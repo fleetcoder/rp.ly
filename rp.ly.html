@@ -707,10 +707,10 @@
                       
                     } else {
                       this.contacts[j].groups.push(this.cgroups[i].id)
-                      console.log(this.contacts[j].name + ' added ' + this.cgroups[i].name)
+                      console.log(this.contacts[j].name + ' added ' + this.cgroups[i].name + ' ' + JSON.stringify(this.contacts[j].groups.concat(this.lastgroups[j])))
                       Vue.http.post( 'modContactGroups', {
                         id : this.contacts[j].id,
-                        groups : JSON.stringify(this.contacts[j].groups)
+                        groups : JSON.stringify(this.contacts[j].groups.concat(this.lastgroups[j]))
                       }).then( ( response ) => {
                         if ( !!response.body ) {
                           this.groups = response.body[0]
@@ -721,10 +721,14 @@
                 } else {
                   if ("undefined" != typeof this.lastgroups[j]) {
                     if(this.lastgroups[j].indexOf(this.cgroups[i].id) !== -1){
-                      console.log(this.contacts[j].name + ' removed ' + this.cgroups[i].name)
+                      console.log(this.contacts[j].name + ' removed ' + this.cgroups[i].name + ' ' + JSON.stringify(this.lastgroups[j]))
+                      const index = this.lastgroups[j].indexOf(this.cgroups[i].id)
+                      if (index > -1) {
+                        this.lastgroups[j].splice(index, 1)
+                      }
                       Vue.http.post( 'modContactGroups', {
                         id : this.contacts[j].id,
-                        groups : JSON.stringify(this.contacts[j].groups)
+                        groups : JSON.stringify(this.lastgroups[j])
                       }).then( ( response ) => {
                         if ( !!response.body ) {
                           this.groups = response.body[0]
