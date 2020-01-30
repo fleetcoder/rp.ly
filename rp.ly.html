@@ -73,6 +73,7 @@
             sent : false,
             phone : '',
             inputhidden: true,
+            inputnamehidden: true,
             code: '',
             name:'',
             loginHidden: true,
@@ -190,6 +191,7 @@
                   this.registerHidden = true
                   this.sent = true
                   this.inputhidden = false
+                  this.inputnamehidden = false
                 })
               } else {
                 this.emailstatus = 'error'
@@ -214,6 +216,7 @@
                   this.sentcode = ' your phone'
                   this.registerHidden = true
                   this.inputhidden = false
+                  this.inputnamehidden = false
                   this.sent = true
                  /* MintUI.Toast({
                     message: 'Check your text messages for a link!',
@@ -236,7 +239,7 @@
             <mt-field v-bind:class="{'is-hidden':loginHidden}" label="Log In:" placeholder="Email or Phone Number..." type="text" :state="emailstatus" v-model="email"></mt-field>
             <mt-button v-bind:class="{'is-hidden':loginHidden}" v-on:click="myLogin()" size="large">Submit</mt-button>
             <mt-cell v-bind:class="{'is-hidden':inputhidden}">A code was just sent to {{sentcode}}</mt-cell>
-            <mt-field v-bind:class="{'is-hidden':inputhidden}" label="Name:" placeholder="Your name..." v-model="name"></mt-field>
+            <mt-field v-bind:class="{'is-hidden':inputnamehidden}" label="Name:" placeholder="Your name..." v-model="name"></mt-field>
             <mt-field v-bind:class="{'is-hidden':inputhidden}" label="Code:" placeholder="***" v-model="code"></mt-field>
             <mt-button v-bind:class="{'is-hidden':inputhidden}" v-on:click="doCode()" size="large">Submit Code</mt-button>
             <mt-spinner v-bind:class="{'is-hidden':spinnerHidden}" type="snake"></mt-spinner>
