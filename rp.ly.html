@@ -1,0 +1,1953 @@
+<!DOCTYPE html>
+<html>
+  <head><meta charset=utf-8>
+    <meta name=viewport content="width=device-width,initial-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+
+    <title>rp.ly</title>
+
+    <link href=/file/app.f6299154743b22e4ec60751bc6631bb6.css rel=stylesheet>
+    <script type=text/javascript src=/file/manifest.2ae2e69a05c33dfc65f8.js></script>
+    <script type=text/javascript src=/file/vendor.0eb5480a7e9a156e90f2.js></script>
+    <script type=text/javascript src=/file/app.be9945027a8323d84e7d.js></script>
+    <!-- <script type=text/javascript src=/file/socket.io.js></script> -->
+    <link rel="apple-touch-icon-precomposed" sizes="57x57" href="/file/rply57.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="/file/rply72.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="/file/rply114.png" />
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/file/rply144.png" />
+  </head>
+  <body>
+    
+    <div id="app"><router-view class="view"></router-view></div>
+
+    <style id="style">
+      div.mint-cell-wrapper > div.mint-cell-value > input {
+        background-color: #eee
+      }
+      .mint-header {
+        background-color: green
+      }
+      #app {
+        margin:0
+      }
+      .mint-button--primary {
+        background-color: gray
+      }
+      .is-hidden {
+        display: none
+      }
+      .file-upload .input-wrapper {
+        background-color: gray
+      }
+      .img {
+        width:100%;
+        height:auto
+      }
+      .contact {
+        list-style:none;
+        text-align:right;
+        margin-top:30px;
+      }
+      .contacts {
+        margin-top:15px;
+      }
+      .addcontact {
+        padding:10px;
+      }
+      .fieldlist div.mint-cell-wrapper > div.mint-cell-value > input {
+        background-color: #fff
+      }
+
+    </style>
+    
+    <script id="client">
+      const freeTrial = {
+        data() {
+          return {
+            spinnerHidden : true,
+            email: '',
+            emailstatus: '',
+            sent : false,
+            phone : '',
+            inputhidden: true,
+            code: '',
+            name:''
+          }
+        },
+        created() {
+        },
+        methods: {
+          doCode() {
+            this.spinnerHidden = false
+            Vue.http.post( 'freeTrialStart', {
+              code : this.code,
+              email : this.email,
+              phone : this.phone,
+              name: this.name
+            }).then( ( response ) => {
+              if (response.body[0] == 'OK') {
+                window.location.href = '/'
+              } else {
+                alert('Sorry, the code did not match')
+              }
+            })
+          },
+          validateEmail(email) {
+            var re = /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+            return re.test(email)
+          },
+          doTrial(){
+            if (this.email.indexOf('@') !== -1) {
+              var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+              if (re.test(String(this.email).toLowerCase())) {
+                this.emailstatus = 'success'
+                Vue.http.post( 'freeTrial', {
+                  email : this.email,
+                  phone : this.phone,
+                  name: this.name
+                }).then( ( response ) => {
+                  this.sent = true
+                  this.inputhidden = false
+                })
+              } else {
+                this.emailstatus = 'error'
+              }
+            } else {
+              if (this.email.match(/\d/g).length===10) {
+                this.emailstatus = 'success'
+                this.phone = this.email
+                this.email = ''
+                Vue.http.post( 'freeTrial', {
+                  email : this.email,
+                  phone : this.phone
+                }).then( ( response ) => {
+                  this.inputhidden = false
+                  this.sent = true
+                 /* MintUI.Toast({
+                    message: 'Check your text messages for a link!',
+                    iconClass: 'icon icon-success',
+                    duration: 10000
+                   })*/
+                })
+              } else {
+                this.emailstatus = 'error'
+              }
+            }
+          }
+        },
+        template: `
+          <div>
+            <mt-cell><h1>rp.ly</h1>&nbsp;&nbsp;&nbsp;&nbsp;<p>accountable, open source group chat software that respects your privacy</p></mt-cell>
+            <mt-field v-bind:class="{'is-hidden':sent}" label="Register or Sign In:" placeholder="Email or Phone Number..." type="text" :state="emailstatus" v-model="email"></mt-field>
+            <mt-button v-bind:class="{'is-hidden':sent}" v-on:click="doTrial()" size="large">Submit</mt-button>
+            <mt-cell v-bind:class="{'is-hidden':inputhidden}">A code was sent to your email address or phone number</mt-cell>
+            <mt-field v-bind:class="{'is-hidden':inputhidden}" label="Name:" placeholder="Your name..." v-model="name"></mt-field>
+            <mt-field v-bind:class="{'is-hidden':inputhidden}" label="Code:" placeholder="***" v-model="code"></mt-field>
+            <mt-button v-bind:class="{'is-hidden':inputhidden}" v-on:click="doCode()" size="large">Submit Code</mt-button>
+            <mt-spinner v-bind:class="{'is-hidden':spinnerHidden}" type="snake"></mt-spinner>
+          </div>`
+      }
+      const connect = {
+        data() {
+          return {
+            code:'',
+            spinnerHidden:true
+          }
+        },
+        props: {},
+        created() {
+          this.spinnerHidden = false
+          Vue.http.post( 'doConnect', {
+            code:this.$route.params.code
+          }).then( ( response ) => {
+            if (response.body[0] == 'OK') {
+              window.location.href = '/'
+            }
+            this.spinnerHidden = true
+          })
+        },
+        methods: {
+          doCode() {
+            this.spinnerHidden = false
+            Vue.http.post( 'doCode', {
+              code:this.code,
+              connect:this.$route.params.code
+            }).then( ( response ) => {
+              if (response.body[0] == 'OK') {
+                window.location.href = '/'
+              } else {
+                alert('Sorry, the code did not match')
+              }
+            })
+          }
+        },
+        template: `
+          <div>
+            <mt-header title="rp.ly">
+            </mt-header>
+            <mt-cell>A code was sent to your email address or phone number</mt-cell>
+            <mt-field label="Code:" placeholder="***" v-model="code"></mt-field>
+            <mt-button v-on:click="doCode()" size="large">Submit Code</mt-button>
+            <mt-spinner v-bind:class="{'is-hidden':spinnerHidden}" type="snake"></mt-spinner>
+          </div>`
+      }
+      const listPosts = {
+        data() {
+          return {
+            spinnerHidden : true
+          }
+        },
+        props: { items : Array, editHidden: Boolean },
+        methods: {
+          showLink(){
+            this.$emit('on-show-menu')
+          },
+          delPosts( id, idx ){
+            this.spinnerHidden = false
+            Vue.http.post( 'delPosts', {
+              id:id
+            }).then( ( response ) => {
+              this.items.splice( idx, 1 )
+              this.spinnerHidden = true
+            })
+          }
+        },
+        template: `
+          <div>
+            <mt-header title="rp.ly">
+              <a v-on:click="showLink()" slot="right">
+                <mt-button icon="more"></mt-button>
+              </a>
+            </mt-header>
+            <mt-spinner v-bind:class="{'is-hidden':spinnerHidden}" type="snake"></mt-spinner>
+            <mt-cell-swipe v-for="(item, idx) in items" :title="item.title" is-link :to="'/showPosts/' + idx" :right="[
+              {
+                content: 'Delete',
+                style: { background: 'red', color: '#fff' },
+                handler: () => delPosts( item.id, idx )
+              }
+            ]">
+            </mt-cell-swipe>
+          </div>`
+      }
+      const showPosts = {
+        data() {
+          return {
+            spinnerHidden : true,
+            idx: this.$route.params.idx,
+            id : 0,
+            title : '',
+            image : '',
+            sound : ''
+          }
+        },
+        props: { items : Array },
+        created() {
+          if (this.items.length == 0) {
+            this.$emit('on-update-list')
+            setTimeout( function (self) {
+              self.setData()
+            }, 2000, this)
+          } else {
+            this.setData()
+          }
+        },
+        methods: {
+          setData(){
+            this.id = this.items[ this.idx ].id
+            this.title = this.items[ this.idx ].title
+            this.image = this.items[ this.idx ].image
+            this.sound = this.items[ this.idx ].sound
+            this.$emit('on-tabs-hidden')
+          }
+        },
+        template: `
+          <div>
+            <mt-header title="rp.ly">
+              <router-link to="/" slot="left">
+                <mt-button icon="back">back</mt-button>
+              </router-link>
+              <router-link :to="'/modPosts/' + idx" slot="right">
+                <mt-button icon="more"></mt-button>
+              </router-link>
+            </mt-header>
+            <mt-spinner v-bind:class="{'is-hidden':spinnerHidden}" type="snake"></mt-spinner>
+            <mt-cell title="Title:" :value="title"></mt-cell>
+            <mt-cell title="Image:"><img class="img" :src="'myFile?field=image&name=' + image" /></mt-cell>
+            <mt-cell title="Sound:"><audio-player :src="'myFile?field=sound&name=' + sound" /></mt-cell>
+          </div>`
+      }
+      const modPosts = {
+        data() {
+          return {
+            spinnerHidden : true,
+            uploadTo : 'uploadFile',
+            idx: this.$route.params.idx,
+            id : 0,
+            title : '',
+            image : '',
+            sound : ''
+          }
+        },
+        props: { items : Array },
+        created() {
+          this.id = this.items[ this.idx ].id
+          this.title = this.items[ this.idx ].title
+          this.image = this.items[ this.idx ].image
+          this.sound = this.items[ this.idx ].sound
+
+          this.$emit('on-tabs-hidden')
+        },
+        methods: {
+          modPosts(){
+            this.spinnerHidden = false
+            Vue.http.post( 'modPosts', {
+              id : this.id,
+              title : this.title
+            }).then( ( response ) => {
+              this.$emit('on-update-list')
+              router.push( '/' )
+            })
+          },
+          stagedUpload(field){
+            Vue.http.get( 'stagedFile?field=' + field ).then( ( response ) => { 
+              if ( !!response.body ) {
+                this[field] = response.body
+              }
+            })
+          }
+        },
+        template: `
+          <div>
+            <mt-header title="rp.ly">
+              <router-link :to="'/showPosts/' + idx" slot="left">
+                <mt-button icon="back">back</mt-button>
+              </router-link>
+            </mt-header>
+            <mt-spinner v-bind:class="{'is-hidden':spinnerHidden}" type="snake"></mt-spinner>
+            <mt-field label="Title:" placeholder="Title.." v-model="title"></mt-field>
+            <mt-cell title="Image:"><img class="img" :src="'myFile?staged=1&field=image&name=' + image" /></mt-cell>
+            <file-upload btn-label="Image" @change="stagedUpload('image')" :url="uploadTo + '&field=image'"></file-upload>
+            <mt-cell title="Sound:"><audio-player :src="'myFile?staged=1&field=sound&name=' + sound" /></mt-cell>
+            <audio-recorder :upload-url="uploadTo + '&field=sound'"/>
+            <mt-button v-on:click="modPosts()" size="large">Save</mt-button>
+          </div>`
+      }
+      const Posts = {
+        data() {
+          return {
+            spinnerHidden : true,
+            uploadTo : 'uploadFile',
+            selected : 'tab1',
+            items : [],
+            tabsHidden: false,
+            groups: [],
+            abilities:[],
+            editHidden:true,
+            groupsHidden:false,
+            postto:[],
+            comet:'',
+            title : '',
+            image : '',
+            cgroups:[{id:1,user_id:1,name:'Admins',perms:[],members:[]},{id:2,user_id:1,name:'Group 2',perms:[],members:[]},{id:3,user_id:1,name:'Group 3',perms:[],members:[]}],
+            contacts:[{id:1,user_id:1,name:'Me',email:'',phone:'',groups:[1,2,3]}],
+            lastgroups : [],
+            saveHidden: false,
+            imgHidden: true,
+            linkVisible: false,
+            feedsVisible: false,
+            feedLink: '',
+            addFeed: '',
+            feeds: []
+          }
+        },
+        watch: {
+          '$route' (to, from) {
+            this.tabsHidden = false
+          }
+        },
+        components:{
+          'show-posts' : showPosts
+        },
+        created() {
+          if (this.$route.path == '/myContacts') {
+            router.push('/')
+            setTimeout(function (el){
+              el.selected = 'tab2'
+            }, 300, this)
+          }
+          this.getPosts()
+          this.getContacts()
+          this.getSettings()
+        },
+        methods: {
+          showLink() {
+            this.linkVisible = true
+          },
+          aftRec(data){
+            MintUI.Toast({
+              message: 'Click - Record 1 - and then click the floppy disk',
+              iconClass: 'icon icon-success',
+              duration: 10000
+            })
+          },
+          getSettings() {
+            Vue.http.get( 'getSettings').then( ( response ) => { 
+              if ( !!response.body ) {
+                console.log(response.body)
+                this.feedLink = response.body.feedLink
+                this.feeds = JSON.parse(response.body.feedSubs)
+              }
+            })
+          },
+          getContacts() {
+            Vue.http.get( 'getContacts').then( ( response ) => { 
+              if ( !!response.body ) {
+                this.contacts = response.body[0]
+                this.reloadGroups()
+              }
+            })
+            Vue.http.get( 'getGroups').then( ( response ) => { 
+              if ( !!response.body ) {
+                this.cgroups = response.body[0]
+                this.reloadGroups()
+              }
+            })
+          },
+          reloadGroups() {
+            this.lastgroups = []
+            for (var i = 0; i < this.cgroups.length; i++) {
+              this.cgroups[i].members = []
+              this.cgroups[i].perms = []
+              for (var j = 0; j < this.contacts.length; j++) {
+                this.lastgroups.push([])
+                if (this.contacts[j].groups.indexOf(this.cgroups[i].id) > -1) {
+                  this.cgroups[i].members.push(this.contacts[j].id)
+                  this.lastgroups[j].push(this.cgroups[i].id)
+                }
+                this.cgroups[i].perms.push({label: ' ',value: this.contacts[j].id})
+              }
+            }
+          },
+          cometAdd(item) {
+            this.items.unshift(item)
+          },
+          hideTabs() {
+            this.tabsHidden = true
+          },
+          getPosts() {
+            Vue.http.get('isAuthed').then((response) => {
+              if(parseInt(response.body) != 1) {
+                router.push('auth')
+              }
+            })
+            this.spinnerHidden = false
+            Vue.http.get( 'getPosts').then( ( response ) => { 
+              if ( !!response.body ) {
+                this.items = response.body[0]
+                this.groups = response.body[1]
+                this.abilities = response.body[2]
+                if (this.abilities.indexOf("modSource Code") > -1) {
+                  this.editHidden = false
+                }
+                if (this.groups.length < 2) {
+                  this.groupsHidden = true
+                  this.postto = [this.groups[0].value]
+                }
+                if (this.comet == '') {
+                  this.comet = response.body[3]
+                  //var socket = io( '/rply/' + response.body[3] )
+                  //socket.on( 'new item', this.cometAdd )
+                }
+                if (this.$route.path == '/myContacts') {
+                  //this.selected = 'tab2'
+                }
+              }
+              this.spinnerHidden = true
+            })
+          },
+          addPosts(){
+            this.spinnerHidden = false
+            this.saveHidden = true
+            this.groupsHidden = true
+            this.imgHidden = true
+            if (this.postto.length == 0) {
+              MintUI.Toast({
+                message: 'Your post needs recipients, try adding a Contact to a Group',
+                iconClass: 'icon icon-success',
+                duration: 4000
+              })
+              return
+            }
+            Vue.http.post( 'addPosts', {
+              recips:JSON.stringify(this.postto),
+              title : this.title
+            }).then( ( response ) => {
+              this.selected = 'tab1'
+              this.getPosts()
+              this.title = ''
+              this.image = ''
+              this.spinnerHidden = true
+              this.saveHidden = false
+              this.groupsHidden = false
+            })
+          },
+          dropFeed(idx){
+            Vue.http.post( 'dropFeed', {
+              feed : idx
+            }).then( ( response ) => {
+              this.feeds = response.body
+            })
+          },
+          doAddFeed(){
+            Vue.http.post( 'addFeeds', {
+              feed : this.addFeed
+            }).then( ( response ) => {
+              this.feeds = response.body
+              this.addFeed = ''
+            })
+          },
+          showFeeds(){
+            this.linkVisible = false
+            this.feedsVisible = true
+          },
+          closeSettings(){
+            this.linkVisible = false
+          },
+          closeFeeds(){
+            this.feedsVisible = false
+          },
+          stagedUpload(field){
+            Vue.http.get( 'stagedFile?field=' + field ).then( ( response ) => { 
+              if ( !!response.body ) {
+                this[field] = response.body
+                this.imgHidden = false
+              }
+            })
+          },
+          setGroups() {
+            for (var j = 0; j < this.contacts.length; j++) {
+              this.contacts[j].groups = []
+              for (var i = 0; i < this.cgroups.length; i++) {
+                if (this.cgroups[i].members.indexOf(this.contacts[j].id) > -1) {
+                  if ("undefined" != typeof this.lastgroups[j]) {
+                    if(this.lastgroups[j].indexOf(this.cgroups[i].id) !== -1){
+                      
+                    } else {
+                      this.contacts[j].groups.push(this.cgroups[i].id)
+                      console.log(this.contacts[j].name + ' added ' + this.cgroups[i].name)
+                      Vue.http.post( 'modContactGroups', {
+                        id : this.contacts[j].id,
+                        groups : JSON.stringify(this.contacts[j].groups)
+                      }).then( ( response ) => {
+                        if ( !!response.body ) {
+                          this.groups = response.body[0]
+                        }
+                      })
+                    }
+                  }
+                } else {
+                  if ("undefined" != typeof this.lastgroups[j]) {
+                    if(this.lastgroups[j].indexOf(this.cgroups[i].id) !== -1){
+                      console.log(this.contacts[j].name + ' removed ' + this.cgroups[i].name)
+                      Vue.http.post( 'modContactGroups', {
+                        id : this.contacts[j].id,
+                        groups : JSON.stringify(this.contacts[j].groups)
+                      }).then( ( response ) => {
+                        if ( !!response.body ) {
+                          this.groups = response.body[0]
+                        }
+                      })
+                    }
+                  }
+                }
+              }
+            }
+            this.lastgroups = []
+            for (var j = 0; j < this.contacts.length; j++) {
+              this.lastgroups.push([])
+              this.lastgroups[j] = []
+              for (var i = 0; i < this.cgroups.length; i++) {
+                if (this.cgroups[i].members.indexOf(this.contacts[j].id) > -1) {
+                  this.lastgroups[j].push(this.cgroups[i].id)
+                }
+              }
+            }
+          }
+        },
+        template: `
+          <div>
+            <mt-spinner v-bind:class="{'is-hidden':spinnerHidden}" type="snake"></mt-spinner>
+            <mt-tab-container v-model="selected">
+              <mt-tab-container-item id="tab1">
+                <router-view v-bind:items="items" v-bind:editHidden="editHidden" @on-update-list="getPosts" @on-tabs-hidden="hideTabs" @on-show-menu="showLink" />
+                <mt-cell>&nbsp;</mt-cell>
+              </mt-tab-container-item>
+              <mt-tab-container-item id="tab2">
+                <mt-header title="rp.ly"></mt-header>
+                <mt-cell>
+                  <ul class="contacts">
+                    <li class="contact" v-for="friend in contacts">{{ friend.name }}</li>
+                  </ul>
+                  <mt-checklist v-for="(group,idx) in cgroups" :title="cgroups[idx].name"
+                    v-model="cgroups[idx].members"
+                    :options="cgroups[idx].perms"
+                    align="right"
+                    v-on:change="setGroups()">
+                  </mt-checklist>
+                </mt-cell>
+                <mt-cell is-link to="/contacts" title="Contacts"></mt-cell>
+                <mt-cell is-link to="/groups" title="Groups"></mt-cell>
+                <mt-cell></mt-cell>
+              </mt-tab-container-item>
+              <mt-tab-container-item id="tab3">
+                <mt-header title="rp.ly"></mt-header>
+                <mt-field placeholder="Title.." v-model="title"></mt-field>
+                <mt-cell v-bind:class="{'is-hidden':imgHidden}" title="Image:"><img class="img" :src="'myFile?staged=1&field=image&name=' + image" /></mt-cell>
+                <file-upload v-bind:class="{'is-hidden':saveHidden}" btn-label="Image" @change="stagedUpload('image')" :url="uploadTo + '?field=image'"></file-upload>
+                <audio-recorder v-bind:class="{'is-hidden':saveHidden}" :upload-url="uploadTo + '?field=sound'" :after-recording="aftRec" />
+                <mt-checklist v-bind:class="{'is-hidden':groupsHidden}"
+                  v-model="postto"
+                  :options="groups"
+                  align="right">
+                </mt-checklist>
+                <mt-button v-bind:class="{'is-hidden':saveHidden}" v-on:click="addPosts()" size="large">Save</mt-button>
+                <mt-cell>&nbsp;</mt-cell>
+              </mt-tab-container-item>
+            </mt-tab-container>
+            
+            <mt-tabbar fixed="true" v-model="selected" v-bind:class="{'is-hidden':tabsHidden}">
+              <mt-tab-item id="tab1">
+                <img slot="icon" src="/file/home.svg">
+                Posts
+              </mt-tab-item>
+              <mt-tab-item id="tab2">
+                <img slot="icon" src="/file/users.svg">
+                Contacts
+              </mt-tab-item>
+              <mt-tab-item id="tab3">
+                <img slot="icon" src="/file/plus-circle.svg">
+                Create
+              </mt-tab-item>
+            </mt-tabbar>
+
+            <mt-popup v-model="feedsVisible" position="middle">
+              <mt-header>
+                <a v-on:click="closeFeeds()" slot="left">
+                  <mt-button>X</mt-button>
+                </a>
+              </mt-header>
+              <mt-cell v-for="(url, idx) in feeds">
+                <mt-field v-model="url"></mt-field>
+                <a v-on:click="dropFeed(idx)">
+                  <mt-button>X</mt-button>
+                </a>
+              </mt-cell>
+              <mt-field placeholder="Paste a feed link..." v-model="addFeed"></mt-field>
+              <mt-button v-on:click="doAddFeed()" size="large">Save Feed</mt-button>
+            </mt-popup>
+            
+            <mt-popup v-model="linkVisible" position="middle">
+              <mt-header>
+                <a v-on:click="closeSettings()" slot="left">
+                  <mt-button>X</mt-button>
+                </a>
+              </mt-header>
+              <mt-cell></mt-cell>
+              <mt-cell title="The link below includes your password, it allows you to view your personalized feed from other apps like Podcasts or Reeder"></mt-cell>
+              <mt-field v-model="feedLink"></mt-field>
+              <mt-cell></mt-cell>
+              <mt-cell title="Follow podcast or photo feeds from any Web site"></mt-cell>
+              <mt-button v-on:click="showFeeds()" size="large">Feeds</mt-button>
+              <mt-cell></mt-cell>
+            </mt-popup>
+          
+          </div>`
+      }
+      const listContacts = {
+        data() {
+          return {
+            spinnerHidden : true
+          }
+        },
+        props: { items : Array, editHidden: Boolean },
+        methods: {
+          delContacts( id, idx ){
+            this.spinnerHidden = false
+            Vue.http.post( 'delContacts', {
+              id:id
+            }).then( ( response ) => {
+              this.items.splice( idx, 1 )
+              this.spinnerHidden = true
+            })
+          }
+        },
+        template: `
+          <div>
+            <mt-header title="Contacts">
+              <router-link to="/myContacts" slot="left">
+                <mt-button icon="back">back</mt-button>
+              </router-link>
+            </mt-header>
+            <mt-spinner v-bind:class="{'is-hidden':spinnerHidden}" type="snake"></mt-spinner>
+            <mt-cell-swipe v-for="(item, idx) in items" :title="item.name" is-link :to="'/showContacts/' + idx" :right="[
+              {
+                content: 'Delete',
+                style: { background: 'red', color: '#fff' },
+                handler: () => delContacts( item.id, idx )
+              }
+            ]">
+            </mt-cell-swipe>
+          </div>`
+      }
+      const showContacts = {
+        data() {
+          return {
+            spinnerHidden : true,
+            idx: this.$route.params.idx,
+            id : 0,
+            name : '',
+            email : '',
+            phone : ''
+          }
+        },
+        props: { items : Array },
+        created() {
+          if (this.items.length == 0) {
+            this.$emit('on-update-list')
+            setTimeout( function (self) {
+              self.setData()
+            }, 2000, this)
+          } else {
+            this.setData()
+          }
+        },
+        methods: {
+          setData(){
+            this.id = this.items[ this.idx ].id
+            this.name = this.items[ this.idx ].name
+            this.email = this.items[ this.idx ].email
+            this.phone = this.items[ this.idx ].phone
+            this.$emit('on-tabs-hidden')
+          }
+        },
+        template: `
+          <div>
+            <mt-header title="Contacts">
+              <router-link to="/contacts" slot="left">
+                <mt-button icon="back">back</mt-button>
+              </router-link>
+              <router-link :to="'/modContacts/' + idx" slot="right">
+                <mt-button icon="more"></mt-button>
+              </router-link>
+            </mt-header>
+            <mt-spinner v-bind:class="{'is-hidden':spinnerHidden}" type="snake"></mt-spinner>
+            <mt-cell title="Name:" :value="name"></mt-cell>
+            <mt-cell title="Email:" :value="email"></mt-cell>
+            <mt-cell title="Phone:" :value="phone"></mt-cell>
+          </div>`
+      }
+      const modContacts = {
+        data() {
+          return {
+            spinnerHidden : true,
+            uploadTo : 'uploadFile',
+            idx: this.$route.params.idx,
+            id : 0,
+            name : '',
+            email : '',
+            phone : ''
+          }
+        },
+        props: { items : Array },
+        created() {
+          this.id = this.items[ this.idx ].id
+          this.name = this.items[ this.idx ].name
+          this.email = this.items[ this.idx ].email
+          this.phone = this.items[ this.idx ].phone
+
+          this.$emit('on-tabs-hidden')
+        },
+        methods: {
+          modContacts(){
+            this.spinnerHidden = false
+            Vue.http.post( 'modContacts', {
+              id : this.id,
+              name : this.name,
+              email : this.email,
+              phone : this.phone
+            }).then( ( response ) => {
+              this.$emit('on-update-list')
+              router.push( '/' )
+            })
+          },
+          stagedUpload(field){
+            Vue.http.get( 'stagedFile?field=' + field ).then( ( response ) => { 
+              if ( !!response.body ) {
+                this[field] = response.body
+              }
+            })
+          }
+        },
+        template: `
+          <div>
+            <mt-header title="Contacts">
+              <router-link :to="'/showContacts/' + idx" slot="left">
+                <mt-button icon="back">back</mt-button>
+              </router-link>
+            </mt-header>
+            <mt-spinner v-bind:class="{'is-hidden':spinnerHidden}" type="snake"></mt-spinner>
+            <mt-field label="Name:" placeholder="Name.." v-model="name"></mt-field>
+            <mt-field label="Email:" placeholder="Email.." v-model="email"></mt-field>
+            <mt-field label="Phone:" placeholder="Phone.." v-model="phone"></mt-field>
+            <mt-button v-on:click="modContacts()" size="large">Save</mt-button>
+          </div>`
+      }
+      const Contacts = {
+        data() {
+          return {
+            spinnerHidden : true,
+            uploadTo : 'uploadFile',
+            selected : 'tab1',
+            items : [],
+            tabsHidden: false,
+            groups: [],
+            abilities:[],
+            editHidden:true,
+            groupsHidden:false,
+            postto:[],
+            comet:'',
+            name : '',
+            email : '',
+            phone : '',
+            validEmail: '',
+            validPhone: ''
+          }
+        },
+        watch: {
+          '$route' (to, from) {
+            this.tabsHidden = false
+          }
+        },
+        components:{
+          'show-contacts' : showContacts
+        },
+        created() {
+          this.getContacts()
+        },
+        methods: {
+          checkEmail() {
+            this.validEmail = ''
+            var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+            if (re.test(String(this.email).toLowerCase())) {
+              this.validEmail = "success"
+            } else {
+              this.validEmail = "error"
+            }
+          },
+          checkPhone() {
+            this.validPhone = ''
+            if (this.phone.match(/\d/g).length===10) {
+              this.validPhone = "success"
+            } else {
+              this.validPhone = "error"
+            }
+          },
+          cometAdd(item) {
+            this.items.unshift(item)
+          },
+          hideTabs() {
+            this.tabsHidden = true
+          },
+          getContacts() {
+            this.spinnerHidden = false
+            Vue.http.get( 'getContacts').then( ( response ) => { 
+              if ( !!response.body ) {
+                this.items = response.body[0]
+                this.groups = response.body[1]
+                this.abilities = response.body[2]
+                if (this.abilities.indexOf("modSource Code") > -1) {
+                  this.editHidden = false
+                }
+                if (this.groups.length < 2) {
+                  this.groupsHidden = true
+                  this.postto = [this.groups[0].value]
+                }
+                if (this.comet == '') {
+                  this.comet = response.body[3]
+                  //var socket = io( '/rply/' + response.body[3] )
+                  //socket.on( 'new item', this.cometAdd )
+                }
+              }
+              this.spinnerHidden = true
+            })
+          },
+          addContacts(){
+            this.spinnerHidden = false
+            Vue.http.post( 'addContacts', {
+              recips:JSON.stringify(this.postto),
+              name : this.name,
+              email : this.email,
+              phone : this.phone
+            }).then( ( response ) => {
+              this.selected = 'tab1'
+              this.getContacts()
+              this.name = ''
+              this.email = ''
+              this.phone = ''
+              Posts.getContacts()
+            })
+          },
+          stagedUpload(field){
+            Vue.http.get( 'stagedFile?field=' + field ).then( ( response ) => { 
+              if ( !!response.body ) {
+                this[field] = response.body
+              }
+            })
+          }
+        },
+        template: `
+          <div>
+
+            <mt-tab-container v-model="selected">
+              <mt-tab-container-item id="tab1">
+                <router-view v-bind:items="items" v-bind:editHidden="editHidden" @on-update-list="getContacts" @on-tabs-hidden="hideTabs"  />
+                <mt-cell>&nbsp;</mt-cell>
+              </mt-tab-container-item>
+              <mt-tab-container-item id="tab2">
+                <mt-header title="Contacts"></mt-header>
+                <mt-field placeholder="Name.." v-model="name"></mt-field>
+                <mt-field :state="validEmail" @keyup.native="checkEmail" placeholder="Email.." v-model="email"></mt-field>
+                <mt-field :state="validPhone" @keyup.native="checkPhone" placeholder="Phone.." v-model="phone"></mt-field>
+                <mt-button v-on:click="addContacts()" size="large">Save</mt-button>
+                <mt-cell>&nbsp;</mt-cell>
+              </mt-tab-container-item>
+            </mt-tab-container>
+            
+            <mt-spinner v-bind:class="{'is-hidden':spinnerHidden}" type="snake"></mt-spinner>
+            
+            <mt-tabbar fixed="true" v-model="selected" v-bind:class="{'is-hidden':tabsHidden}">
+              <mt-tab-item id="tab1">
+                <img slot="icon" src="/file/home.svg">
+                Contacts
+              </mt-tab-item>
+              <mt-tab-item id="tab2">
+                <img slot="icon" src="/file/plus-circle.svg">
+                Add Contact
+              </mt-tab-item>
+            </mt-tabbar>
+          
+          </div>`
+      }
+      const listGroups = {
+        data() {
+          return {
+            spinnerHidden : true
+          }
+        },
+        props: { items : Array, editHidden: Boolean },
+        methods: {
+          delGroups( id, idx ){
+            this.spinnerHidden = false
+            Vue.http.post( 'delGroups', {
+              id:id
+            }).then( ( response ) => {
+              this.items.splice( idx, 1 )
+              this.spinnerHidden = true
+            })
+          }
+        },
+        template: `
+          <div>
+            <mt-header title="Groups">
+              <router-link to="/myContacts" slot="left">
+                <mt-button icon="back">back</mt-button>
+              </router-link>
+            </mt-header>
+            <mt-spinner v-bind:class="{'is-hidden':spinnerHidden}" type="snake"></mt-spinner>
+            <mt-cell-swipe v-for="(item, idx) in items" :title="item.name" is-link :to="'/showGroups/' + idx" :right="[
+              {
+                content: 'Delete',
+                style: { background: 'red', color: '#fff' },
+                handler: () => delGroups( item.id, idx )
+              }
+            ]">
+            </mt-cell-swipe>
+          </div>`
+      }
+      const showGroups = {
+        data() {
+          return {
+            spinnerHidden : true,
+            idx: this.$route.params.idx,
+            id : 0,
+            name : ''
+          }
+        },
+        props: { items : Array },
+        created() {
+          if (this.items.length == 0) {
+            this.$emit('on-update-list')
+            setTimeout( function (self) {
+              self.setData()
+            }, 2000, this)
+          } else {
+            this.setData()
+          }
+        },
+        methods: {
+          setData(){
+            this.id = this.items[ this.idx ].id
+            this.name = this.items[ this.idx ].name
+            this.$emit('on-tabs-hidden')
+          }
+        },
+        template: `
+          <div>
+            <mt-header title="Groups">
+              <router-link to="/groups" slot="left">
+                <mt-button icon="back">back</mt-button>
+              </router-link>
+              <router-link :to="'/modGroups/' + idx" slot="right">
+                <mt-button icon="more"></mt-button>
+              </router-link>
+            </mt-header>
+            <mt-spinner v-bind:class="{'is-hidden':spinnerHidden}" type="snake"></mt-spinner>
+            <mt-cell title="Name:" :value="name"></mt-cell>
+          </div>`
+      }
+      const modGroups = {
+        data() {
+          return {
+            spinnerHidden : true,
+            uploadTo : 'uploadFile',
+            idx: this.$route.params.idx,
+            id : 0,
+            name : ''
+          }
+        },
+        props: { items : Array },
+        created() {
+          this.id = this.items[ this.idx ].id
+          this.name = this.items[ this.idx ].name
+
+          this.$emit('on-tabs-hidden')
+        },
+        methods: {
+          modGroups(){
+            this.spinnerHidden = false
+            Vue.http.post( 'modGroups', {
+              id : this.id,
+              name : this.name
+            }).then( ( response ) => {
+              this.$emit('on-update-list')
+              router.push( '/' )
+            })
+          },
+          stagedUpload(field){
+            Vue.http.get( 'stagedFile?field=' + field ).then( ( response ) => { 
+              if ( !!response.body ) {
+                this[field] = response.body
+              }
+            })
+          }
+        },
+        template: `
+          <div>
+            <mt-header title="Groups">
+              <router-link :to="'/showGroups/' + idx" slot="left">
+                <mt-button icon="back">back</mt-button>
+              </router-link>
+            </mt-header>
+            <mt-spinner v-bind:class="{'is-hidden':spinnerHidden}" type="snake"></mt-spinner>
+            <mt-field label="Name:" placeholder="Name.." v-model="name"></mt-field>
+            <mt-button v-on:click="modGroups()" size="large">Save</mt-button>
+          </div>`
+      }
+      const Groups = {
+        data() {
+          return {
+            spinnerHidden : true,
+            uploadTo : 'uploadFile',
+            selected : 'tab1',
+            items : [],
+            tabsHidden: false,
+            groups: [],
+            abilities:[],
+            editHidden:true,
+            groupsHidden:false,
+            postto:[],
+            comet:'',
+            name : ''
+          }
+        },
+        watch: {
+          '$route' (to, from) {
+            this.tabsHidden = false
+          }
+        },
+        components:{
+          'show-groups' : showGroups
+        },
+        created() {
+          this.getGroups()
+        },
+        methods: {
+          cometAdd(item) {
+            this.items.unshift(item)
+          },
+          hideTabs() {
+            this.tabsHidden = true
+          },
+          getGroups() {
+            this.spinnerHidden = false
+            Vue.http.get( 'getGroups').then( ( response ) => { 
+              if ( !!response.body ) {
+                this.items = response.body[0]
+                this.groups = response.body[1]
+                this.abilities = response.body[2]
+                if (this.abilities.indexOf("modSource Code") > -1) {
+                  this.editHidden = false
+                }
+                if (this.groups.length < 2) {
+                  this.groupsHidden = true
+                  this.postto = [this.groups[0].value]
+                }
+                if (this.comet == '') {
+                  this.comet = response.body[3]
+                  //var socket = io( '/rplygroups/' + response.body[3] )
+                  //socket.on( 'new item', this.cometAdd )
+                }
+              }
+              this.spinnerHidden = true
+            })
+          },
+          addGroups(){
+            this.spinnerHidden = false
+            Vue.http.post( 'addGroups', {
+              recips:JSON.stringify(this.postto),
+              name : this.name
+            }).then( ( response ) => {
+              this.selected = 'tab1'
+              this.getGroups()
+              this.name = ''
+              Posts.getContacts()
+            })
+          },
+          stagedUpload(field){
+            Vue.http.get( 'stagedFile?field=' + field ).then( ( response ) => { 
+              if ( !!response.body ) {
+                this[field] = response.body
+              }
+            })
+          }
+        },
+        template: `
+          <div>
+
+            <mt-tab-container v-model="selected">
+              <mt-tab-container-item id="tab1">
+                <router-view v-bind:items="items" v-bind:editHidden="editHidden" @on-update-list="getGroups" @on-tabs-hidden="hideTabs"  />
+                <mt-cell>&nbsp;</mt-cell>
+              </mt-tab-container-item>
+              <mt-tab-container-item id="tab2">
+                <mt-header title="Groups"></mt-header>
+                <mt-field placeholder="Name.." v-model="name"></mt-field>
+                <mt-button v-on:click="addGroups()" size="large">Save</mt-button>
+                <mt-cell>&nbsp;</mt-cell>
+              </mt-tab-container-item>
+            </mt-tab-container>
+            
+            <mt-spinner v-bind:class="{'is-hidden':spinnerHidden}" type="snake"></mt-spinner>
+            
+            <mt-tabbar fixed="true" v-model="selected" v-bind:class="{'is-hidden':tabsHidden}">
+              <mt-tab-item id="tab1">
+                <img slot="icon" src="/file/home.svg">
+                Groups
+              </mt-tab-item>
+              <mt-tab-item id="tab2">
+                <img slot="icon" src="/file/plus-circle.svg">
+                Add Group
+              </mt-tab-item>
+            </mt-tabbar>
+          
+          </div>`
+      }
+      const router = new VueRouter({routes:[
+        { path: '', component: Posts,
+          children: [{
+            path: 'showPosts/:idx',
+            component: showPosts
+        },{
+            path: 'modPosts/:idx',
+            component: modPosts
+        },{
+            path: 'myContacts',
+            component: listPosts
+        },{
+            path: '',
+            component: listPosts
+        }]},{
+          path: '/groups', component: Groups,
+                    children: [{
+                      path: '/showGroups/:idx',
+                      component: showGroups
+                  },{
+                      path: '/modGroups/:idx',
+                      component: modGroups
+                  },{
+                      path: '',
+                      component: listGroups
+                  }]
+        },{
+          path: '/contacts', component: Contacts,
+                    children: [{
+                      path: '/showContacts/:idx',
+                      component: showContacts
+                  },{
+                      path: '/modContacts/:idx',
+                      component: modContacts
+                  },{
+                      path: '',
+                      component: listContacts
+                  }]
+        },{
+            path: '/connect/:code',
+            component: connect
+        },{
+            path: '/auth',
+            component: freeTrial
+        }
+      ]})
+      const vueApp = new Vue({
+        router
+      }).$mount('#app')
+    </script>
+    
+  </body>
+  <script type="python" id="server">
+
+@app.route('/doCode', methods=['GET','POST'])
+def doCode():
+  item = get_one_by( 'connectcodes', request.form.get('code'), 'num' )
+  if len(item) > 0:
+    for conn in item:
+      if conn['code'] == request.form.get('connect'):
+        usr = get_one_by( 'contacts', request.form.get('connect'), 'code' )
+        if len(usr) > 0 and usr[0]['user_id'] is None:
+          u = usr[0]['id']
+        else:
+          if len(usr) > 0:
+            if int(usr[0]['user_id']) > 0:
+              exists = get_parent(usr[0]['id'])
+              if exists['user_id'] is None:
+                u = exists['id']
+              else:
+                ra = randomword(6)
+                u = add_one('contacts',{
+                  'name':usr[0]['name'],
+                  'email':usr[0]['email'].lower(),
+                  'phone':usr[0]['phone'],
+                  'groups':json.dumps([2]),
+                  'code':ra,
+                  'created':str(datetime.now())
+                })
+                newrec = {
+                  'name' : 'Group 1',
+                  'user_id' : u,
+                  'created' : str( timezone( 'US/Pacific' ).localize( datetime.now() ) )
+                }
+                gr1 = add_one( 'groups', newrec )
+                newrec = {
+                  'name' : 'Group 2',
+                  'user_id' : u,
+                  'created' : str( timezone( 'US/Pacific' ).localize( datetime.now() ) )
+                }
+                gr2 = add_one( 'groups', newrec )
+                con = mod_one('contacts',{'groups': json.dumps([2,gr1,gr2])},u)
+                update_abilities()
+        expire_date = datetime.now()
+        expire_date = expire_date + timedelta(days=900)
+        response = make_response(json.dumps( [ 'OK' ] ))
+        response.set_cookie('user', str(u), expires=expire_date)
+        return response
+  return json.dumps( [ 'Error' ] )
+
+@app.route('/doConnect', methods=['GET','POST'])
+def doConnect():
+  num = randint(100, 999)
+  add_one('connectcodes',{
+    'num':num,
+    'code':request.form.get('code')
+  })
+  item = get_one_by( 'contacts', request.form.get('code'), 'code' )
+  cont = {}
+  if 'user' in request.cookies:
+    if int(request.cookies['user']) == int(item[0]['id']):
+      return json.dumps( [ 'OK' ] )
+    exists = get_parent(item[0]['id'])
+    if 'user_id' in exists and exists['user_id'] is None:
+      return json.dumps( [ 'OK' ] )
+  cont['phone'] = item[0]['phone']
+  cont['email'] = item[0]['email']
+  if len(cont['phone']) > 0:
+    client = Client(twilio_id, twilio_token)
+    rl = "Your code is " + str(num)
+    message = client.messages.create(
+      body=rl,
+      from_='+19718036380',
+      to=cont['phone']
+    )
+    return json.dumps( [ 'SENT' ] )
+  if len(cont['email']) > 0:
+    em = cont['email']
+    message = Mail(
+      from_email=' Request at ' + mydomain + ' <brian@hoverkitty.com>',
+      to_emails=em,
+      subject='Your connection code is ' + str(num),
+      html_content='<strong>Your code is ' + str(num) + '</strong>')
+    sg = SendGridAPIClient(sendgrid_token)
+    response = sg.send(message)
+    return json.dumps( [ 'SENT' ] )
+  return json.dumps( [ 'Error' ] )
+
+@app.route('/freeTrial', methods=['GET','POST'])
+def freeTrial():
+    num = randint(100, 999)
+    cont = {}
+    cont['phone'] = request.form.get("phone")
+    cont['email'] = request.form.get("email").lower()
+    add_one('connectcodes',{
+      'num':num,
+      'email':cont['email'],
+      'phone':cont['phone']
+    })
+    if len(cont['phone']) > 0:
+      client = Client(twilio_id, twilio_token)
+      rl = "Your " + mydomain + " code is " + str(num)
+      message = client.messages.create(
+        body=rl,
+        from_='+19718036380',
+        to=cont['phone']
+      )
+    if len(cont['email']) > 0:
+      em = cont['email']
+      message = Mail(
+        from_email='brian@hoverkitty.com',
+        to_emails=em,
+        subject='Your ' + mydomain + ' connection request',
+        html_content='<strong>Your code is ' + str(num) + '</strong>')
+      sg = SendGridAPIClient(sendgrid_token)
+      response = sg.send(message)
+    return 'OK'
+
+@app.route('/freeTrialStart', methods=['GET','POST'])
+def freeTrialStart():
+  cont = {}
+  cont['phone'] = request.form.get("phone")
+  cont['email'] = request.form.get("email")
+  cont['name'] = request.form.get("name")
+  newuser = ''
+  if len(cont['phone']) > 0:
+    newuser = cont['phone']
+    usr = get_one_by('contacts',newuser,'phone')
+  if len(cont['email']) > 0:
+    newuser = cont['email']
+    usr = get_one_by('contacts',newuser,'email')
+  os.chdir(appdir)
+  tri = get_one_by('connectcodes',request.form.get("code"),'num')
+  email = tri[0]['email']
+  phone = tri[0]['phone']
+  if not (cont['phone'] == phone or cont['email'] == email):
+    return '0'
+  ra = randomword(6)
+  if len(usr) > 0 and usr[0]['user_id'] is None:
+    u = usr[0]['id']
+  else:
+    exists = {}
+    if len(usr) > 0:
+      exists = get_parent(usr[0]['id'])
+    if 'user_id' in exists and exists['user_id'] is None:
+      u = exists['id']
+    else:
+      u = add_one('contacts',{
+        'name':cont['name'],
+        'email':cont['email'].lower(),
+        'phone':cont['phone'],
+        'groups':json.dumps([2]),
+        'code':ra,
+        'created':str(datetime.now())
+      })
+      newrec = {
+        'name' : 'Group 1',
+        'user_id' : u,
+        'created' : str( timezone( 'US/Pacific' ).localize( datetime.now() ) )
+      }
+      gr1 = add_one( 'groups', newrec )
+      newrec = {
+        'name' : 'Group 2',
+        'user_id' : u,
+        'created' : str( timezone( 'US/Pacific' ).localize( datetime.now() ) )
+      }
+      gr2 = add_one( 'groups', newrec )
+      con = mod_one('contacts',{'groups': json.dumps([2,gr1,gr2])},u)
+      update_abilities()
+  expire_date = datetime.now()
+  expire_date = expire_date + timedelta(days=900)
+  response = make_response(json.dumps( [ 'OK' ] ))
+  response.set_cookie('user', str(u), expires=expire_date)
+  return response
+
+@app.route("/isAuthed", methods=['GET'])
+def isAuthed():
+  os.chdir(appdir)
+  if 'user' in request.cookies:
+    if int(request.cookies['user']) > 0:
+      return '1'
+  return '0'
+
+@app.route("/logout", methods=['POST','GET'])
+def logout():
+  os.chdir(appdir)
+  expire_date = datetime.now()
+  response = make_response('1')
+  response.set_cookie('user', '0', expires=expire_date)
+  return response
+
+@app.route('/feed',methods=['GET','POST'])
+def feed():
+  items = get_one_by( 'settings', 'https://' + mydomain + '/feed?k=' + request.args.get('k'), 'value' )
+  if len(items) > 0:
+    user = get_user(items[0]['user_id'])
+    recs = get_all('posts')
+    items = []
+    for item in recs:
+      if can('get','posts',user,item):
+        item['title'] = get_user(item['user_id'])['name'] + ': ' + item['title']
+        items.append(item)
+    channel = etree.Element('channel')
+    etree.SubElement(channel,'title').text = 'Feed'
+    etree.SubElement(channel,'link').text = 'https://' + mydomain
+    etree.SubElement(channel,'description').text = ''
+    for post in items:
+      item = etree.Element('item')
+      etree.SubElement(item,'title').text = post['title']
+      etree.SubElement(item,'pubDate').text = post['created']
+      enc = etree.Element('enclosure')
+      mtype = mimetypes.MimeTypes().guess_type(post['sound'])[0]
+      if not mtype is None:
+        if post['sound'][-3:] == 'mp3':
+          enc.set('url', 'https://' + mydomain + '/myFile?name=' + post['sound'] + '&field=sound')
+          enc.set('length', str(os.path.getsize('myfiles/' + post['sound'])))
+          enc.set('type', mtype)
+          item.append(enc)
+      else:
+        enc = etree.Element('enclosure')
+        mtype = mimetypes.MimeTypes().guess_type(post['image'])[0]
+        if not mtype is None:
+          enc.set('url', 'https://' + mydomain + '/myFile?name=' + post['image'] + '&field=image')
+          enc.set('length', str(os.path.getsize('myfiles/' + post['image'])))
+          enc.set('type', mtype)
+          item.append(enc)
+      channel.append(item)
+    root = etree.Element('rss')
+    root.set('version', '2.0')
+    root.append(channel)
+    return etree.tostring(root, pretty_print=True).decode('utf-8')
+  return str(0)
+
+@app.route('/getSettings',methods=['GET','POST'])
+def getSettings():
+  if not 'user' in request.cookies:
+    return json.dumps([])
+  items = get_one_by( 'settings', request.cookies['user'], 'user_id' )
+  if not len(items) > 0:
+    sett = add_one('settings',{
+      'name':'feedLink',
+      'value':'https://' + mydomain + '/feed?k=' + randomword(19),
+      'user_id':request.cookies['user']
+    })
+    sett = add_one('settings',{
+      'name':'feedSubs',
+      'value':'[]',
+      'user_id':request.cookies['user']
+    })
+  items = get_one_by( 'settings', request.cookies['user'], 'user_id' )
+  sett = {}
+  for it in items:
+    sett[it['name']] = it['value']
+  return json.dumps(sett)
+
+@app.route('/getPosts',methods=['GET','POST'])
+def getPosts():
+  user = current_user()
+  recs = get_all('posts')
+  posts = []
+  for item in recs:
+    if can('get','posts',user,item):
+      item['title'] = get_user(item['user_id'])['name'] + ': ' + item['title']
+      posts.append(item)
+  contacts = get_all('contacts')
+  groups = json.loads(user['groups'])
+  abils = []
+  grps = []
+  for grp in groups:
+    glabel = ''
+    comma = ''
+    for con in contacts:
+      if not con['groups'] is None:
+        cgrps = json.loads(con['groups'])
+        if grp in cgrps and not grp == 2:
+          glabel = glabel + comma + con['name']
+          comma = ', '
+    if not glabel == '':
+      grps.append({'value':grp,'label':glabel})
+    for abb in abilities:
+      if abb['group_id'] == grp:
+        for act in abb['actions']:
+          abils.append(act + abb['resource'])
+  feeds = []
+  if 'user' in request.cookies:
+    settings = get_one_by( 'settings', request.cookies['user'], 'user_id' )
+    if len(settings) > 1:
+      for it in settings:
+        if it['name'] == 'feedSubs':
+          feeds = json.loads(it['value'])
+  for fd in feeds:
+    feed = feedparser.parse(fd)
+    items = []
+    for item in feed.entries:
+      if 'enclosures' in item:
+        if len(item['enclosures']) > 0:
+          if 'href' in item['enclosures'][0]:
+            if 'type' in item['enclosures'][0]:
+              item['media'] = item['enclosures'][0]['href']
+              item['mediatype'] = item['enclosures'][0]['type']
+      if not 'title' in item:
+        h2t.ignore_links = True
+        if 'description' in item:
+          item['title'] = h2t.handle(str(item['description']))[:100]
+        else:
+          if 'content' in item:
+            item['title'] = h2t.handle(str(item['content']))[:100]
+          else:
+            continue
+      items.append(item)
+    posts = posts + items
+  #posts.sort(key=lambda p: p['published'], reverse=True)
+  return( json.dumps( [posts,grps,abils,user['code']] ) )
+
+@app.route('/dropFeed',methods=['GET','POST'])
+def dropFeed():
+  if not 'user' in request.cookies:
+    return json.dumps([])
+  feeds = []
+  items = get_one_by( 'settings', request.cookies['user'], 'user_id' )
+  for it in items:
+    if it['name'] == 'feedSubs':
+      feeds = json.loads(it['value'])
+      sid = it['id']
+      for idx, fe in enumerate(feeds):
+        if int(request.form.get('feed')) == idx:
+          feeds.remove(fe)
+          mod_one('settings',{'value':json.dumps(feeds)},sid)
+  return json.dumps(feeds)
+
+@app.route('/addFeeds',methods=['GET','POST'])
+def addFeeds():
+  if not 'user' in request.cookies:
+    return json.dumps([])
+  items = get_one_by( 'settings', request.cookies['user'], 'user_id' )
+  if not len(items) > 1:
+    sett = add_one('settings',{
+      'name':'feedSubs',
+      'value':'[]',
+      'user_id':request.cookies['user']
+    })
+  items = get_one_by( 'settings', request.cookies['user'], 'user_id' )
+  feeds = []
+  sid = 0
+  for it in items:
+    if it['name'] == 'feedSubs':
+      feeds = json.loads(it['value'])
+      sid = it['id']
+      feeds.append(request.form.get('feed'))
+      mod_one('settings',{'value':json.dumps(feeds)},sid)
+  return json.dumps(feeds)
+
+@app.route('/addPosts',methods=['GET','POST'])
+def addPosts():
+  if not can('add','posts',current_user()):
+    return( json.dumps( [ 'Error' ] ) )
+    return
+  newrec = {
+    'title' : request.form.get('title'),
+    'image' : saveFile( 'image' ),
+    'sound' : saveFile( 'sound' ),
+    'groups' : request.form.get('recips'),
+    'user_id' : request.cookies['user'],
+    'created' : str( timezone( 'US/Pacific' ).localize( datetime.now() ) )
+  }
+  rid = add_one( 'posts', newrec )
+  if rid > 0:
+    newrec['id'] = rid
+    newrec['title'] = current_user()['name'] + ': ' + newrec['title']
+    contacts = get_all('contacts')
+    recips = []
+    for con in contacts:
+      if can('get','posts',con,newrec):
+        recips.append( con['id'] )
+        notify_photo( con['id'] )
+    response = make_response(json.dumps( [ 'OK' ] ))
+    response.set_cookie('image', expires=0)
+    response.set_cookie('sound', expires=0)
+    sendcomet(recips,newrec)
+    return response
+  else:
+    return( json.dumps( [ 'Error' ] ) )
+
+@app.route('/modPosts',methods=['GET','POST'])
+def modPosts():
+  item = get_one( 'posts', request.form.get('id') )[0]
+  if not can('mod','posts',current_user(),item):
+    return( json.dumps( [ 'Error' ] ) )
+    return
+  newobj = {
+    'title' : request.form.get('title'),
+    'image' : saveFile( 'image' ),
+    'sound' : saveFile( 'sound' )
+  }
+  if newobj['image'] == '':
+    del newobj['image']
+  if newobj['sound'] == '':
+    del newobj['sound']
+  if mod_one( 'posts', newobj, request.form.get('id') ):
+    return( json.dumps( [ 'OK' ] ) )
+  else:
+    return( json.dumps( [ 'Error' ] ) )
+
+@app.route('/delPosts',methods=['GET','POST'])
+def delPosts():
+  item = get_one( 'posts', request.form.get('id') )[0]
+  if not can('del','posts',current_user(),item):
+    return( json.dumps( [ 'Error' ] ) )
+    return
+  if del_one( 'posts', request.form.get('id') ):
+    return( json.dumps( [ 'OK' ] ) )
+  else:
+    return( json.dumps( [ 'Error' ] ) )
+
+@app.route('/getGroups',methods=['GET','POST'])
+def getGroups():
+  user = current_user()
+  recs = get_all('groups')
+  items = []
+  for item in recs:
+    if can('get','groups',user,item):
+      items.append(item)
+  contacts = get_all('contacts')
+  groups = json.loads(user['groups'])
+  abils = []
+  grps = []
+  for grp in groups:
+    glabel = ''
+    comma = ''
+    for con in contacts:
+      if not con['groups'] == None:
+        cgrps = json.loads(con['groups'])
+        if grp in cgrps and not con['name'] == 'Me':
+          glabel = glabel + comma + con['name']
+          comma = ', '
+      if not glabel == '':
+        grps.append({'value':grp,'label':glabel})
+    for abb in abilities:
+      if abb['group_id'] == grp:
+        for act in abb['actions']:
+          abils.append(act + abb['resource'])
+  return( json.dumps( [items,grps,abils,user['code']] ) )
+
+@app.route('/addGroups',methods=['GET','POST'])
+def addGroups():
+  if not can('add','groups',current_user()):
+    return( json.dumps( [ 'Error' ] ) )
+    return
+  newrec = {
+    'name' : request.form.get('name'),
+    'groups' : request.form.get('recips'),
+    'user_id' : request.cookies['user'],
+    'created' : str( timezone( 'US/Pacific' ).localize( datetime.now() ) )
+  }
+  rid = add_one( 'groups', newrec )
+  grps = json.loads(get_user(current_user()['id'])['groups'])
+  grps.append(rid)
+  mod_one('contacts',{'groups': json.dumps(grps)},current_user()['id'])
+  if rid > 0:
+    return( json.dumps( [ 'OK' ] ) )
+  else:
+    return( json.dumps( [ 'Error' ] ) )
+
+@app.route('/modGroups',methods=['GET','POST'])
+def modGroups():
+  item = get_one( 'groups', request.form.get('id') )[0]
+  if not can('mod','groups',current_user(),item):
+    return( json.dumps( [ 'Error' ] ) )
+    return
+  newobj = {
+    'name' : request.form.get('name')
+  }
+
+  if mod_one( 'groups', newobj, request.form.get('id') ):
+    return( json.dumps( [ 'OK' ] ) )
+  else:
+    return( json.dumps( [ 'Error' ] ) )
+
+@app.route('/delGroups',methods=['GET','POST'])
+def delGroups():
+  item = get_one( 'groups', request.form.get('id') )[0]
+  if not can('del','groups',current_user(),item):
+    return( json.dumps( [ 'Error' ] ) )
+    return
+  if del_one( 'groups', request.form.get('id') ):
+    return( json.dumps( [ 'OK' ] ) )
+  else:
+    return( json.dumps( [ 'Error' ] ) )
+
+@app.route('/getContacts',methods=['GET','POST'])
+def getContacts():
+  user = current_user()
+  recs = get_all('contacts')
+  items = []
+  for item in recs:
+    if can('get','contacts',user,item):
+      if not item['name'] == None and not item['user_id'] == None:
+        items.append(item)
+  contacts = get_all('contacts')
+  groups = json.loads(user['groups'])
+  abils = []
+  grps = []
+  for grp in groups:
+    glabel = ''
+    comma = ''
+    for con in contacts:
+      if not con['groups'] == None:
+        cgrps = json.loads(con['groups'])
+        if grp in cgrps and not con['name'] == 'Me':
+          glabel = glabel + comma + con['name']
+          comma = ', '
+      if not glabel == '':
+        grps.append({'value':grp,'label':glabel})
+    for abb in abilities:
+      if abb['group_id'] == grp:
+        for act in abb['actions']:
+          abils.append(act + abb['resource'])
+  return( json.dumps( [items,grps,abils,user['code']] ) )
+
+@app.route('/addContacts',methods=['GET','POST'])
+def addContacts():
+  if not can('add','contacts',current_user()):
+    return( json.dumps( [ 'Error' ] ) )
+  ra = randomword(6)
+  newph = ''.join(re.findall(r'[0-9]+', request.form.get('phone')))
+  if len(newph) == 11:
+    newph = newph[1:]
+  newrec = {
+    'name' : request.form.get('name'),
+    'email' : request.form.get('email'),
+    'phone' : newph,
+    'groups' : request.form.get('recips'),
+    'code':ra,
+    'user_id' : request.cookies['user'],
+    'created' : str( timezone( 'US/Pacific' ).localize( datetime.now() ) )
+  }
+  rid = add_one( 'contacts', newrec )
+  if rid > 0:
+    return( json.dumps( [ 'OK' ] ) )
+  else:
+    return( json.dumps( [ 'Error' ] ) )
+
+@app.route('/modContacts',methods=['GET','POST'])
+def modContacts():
+  item = get_one( 'contacts', request.form.get('id') )[0]
+  if not can('mod','contacts',current_user(),item):
+    return( json.dumps( [ 'Error' ] ) )
+  newph = ''.join(re.findall(r'[0-9]+', request.form.get('phone')))
+  if len(newph) == 11:
+    newph = newph[1:]
+  newobj = {
+    'name' : request.form.get('name'),
+    'email' : request.form.get('email'),
+    'phone' : newph
+  }
+  if mod_one( 'contacts', newobj, request.form.get('id') ):
+    return( json.dumps( [ 'OK' ] ) )
+  else:
+    return( json.dumps( [ 'Error' ] ) )
+
+@app.route('/modContactGroups',methods=['GET','POST'])
+def modContactGroups():
+  item = get_one( 'contacts', request.form.get('id') )[0]
+  if not can('mod','contacts',current_user(),item):
+    return( json.dumps( [ 'Error' ] ) )
+  newobj = {
+    'groups' : request.form.get('groups')
+  }
+  mod_one( 'contacts', newobj, request.form.get('id') )
+  contacts = get_all('contacts')
+  user = current_user()
+  groups = json.loads(user['groups'])
+  grps = []
+  for grp in groups:
+    glabel = ''
+    comma = ''
+    for con in contacts:
+      if not con['groups'] is None:
+        cgrps = json.loads(con['groups'])
+        if grp in cgrps and not grp == 2:
+          glabel = glabel + comma + con['name']
+          comma = ', '
+    if not glabel == '':
+      grps.append({'value':grp,'label':glabel})
+  update_abilities()
+  return( json.dumps( [ grps ] ) )
+
+@app.route('/delContacts',methods=['GET','POST'])
+def delContacts():
+  item = get_one( 'contacts', request.form.get('id') )[0]
+  if not can('del','contacts',current_user(),item):
+    return( json.dumps( [ 'Error' ] ) )
+    return
+  if del_one( 'contacts', request.form.get('id') ):
+    return( json.dumps( [ 'OK' ] ) )
+  else:
+    return( json.dumps( [ 'Error' ] ) )
+
+@app.route('/uploadFile',methods=['GET','POST'])
+def uploadFile():
+  filedata = {}
+  if not os.path.exists(appdir + 'myfiles'):
+    os.makedirs(appdir + 'myfiles')
+  if request.method == 'POST':
+    if (sys.getsizeof(request.get_data()) > 5000):
+      fi = tempfile.NamedTemporaryFile(delete=False)
+      f = open(fi.name, 'w+b')
+      f.write(request.get_data())
+      f.close()
+      filedata['tmp_name'] = fi.name
+      filedata['name'] = time.strftime("%d_%m_%Y_%H_%M_%S_") + '.mp3'
+    if 'file' in request.files:
+      file = request.files['file']
+      if not file.filename == '':
+        if file and allowed_file(file.filename):
+          fi = tempfile.NamedTemporaryFile(delete=False)
+          file.save(fi.name)
+          filedata['tmp_name'] = fi.name
+          filedata['name'] = file.filename
+  if 'name' in filedata:
+    fname = time.strftime("%Y%m%d-%H%M%S") + filedata['name']
+    filepath = appdir + 'myfiles/' + fname
+    copyfile(filedata['tmp_name'], filepath)
+    if not (filepath[-3:] == 'mp3'):
+      try:
+        image=Image.open(filepath)
+        for orientation in ExifTags.TAGS.keys():
+          if ExifTags.TAGS[orientation]=='Orientation':
+            break
+        exif=dict(image._getexif().items())
+        if exif[orientation] == 3:
+          image=image.rotate(180, expand=True)
+        elif exif[orientation] == 6:
+          image=image.rotate(270, expand=True)
+        elif exif[orientation] == 8:
+          image=image.rotate(90, expand=True)
+        image.save(filepath)
+        image.close()
+      except (AttributeError, KeyError, IndexError):
+        # cases: image don't have getexif
+        pass
+    expire_date = datetime.now() + timedelta(days=1)
+    response = make_response(json.dumps( [ 'OK' ] ))
+    response.set_cookie(request.args.get('field'), fname, expires=expire_date)
+    return response
+  return 'OK'
+
+@app.route('/stagedFile',methods=['GET','POST'])
+def stagedFile():
+  if request.args.get('field') in request.cookies:
+    return(request.cookies[request.args.get('field')])
+  else:
+    return('Error')
+
+@app.route('/myFile',methods=['GET','POST'])
+def myFile():
+  thefile = False
+  if request.args.get('field') in request.cookies and not request.args.get('staged') is None:
+    thefile = appdir + 'myfiles/' + request.cookies[request.args.get('field')]
+  else:
+    item = get_one_by( 'posts', request.args.get('name'), request.args.get('field') )
+    if len(item) > 0:
+      thefile = appdir + 'myfiles/' + item[0][request.args.get('field')]
+  ftype = 'image/jpeg'
+  if thefile and not os.path.isdir(thefile):
+    if (thefile[-3:] == 'mp3'):
+      ftype = 'audio/mp3'
+    print(thefile,file=sys.stderr)
+    return send_file( thefile, mimetype=ftype)
+  return 'Error'
+
+abilities = [
+  {
+    'group_id':2,
+    'resource':'posts',
+    'actions':['add']
+  },
+  {
+    'group_id':2,
+    'resource':'posts',
+    'actions':['get'],
+    'conditions':[['groups','groups']]
+  },
+  {
+    'group_id':2,
+    'resource':'posts',
+    'actions':['mod','del'],
+    'conditions':[['user_id','id']]
+  },
+  {
+    'group_id':2,
+    'resource':'contacts',
+    'actions':['add']
+  },
+  {
+    'group_id':2,
+    'resource':'contacts',
+    'actions':['get'],
+    'conditions':[['user_id','id']]
+  },
+  {
+    'group_id':2,
+    'resource':'contacts',
+    'actions':['mod','del'],
+    'conditions':[['user_id','id']]
+  },
+  {
+    'group_id':2,
+    'resource':'groups',
+    'actions':['add']
+  },
+  {
+    'group_id':2,
+    'resource':'groups',
+    'actions':['get'],
+    'conditions':[['user_id','id']]
+  },
+  {
+    'group_id':2,
+    'resource':'groups',
+    'actions':['mod','del'],
+    'conditions':[['user_id','id']]
+  }
+]
+
+  </script>
+</html>
+
