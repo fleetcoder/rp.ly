@@ -649,6 +649,13 @@
           quickContact(){
             this.showAddContact = true
           },
+          cancelContact(){
+            this.showAddContact = false
+            this.newName = ''
+            this.newEmail = ''
+            this.newPhone = ''
+            this.newContact = ''
+          },
           checkConName() {
             this.validName = "success"
           },
