@@ -60,6 +60,15 @@
       .fieldlist div.mint-cell-wrapper > div.mint-cell-value > input {
         background-color: #fff
       }
+      .feedimg {
+        width:100%;
+        height:auto
+      }
+      .imagecell {
+        position:relative;
+        overflow:hidden;
+        padding-bottom:100%;
+      }
 
     </style>
     
@@ -318,14 +327,13 @@
               </a>
             </mt-header>
             <mt-spinner v-bind:class="{'is-hidden':spinnerHidden}" type="snake"></mt-spinner>
-            <mt-cell-swipe v-for="(item, idx) in items" :title="item.title" is-link :to="'/showPosts/' + idx" :right="[
-              {
-                content: 'Delete',
-                style: { background: 'red', color: '#fff' },
-                handler: () => delPosts( item.id, idx )
-              }
-            ]">
-            </mt-cell-swipe>
+            <mt-cell class="imagecell" v-for="(item, idx) in items">
+              <mt-spinner v-bind:class="{'is-hidden':item.spinnerHidden}" type="triple-bounce"></mt-spinner>
+              <figure>
+                <img v-on:click="openImage(item.id,item.image)" class="feedimg" :src="'myFile?field=image&name=' + item.image" />
+                <figcaption class="caption" v-text="item.title"></figcaption>
+              </figure>
+            </mt-cell>
           </div>`
       }
       const showPosts = {
