@@ -456,8 +456,8 @@
                 }
                 if (this.comet == '') {
                   this.comet = response.body[3]
-                  //var socket = io( '/rply/' + response.body[3] )
-                  //socket.on( 'new item', this.cometAdd )
+                  var socket = io( '/rply/' + response.body[3] )
+                  socket.on( 'new item', this.cometAdd )
                 }
                 if (this.$route.path == '/myContacts') {
                   //this.selected = 'tab2'
