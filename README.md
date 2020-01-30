@@ -16,12 +16,12 @@
 ------------------
 3. Download rp.ly
 
-```wget https://rp.ly/file/0.1.zip```
+```wget https://rp.ly/file/latest.zip```
 
 ------------------
 4. Unzip rp.ly
 
-```unzip 0.1.zip```
+```unzip latest.zip```
 
 ------------------
 5. Set Twilio keys
