@@ -10,56 +10,74 @@
 
 ------------------
 2. Download Python software
-pip3 install flask flask_socketio python-dateutil lxml feedparser flask_cors pillow sendgrid twilio gunicorn pytz
+
+```pip3 install flask flask_socketio python-dateutil lxml feedparser flask_cors pillow sendgrid twilio gunicorn pytz```
 
 ------------------
 3. Download rp.ly
-wget https://rp.ly/file/0.1.zip
+
+```wget https://rp.ly/file/0.1.zip```
 
 ------------------
 4. Unzip rp.ly
-unzip 0.1.zip
+
+```unzip 0.1.zip```
 
 ------------------
 5. Set Twilio keys
-export TWILIO_ID=xxx
-export TWILIO_TOKEN=xxx
+
+```export TWILIO_ID=xxx```
+
+```export TWILIO_TOKEN=xxx```
 
 ------------------
 6. Set Sendgrid key
-export SENDGRID_TOKEN=xxx
+
+```export SENDGRID_TOKEN=xxx```
 
 ------------------
 7. Set host name
-export APP_HOSTNAME=photo.gy
+
+```export APP_HOSTNAME=photo.gy```
 
 ------------------
 8. Set file name
-export FLEET_APP=rp.ly.html
+
+```export FLEET_APP=rp.ly.html```
 
 ------------------
 9. Get free SSL certificate
-certbot certonly --apache
+
+```certbot certonly --apache```
 
 ------------------
 10. Stop apache web server
-service apache2 stop
+
+```service apache2 stop```
 
 ------------------
 11. Copy SSL cert
-cp /etc/letsencrypt/live/*/fullchain.pem .
+
+```cp /etc/letsencrypt/live/*/fullchain.pem .```
 
 ------------------
 12. Copy SSL Cert key
-cp /etc/letsencrypt/live/*/privkey.pem .
+
+```cp /etc/letsencrypt/live/*/privkey.pem .```
 
 ------------------
 13. Start app with Flask web server
-python3 fleet.py 165.227.57.132
+
+```python3 fleet.py 165.227.57.132```
 
 ------------------
 14. Start app with Gunicorn web server
-gunicorn --certfile=fullchain.pem --keyfile=privkey.pem --bind 165.227.57.132:443 --log-file=fleet.log fleet:app
 
+```gunicorn --certfile=fullchain.pem --keyfile=privkey.pem --bind 165.227.57.132:443 --log-file=fleet.log fleet:app```
+
+
+
+
+### (tested with Ubuntu 18.04)
 
 
