@@ -456,7 +456,9 @@
             feedsVisible: false,
             feedLink: '',
             addFeed: '',
-            feeds: []
+            feeds: [],
+            textHidden: true,
+            audioHidden: true
           }
         },
         watch: {
@@ -565,10 +567,6 @@
             })
           },
           addPosts(){
-            this.spinnerHidden = false
-            this.saveHidden = true
-            this.groupsHidden = true
-            this.imgHidden = true
             if (this.postto.length == 0) {
               MintUI.Toast({
                 message: 'Your post needs recipients, try adding a Contact to a Group',
@@ -577,6 +575,10 @@
               })
               return
             }
+            this.spinnerHidden = false
+            this.saveHidden = true
+            this.groupsHidden = true
+            this.imgHidden = true
             Vue.http.post( 'addPosts', {
               recips:JSON.stringify(this.postto),
               title : this.title
@@ -706,10 +708,10 @@
               </mt-tab-container-item>
               <mt-tab-container-item id="tab3">
                 <mt-header title="rp.ly"></mt-header>
-                <mt-field placeholder="Title.." v-model="title"></mt-field>
+                <mt-field v-bind:class="{'is-hidden':textHidden}" placeholder="Title.." v-model="title"></mt-field>
                 <mt-cell v-bind:class="{'is-hidden':imgHidden}" title="Image:"><img class="img" :src="'myFile?staged=1&field=image&name=' + image" /></mt-cell>
                 <file-upload v-bind:class="{'is-hidden':saveHidden}" btn-label="Image" @change="stagedUpload('image')" :url="uploadTo + '?field=image'"></file-upload>
-                <audio-recorder v-bind:class="{'is-hidden':saveHidden}" :upload-url="uploadTo + '?field=sound'" :after-recording="aftRec" />
+                <audio-recorder v-bind:class="{'is-hidden':audioHidden}" :upload-url="uploadTo + '?field=sound'" :after-recording="aftRec" />
                 <mt-checklist v-bind:class="{'is-hidden':groupsHidden}"
                   v-model="postto"
                   :options="groups"
@@ -731,7 +733,7 @@
               </mt-tab-item>
               <mt-tab-item id="tab3">
                 <img slot="icon" src="/file/plus-circle.svg">
-                Create
+                Add Post
               </mt-tab-item>
             </mt-tabbar>
 
