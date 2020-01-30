@@ -145,7 +145,7 @@
                     })
                     return
                   }
-                    this.inputhidden = false
+                  this.inputhidden = false
                   this.sent = true
                   this.sentcode = ' your phone'
                   this.loginHidden = true
@@ -1427,7 +1427,7 @@ def freeTrial():
     if len(cont['email']) > 0:
       loginuser = cont['email']
       usr = get_one_by('contacts',loginuser,'email')
-    if len(usr) > 0:
+    if len(usr) > 0 and usr[0]['user_id'] is None:
       return json.dumps(['error'])
     num = randint(100, 999)
     cont = {}
@@ -1470,7 +1470,7 @@ def freeTrialLogin():
     if len(cont['email']) > 0:
       loginuser = cont['email']
       usr = get_one_by('contacts',loginuser,'email')
-    if not len(usr) > 0:
+    if not (len(usr) > 0 and usr[0]['user_id'] is None):
       return json.dumps(['error'])
     num = randint(100, 999)
     cont = {}
