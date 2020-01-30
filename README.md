@@ -1,6 +1,7 @@
 # rp.ly
 
 ## Installation
+#### (tested with Ubuntu 18.04)
 
 
 ------------------
@@ -78,6 +79,6 @@
 
 
 
-### (tested with Ubuntu 18.04)
+
 
 
