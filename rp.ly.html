@@ -466,7 +466,14 @@
             addFeed: '',
             feeds: [],
             textHidden: true,
-            audioHidden: true
+            audioHidden: true,
+            showAddContact: false,
+            validName: '',
+            validContact: '',
+            newName:'',
+            newContact:'',
+            newEmail:'',
+            newPhone:''
           }
         },
         watch: {
@@ -639,6 +646,50 @@
               }
             })
           },
+          quickContact(){
+            this.showAddContact = true
+          },
+          checkConName() {
+            this.validName = "success"
+          },
+          saveContact(){
+            this.spinnerHidden = false
+            Vue.http.post( 'quickAddContacts', {
+              name : this.newName,
+              email : this.newEmail,
+              phone : this.newPhone
+            }).then( ( response ) => {
+              this.newName = ''
+              this.newEmail = ''
+              this.newPhone = ''
+              this.newContact = ''
+              this.getContacts()
+              this.getPosts()
+              this.showAddContact = false
+            })
+          },
+          checkContact() {
+            this.newPhone = ''
+            this.newEmail = ''
+            this.validContact = ''
+            if (this.newContact.indexOf('@') !== -1) {
+                var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+                if (re.test(String(this.newContact).toLowerCase())) {
+                  this.validContact = "success"
+                  this.newEmail = this.newContact
+                } else {
+                  this.validContact = "error"
+                }
+              } else {
+                if (this.newContact.match(/\d/g).length===10) {
+                  this.validContact = "success"
+                  this.newPhone = this.newContact
+                } else {
+                  this.validContact = "error"
+                }
+              }
+            
+          },
           setGroups() {
             for (var j = 0; j < this.contacts.length; j++) {
               this.contacts[j].groups = []
@@ -725,6 +776,7 @@
                   :options="groups"
                   align="right">
                 </mt-checklist>
+                <mt-button v-bind:class="{'is-hidden':saveHidden}" v-on:click="quickContact()" size="large">Add Contact</mt-button>
                 <mt-button v-bind:class="{'is-hidden':saveHidden}" v-on:click="addPosts()" size="large">Save</mt-button>
                 <mt-cell>&nbsp;</mt-cell>
               </mt-tab-container-item>
@@ -776,6 +828,12 @@
               <mt-cell></mt-cell>
               <mt-button v-on:click="doLogout()" size="large">Logout</mt-button>
               <mt-cell></mt-cell>
+            </mt-popup>
+            
+            <mt-popup class="addcontact" v-model="showAddContact" position="middle">
+              <mt-field :state="validName" placeholder="Name" @keyup.native="checkConName" v-model="newName"></mt-field>
+              <mt-field :state="validContact" @keyup.native="checkContact" placeholder="Email or Phone" v-model="newContact"></mt-field>
+              <mt-button v-on:click="cancelContact()">Cancel</mt-button>&nbsp;<mt-button v-on:click="saveContact()" type="primary">Add Contact</mt-button>
             </mt-popup>
           
           </div>`
@@ -1927,6 +1985,31 @@ def addContacts():
     'email' : request.form.get('email'),
     'phone' : newph,
     'groups' : request.form.get('recips'),
+    'code':ra,
+    'user_id' : request.cookies['user'],
+    'created' : str( timezone( 'US/Pacific' ).localize( datetime.now() ) )
+  }
+  rid = add_one( 'contacts', newrec )
+  if rid > 0:
+    return( json.dumps( [ 'OK' ] ) )
+  else:
+    return( json.dumps( [ 'Error' ] ) )
+
+@app.route('/quickAddContacts',methods=['GET','POST'])
+def quickAddContacts():
+  if not can('add','contacts',current_user()):
+    return( json.dumps( [ 'Error' ] ) )
+  ra = randomword(6)
+  newph = ''.join(re.findall(r'[0-9]+', request.form.get('phone')))
+  if len(newph) == 11:
+    newph = newph[1:]
+  user = current_user()
+  groups = json.loads(user['groups'])
+  newrec = {
+    'name' : request.form.get('name'),
+    'email' : request.form.get('email'),
+    'phone' : newph,
+    'groups' : json.dumps([groups[1]]),
     'code':ra,
     'user_id' : request.cookies['user'],
     'created' : str( timezone( 'US/Pacific' ).localize( datetime.now() ) )
