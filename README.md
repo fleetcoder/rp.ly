@@ -1,8 +1,14 @@
 # rp.ly
 
+## µblog network
+
+[https://rp.ly](https://rp.ly "https://rp.ly")
+[https://photo.gy](https://photo.gy "https://photo.gy")
+[https://audio.gy](https://audio.gy "https://audio.gy")
+______________    <- your instance here
+
 ## Installation
 #### (tested with Ubuntu 18.04)
-
 
 
 ------------------
