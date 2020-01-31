@@ -200,7 +200,7 @@ def sendcomet(recips,obj):
   for id in recips:
     recip = get_parent(id)
     print('SEND ' + '/rply/' + recip['code'],file=sys.stderr)
-    #socketio.emit('new item', obj, namespace='/rply/' + recip['code'] )
+    socketio.emit('new item', obj, namespace='/rply/' + recip['code'] )
   return True
 
 def get_parent(id):
