@@ -318,6 +318,13 @@
               this.items.splice( idx, 1 )
               this.spinnerHidden = true
             })
+          },
+          imageLink(item){
+            if ("undefined" !== typeof item.media) {
+              return item.media
+            } else {
+              return 'myFile?field=image&name=' + item.image
+            }
           }
         },
         template: `
@@ -329,7 +336,7 @@
             </mt-header>
             <mt-spinner v-bind:class="{'is-hidden':spinnerHidden}" type="snake"></mt-spinner>
             <figure class="imagecell" v-for="(item, idx) in items">
-              <img v-on:click="openImage(item.id,item.image)" class="feedimg" :src="'myFile?field=image&name=' + item.image" />
+              <img v-on:click="openImage(item.id,item.image)" class="feedimg" :src="imageLink(item)" />
               <figcaption class="caption" v-text="item.title"></figcaption>
             </figure>
           </div>`
