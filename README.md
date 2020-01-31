@@ -12,7 +12,8 @@ ______________    <- your instance here
 
 ## Screenshots
 
-|:---:|:---:|:---:|
+| Groups | Post | Settings |
+| ------------- | ------------- | ------------- |
 | <img src="https://rp.ly/file/screen1.png"> | <img src="https://rp.ly/file/screen2.png"> | <img src="https://rp.ly/file/screen3.png"> |
 
 
