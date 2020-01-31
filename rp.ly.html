@@ -31,7 +31,7 @@
         background-color: green
       }
       #app {
-        margin:0
+        margin:0;
       }
       .mint-button--primary {
         background-color: gray
@@ -67,7 +67,8 @@
       .imagecell {
         position:relative;
         overflow:hidden;
-        padding-bottom:100%;
+        padding:0;
+        margin:0;
       }
 
     </style>
@@ -327,13 +328,10 @@
               </a>
             </mt-header>
             <mt-spinner v-bind:class="{'is-hidden':spinnerHidden}" type="snake"></mt-spinner>
-            <mt-cell class="imagecell" v-for="(item, idx) in items">
-              <mt-spinner v-bind:class="{'is-hidden':item.spinnerHidden}" type="triple-bounce"></mt-spinner>
-              <figure>
-                <img v-on:click="openImage(item.id,item.image)" class="feedimg" :src="'myFile?field=image&name=' + item.image" />
-                <figcaption class="caption" v-text="item.title"></figcaption>
-              </figure>
-            </mt-cell>
+            <figure class="imagecell" v-for="(item, idx) in items">
+              <img v-on:click="openImage(item.id,item.image)" class="feedimg" :src="'myFile?field=image&name=' + item.image" />
+              <figcaption class="caption" v-text="item.title"></figcaption>
+            </figure>
           </div>`
       }
       const showPosts = {
@@ -584,7 +582,7 @@
           addPosts(){
             if (this.postto.length == 0) {
               MintUI.Toast({
-                message: 'Your post needs recipients, try adding a Contact',
+                message: 'Select group(s) for your post',
                 iconClass: 'icon icon-success',
                 duration: 4000
               })
