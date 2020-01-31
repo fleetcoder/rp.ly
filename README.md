@@ -10,6 +10,11 @@
 
 ______________    <- your instance here
 
+## Screenshots
+
+|:---:|:---:|:---:|
+| <img src="https://rp.ly/file/screen1.png"> | <img src="https://rp.ly/file/screen2.png"> | <img src="https://rp.ly/file/screen3.png"> |
+
 
 ## Installation
 #### (tested with Ubuntu 18.04)
