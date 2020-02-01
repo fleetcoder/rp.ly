@@ -10,6 +10,12 @@
 
 ______________    <- your instance here
 
+## Getting Started
+
+Step 1) add contacts to a group (by email or phone#)
+
+Step 2) add photos to a group (contacts will be notified)
+
 ## Screenshots
 
 | Groups | Post | Settings |
