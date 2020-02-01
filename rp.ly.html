@@ -10,7 +10,7 @@
     <script type=text/javascript src=/file/manifest.2ae2e69a05c33dfc65f8.js></script>
     <script type=text/javascript src=/file/vendor.0eb5480a7e9a156e90f2.js></script>
     <script type=text/javascript src=/file/app.be9945027a8323d84e7d.js></script>
-    <!-- <script type=text/javascript src=/file/socket.io.js></script>  -->
+    <script type=text/javascript src=/file/socket.io.js></script>
     <link rel="apple-touch-icon-precomposed" sizes="57x57" href="/file/rply57.png" />
     <link rel="apple-touch-icon-precomposed" sizes="72x72" href="/file/rply72.png" />
     <link rel="apple-touch-icon-precomposed" sizes="114x114" href="/file/rply114.png" />
@@ -576,8 +576,8 @@
                 }
                 if (this.comet == '') {
                   this.comet = response.body[3]
-                  //var socket = io( '/rply/' + response.body[3] )
-                  //socket.on( 'new item', this.cometAdd )
+                  var socket = io( '/rply/' + response.body[3] )
+                  socket.on( 'new item', this.cometAdd )
                 }
                 if (this.$route.path == '/myContacts') {
                   //this.selected = 'tab2'
