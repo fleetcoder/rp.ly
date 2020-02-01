@@ -200,7 +200,7 @@ def sendcomet(recips,obj):
   for id in recips:
     recip = get_parent(id)
     print('SEND ' + '/rply/' + recip['code'],file=sys.stderr)
-    socketio.emit('new item', obj, namespace='/rply/' + recip['code'] )
+    #socketio.emit('new item', obj, namespace='/rply/' + recip['code'] )
   return True
 
 def get_parent(id):
@@ -327,6 +327,7 @@ def randomword(length):
 
 @app.route('/reportit',methods=['GET'])
 def reportit():
+  return ''
   html = '<table>'
   html = html + '<tr><td>Name</td><td>ID</td><td>Groups</td><td>User ID</td><td>Phone</td><td>Email</td><td>code</td></tr>'
   for gg in get_all('contacts'):
