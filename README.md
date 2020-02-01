@@ -2,13 +2,10 @@
 
 ## µblog network
 
-[https://rp.ly](https://rp.ly "https://rp.ly")
-
-[https://photo.gy](https://photo.gy "https://photo.gy")
-
-[https://audio.gy](https://audio.gy "https://audio.gy")
-
-______________    <- your instance here
+- [https://rp.ly](https://rp.ly "https://rp.ly")
+- [https://photo.gy](https://photo.gy "https://photo.gy")
+- [https://audio.gy](https://audio.gy "https://audio.gy")
+- ______________    <- your instance here
 
 ## Getting Started
 
