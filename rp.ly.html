@@ -478,7 +478,9 @@
             newName:'',
             newContact:'',
             newEmail:'',
-            newPhone:''
+            newPhone:'',
+            doExpire: true,
+            expireHours: '24'
           }
         },
         watch: {
@@ -501,6 +503,9 @@
           this.getSettings()
         },
         methods: {
+          onExpireChange(){
+            
+          },
           showLink() {
             this.linkVisible = true
           },
@@ -595,13 +600,18 @@
               })
               return
             }
+            var exp = this.expireHours
+            if (this.doExpire === false) {
+              exp = 0
+            }
             this.spinnerHidden = false
             this.saveHidden = true
             this.groupsHidden = true
             this.imgHidden = true
             Vue.http.post( 'addPosts', {
               recips:JSON.stringify(this.postto),
-              title : this.title
+              title : this.title,
+              expirehours: exp
             }).then( ( response ) => {
               this.selected = 'tab1'
               this.getPosts()
@@ -793,6 +803,7 @@
                   align="right">
                 </mt-checklist>
                 <mt-button v-bind:class="{'is-hidden':saveHidden}" v-on:click="quickContact()" size="large">Add Contact</mt-button>
+                <mt-cell title="Expire after"><mt-field v-model="expireHours" label="hours"></mt-field><mt-switch v-model="doExpire" @change="onExpireChange()"></mt-switch></mt-cell>
                 <mt-button v-bind:class="{'is-hidden':saveHidden}" v-on:click="addPosts()" size="large">Save</mt-button>
                 <mt-cell>&nbsp;</mt-cell>
               </mt-tab-container-item>
@@ -1733,6 +1744,15 @@ def getPosts():
     if can('get','posts',user,item):
       item['title'] = get_user(item['user_id'])['name'] + ': ' + item['title']
       posts.append(item)
+    if expired(item):
+      notify_del(item['user_id'])
+      img = appdir + 'myfiles/' + item['image']
+      if os.path.exists(img) and not item['image'] == '':
+        os.remove(img)
+      mus = appdir + 'myfiles/' + item['sound']
+      if os.path.exists(mus) and not item['sound'] == '':
+        os.remove(mus)
+      del_one( 'posts', item['id'] )
   contacts = get_all('contacts')
   groups = json.loads(user['groups'])
   abils = []
@@ -1834,6 +1854,9 @@ def addPosts():
     'user_id' : request.cookies['user'],
     'created' : str( timezone( 'US/Pacific' ).localize( datetime.now() ) )
   }
+  if (int(request.form.get('expirehours')) > 0):
+    now_plus_hours = datetime.now() + timedelta(hours=int(request.form.get('expirehours')))
+    newrec['expires'] = str( timezone( 'US/Pacific' ).localize( now_plus_hours ) )
   rid = add_one( 'posts', newrec )
   if rid > 0:
     newrec['id'] = rid

@@ -17,6 +17,7 @@ from twilio.rest import Client
 from shutil import copyfile
 from lxml import etree
 from werkzeug.serving import WSGIRequestHandler
+from dateutil import parser
 
 appdir = os.getcwd() + '/'
 
@@ -249,6 +250,40 @@ def notify_photo(id):
     sg = SendGridAPIClient(sendgrid_token)
     response = sg.send(message)
     print('notify ' + em, file=sys.stderr)
+  return True
+
+def expired(item):
+  if not item['expires'] is None:
+    from dateutil import tz
+    tzinfos = {"-08:00": tz.gettz('US/Pacific')}
+    dt = parser.parse(item['expires'], tzinfos=tzinfos)
+    if dt < timezone( 'US/Pacific' ).localize( datetime.now() ):
+      return True
+  return False
+
+def notify_del(id):
+  num = randint(100, 999)
+  cont = get_user(id)
+  if len(cont['phone']) > 0:
+    client = Client(twilio_id, twilio_token)
+    rl = cont['name'] + " your " + mydomain + " post expired and was deleted "
+    message = client.messages.create(
+      body=rl,
+      from_='+19718036380',
+      to=cont['phone']
+    )
+    print('del notify ' + cont['phone'], file=sys.stderr)
+  if len(cont['email']) > 0:
+    owner = cont
+    em = cont['email']
+    message = Mail(
+      from_email=owner['name'] + ' via ' + mydomain + ' <brian@hoverkitty.com>',
+      to_emails=em,
+      subject=owner['name'] + " your post expired ",
+      html_content='<strong><p>your post expired and was deleted</p></strong>')
+    sg = SendGridAPIClient(sendgrid_token)
+    response = sg.send(message)
+    print('del notify ' + em, file=sys.stderr)
   return True
 
 def get_user(id):
