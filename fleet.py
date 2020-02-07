@@ -253,12 +253,13 @@ def notify_photo(id):
   return True
 
 def expired(item):
-  if not item['expires'] is None:
-    from dateutil import tz
-    tzinfos = {"-08:00": tz.gettz('US/Pacific')}
-    dt = parser.parse(item['expires'], tzinfos=tzinfos)
-    if dt < timezone( 'US/Pacific' ).localize( datetime.now() ):
-      return True
+  if 'expires' in item:
+    if not item['expires'] is None:
+      from dateutil import tz
+      tzinfos = {"-08:00": tz.gettz('US/Pacific')}
+      dt = parser.parse(item['expires'], tzinfos=tzinfos)
+      if dt < timezone( 'US/Pacific' ).localize( datetime.now() ):
+        return True
   return False
 
 def notify_del(id):
