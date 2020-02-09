@@ -1,6 +1,6 @@
 # rp.ly
 
-## standard µblog
+## open source micro-blog
 
 ## try it
 
