@@ -10,7 +10,7 @@
 
 ## Screenshots
 
-| Groups | hi  | alec |
+| Groups |   |  |
 | ------------- | ------------- | ------------- |
 | <img src="https://rp.ly/file/screen1.png"> |  |  |
 
