@@ -10,7 +10,7 @@
 
 ## Screenshots
 
-| Groups | Post | Settings |
+| Groups |  |  |
 | ------------- | ------------- | ------------- |
 | <img src="https://rp.ly/file/screen1.png"> |  |  |
 
