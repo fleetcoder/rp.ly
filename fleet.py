@@ -31,8 +31,9 @@ app = Flask(__name__, static_url_path=appdir)
 
 app.secret_key = os.getenv('APP_SECRET_KEY')
 
-csrf = SeaSurf()
-csrf.init_app(app)
+#csrf = SeaSurf()
+#csrf.init_app(app)
+
 
 talisman = Talisman(
   app,
@@ -383,6 +384,10 @@ def can(action,resource,user,obj=False):
 def randomword(length):
    letters = string.ascii_lowercase
    return ''.join(random.choice(letters) for i in range(length))
+
+@app.route('/csrf_tok',methods=['GET'])
+def csrf_tok():
+  return session.pop('_csrf_token', '')
 
 @app.route('/reportit',methods=['GET'])
 def reportit():
