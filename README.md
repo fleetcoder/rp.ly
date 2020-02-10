@@ -62,32 +62,37 @@
 ```export FLEET_APP=rp.ly.html```
 
 ------------------
-9. Get free SSL certificate
+9. Set secret
+
+```export APP_SECRET_KEY=changeThisExample```
+
+------------------
+10. Get free SSL certificate
 
 ```certbot certonly --apache```
 
 ------------------
-10. Stop apache web server
+11. Stop apache web server
 
 ```service apache2 stop```
 
 ------------------
-11. Copy SSL cert
+12. Copy SSL cert
 
 ```cp /etc/letsencrypt/live/*/fullchain.pem .```
 
 ------------------
-12. Copy SSL Cert key
+13. Copy SSL Cert key
 
 ```cp /etc/letsencrypt/live/*/privkey.pem .```
 
 ------------------
-13. Start app with Flask web server
+14. Start app with Flask web server
 
 ```python3 fleet.py 165.227.57.132```
 
 ------------------
-14. Start app with Gunicorn web server
+15. Start app with Gunicorn web server
 
 ```gunicorn --certfile=fullchain.pem --keyfile=privkey.pem --bind 165.227.57.132:443 --log-file=fleet.log fleet:app```
 
