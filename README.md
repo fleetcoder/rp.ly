@@ -1,23 +1,18 @@
 # rp.ly
 
-## µblog network
+## open source micro-blog
+
+## try it
 
 - [https://rp.ly](https://rp.ly "https://rp.ly")
 - [https://photo.gy](https://photo.gy "https://photo.gy")
 - [https://audio.gy](https://audio.gy "https://audio.gy")
-- ______________    <- your instance here
-
-## Getting Started
-
-Step 1) add contacts to a group (by email or phone#)
-
-Step 2) add photos to a group (contacts will be notified)
 
 ## Screenshots
 
-| Groups | Post | Settings |
+| Groups |   |  |
 | ------------- | ------------- | ------------- |
-| <img src="https://rp.ly/file/screen1.png"> | <img src="https://rp.ly/file/screen2.png"> | <img src="https://rp.ly/file/screen3.png"> |
+| <img src="https://rp.ly/file/screen1.png"> |  |  |
 
 
 ## Installation
