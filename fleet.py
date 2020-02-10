@@ -1,5 +1,5 @@
 from flask import Flask
-from flask import send_file, render_template, flash, redirect, url_for, request, make_response, send_from_directory
+from flask import send_file, render_template, flash, redirect, url_for, request, make_response, send_from_directory, session
 from flask_cors import CORS, cross_origin
 import os, sys, json, time, mimetypes, feedparser
 from datetime import datetime, timedelta
@@ -18,6 +18,8 @@ from shutil import copyfile
 from lxml import etree
 from werkzeug.serving import WSGIRequestHandler
 from dateutil import parser
+from flask_talisman import Talisman
+from flask_seasurf import SeaSurf
 
 appdir = os.getcwd() + '/'
 
@@ -26,9 +28,30 @@ twilio_token = os.getenv('TWILIO_TOKEN')
 sendgrid_token = os.getenv('SENDGRID_TOKEN')
 
 app = Flask(__name__, static_url_path=appdir)
+
+
+app.secret_key = os.getenv('APP_SECRET_KEY')
+
+#csrf = SeaSurf(app)
+
+talisman = Talisman(
+  app,
+  content_security_policy={
+    'default-src': [
+      '\'self\'',
+      '\'unsafe-inline\'',
+      '\'unsafe-eval\'',
+    ],
+    'font-src': [
+      'data:',
+    ],
+  }
+)
+
+
 #socketio = SocketIO(app)
 #socketio.init_app(app)
-cookiedata = {'user':1}
+
 
 myapp = appdir + os.getenv('FLEET_APP')
 mydomain = os.getenv('APP_HOSTNAME')
@@ -55,8 +78,8 @@ def randomword(length):
    return ''.join(random.choice(letters) for i in range(length))
 
 def saveFile(field):
-  if field in request.cookies:
-    save = request.cookies[field]
+  if field in session:
+    save = session[field]
     #del request.cookies[field]
     #setcookie(json.dumps(request.cookies))
     return save
@@ -302,8 +325,8 @@ def get_user(id):
 
 def current_user():
   rows = []
-  if 'user' in request.cookies:
-    id = request.cookies['user']
+  if 'user' in session:
+    id = session['user']
     conn = sqlite3.connect('sqlite.db')
     conn.row_factory = dict_factory
     cur = conn.cursor()
@@ -363,7 +386,8 @@ def randomword(length):
 
 @app.route('/reportit',methods=['GET'])
 def reportit():
-  return ''
+  if not request.remote_addr == '24.22.62.218':
+    quit()
   html = '<table>'
   html = html + '<tr><td>Name</td><td>ID</td><td>Groups</td><td>User ID</td><td>Phone</td><td>Email</td><td>code</td></tr>'
   for gg in get_all('contacts'):

@@ -1467,10 +1467,8 @@ def doCode():
                 gr2 = add_one( 'groups', newrec )
                 con = mod_one('contacts',{'groups': json.dumps([2,gr1,gr2])},u)
                 update_abilities()
-        expire_date = datetime.now()
-        expire_date = expire_date + timedelta(days=900)
         response = make_response(json.dumps( [ 'OK' ] ))
-        response.set_cookie('user', str(u), expires=expire_date)
+        session['user'] = str(u)
         return response
   return json.dumps( [ 'Error' ] )
 
@@ -1483,8 +1481,8 @@ def doConnect():
   })
   item = get_one_by( 'contacts', request.form.get('code'), 'code' )
   cont = {}
-  if 'user' in request.cookies:
-    if int(request.cookies['user']) == int(item[0]['id']):
+  if 'user' in session:
+    if int(session['user']) == int(item[0]['id']):
       return json.dumps( [ 'OK' ] )
     exists = get_parent(item[0]['id'])
     if 'user_id' in exists and exists['user_id'] is None:
@@ -1649,26 +1647,23 @@ def freeTrialStart():
       gr2 = add_one( 'groups', newrec )
       con = mod_one('contacts',{'groups': json.dumps([2,gr1,gr2])},u)
       update_abilities()
-  expire_date = datetime.now()
-  expire_date = expire_date + timedelta(days=900)
   response = make_response(json.dumps( [ 'OK' ] ))
-  response.set_cookie('user', str(u), expires=expire_date)
+  session['user'] = str(u)
   return response
 
 @app.route("/isAuthed", methods=['GET'])
 def isAuthed():
   os.chdir(appdir)
-  if 'user' in request.cookies:
-    if int(request.cookies['user']) > 0:
+  if 'user' in session:
+    if int(session['user']) > 0:
       return '1'
   return '0'
 
 @app.route("/logout", methods=['POST','GET'])
 def logout():
   os.chdir(appdir)
-  expire_date = datetime.now()
   response = make_response('1')
-  response.set_cookie('user', '0', expires=expire_date)
+  session['user'] = '0'
   return response
 
 @app.route('/feed',methods=['GET','POST'])
@@ -1715,21 +1710,21 @@ def feed():
 
 @app.route('/getSettings',methods=['GET','POST'])
 def getSettings():
-  if not 'user' in request.cookies:
+  if not 'user' in session:
     return json.dumps([])
-  items = get_one_by( 'settings', request.cookies['user'], 'user_id' )
+  items = get_one_by( 'settings', session['user'], 'user_id' )
   if not len(items) > 0:
     sett = add_one('settings',{
       'name':'feedLink',
       'value':'https://' + mydomain + '/feed?k=' + randomword(19),
-      'user_id':request.cookies['user']
+      'user_id':session['user']
     })
     sett = add_one('settings',{
       'name':'feedSubs',
       'value':'[]',
-      'user_id':request.cookies['user']
+      'user_id':session['user']
     })
-  items = get_one_by( 'settings', request.cookies['user'], 'user_id' )
+  items = get_one_by( 'settings', session['user'], 'user_id' )
   sett = {}
   for it in items:
     sett[it['name']] = it['value']
@@ -1773,8 +1768,8 @@ def getPosts():
         for act in abb['actions']:
           abils.append(act + abb['resource'])
   feeds = []
-  if 'user' in request.cookies:
-    settings = get_one_by( 'settings', request.cookies['user'], 'user_id' )
+  if 'user' in session:
+    settings = get_one_by( 'settings', session['user'], 'user_id' )
     if len(settings) > 1:
       for it in settings:
         if it['name'] == 'feedSubs':
@@ -1805,10 +1800,10 @@ def getPosts():
 
 @app.route('/dropFeed',methods=['GET','POST'])
 def dropFeed():
-  if not 'user' in request.cookies:
+  if not 'user' in session:
     return json.dumps([])
   feeds = []
-  items = get_one_by( 'settings', request.cookies['user'], 'user_id' )
+  items = get_one_by( 'settings', session['user'], 'user_id' )
   for it in items:
     if it['name'] == 'feedSubs':
       feeds = json.loads(it['value'])
@@ -1821,16 +1816,16 @@ def dropFeed():
 
 @app.route('/addFeeds',methods=['GET','POST'])
 def addFeeds():
-  if not 'user' in request.cookies:
+  if not 'user' in session:
     return json.dumps([])
-  items = get_one_by( 'settings', request.cookies['user'], 'user_id' )
+  items = get_one_by( 'settings', session['user'], 'user_id' )
   if not len(items) > 1:
     sett = add_one('settings',{
       'name':'feedSubs',
       'value':'[]',
-      'user_id':request.cookies['user']
+      'user_id':session['user']
     })
-  items = get_one_by( 'settings', request.cookies['user'], 'user_id' )
+  items = get_one_by( 'settings', session['user'], 'user_id' )
   feeds = []
   sid = 0
   for it in items:
@@ -1851,7 +1846,7 @@ def addPosts():
     'image' : saveFile( 'image' ),
     'sound' : saveFile( 'sound' ),
     'groups' : request.form.get('recips'),
-    'user_id' : request.cookies['user'],
+    'user_id' : session['user'],
     'created' : str( timezone( 'US/Pacific' ).localize( datetime.now() ) )
   }
   if (int(request.form.get('expirehours')) > 0):
@@ -1868,8 +1863,8 @@ def addPosts():
         recips.append( con['id'] )
         notify_photo( con['id'] )
     response = make_response(json.dumps( [ 'OK' ] ))
-    response.set_cookie('image', expires=0)
-    response.set_cookie('sound', expires=0)
+    session['image'] = ''
+    session['sound'] = ''
     sendcomet(recips,newrec)
     return response
   else:
@@ -1943,7 +1938,7 @@ def addGroups():
   newrec = {
     'name' : request.form.get('name'),
     'groups' : request.form.get('recips'),
-    'user_id' : request.cookies['user'],
+    'user_id' : session['user'],
     'created' : str( timezone( 'US/Pacific' ).localize( datetime.now() ) )
   }
   rid = add_one( 'groups', newrec )
@@ -2025,7 +2020,7 @@ def addContacts():
     'phone' : newph,
     'groups' : request.form.get('recips'),
     'code':ra,
-    'user_id' : request.cookies['user'],
+    'user_id' : session['user'],
     'created' : str( timezone( 'US/Pacific' ).localize( datetime.now() ) )
   }
   rid = add_one( 'contacts', newrec )
@@ -2050,7 +2045,7 @@ def quickAddContacts():
     'phone' : newph,
     'groups' : json.dumps([groups[1]]),
     'code':ra,
-    'user_id' : request.cookies['user'],
+    'user_id' : session['user'],
     'created' : str( timezone( 'US/Pacific' ).localize( datetime.now() ) )
   }
   rid = add_one( 'contacts', newrec )
@@ -2158,24 +2153,23 @@ def uploadFile():
       except (AttributeError, KeyError, IndexError):
         # cases: image don't have getexif
         pass
-    expire_date = datetime.now() + timedelta(days=1)
     response = make_response(json.dumps( [ 'OK' ] ))
-    response.set_cookie(request.args.get('field'), fname, expires=expire_date)
+    session[request.args.get('field')] = fname
     return response
   return 'OK'
 
 @app.route('/stagedFile',methods=['GET','POST'])
 def stagedFile():
-  if request.args.get('field') in request.cookies:
-    return(request.cookies[request.args.get('field')])
+  if request.args.get('field') in session:
+    return(session[request.args.get('field')])
   else:
     return('Error')
 
 @app.route('/myFile',methods=['GET','POST'])
 def myFile():
   thefile = False
-  if request.args.get('field') in request.cookies and not request.args.get('staged') is None:
-    thefile = appdir + 'myfiles/' + request.cookies[request.args.get('field')]
+  if request.args.get('field') in session and not request.args.get('staged') is None:
+    thefile = appdir + 'myfiles/' + session[request.args.get('field')]
   else:
     item = get_one_by( 'posts', request.args.get('name'), request.args.get('field') )
     if len(item) > 0:
