@@ -31,7 +31,7 @@ app = Flask(__name__, static_url_path=appdir)
 
 app.secret_key = os.getenv('APP_SECRET_KEY')
 
-app.permanent_session_lifetime = timedelta(months=1)
+app.permanent_session_lifetime = timedelta(days=31)
 
 #csrf = SeaSurf()
 #csrf.init_app(app)
