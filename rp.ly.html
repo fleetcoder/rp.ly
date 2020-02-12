@@ -1472,6 +1472,7 @@ def doCode():
                 con = mod_one('contacts',{'groups': json.dumps([2,gr1,gr2])},u)
                 update_abilities()
         response = make_response(json.dumps( [ 'OK' ] ))
+        session.permanent = True
         session['user'] = str(u)
         return response
   return json.dumps( [ 'Error' ] )
@@ -1655,6 +1656,7 @@ def freeTrialStart():
       con = mod_one('contacts',{'groups': json.dumps([2,gr1,gr2])},u)
       update_abilities()
   response = make_response(json.dumps( [ 'OK' ] ))
+  session.permanent = True
   session['user'] = str(u)
   return response
 
