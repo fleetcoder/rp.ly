@@ -47,6 +47,10 @@ talisman = Talisman(
     'font-src': [
       'data:',
     ],
+    'img-src': [
+      '*',
+      'data:',
+    ],
   }
 )
 

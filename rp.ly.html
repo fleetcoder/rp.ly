@@ -307,6 +307,9 @@
         },
         props: { items : Array, editHidden: Boolean },
         methods: {
+          openImage(){
+            alert('img')
+          },
           showLink(){
             this.$emit('on-show-menu')
           },
@@ -576,6 +579,7 @@
                 if (this.abilities.indexOf("modSource Code") > -1) {
                   this.editHidden = false
                 }
+                console.log(this.abilities)
                 if (this.groups.length < 2) {
                   this.groupsHidden = true
                   this.postto = [this.groups[0].value]
