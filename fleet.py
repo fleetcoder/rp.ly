@@ -259,7 +259,7 @@ def notify_photo(id):
     rl = current_user()['name'] + " shared a post with you " + 'https://' + mydomain + '/#/connect/' + cont['code']
     message = client.messages.create(
       body=rl,
-      from_='+19718036380',
+      from_='+1' + os.getenv('TWILIO_FROM'),
       to=cont['phone']
     )
     print('notify ' + cont['phone'], file=sys.stderr)
@@ -267,7 +267,7 @@ def notify_photo(id):
     owner = current_user()
     em = cont['email']
     message = Mail(
-      from_email=owner['name'] + ' via ' + mydomain + ' <brian@hoverkitty.com>',
+      from_email=owner['name'] + ' via ' + mydomain + ' <' + os.getenv('SENDGRID_FROM') + '>',
       to_emails=em,
       subject=current_user()['name'] + " shared a post ",
       html_content='<strong><p>' + current_user()['name'] + " shared a post with you on " + mydomain + " </p><a href=\"" + 'https://' + mydomain + '/#/connect/' + cont['code'] + '">' + owner['name'] + "'s post" + '</a></strong>')
@@ -294,7 +294,7 @@ def notify_del(id):
     rl = cont['name'] + " your " + mydomain + " post expired and was deleted "
     message = client.messages.create(
       body=rl,
-      from_='+19718036380',
+      from_='+1' + os.getenv('TWILIO_FROM'),
       to=cont['phone']
     )
     print('del notify ' + cont['phone'], file=sys.stderr)
@@ -302,7 +302,7 @@ def notify_del(id):
     owner = cont
     em = cont['email']
     message = Mail(
-      from_email=owner['name'] + ' via ' + mydomain + ' <brian@hoverkitty.com>',
+      from_email=owner['name'] + ' via ' + mydomain + ' <' + os.getenv('SENDGRID_FROM') + '>',
       to_emails=em,
       subject=owner['name'] + " your post expired ",
       html_content='<strong><p>your post expired and was deleted</p></strong>')

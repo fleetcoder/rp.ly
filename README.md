@@ -46,10 +46,14 @@
 
 ```export TWILIO_TOKEN=xxx```
 
+```export TWILIO_FROM=1231231234```
+
 ------------------
 6. Set Sendgrid key
 
 ```export SENDGRID_TOKEN=xxx```
+
+```export SENDGRID_FROM=from@example.net```
 
 ------------------
 7. Set host name
