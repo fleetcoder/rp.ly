@@ -528,7 +528,6 @@
           getSettings() {
             Vue.http.get( 'getSettings').then( ( response ) => { 
               if ( !!response.body ) {
-                console.log(response.body)
                 this.feedLink = response.body.feedLink
                 this.feeds = JSON.parse(response.body.feedSubs)
               }
@@ -579,7 +578,6 @@
                 if (this.abilities.indexOf("modSource Code") > -1) {
                   this.editHidden = false
                 }
-                console.log(this.abilities)
                 if (this.groups.length < 2) {
                   this.groupsHidden = true
                   this.postto = [this.groups[0].value]
