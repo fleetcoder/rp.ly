@@ -390,6 +390,18 @@ def randomword(length):
 def csrf_tok():
   return session.pop('_csrf_token', '')
 
+@app.route('/clearcodes',methods=['GET'])
+def clearcodes():
+  dell = ''
+  if not request.remote_addr == '24.22.62.218':
+    quit()
+  item = get_all( 'connectcodes' )
+  if len(item) > 0:
+    for conn in item:
+      del_one( 'connectcodes', conn['id'] )
+      dell = dell + str(conn['id']) + '<br>'
+  return dell
+
 @app.route('/reportit',methods=['GET'])
 def reportit():
   if not request.remote_addr == '24.22.62.218':

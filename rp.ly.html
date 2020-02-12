@@ -1435,6 +1435,7 @@ def doCode():
   if len(item) > 0:
     for conn in item:
       if conn['code'] == request.form.get('connect'):
+        del_one( 'connectcodes', conn['id'] )
         usr = get_one_by( 'contacts', request.form.get('connect'), 'code' )
         if len(usr) > 0 and usr[0]['user_id'] is None:
           u = usr[0]['id']
@@ -1618,6 +1619,7 @@ def freeTrialStart():
   phone = tri[0]['phone']
   if not (cont['phone'] == phone or cont['email'] == email):
     return '0'
+  del_one( 'connectcodes', tri[0]['id'] )
   ra = randomword(6)
   if len(usr) > 0 and usr[0]['user_id'] is None:
     u = usr[0]['id']
