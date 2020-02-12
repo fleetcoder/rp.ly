@@ -498,9 +498,15 @@
               el.selected = 'tab2'
             }, 300, this)
           }
-          this.getPosts()
-          this.getContacts()
-          this.getSettings()
+          Vue.http.get('isAuthed').then((response) => {
+            if(parseInt(response.body) != 1) {
+              router.push('auth')
+            } else {
+              this.getPosts()
+              this.getContacts()
+              this.getSettings()
+            }
+          })
         },
         methods: {
           onExpireChange(){
@@ -561,11 +567,6 @@
             this.tabsHidden = true
           },
           getPosts() {
-            Vue.http.get('isAuthed').then((response) => {
-              if(parseInt(response.body) != 1) {
-                router.push('auth')
-              }
-            })
             this.spinnerHidden = false
             Vue.http.get( 'getPosts').then( ( response ) => { 
               if ( !!response.body ) {
@@ -1494,14 +1495,14 @@ def doConnect():
     rl = "Your code is " + str(num)
     message = client.messages.create(
       body=rl,
-      from_='+19718036380',
+      from_='+1' + os.getenv('TWILIO_FROM'),
       to=cont['phone']
     )
     return json.dumps( [ 'SENT' ] )
   if len(cont['email']) > 0:
     em = cont['email']
     message = Mail(
-      from_email=' Request at ' + mydomain + ' <brian@hoverkitty.com>',
+      from_email=' Request at ' + mydomain + ' <' + os.getenv('SENDGRID_FROM') + '>',
       to_emails=em,
       subject='Your connection code is ' + str(num),
       html_content='<strong>Your code is ' + str(num) + '</strong>')
@@ -1539,13 +1540,13 @@ def freeTrial():
       rl = "Your " + mydomain + " code is " + str(num)
       message = client.messages.create(
         body=rl,
-        from_='+19718036380',
+        from_='+1' + os.getenv('TWILIO_FROM'),
         to=cont['phone']
       )
     if len(cont['email']) > 0:
       em = cont['email']
       message = Mail(
-        from_email='brian@hoverkitty.com',
+        from_email=os.getenv('SENDGRID_FROM'),
         to_emails=em,
         subject='Your ' + mydomain + ' connection request',
         html_content='<strong>Your code is ' + str(num) + '</strong>')
@@ -1563,10 +1564,12 @@ def freeTrialLogin():
     if len(cont['phone']) > 0:
       loginuser = cont['phone']
       usr = get_one_by('contacts',loginuser,'phone')
+      exists = get_parent(usr[0]['id'])
     if len(cont['email']) > 0:
       loginuser = cont['email']
       usr = get_one_by('contacts',loginuser,'email')
-    if not (len(usr) > 0 and usr[0]['user_id'] is None):
+      exists = get_parent(usr[0]['id'])
+    if not (len(usr) > 0 and exists['user_id'] is None):
       return json.dumps(['error'])
     num = randint(100, 999)
     cont = {}
@@ -1582,13 +1585,13 @@ def freeTrialLogin():
       rl = "Your " + mydomain + " code is " + str(num)
       message = client.messages.create(
         body=rl,
-        from_='+19718036380',
+        from_='+1' + os.getenv('TWILIO_FROM'),
         to=cont['phone']
       )
     if len(cont['email']) > 0:
       em = cont['email']
       message = Mail(
-        from_email='brian@hoverkitty.com',
+        from_email=os.getenv('SENDGRID_FROM'),
         to_emails=em,
         subject='Your ' + mydomain + ' connection request',
         html_content='<strong>Your code is ' + str(num) + '</strong>')
