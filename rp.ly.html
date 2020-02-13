@@ -349,10 +349,11 @@
                 handler: () => delPosts( item.id, idx )
               }
             ]">
-              <figure class="imagecell">
+              <figure class="imagecell" v-bind:class="{'is-hidden':item.imageHidden}">
                 <img v-on:click="openImage(idx)" class="feedimg" :src="imageLink(item)" />
                 <figcaption class="caption" v-text="item.title"></figcaption>
               </figure>
+              <audio-player :src="'myFile?field=sound&name=' + item.sound" v-bind:class="{'is-hidden':item.soundHidden}" />
             </mt-cell-swipe>
           </div>`
       }
@@ -364,7 +365,9 @@
             id : 0,
             title : '',
             image : '',
-            sound : ''
+            sound : '',
+            soundHidden : false,
+            imageHidden : false
           }
         },
         props: { items : Array },
@@ -384,6 +387,12 @@
             this.title = this.items[ this.idx ].title
             this.image = this.items[ this.idx ].image
             this.sound = this.items[ this.idx ].sound
+            if (this.sound == '') {
+              this.soundHidden = true
+            }
+            if (this.image == '') {
+              this.imageHidden = true
+            }
             this.$emit('on-tabs-hidden')
           }
         },
@@ -399,8 +408,8 @@
             </mt-header>
             <mt-spinner v-bind:class="{'is-hidden':spinnerHidden}" type="snake"></mt-spinner>
             <mt-cell title="Title:" :value="title"></mt-cell>
-            <mt-cell title="Image:"><img class="img" :src="'myFile?field=image&name=' + image" /></mt-cell>
-            <mt-cell title="Sound:"><audio-player :src="'myFile?field=sound&name=' + sound" /></mt-cell>
+            <mt-cell title="Image:" v-bind:class="{'is-hidden':imageHidden}"><img class="img" :src="'myFile?field=image&name=' + image" /></mt-cell>
+            <mt-cell title="Sound:" v-bind:class="{'is-hidden':soundHidden}"><audio-player :src="'myFile?field=sound&name=' + sound" /></mt-cell>
           </div>`
       }
       const modPosts = {
@@ -1759,6 +1768,12 @@ def getPosts():
   for item in recs:
     if can('get','posts',user,item):
       item['title'] = get_user(item['user_id'])['name'] + ': ' + item['title']
+      item['imageHidden'] = False
+      if item['image'] == '':
+        item['imageHidden'] = True
+      item['soundHidden'] = False
+      if item['sound'] == '':
+        item['soundHidden'] = True
       posts.append(item)
     if expired(item):
       notify_del(item['user_id'])
@@ -1774,7 +1789,10 @@ def getPosts():
   abils = []
   grps = []
   for grp in groups:
-    groupname = get_one( 'groups', grp )[0]['name']
+    group = get_one( 'groups', grp )
+    groupname = ''
+    if len(group) > 0:
+      groupname = group[0]['name']
     glabel = ''
     comma = ''
     for con in contacts:
