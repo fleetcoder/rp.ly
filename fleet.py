@@ -211,7 +211,8 @@ def del_one(resource,id):
   cur = conn.cursor()
   sql = "DELETE FROM " + resource + " WHERE id = ?"
   conn.cursor().execute(sql,[id])
-  return conn.commit()
+  conn.commit()
+  return True
 
 def get_all(resource):
   resource = username + resource

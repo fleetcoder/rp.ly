@@ -60,9 +60,13 @@
       .fieldlist div.mint-cell-wrapper > div.mint-cell-value > input {
         background-color: #fff
       }
+      .caption {
+      }
       .feedimg {
         width:100%;
         height:auto
+        padding:0;
+        margin:0;
       }
       .imagecell {
         position:relative;
@@ -307,8 +311,8 @@
         },
         props: { items : Array, editHidden: Boolean },
         methods: {
-          openImage(){
-            alert('img')
+          openImage(idx){
+            router.push( '/showPosts/' + idx )
           },
           showLink(){
             this.$emit('on-show-menu')
@@ -338,10 +342,18 @@
               </a>
             </mt-header>
             <mt-spinner v-bind:class="{'is-hidden':spinnerHidden}" type="snake"></mt-spinner>
-            <figure class="imagecell" v-for="(item, idx) in items">
-              <img v-on:click="openImage(item.id,item.image)" class="feedimg" :src="imageLink(item)" />
-              <figcaption class="caption" v-text="item.title"></figcaption>
-            </figure>
+            <mt-cell-swipe class="imagecell" v-for="(item, idx) in items" :title="item.name" :right="[
+              {
+                content: 'Delete',
+                style: { background: 'red', color: '#fff' },
+                handler: () => delPosts( item.id, idx )
+              }
+            ]">
+              <figure class="imagecell">
+                <img v-on:click="openImage(idx)" class="feedimg" :src="imageLink(item)" />
+                <figcaption class="caption" v-text="item.title"></figcaption>
+              </figure>
+            </mt-cell-swipe>
           </div>`
       }
       const showPosts = {
@@ -1849,7 +1861,6 @@ def addFeeds():
 def addPosts():
   if not can('add','posts',current_user()):
     return( json.dumps( [ 'Error' ] ) )
-    return
   newrec = {
     'title' : request.form.get('title'),
     'image' : saveFile( 'image' ),
@@ -1884,7 +1895,6 @@ def modPosts():
   item = get_one( 'posts', request.form.get('id') )[0]
   if not can('mod','posts',current_user(),item):
     return( json.dumps( [ 'Error' ] ) )
-    return
   newobj = {
     'title' : request.form.get('title'),
     'image' : saveFile( 'image' ),
@@ -1904,8 +1914,13 @@ def delPosts():
   item = get_one( 'posts', request.form.get('id') )[0]
   if not can('del','posts',current_user(),item):
     return( json.dumps( [ 'Error' ] ) )
-    return
   if del_one( 'posts', request.form.get('id') ):
+    img = appdir + 'myfiles/' + item['image']
+    if os.path.exists(img) and not item['image'] == '':
+      os.remove(img)
+    mus = appdir + 'myfiles/' + item['sound']
+    if os.path.exists(mus) and not item['sound'] == '':
+      os.remove(mus)
     return( json.dumps( [ 'OK' ] ) )
   else:
     return( json.dumps( [ 'Error' ] ) )
@@ -1943,7 +1958,6 @@ def getGroups():
 def addGroups():
   if not can('add','groups',current_user()):
     return( json.dumps( [ 'Error' ] ) )
-    return
   newrec = {
     'name' : request.form.get('name'),
     'groups' : request.form.get('recips'),
@@ -1964,7 +1978,6 @@ def modGroups():
   item = get_one( 'groups', request.form.get('id') )[0]
   if not can('mod','groups',current_user(),item):
     return( json.dumps( [ 'Error' ] ) )
-    return
   newobj = {
     'name' : request.form.get('name')
   }
@@ -1979,7 +1992,6 @@ def delGroups():
   item = get_one( 'groups', request.form.get('id') )[0]
   if not can('del','groups',current_user(),item):
     return( json.dumps( [ 'Error' ] ) )
-    return
   if del_one( 'groups', request.form.get('id') ):
     return( json.dumps( [ 'OK' ] ) )
   else:
@@ -2113,7 +2125,6 @@ def delContacts():
   item = get_one( 'contacts', request.form.get('id') )[0]
   if not can('del','contacts',current_user(),item):
     return( json.dumps( [ 'Error' ] ) )
-    return
   if del_one( 'contacts', request.form.get('id') ):
     return( json.dumps( [ 'OK' ] ) )
   else:
