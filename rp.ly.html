@@ -488,6 +488,7 @@
             contacts:[{id:1,user_id:1,name:'Me',email:'',phone:'',groups:[1,2,3]}],
             lastgroups : [],
             saveHidden: false,
+            uploadHidden: false,
             imgHidden: true,
             linkVisible: false,
             feedsVisible: false,
@@ -631,6 +632,7 @@
             this.spinnerHidden = false
             this.saveHidden = true
             this.groupsHidden = true
+            this.uploadHidden = true
             this.imgHidden = true
             Vue.http.post( 'addPosts', {
               recips:JSON.stringify(this.postto),
@@ -643,6 +645,7 @@
               this.image = ''
               this.spinnerHidden = true
               this.saveHidden = false
+              this.uploadHidden = false
               this.groupsHidden = false
             })
           },
@@ -682,6 +685,7 @@
               if ( !!response.body ) {
                 this[field] = response.body
                 this.imgHidden = false
+                this.uploadHidden = true
               }
             })
           },
@@ -819,7 +823,7 @@
                 <mt-header title="rp.ly"></mt-header>
                 <mt-field v-bind:class="{'is-hidden':textHidden}" placeholder="Title.." v-model="title"></mt-field>
                 <mt-cell v-bind:class="{'is-hidden':imgHidden}" title="Image:"><img class="img" :src="'myFile?staged=1&field=image&name=' + image" /></mt-cell>
-                <file-upload v-bind:class="{'is-hidden':saveHidden}" btn-label="Image" @change="stagedUpload('image')" :url="uploadTo + '?field=image'"></file-upload>
+                <file-upload v-bind:class="{'is-hidden':uploadHidden}" btn-label="Image" @change="stagedUpload('image')" :url="uploadTo + '?field=image'"></file-upload>
                 <audio-recorder v-bind:class="{'is-hidden':audioHidden}" :upload-url="uploadTo + '?field=sound'" :after-recording="aftRec" />
                 <mt-checklist v-bind:class="{'is-hidden':groupsHidden}"
                   v-model="postto"
