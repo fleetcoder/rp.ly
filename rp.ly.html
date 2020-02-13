@@ -1774,6 +1774,7 @@ def getPosts():
   abils = []
   grps = []
   for grp in groups:
+    groupname = get_one( 'groups', grp )[0]['name']
     glabel = ''
     comma = ''
     for con in contacts:
@@ -1783,7 +1784,7 @@ def getPosts():
           glabel = glabel + comma + con['name']
           comma = ', '
     if not glabel == '':
-      grps.append({'value':grp,'label':glabel})
+      grps.append({'value':grp,'label':groupname + ': ' + glabel})
     for abb in abilities:
       if abb['group_id'] == grp:
         for act in abb['actions']:
