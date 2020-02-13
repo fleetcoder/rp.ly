@@ -248,9 +248,9 @@
           <div>
             <mt-cell><h1>rp.ly</h1>&nbsp;&nbsp;&nbsp;&nbsp;<p>µblog</p></mt-cell>
             <mt-button type="default" class="startbuttons" v-on:click="doLogin()">Log In</mt-button><mt-button type="default" class="startbuttons" v-on:click="doRegister()">Register</mt-button>
-            <mt-field v-bind:class="{'is-hidden':registerHidden}" label="Register:" placeholder="Email or Phone Number..." type="text" :state="emailstatus" v-model="email"></mt-field>
+            <mt-field v-bind:class="{'is-hidden':registerHidden}" label="Register:" placeholder="Email or Phone Number..." type="email" :state="emailstatus" v-model="email"></mt-field>
             <mt-button v-bind:class="{'is-hidden':registerHidden}" v-on:click="doTrial()" size="large">Submit</mt-button>
-            <mt-field v-bind:class="{'is-hidden':loginHidden}" label="Log In:" placeholder="Email or Phone Number..." type="text" :state="emailstatus" v-model="email"></mt-field>
+            <mt-field v-bind:class="{'is-hidden':loginHidden}" label="Log In:" placeholder="Email or Phone Number..." type="email" :state="emailstatus" v-model="email"></mt-field>
             <mt-button v-bind:class="{'is-hidden':loginHidden}" v-on:click="myLogin()" size="large">Submit</mt-button>
             <mt-cell v-bind:class="{'is-hidden':inputhidden}">A code was just sent to {{sentcode}}</mt-cell>
             <mt-field v-bind:class="{'is-hidden':inputnamehidden}" label="Name:" placeholder="Your name..." v-model="name"></mt-field>
@@ -874,7 +874,7 @@
             
             <mt-popup class="addcontact" v-model="showAddContact" position="middle">
               <mt-field :state="validName" placeholder="Name" @keyup.native="checkConName" v-model="newName"></mt-field>
-              <mt-field :state="validContact" @keyup.native="checkContact" placeholder="Email or Phone" v-model="newContact"></mt-field>
+              <mt-field :state="validContact" @keyup.native="checkContact" placeholder="Email or Phone..." v-model="newContact" type="email"></mt-field>
               <mt-button v-on:click="cancelContact()">Cancel</mt-button>&nbsp;<mt-button v-on:click="saveContact()" type="primary">Add Contact</mt-button>
             </mt-popup>
           
@@ -1014,7 +1014,7 @@
             </mt-header>
             <mt-spinner v-bind:class="{'is-hidden':spinnerHidden}" type="snake"></mt-spinner>
             <mt-field label="Name:" placeholder="Name.." v-model="name"></mt-field>
-            <mt-field label="Email:" placeholder="Email..(optional)" v-model="email"></mt-field>
+            <mt-field label="Email:" placeholder="Email..(optional)" v-model="email" type="email"></mt-field>
             <mt-field label="Phone:" placeholder="Phone..(optional)" v-model="phone"></mt-field>
             <mt-button v-on:click="modContacts()" size="large">Save</mt-button>
           </div>`
@@ -1133,8 +1133,8 @@
               <mt-tab-container-item id="tab2">
                 <mt-header title="Contacts"></mt-header>
                 <mt-field placeholder="Name.." v-model="name"></mt-field>
-                <mt-field :state="validEmail" @keyup.native="checkEmail" placeholder="Email.." v-model="email"></mt-field>
-                <mt-field :state="validPhone" @keyup.native="checkPhone" placeholder="Phone.." v-model="phone"></mt-field>
+                <mt-field :state="validEmail" @keyup.native="checkEmail" placeholder="Email..(optional)" v-model="email" type="email"></mt-field>
+                <mt-field :state="validPhone" @keyup.native="checkPhone" placeholder="Phone..(optional)" v-model="phone"></mt-field>
                 <mt-button v-on:click="addContacts()" size="large">Save</mt-button>
                 <mt-cell>&nbsp;</mt-cell>
               </mt-tab-container-item>
