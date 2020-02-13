@@ -1014,8 +1014,8 @@
             </mt-header>
             <mt-spinner v-bind:class="{'is-hidden':spinnerHidden}" type="snake"></mt-spinner>
             <mt-field label="Name:" placeholder="Name.." v-model="name"></mt-field>
-            <mt-field label="Email:" placeholder="Email.." v-model="email"></mt-field>
-            <mt-field label="Phone:" placeholder="Phone.." v-model="phone"></mt-field>
+            <mt-field label="Email:" placeholder="Email..(optional)" v-model="email"></mt-field>
+            <mt-field label="Phone:" placeholder="Phone..(optional)" v-model="phone"></mt-field>
             <mt-button v-on:click="modContacts()" size="large">Save</mt-button>
           </div>`
       }
