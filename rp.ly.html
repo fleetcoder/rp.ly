@@ -731,6 +731,9 @@
                   this.validContact = "error"
                 }
               } else {
+                if (this.newContact.substring(0, 2) == '+1') {
+                  this.newContact = this.newContact.substring(2)
+                }
                 if (this.newContact.match(/\d/g).length===10) {
                   this.validContact = "success"
                   this.newPhone = this.newContact
