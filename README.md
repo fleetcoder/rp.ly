@@ -10,7 +10,7 @@
 
 ## Screenshots
 
-| Groups |   |  |
+|  |  |  |
 | ------------- | ------------- | ------------- |
 | <img src="https://rp.ly/file/screenshot4.jpg"> | <img src="https://rp.ly/file/screenshot5.jpg"> | <img src="https://rp.ly/file/screenshot6.jpg"> |
 
