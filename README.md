@@ -12,7 +12,7 @@
 
 | Groups |   |  |
 | ------------- | ------------- | ------------- |
-| <img src="https://rp.ly/file/screen1.png"> |  |  |
+| <img src="https://rp.ly/file/screenshot4.jpg"> |  |  |
 
 
 ## Installation
