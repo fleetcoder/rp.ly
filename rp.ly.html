@@ -461,7 +461,7 @@
             </mt-header>
             <mt-spinner v-bind:class="{'is-hidden':spinnerHidden}" type="snake"></mt-spinner>
             <mt-field label="Title:" placeholder="Title.." v-model="title"></mt-field>
-            <mt-cell title="Image:"><img class="img" :src="'myFile?staged=1&field=image&name=' + image" /></mt-cell>
+            <mt-cell title=""><img class="img" :src="'myFile?staged=1&field=image&name=' + image" /></mt-cell>
             <file-upload btn-label="Image" @change="stagedUpload('image')" :url="uploadTo + '&field=image'"></file-upload>
             <mt-cell title="Sound:"><audio-player :src="'myFile?staged=1&field=sound&name=' + sound" /></mt-cell>
             <audio-recorder :upload-url="uploadTo + '&field=sound'"/>
@@ -825,7 +825,7 @@
               <mt-tab-container-item id="tab3">
                 <mt-header title="rp.ly"></mt-header>
                 <mt-field v-bind:class="{'is-hidden':textHidden}" placeholder="Title.." v-model="title"></mt-field>
-                <mt-cell v-bind:class="{'is-hidden':imgHidden}" title="Image:"><img class="img" :src="'myFile?staged=1&field=image&name=' + image" /></mt-cell>
+                <mt-cell v-bind:class="{'is-hidden':imgHidden}" title=""><img class="img" :src="'myFile?staged=1&field=image&name=' + image" /></mt-cell>
                 <file-upload v-bind:class="{'is-hidden':uploadHidden}" btn-label="Image" @change="stagedUpload('image')" :url="uploadTo + '?field=image'"></file-upload>
                 <audio-recorder v-bind:class="{'is-hidden':audioHidden}" :upload-url="uploadTo + '?field=sound'" :after-recording="aftRec" />
                 <mt-checklist v-bind:class="{'is-hidden':groupsHidden}"
