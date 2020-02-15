@@ -12,7 +12,7 @@
 
 |  |  |  |
 | ------------- | ------------- | ------------- |
-| <img src="https://rp.ly/file/screenshot4.jpg"> | <img src="https://rp.ly/file/screenshot7.jpg"> | <img src="https://rp.ly/file/screenshot8.jpg"> |
+| <img src="https://rp.ly/file/screenshot9.jpg"> | <img src="https://rp.ly/file/screenshot7.jpg"> | <img src="https://rp.ly/file/screenshot8.jpg"> |
 
 
 ## Installation
