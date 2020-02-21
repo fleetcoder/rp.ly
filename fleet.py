@@ -45,6 +45,7 @@ talisman = Talisman(
       '\'unsafe-inline\'',
       '\'unsafe-eval\'',
       'data:',
+      'blob:',
     ],
     'font-src': [
       'data:',
