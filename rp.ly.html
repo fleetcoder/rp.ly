@@ -1506,7 +1506,7 @@ def doCode():
                 ra = randomword(6)
                 copy = get_user(usr[0]['user_id'])
                 copy['user_id'] = u
-                copy['groups'] = json.dumps([])
+                copy['groups'] = json.dumps([gr1])
                 copy['code'] = ra
                 del copy['id']
                 con = add_one( 'contacts', copy )
