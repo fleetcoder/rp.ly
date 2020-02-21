@@ -263,7 +263,8 @@
         data() {
           return {
             code:'',
-            spinnerHidden:true
+            spinnerHidden:true,
+            sentcode: ''
           }
         },
         props: {},
@@ -274,6 +275,8 @@
           }).then( ( response ) => {
             if (response.body[0] == 'OK') {
               window.location.href = '/'
+            } else {
+              this.sentcode = response.body[0]
             }
             this.spinnerHidden = true
           })
@@ -297,7 +300,7 @@
           <div>
             <mt-header title="rp.ly">
             </mt-header>
-            <mt-cell>A code was just sent to your email address or phone number</mt-cell>
+            <mt-cell>A code was just sent to your {{sentcode}}</mt-cell>
             <mt-field label="Code:" placeholder="***" v-model="code"></mt-field>
             <mt-button v-on:click="doCode()" size="large">Submit Code</mt-button>
             <mt-spinner v-bind:class="{'is-hidden':spinnerHidden}" type="snake"></mt-spinner>
@@ -1499,6 +1502,13 @@ def doCode():
                 gr2 = add_one( 'groups', newrec )
                 con = mod_one('contacts',{'groups': json.dumps([2,gr1,gr2])},u)
                 update_abilities()
+                ra = randomword(6)
+                copy = get_user(usr[0]['user_id'])
+                copy['user_id'] = u
+                copy['groups'] = json.dumps([])
+                copy['code'] = ra
+                del copy['id']
+                con = add_one( 'contacts', copy )
         response = make_response(json.dumps( [ 'OK' ] ))
         session.permanent = True
         session['user'] = str(u)
@@ -1530,7 +1540,7 @@ def doConnect():
       from_='+1' + os.getenv('TWILIO_FROM'),
       to=cont['phone']
     )
-    return json.dumps( [ 'SENT' ] )
+    return json.dumps( [ 'phone number' ] )
   if len(cont['email']) > 0:
     em = cont['email']
     message = Mail(
@@ -1540,7 +1550,7 @@ def doConnect():
       html_content='<strong>Your code is ' + str(num) + '</strong>')
     sg = SendGridAPIClient(sendgrid_token)
     response = sg.send(message)
-    return json.dumps( [ 'SENT' ] )
+    return json.dumps( [ 'email address' ] )
   return json.dumps( [ 'Error' ] )
 
 @app.route('/freeTrial', methods=['GET','POST'])
