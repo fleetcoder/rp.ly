@@ -15,8 +15,25 @@
 | <img src="https://rp.ly/file/screenshot10.jpg"> | <img src="https://rp.ly/file/screenshot11.jpg"> | <img src="https://rp.ly/file/screenshot12.jpg"> |
 
 
+## Prerequisites
+####
+
+
+------------------
+1. Web server with command-line shell (free from Amazon, $5/mo at Digital Ocean, Linode)
+
+------------------
+2. Domain Name or subdomain
+
+------------------
+3. Twilio Account (for notifying friends via Text Message)
+
+------------------
+4. Sendgrid Account (for notifying friends via Email)
+
+
 ## Installation
-#### (tested with Ubuntu 18.04)
+#### (tested with Ubuntu Linux 18.04)
 
 
 ------------------

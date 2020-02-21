@@ -2072,6 +2072,7 @@ def addContacts():
   }
   rid = add_one( 'contacts', newrec )
   if rid > 0:
+    share_my_contact(rid,newrec)
     return( json.dumps( [ 'OK' ] ) )
   else:
     return( json.dumps( [ 'Error' ] ) )
@@ -2097,6 +2098,7 @@ def quickAddContacts():
   }
   rid = add_one( 'contacts', newrec )
   if rid > 0:
+    share_my_contact(rid,newrec)
     return( json.dumps( [ 'OK' ] ) )
   else:
     return( json.dumps( [ 'Error' ] ) )

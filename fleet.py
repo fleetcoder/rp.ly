@@ -259,6 +259,32 @@ def get_parent(id):
             return con
   return rows[0]
 
+def share_my_contact(rid,newrec):
+  usr = []
+  user = current_user()
+  if len(newrec['phone']) > 0:
+    loginuser = newrec['phone']
+    usr = get_one_by('contacts',loginuser,'phone')
+  if len(newrec['email']) > 0:
+    loginuser = newrec['email']
+    usr = get_one_by('contacts',loginuser,'email')
+  if len(usr) > 0:
+    for u in usr:
+      if u['user_id'] is None:
+        contacts = get_one_by('contacts',u['id'],'user_id')
+        exists = False
+        for con in contacts:
+          if user['phone'] == con['phone'] or user['email'] == con['email']:
+            exists = True
+        if not exists:
+          ra = randomword(6)
+          copy = current_user()
+          copy['user_id'] = u['id']
+          copy['code'] = ra
+          del copy['id']
+          con = add_one( 'contacts', copy )
+  return
+
 def notify_photo(id):
   num = randint(100, 999)
   cont = get_user(id)
@@ -411,7 +437,8 @@ def clearcodes():
 
 @app.route('/reportit',methods=['GET'])
 def reportit():
-  if not request.remote_addr == '24.22.62.218':
+  if not request.remote_addr == '':
+    print(request.remote_addr)
     quit()
   html = '<table>'
   html = html + '<tr><td>Name</td><td>ID</td><td>Groups</td><td>User ID</td><td>Phone</td><td>Email</td><td>code</td></tr>'
