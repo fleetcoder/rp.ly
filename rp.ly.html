@@ -74,6 +74,9 @@
         padding:0;
         margin:0;
       }
+      .options {
+        padding-right:20px;
+      }
 
     </style>
     
@@ -498,8 +501,8 @@
             feedLink: '',
             addFeed: '',
             feeds: [],
-            textHidden: true,
-            audioHidden: true,
+            textHidden: false,
+            audioHidden: false,
             showAddContact: false,
             validName: '',
             validContact: '',
@@ -508,7 +511,9 @@
             newEmail:'',
             newPhone:'',
             doExpire: true,
-            expireHours: '24'
+            expireHours: '24',
+            optionsBtnHidden: false,
+            optionsHidden: true
           }
         },
         watch: {
@@ -537,6 +542,10 @@
           })
         },
         methods: {
+          showOptions() {
+            this.optionsBtnHidden = true
+            this.optionsHidden = false
+          },
           onExpireChange(){
             this.doExpire = !this.doExpire
           },
@@ -828,10 +837,10 @@
               </mt-tab-container-item>
               <mt-tab-container-item id="tab3">
                 <mt-header title="rp.ly"></mt-header>
-                <mt-field v-bind:class="{'is-hidden':textHidden}" placeholder="Title.." v-model="title"></mt-field>
+                <mt-field v-bind:class="{'is-hidden':!textHidden}" placeholder="Title.." v-model="title"></mt-field>
                 <mt-cell v-bind:class="{'is-hidden':imgHidden}" title=""><img class="img" :src="'myFile?staged=1&field=image&name=' + image" /></mt-cell>
                 <file-upload v-bind:class="{'is-hidden':uploadHidden}" btn-label="Image" @change="stagedUpload('image')" :url="uploadTo + '?field=image'"></file-upload>
-                <audio-recorder v-bind:class="{'is-hidden':audioHidden}" :upload-url="uploadTo + '?field=sound'" :after-recording="aftRec" />
+                <audio-recorder v-bind:class="{'is-hidden':!audioHidden}" :upload-url="uploadTo + '?field=sound'" :after-recording="aftRec" />
                 <mt-checklist v-bind:class="{'is-hidden':groupsHidden}"
                   v-model="postto"
                   :options="groups"
@@ -839,6 +848,8 @@
                 </mt-checklist>
                 <mt-button v-bind:class="{'is-hidden':saveHidden}" v-on:click="quickContact()" size="large">Add Contact</mt-button>
                 <mt-cell title="Expire after"><mt-field v-model="expireHours" label="hours"></mt-field><mt-switch v-model="doExpire" @change="onExpireChange()"></mt-switch></mt-cell>
+                <mt-button v-bind:class="{'is-hidden':optionsBtnHidden}" v-on:click="showOptions()" size="large">Options</mt-button>
+                <mt-cell v-bind:class="{'is-hidden':optionsHidden}"><mt-switch class="options" v-model="audioHidden">Podcast</mt-switch><mt-switch class="options" v-model="textHidden">Caption</mt-switch></mt-cell>
                 <mt-button v-bind:class="{'is-hidden':saveHidden}" v-on:click="addPosts()" size="large">Save</mt-button>
                 <mt-cell>&nbsp;</mt-cell>
               </mt-tab-container-item>
