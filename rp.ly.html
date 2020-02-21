@@ -355,6 +355,7 @@
                 handler: () => delPosts( item.id, idx )
               }
             ]">
+              <p class="caption" v-text="item.title" v-bind:class="{'is-hidden':item.textHidden}"></p>
               <figure class="imagecell" v-bind:class="{'is-hidden':item.imageHidden}">
                 <img v-on:click="openImage(idx)" class="feedimg" :src="imageLink(item)" />
                 <figcaption class="caption" v-text="item.title"></figcaption>
@@ -1798,11 +1799,14 @@ def getPosts():
     if can('get','posts',user,item):
       item['title'] = get_user(item['user_id'])['name'] + ': ' + item['title']
       item['imageHidden'] = False
+      item['textHidden'] = True
       if item['image'] == '':
         item['imageHidden'] = True
       item['soundHidden'] = False
       if item['sound'] == '':
         item['soundHidden'] = True
+      if item['image'] == '' and item['sound'] == '':
+        item['textHidden'] = False
       posts.append(item)
     if expired(item):
       notify_del(item['user_id'])
