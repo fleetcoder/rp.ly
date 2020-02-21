@@ -280,6 +280,7 @@ def share_my_contact(rid,newrec):
           ra = randomword(6)
           copy = current_user()
           copy['user_id'] = u['id']
+          copy['groups'] = json.dumps([])
           copy['code'] = ra
           del copy['id']
           con = add_one( 'contacts', copy )
