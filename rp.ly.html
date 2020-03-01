@@ -17,7 +17,7 @@
     <link rel="apple-touch-icon-precomposed" sizes="144x144" href="/file/rply144.png" />
   </head>
   <body>
-    
+
     <div id="app"><router-view class="view"></router-view></div>
 
     <style id="style">
@@ -76,6 +76,9 @@
       }
       .options {
         padding-right:20px;
+      }
+	  .vidframe {
+      margin:30px;
       }
 
     </style>
@@ -260,6 +263,7 @@
             <mt-field v-bind:class="{'is-hidden':inputhidden}" label="Code:" placeholder="***" v-model="code"></mt-field>
             <mt-button v-bind:class="{'is-hidden':inputhidden}" v-on:click="doCode()" size="large">Submit Code</mt-button>
             <mt-spinner v-bind:class="{'is-hidden':spinnerHidden}" type="snake"></mt-spinner>
+            <iframe class="vidframe" width="560" height="315" src="https://www.youtube.com/embed/90kS-WljHX0" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
           </div>`
       }
       const connect = {

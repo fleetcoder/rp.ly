@@ -46,6 +46,7 @@ talisman = Talisman(
       '\'unsafe-eval\'',
       'data:',
       'blob:',
+      'https://www.youtube.com/embed/90kS-WljHX0',
     ],
     'font-src': [
       'data:',
