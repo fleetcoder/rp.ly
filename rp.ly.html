@@ -263,8 +263,8 @@
             <mt-field v-bind:class="{'is-hidden':inputhidden}" label="Code:" placeholder="***" v-model="code"></mt-field>
             <mt-button v-bind:class="{'is-hidden':inputhidden}" v-on:click="doCode()" size="large">Submit Code</mt-button>
             <mt-spinner v-bind:class="{'is-hidden':spinnerHidden}" type="snake"></mt-spinner>
-            <iframe class="vidframe" width="560" height="315" src="https://www.youtube.com/embed/90kS-WljHX0" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
-          </div>`
+            <iframe class="vidframe" width="560" height="315" src="https://www.youtube.com/embed/90kS-WljHX0" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen>
+          </iframe></div>`
       }
       const connect = {
         data() {
@@ -898,10 +898,10 @@
                 </a>
               </mt-header>
               <mt-cell></mt-cell>
-              <mt-cell title="The link below includes your password, it allows you to view your personalized feed from other apps like Podcasts or Reeder"></mt-cell>
+              <mt-cell title="Paste this feed link into other rp.ly sites or feed readers to see your feed"></mt-cell>
               <mt-field v-model="feedLink"></mt-field>
               <mt-cell></mt-cell>
-              <mt-cell title="Follow podcast or photo feeds from any Web site"></mt-cell>
+              <mt-cell title="Follow feeds from other rp.ly sites or blogs"></mt-cell>
               <mt-button v-on:click="showFeeds()" size="large">Feeds</mt-button>
               <mt-cell></mt-cell>
               <mt-button v-on:click="doLogout()" size="large">Logout</mt-button>
