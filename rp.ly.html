@@ -1854,12 +1854,19 @@ def getPosts():
     feed = feedparser.parse(fd)
     items = []
     for item in feed.entries:
+      item['imageHidden'] = True
+      item['textHidden'] = False
+      item['soundHidden'] = True
       if 'enclosures' in item:
         if len(item['enclosures']) > 0:
           if 'href' in item['enclosures'][0]:
             if 'type' in item['enclosures'][0]:
               item['media'] = item['enclosures'][0]['href']
               item['mediatype'] = item['enclosures'][0]['type']
+              if 'mp3' in item['enclosures'][0]['href']:
+                item['soundHidden'] = False
+              else:
+                item['imageHidden'] = False
       if not 'title' in item:
         h2t.ignore_links = True
         if 'description' in item:
