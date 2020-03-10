@@ -1,6 +1,6 @@
 # rp.ly
 
-## voice and text chat newsfeed for groups
+## photo, voice and text chat newsfeed for groups
 
 ## try it:
 
