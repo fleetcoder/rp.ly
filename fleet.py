@@ -1,5 +1,5 @@
 from flask import Flask
-from flask import send_file, render_template, flash, redirect, url_for, request, make_response, send_from_directory, session
+from flask import send_file, render_template_string, render_template, flash, redirect, url_for, request, make_response, send_from_directory, session
 from flask_cors import CORS, cross_origin
 import os, sys, json, time, mimetypes, feedparser
 from datetime import datetime, timedelta
@@ -81,10 +81,18 @@ def allowed_file(filename):
 @app.route('/')
 def index():
   global fleet
+  ht = '<title>Rich Link Preview</title>'
+  #ht = ht + '<meta name=”description” content=”” />'
+  ht = ht + '<meta property=”og:title” content=”” />'
+  ht = ht + '<meta property=”og:description” content=”” />'
+  #ht = ht + '<meta property=”og:url” content=”" />'
+  ht = ht + '<meta property=”og:image” content=”" />'
+  #ht = ht + '<link rel=”shortcut icon” href=”" type=”image/x-icon” />'
   if not os.getenv('DEV_IP') is None:
     fleet = open(myapp).read()
-  return fleet
-
+    return fleet.replace( '</head>', ht + '</head>' )
+  return fleet.replace( '</head>', ht + '</head>' )
+  
 def randomword(length):
    letters = string.ascii_lowercase
    return ''.join(random.choice(letters) for i in range(length))
