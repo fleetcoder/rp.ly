@@ -1,10 +1,16 @@
 # rp.ly
 
-## open source micro-blog
+## voice and text chat newsfeed for groups
 
-## try it
+## try it:
 
 - [https://rp.ly](https://rp.ly "https://rp.ly")
+
+
+### the rp.ly newsfeed can include remote content from other rp.ly sites and RSS feeds
+
+## other rp.ly sites for testing a decentralized newsfeed:
+
 - [https://photo.gy](https://photo.gy "https://photo.gy")
 - [https://audio.gy](https://audio.gy "https://audio.gy")
 
