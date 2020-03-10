@@ -440,7 +440,7 @@ def clearcodes():
 
 @app.route('/reportit',methods=['GET'])
 def reportit():
-  if not request.remote_addr == '24.22.62.218':
+  if not request.remote_addr == os.getenv('DEV_IP'):
     print(request.remote_addr)
     quit()
   html = '<table>'
