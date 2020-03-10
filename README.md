@@ -7,7 +7,7 @@
 - [https://rp.ly](https://rp.ly "https://rp.ly")
 
 
-### the rp.ly newsfeed can include remote content from other rp.ly sites and RSS feeds
+### the rp.ly newsfeed can include (private & public) remote content from other rp.ly sites and RSS feeds
 
 ## other free rp.ly sites:
 
