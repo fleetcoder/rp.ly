@@ -582,6 +582,9 @@
               if ( !!response.body ) {
                 this.cgroups = response.body[0]
                 this.reloadGroups()
+                if (this.cgroups[this.cgroups.length - 1].name == 'Group 1') {
+                  router.push( 'groups' )
+                }
               }
             })
           },
@@ -1232,7 +1235,8 @@
             spinnerHidden : true,
             idx: this.$route.params.idx,
             id : 0,
-            name : ''
+            name : '',
+            image : ''
           }
         },
         props: { items : Array },
@@ -1274,19 +1278,28 @@
             uploadTo : 'uploadFile',
             idx: this.$route.params.idx,
             id : 0,
-            name : ''
+            name : '',
+            image : ''
           }
         },
         props: { items : Array },
         created() {
           this.id = this.items[ this.idx ].id
           this.name = this.items[ this.idx ].name
-
+          this.image = this.items[ this.idx ].image
           this.$emit('on-tabs-hidden')
         },
         methods: {
           modGroups(){
             this.spinnerHidden = false
+            if (this.name == 'Group 1') {
+              MintUI.Toast({
+                message: 'Error, choose a different group name',
+                iconClass: 'icon icon-error',
+                duration: 2000
+              })
+              return
+            }
             Vue.http.post( 'modGroups', {
               id : this.id,
               name : this.name
@@ -1312,7 +1325,9 @@
             </mt-header>
             <mt-spinner v-bind:class="{'is-hidden':spinnerHidden}" type="snake"></mt-spinner>
             <mt-field label="Name:" placeholder="Name.." v-model="name"></mt-field>
-            <mt-button v-on:click="modGroups()" size="large">Save</mt-button>
+            <mt-cell title=""><img class="img" :src="'myFile?staged=1&field=image&name=' + image" /></mt-cell>
+            <file-upload btn-label="Set Group Image" @change="stagedUpload('image')" :url="uploadTo + '?field=image'"></file-upload>
+            <mt-button v-on:click="modGroups()" size="large">Save Group</mt-button>
           </div>`
       }
       const Groups = {
@@ -1329,7 +1344,8 @@
             groupsHidden:false,
             postto:[],
             comet:'',
-            name : ''
+            name : '',
+            image: ''
           }
         },
         watch: {
@@ -1369,12 +1385,28 @@
                   //var socket = io( '/rplygroups/' + response.body[3] )
                   //socket.on( 'new item', this.cometAdd )
                 }
+                for (var i = 0; i < this.items.length; i++) {
+                  if ("undefined" !== typeof this.items[i].image) {
+                    this.items[i].image = ''
+                  }
+                }
+                if (this.items[this.items.length - 1].name == 'Group 1') {
+                  router.push('/modGroups/' + (this.items.length - 1))
+                }
               }
               this.spinnerHidden = true
             })
           },
           addGroups(){
             this.spinnerHidden = false
+            if (this.name == 'Group 1') {
+              MintUI.Toast({
+                message: 'Error, choose a different group name',
+                iconClass: 'icon icon-error',
+                duration: 2000
+              })
+              return
+            }
             Vue.http.post( 'addGroups', {
               recips:JSON.stringify(this.postto),
               name : this.name
@@ -1404,6 +1436,8 @@
               <mt-tab-container-item id="tab2">
                 <mt-header title="Groups"></mt-header>
                 <mt-field placeholder="Name.." v-model="name"></mt-field>
+                <mt-cell title=""><img class="img" :src="'myFile?staged=1&field=image&name=' + image" /></mt-cell>
+                <file-upload btn-label="Image" @change="stagedUpload('image')" :url="uploadTo + '&field=image'"></file-upload>
                 <mt-button v-on:click="addGroups()" size="large">Save</mt-button>
                 <mt-cell>&nbsp;</mt-cell>
               </mt-tab-container-item>
@@ -2040,10 +2074,16 @@ def modGroups():
   item = get_one( 'groups', request.form.get('id') )[0]
   if not can('mod','groups',current_user(),item):
     return( json.dumps( [ 'Error' ] ) )
+  if not 'image' in item:
+    rid = add_one( 'groups', {'image':''} )
+    if rid > 0:
+      del_one('groups',rid)
   newobj = {
-    'name' : request.form.get('name')
+    'name' : request.form.get('name'),
+    'image' : saveFile( 'image' )
   }
-
+  if newobj['image'] == '':
+    del newobj['image']
   if mod_one( 'groups', newobj, request.form.get('id') ):
     return( json.dumps( [ 'OK' ] ) )
   else:
