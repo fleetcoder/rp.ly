@@ -78,20 +78,37 @@ def allowed_file(filename):
   return '.' in filename and \
     filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
+@app.route('/g/<grpid>/<uid>')
+def group(grpid,uid):
+  grps = get_one_by( 'groups', grpid, 'key' )
+  urlsrc = 'https://' + mydomain + '/g/' + grpid + '/' + uid
+  ht = '<!DOCTYPE html>' + "\n"
+  ht = ht + '<html>' + "\n"
+  ht = ht + '  <head>' + "\n"
+  ht = ht + '    <title>' + grps[0]['name'] + '</title>'
+  ht = ht + '    <meta property="og:title" content="' + grps[0]['name'] + '" />' + "\n"
+  ht = ht + '    <meta property="og:type" content="website" />'
+  if not grps[0]['image'] is None:
+    ht = ht + '    <meta property="og:image:type" content="image/jpeg" />'
+    imgsrc = 'https://' + mydomain + '/myFile?field=image&name=' + grps[0]['image']
+    ht = ht + '    <meta property="og:image" content="' + imgsrc + '" />' + "\n"
+  ht = ht + '    <meta property="og:url" content="' + urlsrc + '" />'
+  ht = ht + '    <meta property="og:description" content="' + grps[0]['name'] + '" />'
+  ht = ht + '  </head>' + "\n"
+  ht = ht + '  <body>Group Page</body>' + "\n"
+  ht = ht + '</html>' + "\n"
+  response = make_response(ht,200)
+  return response
+  #ht = ht + '    <meta name="description" content="' + grps[0]['name'] + '" />'
+  #ht = ht + '    <link rel="shortcut icon" href="' + imgsrc + '" type="image/x-icon" />'
+  
 @app.route('/')
 def index():
   global fleet
-  ht = '<title>Rich Link Preview</title>'
-  #ht = ht + '<meta name=”description” content=”” />'
-  ht = ht + '<meta property=”og:title” content=”” />'
-  ht = ht + '<meta property=”og:description” content=”” />'
-  #ht = ht + '<meta property=”og:url” content=”" />'
-  ht = ht + '<meta property=”og:image” content=”" />'
-  #ht = ht + '<link rel=”shortcut icon” href=”" type=”image/x-icon” />'
   if not os.getenv('DEV_IP') is None:
     fleet = open(myapp).read()
-    return fleet.replace( '</head>', ht + '</head>' )
-  return fleet.replace( '</head>', ht + '</head>' )
+    return fleet
+  return fleet
   
 def randomword(length):
    letters = string.ascii_lowercase
@@ -298,12 +315,13 @@ def share_my_contact(rid,newrec):
           con = add_one( 'contacts', copy )
   return
 
-def notify_photo(id):
+def notify_photo(id,grpcode):
   num = randint(100, 999)
   cont = get_user(id)
   if len(cont['phone']) > 0:
+    urlsrc = 'https://' + mydomain + '/g/' + grpcode + '/' + cont['code']
     client = Client(twilio_id, twilio_token)
-    rl = current_user()['name'] + " shared a post with you " + 'https://' + mydomain + '/#/connect/' + cont['code']
+    rl = current_user()['name'] + " shared a post with you " + urlsrc
     message = client.messages.create(
       body=rl,
       from_='+1' + os.getenv('TWILIO_FROM'),
@@ -317,7 +335,7 @@ def notify_photo(id):
       from_email=owner['name'] + ' via ' + mydomain + ' <' + os.getenv('SENDGRID_FROM') + '>',
       to_emails=em,
       subject=current_user()['name'] + " shared a post ",
-      html_content='<strong><p>' + current_user()['name'] + " shared a post with you on " + mydomain + " </p><a href=\"" + 'https://' + mydomain + '/#/connect/' + cont['code'] + '">' + owner['name'] + "'s post" + '</a></strong>')
+      html_content='<strong><p>' + current_user()['name'] + " shared a post with you on " + mydomain + " </p><a href=\"" + 'https://' + mydomain + '/g/' + grpcode + '/' + cont['code'] + '">' + owner['name'] + "'s post" + '</a></strong>')
     sg = SendGridAPIClient(sendgrid_token)
     response = sg.send(message)
     print('notify ' + em, file=sys.stderr)

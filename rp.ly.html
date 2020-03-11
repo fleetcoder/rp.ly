@@ -2042,8 +2042,14 @@ def addPosts():
     recips = []
     for con in contacts:
       if can('get','posts',con,newrec):
+        grp = [value for value in json.loads(request.form.get('recips')) if value in json.loads(con['groups'])][0]
+        grpdata = get_one('groups',grp)
+        if not 'key' in grpdata[0] or grpdata[0]['key'] == None:
+          newobj = { 'key' : randomword(8) }
+          mod_one( 'groups', newobj, grpdata[0]['id'] )
+          grpdata[0]['key'] = newobj['key']
         recips.append( con['id'] )
-        notify_photo( con['id'] )
+        notify_photo( con['id'], grpdata[0]['key'] )
     response = make_response(json.dumps( [ 'OK' ] ))
     session['image'] = ''
     session['sound'] = ''
@@ -2140,8 +2146,8 @@ def modGroups():
   item = get_one( 'groups', request.form.get('id') )[0]
   if not can('mod','groups',current_user(),item):
     return( json.dumps( [ 'Error' ] ) )
-  if not 'image' in item:
-    rid = add_one( 'groups', {'image':''} )
+  if not 'image' in item or not 'key' in item:
+    rid = add_one( 'groups', {'image':'','key':''} )
     if rid > 0:
       del_one('groups',rid)
   newobj = {
