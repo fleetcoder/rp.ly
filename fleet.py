@@ -101,7 +101,8 @@ def group(grpid):
   global fleet
   if not os.getenv('DEV_IP') is None:
     fleet = open(myapp).read()
-    fleet = fleet.replace('</head>',ht)
+    fleet = fleet.replace('rp.ly',mydomain)
+  fleet = fleet.replace('</head>',ht)
   response = make_response(fleet,200)
   return response
   #ht = ht + '    <meta name="description" content="' + grps[0]['name'] + '" />'
