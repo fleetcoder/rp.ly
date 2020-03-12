@@ -1650,7 +1650,9 @@ def doConnect():
       return json.dumps( [ 'OK' ] )
     exists = get_parent(item[0]['id'])
     if 'user_id' in exists and exists['user_id'] is None:
-      return json.dumps( [ 'OK' ] )
+      if int(session['user']) == int(exists['id']):
+        print('YA2')
+        return json.dumps( [ 'OK' ] )
   cont['phone'] = item[0]['phone']
   cont['email'] = item[0]['email']
   if len(cont['phone']) > 0:
