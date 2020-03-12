@@ -113,6 +113,7 @@ def index():
   global fleet
   if not os.getenv('DEV_IP') is None:
     fleet = open(myapp).read()
+    fleet = fleet.replace('rp.ly',mydomain)
     return fleet
   return fleet
   

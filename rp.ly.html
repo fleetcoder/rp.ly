@@ -207,7 +207,7 @@
                     })
                     return
                   }
-                  this.sentcode = ' your email address'
+                  this.sentcode = 'A code was just sent to your email address'
                   this.registerHidden = true
                   this.sent = true
                   this.inputhidden = false
@@ -233,7 +233,7 @@
                     })
                     return
                   }
-                  this.sentcode = ' your phone'
+                  this.sentcode = 'A code was just sent to your phone'
                   this.registerHidden = true
                   this.inputhidden = false
                   this.inputnamehidden = false
@@ -258,7 +258,7 @@
             <mt-button v-bind:class="{'is-hidden':registerHidden}" v-on:click="doTrial()" size="large">Submit</mt-button>
             <mt-field v-bind:class="{'is-hidden':loginHidden}" label="Log In:" placeholder="Email or Phone Number..." type="email" :state="emailstatus" v-model="email"></mt-field>
             <mt-button v-bind:class="{'is-hidden':loginHidden}" v-on:click="myLogin()" size="large">Submit</mt-button>
-            <mt-cell v-bind:class="{'is-hidden':inputhidden}">A code was just sent to {{sentcode}}</mt-cell>
+            <mt-cell v-bind:class="{'is-hidden':inputhidden}">{{sentcode}}</mt-cell>
             <mt-field v-bind:class="{'is-hidden':inputnamehidden}" label="Name:" placeholder="Your name..." v-model="name"></mt-field>
             <mt-field v-bind:class="{'is-hidden':inputhidden}" label="Code:" placeholder="***" v-model="code"></mt-field>
             <mt-button v-bind:class="{'is-hidden':inputhidden}" v-on:click="doCode()" size="large">Submit Code</mt-button>
@@ -269,7 +269,7 @@
         data() {
           return {
             code:'',
-            spinnerHidden:true,
+            spinnerHidden:false,
             sentcode: ''
           }
         },
@@ -286,7 +286,7 @@
             if (response.body[0] == 'OK') {
               window.location.href = '/'
             } else {
-              this.sentcode = response.body[0]
+              this.sentcode = 'A code was just sent to your ' + response.body[0]
             }
             this.spinnerHidden = true
           })
@@ -303,6 +303,7 @@
               } else {
                 alert('Sorry, the code did not match')
               }
+              this.spinnerHidden = true
             })
           }
         },
@@ -310,7 +311,7 @@
           <div>
             <mt-header title="rp.ly">
             </mt-header>
-            <mt-cell>A code was just sent to your {{sentcode}}</mt-cell>
+            <mt-cell>{{sentcode}}</mt-cell>
             <mt-field label="Code:" placeholder="***" v-model="code"></mt-field>
             <mt-button v-on:click="doCode()" size="large">Submit Code</mt-button>
             <mt-spinner v-bind:class="{'is-hidden':spinnerHidden}" type="snake"></mt-spinner>
