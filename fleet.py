@@ -78,14 +78,15 @@ def allowed_file(filename):
   return '.' in filename and \
     filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-@app.route('/g/<grpid>/<uid>')
-def group(grpid,uid):
+@app.route('/g/<grpid>')
+def group(grpid):
   grps = get_one_by( 'groups', grpid, 'key' )
-  urlsrc = 'https://' + mydomain + '/g/' + grpid + '/' + uid
-  ht = '<!DOCTYPE html>' + "\n"
-  ht = ht + '<html>' + "\n"
-  ht = ht + '  <head>' + "\n"
-  ht = ht + '    <title>' + grps[0]['name'] + '</title>'
+  urlsrc = 'https://' + mydomain + '/g/' + grpid
+  #ht = '<!DOCTYPE html>' + "\n"
+  #ht = ht + '<html>' + "\n"
+  #ht = ht + '  <head>' + "\n"
+  #ht = ht + '    <title>' + grps[0]['name'] + '</title>'
+  ht = ''
   ht = ht + '    <meta property="og:title" content="' + grps[0]['name'] + '" />' + "\n"
   ht = ht + '    <meta property="og:type" content="website" />'
   if not grps[0]['image'] is None:
@@ -95,9 +96,13 @@ def group(grpid,uid):
   ht = ht + '    <meta property="og:url" content="' + urlsrc + '" />'
   ht = ht + '    <meta property="og:description" content="' + grps[0]['name'] + '" />'
   ht = ht + '  </head>' + "\n"
-  ht = ht + '  <body>Group Page</body>' + "\n"
-  ht = ht + '</html>' + "\n"
-  response = make_response(ht,200)
+  #ht = ht + '  <body>Group Page</body>' + "\n"
+  #ht = ht + '</html>' + "\n"
+  global fleet
+  if not os.getenv('DEV_IP') is None:
+    fleet = open(myapp).read()
+    fleet = fleet.replace('</head>',ht)
+  response = make_response(fleet,200)
   return response
   #ht = ht + '    <meta name="description" content="' + grps[0]['name'] + '" />'
   #ht = ht + '    <link rel="shortcut icon" href="' + imgsrc + '" type="image/x-icon" />'
@@ -319,7 +324,7 @@ def notify_photo(id,grpcode):
   num = randint(100, 999)
   cont = get_user(id)
   if len(cont['phone']) > 0:
-    urlsrc = 'https://' + mydomain + '/g/' + grpcode + '/' + cont['code']
+    urlsrc = 'https://' + mydomain + '/g/' + grpcode + '#/connect/' + cont['code']
     client = Client(twilio_id, twilio_token)
     rl = current_user()['name'] + " shared a post with you " + urlsrc
     message = client.messages.create(
@@ -335,7 +340,7 @@ def notify_photo(id,grpcode):
       from_email=owner['name'] + ' via ' + mydomain + ' <' + os.getenv('SENDGRID_FROM') + '>',
       to_emails=em,
       subject=current_user()['name'] + " shared a post ",
-      html_content='<strong><p>' + current_user()['name'] + " shared a post with you on " + mydomain + " </p><a href=\"" + 'https://' + mydomain + '/g/' + grpcode + '/' + cont['code'] + '">' + owner['name'] + "'s post" + '</a></strong>')
+      html_content='<strong><p>' + current_user()['name'] + " shared a post with you on " + mydomain + " </p><a href=\"" + 'https://' + mydomain + '/g/' + grpcode + '#/connect/' + cont['code'] + '">' + owner['name'] + "'s post" + '</a></strong>')
     sg = SendGridAPIClient(sendgrid_token)
     response = sg.send(message)
     print('notify ' + em, file=sys.stderr)
