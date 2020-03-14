@@ -78,8 +78,38 @@ def allowed_file(filename):
   return '.' in filename and \
     filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-@app.route('/g/<grpid>')
+@app.route('/grp/<grpid>')
 def group(grpid):
+  grps = get_one_by( 'groups', grpid, 'key' )
+  urlsrc = 'https://' + mydomain + '/g/' + grpid
+  #ht = '<!DOCTYPE html>' + "\n"
+  #ht = ht + '<html>' + "\n"
+  #ht = ht + '  <head>' + "\n"
+  #ht = ht + '    <title>' + grps[0]['name'] + '</title>'
+  ht = ''
+  ht = ht + '    <meta property="og:title" content="' + grps[0]['name'] + '" />' + "\n"
+  ht = ht + '    <meta property="og:type" content="website" />'
+  if not grps[0]['image'] is None:
+    ht = ht + '    <meta property="og:image:type" content="image/jpeg" />'
+    imgsrc = 'https://' + mydomain + '/myFile?field=image&name=' + grps[0]['image']
+    ht = ht + '    <meta property="og:image" content="' + imgsrc + '" />' + "\n"
+  ht = ht + '    <meta property="og:url" content="' + urlsrc + '" />'
+  ht = ht + '    <meta property="og:description" content="' + grps[0]['name'] + '" />'
+  ht = ht + '  </head>' + "\n"
+  #ht = ht + '  <body>Group Page</body>' + "\n"
+  #ht = ht + '</html>' + "\n"
+  global fleet
+  if not os.getenv('DEV_IP') is None:
+    fleet = open(myapp).read()
+    fleet = fleet.replace('rp.ly',mydomain)
+  fleet = fleet.replace('</head>',ht)
+  response = make_response(fleet,200)
+  return response
+  #ht = ht + '    <meta name="description" content="' + grps[0]['name'] + '" />'
+  #ht = ht + '    <link rel="shortcut icon" href="' + imgsrc + '" type="image/x-icon" />'
+
+@app.route('/g/<grpid>')
+def groupuser(grpid):
   grps = get_one_by( 'groups', grpid, 'key' )
   urlsrc = 'https://' + mydomain + '/g/' + grpid
   #ht = '<!DOCTYPE html>' + "\n"
@@ -239,7 +269,8 @@ def mod_one(resource,obj,id):
   sql = sql + " WHERE id = ?"
   vals.append(id)
   conn.cursor().execute(sql,vals)
-  return conn.commit()
+  conn.commit()
+  return True
 
 def del_one(resource,id):
   resource = username + resource

@@ -276,7 +276,7 @@
         props: {},
         created() {
           if (!(window.location.href.match(/\/g\//g) === null)) {
-            window.location.href = 'https://' + window.location.hostname + '/#/connect/' + this.$route.params.code
+            window.location.href = 'https://' + window.location.hostname + '/#/connect/ ' + this.$route.params.code
             return
           }
           this.spinnerHidden = false
@@ -290,6 +290,56 @@
             }
             this.spinnerHidden = true
           })
+        },
+        methods: {
+          doCode() {
+            this.spinnerHidden = false
+            Vue.http.post( 'doCode', {
+              code:this.code,
+              connect:this.$route.params.code
+            }).then( ( response ) => {
+              if (response.body[0] == 'OK') {
+                window.location.href = '/'
+              } else {
+                alert('Sorry, the code did not match')
+              }
+              this.spinnerHidden = true
+            })
+          }
+        },
+        template: `
+          <div>
+            <mt-header title="rp.ly">
+            </mt-header>
+            <mt-cell>{{sentcode}}</mt-cell>
+            <mt-field label="Code:" placeholder="***" v-model="code"></mt-field>
+            <mt-button v-on:click="doCode()" size="large">Submit Code</mt-button>
+            <mt-spinner v-bind:class="{'is-hidden':spinnerHidden}" type="snake"></mt-spinner>
+          </div>`
+      }
+      const GroupPage = {
+        data() {
+          return {
+            grp:'',
+            spinnerHidden:false,
+            sentcode: ''
+          }
+        },
+        props: {},
+        created() {
+          this.spinnerHidden = false
+          console.log('GRP ' + this.$route.params.grp)
+          /*
+          Vue.http.post( 'doConnect', {
+            code:this.$route.params.code
+          }).then( ( response ) => {
+            if (response.body[0] == 'OK') {
+              window.location.href = '/'
+            } else {
+              this.sentcode = 'A code was just sent to your ' + response.body[0]
+            }
+            this.spinnerHidden = true
+          })*/
         },
         methods: {
           doCode() {
@@ -534,6 +584,11 @@
           'show-posts' : showPosts
         },
         created() {
+          if (!(window.location.href.match(/\/grp\//g) === null)) {
+            var grp = window.location.pathname.substr(window.location.pathname.lastIndexOf('/') + 1)
+            window.location.href = 'https://' + window.location.hostname + '/#/group/' + grp
+            return
+          }
           if (this.$route.path == '/myContacts') {
             router.push('/')
             setTimeout(function (el){
@@ -1291,7 +1346,9 @@
             newName:'',
             newContact:'',
             newEmail:'',
-            newPhone:''
+            newPhone:'',
+            showShareGroup: false,
+            groupLink: ''
           }
         },
         props: { items : Array },
@@ -1302,6 +1359,9 @@
           this.$emit('on-tabs-hidden')
         },
         methods: {
+          closeShareGroup(){
+            router.push( '/' )
+          },
           checkContact() {
             this.newPhone = ''
             this.newEmail = ''
@@ -1370,7 +1430,8 @@
               name : this.name
             }).then( ( response ) => {
               this.$emit('on-update-list')
-              router.push( '/' )
+              this.showShareGroup = true
+              this.groupLink = response.body
             })
           },
           stagedUpload(field){
@@ -1398,6 +1459,11 @@
               <mt-field :state="validName" placeholder="Name" @keyup.native="checkConName" v-model="newName"></mt-field>
               <mt-field :state="validContact" @keyup.native="checkContact" placeholder="Email or Phone..." v-model="newContact" type="email"></mt-field>
               <mt-button v-on:click="cancelContact()">Cancel</mt-button>&nbsp;<mt-button v-on:click="saveContact()" type="primary">Add Contact</mt-button>
+            </mt-popup>
+            <mt-popup class="addcontact" v-model="showShareGroup" position="middle">
+              <mt-cell title="Copy and share this group link:"></mt-cell>
+              <mt-field v-model="groupLink"></mt-field>
+              <mt-button v-on:click="closeShareGroup()">Close</mt-button>
             </mt-popup>
           </div>`
       }
@@ -1571,6 +1637,9 @@
             path: '/connect/:code',
             component: connect
         },{
+            path: '/group/:grp',
+            component: GroupPage
+        },{
             path: '/auth',
             component: freeTrial
         }
@@ -1651,7 +1720,6 @@ def doConnect():
     exists = get_parent(item[0]['id'])
     if 'user_id' in exists and exists['user_id'] is None:
       if int(session['user']) == int(exists['id']):
-        print('YA2')
         return json.dumps( [ 'OK' ] )
   cont['phone'] = item[0]['phone']
   cont['email'] = item[0]['email']
@@ -2163,8 +2231,12 @@ def modGroups():
   }
   if newobj['image'] == '':
     del newobj['image']
+  if not 'key' in item or item['key'] == None:
+    newobj = { 'key' : randomword(8) }
+    mod_one( 'groups', newobj, item['id'] )
+    item['key'] = newobj['key']
   if mod_one( 'groups', newobj, request.form.get('id') ):
-    return( json.dumps( [ 'OK' ] ) )
+    return( 'https://' + mydomain + '/grp/' + item['key'] )
   else:
     return( json.dumps( [ 'Error' ] ) )
 
