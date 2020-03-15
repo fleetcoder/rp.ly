@@ -282,7 +282,7 @@
         props: {},
         created() {
           if (!(window.location.href.match(/\/g\//g) === null)) {
-            window.location.href = 'https://' + window.location.hostname + '/#/connect/ ' + this.$route.params.code
+            window.location.href = 'https://' + window.location.hostname + '/#/connect/' + this.$route.params.code
             return
           }
           this.spinnerHidden = false
