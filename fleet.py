@@ -91,7 +91,7 @@ def group(grpid):
   ht = ht + '    <meta property="og:type" content="website" />'
   if not grps[0]['image'] is None:
     ht = ht + '    <meta property="og:image:type" content="image/jpeg" />'
-    imgsrc = 'https://' + mydomain + '/myFile?field=image&name=' + grps[0]['image']
+    imgsrc = 'https://' + mydomain + '/grpFile?field=image&name=' + grps[0]['image']
     ht = ht + '    <meta property="og:image" content="' + imgsrc + '" />' + "\n"
   ht = ht + '    <meta property="og:url" content="' + urlsrc + '" />'
   ht = ht + '    <meta property="og:description" content="' + grps[0]['name'] + '" />'
@@ -121,7 +121,7 @@ def groupuser(grpid):
   ht = ht + '    <meta property="og:type" content="website" />'
   if not grps[0]['image'] is None:
     ht = ht + '    <meta property="og:image:type" content="image/jpeg" />'
-    imgsrc = 'https://' + mydomain + '/myFile?field=image&name=' + grps[0]['image']
+    imgsrc = 'https://' + mydomain + '/grpFile?field=image&name=' + grps[0]['image']
     ht = ht + '    <meta property="og:image" content="' + imgsrc + '" />' + "\n"
   ht = ht + '    <meta property="og:url" content="' + urlsrc + '" />'
   ht = ht + '    <meta property="og:description" content="' + grps[0]['name'] + '" />'
