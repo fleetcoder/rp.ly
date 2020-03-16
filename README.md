@@ -9,6 +9,8 @@
 
 ### the rp.ly newsfeed can include (private & public) remote content from other rp.ly sites and RSS feeds
 
+### the feed can also be accessed from podcast apps, feed readers and other rp.ly sites
+
 ## other free rp.ly sites:
 
 - [https://photo.gy](https://photo.gy "https://photo.gy")
