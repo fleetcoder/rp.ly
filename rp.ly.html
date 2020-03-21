@@ -340,7 +340,11 @@
             groupPic: '',
             signupHidden : false,
             ownname: '',
-            grpname: ''
+            grpname: '',
+            emailstatus : '',
+            docodehidden : true,
+            code: '',
+            signupBtnHidden : false
           }
         },
         props: {},
@@ -349,6 +353,10 @@
           Vue.http.post( 'joinGroup', {
             grp:this.$route.params.grp
           }).then( ( response ) => {
+            if (response.body[3] == 'AUTHED') {
+              this.signupHidden = true
+              this.signupBtnHidden = false
+            }
             this.ownname = response.body[0]
             this.grpname = response.body[1]
             this.inviteText = response.body[0] + this.inviteText + response.body[1]
@@ -359,23 +367,101 @@
           })
         },
         methods: {
-          doJoin() {
+          doCode() {
             this.spinnerHidden = false
-            this.signupHidden = true
-            this.inviteText = ''
-            Vue.http.post( 'doJoin', {
+            Vue.http.post( 'freeTrialStart', {
+              code : this.code,
               grp : this.$route.params.grp,
               name : this.newName,
               email : this.newEmail,
               phone : this.newPhone
             }).then( ( response ) => {
-              this.newName = ''
-              this.newEmail = ''
-              this.newPhone = ''
-              this.newContact = ''
-              this.spinnerHidden = true
-              this.inviteText = 'Great! You will receive a notification when ' + this.ownname + ' shares a post to ' + this.grpname
+              if (response.body[0] == 'OK') {
+                window.location.href = '/'
+              } else {
+                alert('Sorry, the code did not match')
+              }
             })
+          },
+          doJoin() {
+            this.spinnerHidden = false
+            this.signupHidden = true
+            this.signupBtnHidden = true
+            this.inviteText = ''
+            this.docodehidden = false
+            if (this.signupHidden) {
+              Vue.http.post( 'doJoin', {
+                grp : this.$route.params.grp,
+                name : this.newName,
+                email : this.newEmail,
+                phone : this.newPhone
+              }).then( ( response ) => {
+                if (response.body[0] == 'error') {
+                  MintUI.Toast({
+                    message: 'Error',
+                    iconClass: 'icon icon-error',
+                    duration: 2000
+                  })
+                  return
+                }
+                MintUI.Toast({
+                  message: 'You have been added to the group',
+                  iconClass: 'icon icon-success',
+                  duration: 2000
+                })
+                this.spinnerHidden = true
+                router.push('/')
+              })
+            } else if (this.newEmail.indexOf('@') !== -1) {
+              var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+              if (re.test(String(this.newEmail).toLowerCase())) {
+                this.emailstatus = 'success'
+                Vue.http.post( 'doJoin', {
+                  grp : this.$route.params.grp,
+                  name : this.newName,
+                  email : this.newEmail,
+                  phone : this.newPhone
+                }).then( ( response ) => {
+                  if (response.body[0] == 'error') {
+                    MintUI.Toast({
+                      message: 'Error',
+                      iconClass: 'icon icon-error',
+                      duration: 2000
+                    })
+                    return
+                  }
+                  this.inviteText = 'A code was just sent to your email address'
+                  this.spinnerHidden = true
+                })
+              } else {
+                this.emailstatus = 'error'
+              }
+            } else {
+              if (this.newEmail.match(/\d/g).length===10) {
+                this.emailstatus = 'success'
+                this.newPhone = this.newEmail
+                this.newEmail = ''
+                Vue.http.post( 'doJoin', {
+                  grp : this.$route.params.grp,
+                  name : this.newName,
+                  email : this.newEmail,
+                  phone : this.newPhone
+                }).then( ( response ) => {
+                  if (response.body[0] == 'error') {
+                    MintUI.Toast({
+                      message: 'Error',
+                      iconClass: 'icon icon-error',
+                      duration: 2000
+                    })
+                    return
+                  }
+                  this.inviteText = 'A code was just sent to your phone'
+                  this.spinnerHidden = true
+                })
+              } else {
+                this.emailstatus = 'error'
+              }
+            }
           },
           checkConName() {
             this.validName = "success"
@@ -414,7 +500,9 @@
             <mt-cell :title="inviteText"></mt-cell>
             <mt-field v-bind:class="{'is-hidden':signupHidden}" :state="validName" placeholder="Name" @keyup.native="checkConName" v-model="newName"></mt-field>
             <mt-field v-bind:class="{'is-hidden':signupHidden}" :state="validContact" @keyup.native="checkContact" placeholder="Email or Phone..." v-model="newContact" type="email"></mt-field>
-            <mt-button v-bind:class="{'is-hidden':signupHidden}" v-on:click="doJoin()" size="large">{{submitText}}</mt-button>
+            <mt-button v-bind:class="{'is-hidden':signupBtnHidden}" v-on:click="doJoin()" size="large">{{submitText}}</mt-button>
+            <mt-field v-bind:class="{'is-hidden':docodehidden}" label="Code:" placeholder="***" v-model="code"></mt-field>
+            <mt-button v-bind:class="{'is-hidden':docodehidden}" v-on:click="doCode()" size="large">Submit Code</mt-button>
             <mt-spinner v-bind:class="{'is-hidden':spinnerHidden}" type="snake"></mt-spinner>
           </div>`
       }
@@ -1790,7 +1878,7 @@ def doConnect():
     message = Mail(
       from_email=' Request at ' + mydomain + ' <' + os.getenv('SENDGRID_FROM') + '>',
       to_emails=em,
-      subject='Your connection code is ' + str(num),
+      subject='Your ' + mydomain + ' connection code is ' + str(num),
       html_content='<strong>Your code is ' + str(num) + '</strong>')
     sg = SendGridAPIClient(sendgrid_token)
     response = sg.send(message)
@@ -1834,7 +1922,7 @@ def freeTrial():
       message = Mail(
         from_email=os.getenv('SENDGRID_FROM'),
         to_emails=em,
-        subject='Your ' + mydomain + ' connection request',
+        subject='Your ' + mydomain + ' connection code is ' + str(num),
         html_content='<strong>Your code is ' + str(num) + '</strong>')
       sg = SendGridAPIClient(sendgrid_token)
       response = sg.send(message)
@@ -1879,7 +1967,7 @@ def freeTrialLogin():
       message = Mail(
         from_email=os.getenv('SENDGRID_FROM'),
         to_emails=em,
-        subject='Your ' + mydomain + ' connection request',
+        subject='Your ' + mydomain + ' connection code is ' + str(num),
         html_content='<strong>Your code is ' + str(num) + '</strong>')
       sg = SendGridAPIClient(sendgrid_token)
       response = sg.send(message)
@@ -1887,7 +1975,12 @@ def freeTrialLogin():
 
 @app.route('/freeTrialStart', methods=['GET','POST'])
 def freeTrialStart():
+  addgrp = None
+  if not request.form.get('grp') is None:
+    items = get_one_by( 'groups', request.form.get('grp'), 'key' )
+    addgrp = items[0]['id']
   cont = {}
+  usr = []
   cont['phone'] = request.form.get("phone")
   cont['email'] = request.form.get("email")
   cont['name'] = request.form.get("name")
@@ -1915,11 +2008,15 @@ def freeTrialStart():
     if 'user_id' in exists and exists['user_id'] is None:
       u = exists['id']
     else:
+      if addgrp is None:
+        newgrp = [2]
+      else:
+        newgrp = [2,addgrp]
       u = add_one('contacts',{
         'name':cont['name'],
         'email':cont['email'].lower(),
         'phone':cont['phone'],
-        'groups':json.dumps([2]),
+        'groups':json.dumps(newgrp),
         'code':ra,
         'created':str(datetime.now())
       })
@@ -1935,7 +2032,7 @@ def freeTrialStart():
         'created' : str( timezone( 'US/Pacific' ).localize( datetime.now() ) )
       }
       gr2 = add_one( 'groups', newrec )
-      con = mod_one('contacts',{'groups': json.dumps([2,gr1,gr2])},u)
+      con = mod_one('contacts',{'groups': json.dumps(newgrp + [gr1,gr2])},u)
       update_abilities()
   response = make_response(json.dumps( [ 'OK' ] ))
   session.permanent = True
@@ -2252,12 +2349,17 @@ def getGroups():
 
 @app.route('/joinGroup',methods=['GET','POST'])
 def joinGroup():
+  os.chdir(appdir)
+  authd = ''
+  if 'user' in session:
+    if int(session['user']) > 0:
+      authd = 'AUTHED'
   items = get_one_by( 'groups', request.form.get('grp'), 'key' )
   result = []
   if len(items) > 0:
     owner = get_user(items[0]['user_id'])
     imgsrc = 'https://' + mydomain + '/grpFile?field=image&name=' + items[0]['image']
-    result = [owner['name'],items[0]['name'],imgsrc]
+    result = [owner['name'],items[0]['name'],imgsrc,authd]
   return json.dumps(result)
 
 @app.route('/addGroups',methods=['GET','POST'])
@@ -2395,11 +2497,58 @@ def quickAddContacts():
 
 @app.route('/doJoin',methods=['GET','POST'])
 def doJoin():
+  if request.form.get("phone") == '' and request.form.get("email") == '':
+    items = get_one_by( 'groups', request.form.get('grp'), 'key' )
+    user = current_user()
+    groups = json.loads(user['groups'])
+    groups.append(items[0]['id'])
+    con = mod_one('contacts',{'groups': json.dumps(groups)},user['id'])
+    return 'OK'
   items = get_one_by( 'groups', request.form.get('grp'), 'key' )
   ra = randomword(6)
   newph = ''.join(re.findall(r'[0-9]+', request.form.get('phone')))
   if len(newph) == 11:
     newph = newph[1:]
+  cont = {}
+  cont['phone'] = newph
+  cont['email'] = request.form.get("email")
+  cont['name'] = request.form.get("name")
+  newuser = ''
+  if len(cont['phone']) > 0:
+    loginuser = cont['phone']
+    usr = get_one_by('contacts',loginuser,'phone')
+  if len(cont['email']) > 0:
+    loginuser = cont['email']
+    usr = get_one_by('contacts',loginuser,'email')
+  if len(usr) > 0 and usr[0]['user_id'] is None:
+    return json.dumps(['error'])
+  num = randint(100, 999)
+  cont = {}
+  cont['phone'] = request.form.get("phone")
+  cont['email'] = request.form.get("email").lower()
+  add_one('connectcodes',{
+    'num':num,
+    'email':cont['email'],
+    'phone':cont['phone']
+  })
+  if len(cont['phone']) > 0:
+    client = Client(twilio_id, twilio_token)
+    rl = "Your " + mydomain + " code is " + str(num)
+    message = client.messages.create(
+      body=rl,
+      from_='+1' + os.getenv('TWILIO_FROM'),
+      to=cont['phone']
+    )
+  if len(cont['email']) > 0:
+    em = cont['email']
+    message = Mail(
+      from_email=os.getenv('SENDGRID_FROM'),
+      to_emails=em,
+      subject='Your ' + mydomain + ' connection code is ' + str(num),
+      html_content='<strong>Your code is ' + str(num) + '</strong>')
+    sg = SendGridAPIClient(sendgrid_token)
+    response = sg.send(message)
+  return 'OK'
   newrec = {
     'name' : request.form.get('name'),
     'email' : request.form.get('email'),
