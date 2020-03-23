@@ -2261,6 +2261,7 @@ def addPosts():
     newrec['expires'] = str( timezone( 'US/Pacific' ).localize( now_plus_hours ) )
   rid = add_one( 'posts', newrec )
   if rid > 0:
+    dt = timezone( 'US/Pacific' ).localize( datetime.now() )
     newrec['id'] = rid
     newrec['title'] = current_user()['name'] + ': ' + newrec['title']
     contacts = get_all('contacts')
@@ -2285,11 +2286,12 @@ def addPosts():
         tzinfos = {"-08:00": tz.gettz('US/Pacific')}
         dt = parser.parse(grpdata[0]['last_notif'], tzinfos=tzinfos) + timedelta(hours=24)
         if dt < timezone( 'US/Pacific' ).localize( datetime.now() ):
-          newobj = { 'last_notif' : str( timezone( 'US/Pacific' ).localize( datetime.now() ) ) }
-          mod_one( 'groups', newobj, grpdata[0]['id'] )
           notify_photo( con['id'], grpdata[0]['key'] )
         recips.append( con['id'] )
     response = make_response(json.dumps( [ 'OK' ] ))
+    if dt < timezone( 'US/Pacific' ).localize( datetime.now() ):
+      newobj = { 'last_notif' : str( timezone( 'US/Pacific' ).localize( datetime.now() ) ) }
+      mod_one( 'groups', newobj, grpdata[0]['id'] )
     session['image'] = ''
     session['sound'] = ''
     sendcomet(recips,newrec)
