@@ -2269,12 +2269,26 @@ def addPosts():
       if can('get','posts',con,newrec):
         grp = [value for value in json.loads(request.form.get('recips')) if value in json.loads(con['groups'])][0]
         grpdata = get_one('groups',grp)
+        if not 'last_notif' in grpdata[0] or grpdata[0]['last_notif'] == None:
+          rid = add_one( 'groups', {'last_notif':''} )
+          if rid > 0:
+            del_one('groups',rid)
         if not 'key' in grpdata[0] or grpdata[0]['key'] == None:
           newobj = { 'key' : randomword(8) }
           mod_one( 'groups', newobj, grpdata[0]['id'] )
           grpdata[0]['key'] = newobj['key']
+        if not 'last_notif' in grpdata[0] or grpdata[0]['last_notif'] == None:
+          newobj = { 'last_notif' : str( timezone( 'US/Pacific' ).localize( datetime.now() - timedelta(hours=25) ) ) }
+          mod_one( 'groups', newobj, grpdata[0]['id'] )
+          grpdata[0]['last_notif'] = newobj['last_notif']
+        from dateutil import tz
+        tzinfos = {"-08:00": tz.gettz('US/Pacific')}
+        dt = parser.parse(grpdata[0]['last_notif'], tzinfos=tzinfos) + timedelta(hours=24)
+        if dt < timezone( 'US/Pacific' ).localize( datetime.now() ):
+          newobj = { 'last_notif' : str( timezone( 'US/Pacific' ).localize( datetime.now() ) ) }
+          mod_one( 'groups', newobj, grpdata[0]['id'] )
+          notify_photo( con['id'], grpdata[0]['key'] )
         recips.append( con['id'] )
-        notify_photo( con['id'], grpdata[0]['key'] )
     response = make_response(json.dumps( [ 'OK' ] ))
     session['image'] = ''
     session['sound'] = ''
