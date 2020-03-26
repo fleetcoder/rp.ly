@@ -11,6 +11,7 @@
     <script type=text/javascript src=/file/vendor.0eb5480a7e9a156e90f2.js></script>
     <script type=text/javascript src=/file/app.be9945027a8323d84e7d.js></script>
     <script type=text/javascript src=/file/socket.io.js></script>
+    <script type=text/javascript src=/file/braintree.min.js></script>
     <link rel="apple-touch-icon-precomposed" sizes="57x57" href="/file/rply57.png" />
     <link rel="apple-touch-icon-precomposed" sizes="72x72" href="/file/rply72.png" />
     <link rel="apple-touch-icon-precomposed" sizes="114x114" href="/file/rply114.png" />
@@ -86,7 +87,51 @@
         padding:100px;
         margin:0;
       }
-
+      .hosted-field {
+        height: 50px;
+        box-sizing: border-box;
+        width: 100%;
+        padding: 12px;
+        display: inline-block;
+        box-shadow: none;
+        font-weight: 500;
+        font-size: 14px;
+        border-radius: $radius-default;
+        border: 1px solid #dddddd;
+        line-height: 20px;
+        background: #fcfcfc;
+        margin-bottom: 12px;
+        background: linear-gradient(to right, white 50%, #fcfcfc 50%);
+        background-size: 200% 100%;
+        background-position: right bottom;
+        transition: all 300ms ease-in-out;
+      }
+      .hosted-fields--label {
+        font-family: courier, monospace;
+        text-transform: uppercase;
+        font-size: 14px;
+        display: block;
+        margin-bottom: 6px;
+      }
+      .button-container {
+        display: block;
+        text-align: center;
+      }
+      .braintree-hosted-fields-focused {
+        border: 1px solid #64d18a;
+        border-radius: $radius-default;
+        background-position: left bottom;
+      }
+      .braintree-hosted-fields-invalid {
+        border: 1px solid #ed574a;
+      }
+      .braintree-hosted-fields-valid {
+      }
+      #cardForm {
+        max-width: 50.75em;
+        margin: 0 auto;
+        padding: 1.875em;
+      }
     </style>
     
     <script id="client">
@@ -711,7 +756,12 @@
             doExpire: true,
             expireHours: '24',
             optionsBtnHidden: false,
-            optionsHidden: true
+            optionsHidden: true,
+            sponsorVisible: true,
+            subs: [],
+            btAuth: '',
+            plan: 'fans50',
+            plans:[{label: 'Great - $3.00 every 6 months',value: 'fans50'},{label: 'Super - $3.00 every month',value: 'fans300'}]
           }
         },
         watch: {
@@ -745,6 +795,11 @@
           })
         },
         methods: {
+          addSponsor() {
+          },
+          closeSponsor() {
+            this.sponsorVisible = !this.sponsorVisible
+          },
           showOptions() {
             this.optionsBtnHidden = true
             this.optionsHidden = false
@@ -830,9 +885,13 @@
                 if (this.$route.path == '/myContacts') {
                   //this.selected = 'tab2'
                 }
+                this.btAuth = response.body[4]
+                this.createHostedFields()
+                this.subs = response.body[5]
               }
               this.spinnerHidden = true
             })
+            
           },
           addPosts(){
             if (this.postto.length == 0) {
@@ -867,6 +926,85 @@
               this.uploadHidden = false
               this.groupsHidden = false
             })
+          },
+          createHostedFields() {
+            var postsobj = this
+            if (typeof braintree !== "undefined") {
+              alert('y')
+              braintree.setup(this.btAuth, "custom", {
+                id: "cardForm",
+                hostedFields: {
+                  number: {
+                    selector: "#card-number",
+                    placeholder: "4111 1111 1111 1111"
+                  },
+                  cvv: {
+                    selector: "#cvv",
+                    placeholder: "111"
+                  },
+                  expirationDate: {
+                    selector: "#expiration-date",
+                    placeholder: "MM/YY"
+                  },
+                  postalCode: {
+                    selector: "#postal-code",
+                    placeholder: "32323"
+                  },
+                  styles: {
+                    'input': {
+                      'font-size': '16px',
+                      'font-family': 'courier, monospace',
+                      'font-weight': 'lighter',
+                      'color': '#ccc'
+                    },
+                    ':focus': {
+                      'color': 'black'
+                    },
+                    '.valid': {
+                      'color': '#8bdda8'
+                    }
+                  }
+                },
+                onReady: function (integration) {
+                  checkout = integration
+                },
+                onPaymentMethodReceived: function (nonce) {
+                  Vue.http.post( 'doSponsor', {
+                    method:JSON.stringify(nonce),
+                    plan_id:postsobj.plan
+                  }).then( ( response ) => {
+                    MintUI.Toast({
+                      message: 'Your subscription was created - cancel any time from the Settings menu',
+                      iconClass: 'icon icon-error',
+                      duration: 2000
+                    })
+                  })
+                  checkout.teardown(function () {
+                    checkout = null
+                    postsobj.createHostedFields()
+                    postsobj.sponsorVisible = false
+                  })
+                }
+              })
+            }
+          },
+          doSponsor(nonce){
+            Vue.http.post( 'addPosts', {
+              recips:JSON.stringify(this.postto),
+              title : this.title,
+              expirehours: exp
+            }).then( ( response ) => {
+              this.selected = 'tab1'
+              this.getPosts()
+              this.title = ''
+              this.image = ''
+              this.postto = []
+              this.spinnerHidden = true
+              this.saveHidden = false
+              this.uploadHidden = false
+              this.groupsHidden = false
+            })
+            onPaymentMethodReceived
           },
           dropFeed(idx){
             Vue.http.post( 'dropFeed', {
@@ -905,6 +1043,26 @@
                 this[field] = response.body
                 this.imgHidden = false
                 this.uploadHidden = true
+              }
+            })
+          },
+          dropSponsor(idx){
+            var postsobj = this
+            MintUI.MessageBox({
+              title: 'Stop Subscription',
+              message: 'Are you sure?',
+              showCancelButton: true,
+              confirmButtonText: 'Stop Subscription',
+              cancelButtonText: 'Cancel'
+            }).then(action => {
+              if (action === 'confirm') {
+                this.spinnerHidden = false
+                Vue.http.post( 'delSponsor', {
+                  id:postsobj.subs[idx].id
+                }).then( ( response ) => {
+                  this.subs.splice( idx, 1 )
+                  this.spinnerHidden = true
+                })
               }
             })
           },
@@ -1076,6 +1234,35 @@
                 Add Post
               </mt-tab-item>
             </mt-tabbar>
+
+            <mt-popup v-model="sponsorVisible" position="middle">
+              <mt-header>
+                <a v-on:click="closeSponsor()" slot="left">
+                  <mt-button>X</mt-button>
+                </a>
+              </mt-header>
+              <mt-cell v-for="(artist, idx) in subs">
+                <mt-field v-model="artist.name"></mt-field>
+                <a v-on:click="dropSponsor(idx)">
+                  <mt-button>X</mt-button>
+                </a>
+              </mt-cell>
+              <form action="/" method="post" id="cardForm" >
+                <label class="hosted-fields--label" for="card-number">Card Number</label>
+                <div id="card-number" class="hosted-field"></div>
+                <label class="hosted-fields--label" for="expiration-date">Expiration Date</label>
+                <div id="expiration-date" class="hosted-field"></div>
+                <label class="hosted-fields--label" for="cvv">CVV</label>
+                <div id="cvv" class="hosted-field"></div>
+                <label class="hosted-fields--label" for="cvv">Postal Code</label>
+                <div id="postal-code" class="hosted-field"></div>
+                <mt-radio v-model="plan" :options="plans"></mt-radio>
+                <div class="button-container">
+                  <input type="submit" class="button button--small button--green" value="Submit" id="submit"/>
+                </div>
+                <label class="hosted-fields--label">Cancel any time from the Settings menu</label>
+              </form>
+            </mt-popup>
 
             <mt-popup v-model="feedsVisible" position="middle">
               <mt-header>
@@ -1793,6 +1980,55 @@
   </body>
   <script type="python" id="server">
 
+@app.route('/delSponsor', methods=['GET','POST'])
+def delSponsor():
+  result = gateway.subscription.cancel(request.form.get('id'))
+  return 'OK'
+
+@app.route('/doSponsor', methods=['GET','POST'])
+def doSponsor():
+  response = json.loads(request.form.get('method'))
+  curr = current_user()
+  collection = gateway.customer.search(
+    braintree.CustomerSearch.phone == curr['phone']
+  )
+  if len(list(collection.items)) > 0:
+    customer = list(collection.items)[0]
+  else:
+    collection = gateway.customer.search(
+      braintree.CustomerSearch.email == curr['email']
+    )
+    if len(list(collection.items)) > 0:
+      customer = list(collection.items)[0]
+  if not len(list(collection.items)) > 0:
+    result = gateway.customer.create({
+      "first_name": curr['name'],
+      "payment_method_nonce": response['nonce'],
+      "email": curr['email'],
+      "phone": curr['phone']
+    })
+    if result.is_success:
+      customer = result.customer
+    else:
+      print('FAIL ADDCST')
+  if not customer is None:
+    print('ADDING ' + customer.payment_methods[0].token)
+    print('PLAN ' + request.form.get('plan_id'))
+    result = gateway.subscription.create({
+      "payment_method_token": customer.payment_methods[0].token,
+      "plan_id": request.form.get('plan_id'),
+      "merchant_account_id":'Fleetcoder_instant'
+    })
+  else:
+    print('CUSET NONE')
+  if result.is_success:
+    print("success")
+  else:
+    print(result.errors)
+  return 'OK'
+
+
+
 @app.route('/doCode', methods=['GET','POST'])
 def doCode():
   item = get_one_by( 'connectcodes', request.form.get('code'), 'num' )
@@ -2204,7 +2440,27 @@ def getPosts():
       items.append(item)
     posts = posts + items
   #posts.sort(key=lambda p: p['published'], reverse=True)
-  return( json.dumps( [posts,grps,abils,user['code']] ) )
+  subs = []
+  tok = ''
+  if not os.getenv('BT_ID') is None:
+    tok = gateway.client_token.generate()
+    curr = current_user()
+    collection = gateway.customer.search(
+      braintree.CustomerSearch.phone == curr['phone']
+    )
+    if len(list(collection.items)) > 0:
+      customer = list(collection.items)[0]
+    else:
+      collection = gateway.customer.search(
+        braintree.CustomerSearch.email == curr['email']
+      )
+      if len(list(collection.items)) > 0:
+        customer = list(collection.items)[0]
+    if len(list(collection.items)) > 0:
+      for sub in customer.credit_cards[0].subscriptions:
+        if sub.status == 'Active':
+          subs.append({'name':'bills $3 on ' + str(sub.next_billing_date),'id':str(sub.id)})
+  return( json.dumps( [posts,grps,abils,user['code'],tok,subs] ) )
 
 @app.route('/dropFeed',methods=['GET','POST'])
 def dropFeed():
