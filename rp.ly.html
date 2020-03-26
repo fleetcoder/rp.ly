@@ -11,7 +11,6 @@
     <script type=text/javascript src=/file/vendor.0eb5480a7e9a156e90f2.js></script>
     <script type=text/javascript src=/file/app.be9945027a8323d84e7d.js></script>
     <script type=text/javascript src=/file/socket.io.js></script>
-    <script type=text/javascript src=/file/braintree.min.js></script>
     <link rel="apple-touch-icon-precomposed" sizes="57x57" href="/file/rply57.png" />
     <link rel="apple-touch-icon-precomposed" sizes="72x72" href="/file/rply72.png" />
     <link rel="apple-touch-icon-precomposed" sizes="114x114" href="/file/rply114.png" />
@@ -930,7 +929,6 @@
           createHostedFields() {
             var postsobj = this
             if (typeof braintree !== "undefined") {
-              alert('y')
               braintree.setup(this.btAuth, "custom", {
                 id: "cardForm",
                 hostedFields: {
