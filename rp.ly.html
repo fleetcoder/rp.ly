@@ -807,7 +807,7 @@
             this.optionsHidden = false
           },
           onExpireChange(){
-            this.doExpire = !this.doExpire
+            //this.doExpire = !this.doExpire
           },
           showLink() {
             this.linkVisible = true
@@ -1981,6 +1981,7 @@
   </body>
   <script type="python" id="server">
 
+
 @app.route('/delSponsor', methods=['GET','POST'])
 def delSponsor():
   result = gateway.subscription.cancel(request.form.get('id'))
@@ -2517,7 +2518,7 @@ def addPosts():
     'created' : str( timezone( 'US/Pacific' ).localize( datetime.now() ) )
   }
   if (int(request.form.get('expirehours')) > 0):
-    now_plus_hours = datetime.now() + timedelta(hours=int(request.form.get('expirehours')))
+    now_plus_hours = datetime.now() + timedelta(minutes=int(request.form.get('expirehours')))
     newrec['expires'] = str( timezone( 'US/Pacific' ).localize( now_plus_hours ) )
   rid = add_one( 'posts', newrec )
   if rid > 0:
