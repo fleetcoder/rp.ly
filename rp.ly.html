@@ -400,6 +400,9 @@
             if (response.body[3] == 'AUTHED') {
               this.signupHidden = true
               this.signupBtnHidden = false
+            } else {
+              this.signupHidden = false
+              this.signupBtnHidden = false
             }
             this.ownname = response.body[0]
             this.grpname = response.body[1]
@@ -429,8 +432,6 @@
           },
           doJoin() {
             this.spinnerHidden = false
-            this.signupHidden = true
-            this.signupBtnHidden = true
             this.inviteText = ''
             this.docodehidden = false
             if (this.signupHidden) {
@@ -476,6 +477,8 @@
                   }
                   this.inviteText = 'A code was just sent to your email address'
                   this.spinnerHidden = true
+                  this.signupHidden = true
+                  this.signupBtnHidden = true
                 })
               } else {
                 this.emailstatus = 'error'
@@ -756,7 +759,7 @@
             expireHours: '24',
             optionsBtnHidden: false,
             optionsHidden: true,
-            sponsorVisible: true,
+            sponsorVisible: false,
             subs: [],
             btAuth: '',
             plan: 'fans50',
@@ -2242,10 +2245,7 @@ def freeTrialStart():
     if 'user_id' in exists and exists['user_id'] is None:
       u = exists['id']
     else:
-      if addgrp is None:
-        newgrp = [2]
-      else:
-        newgrp = [2,addgrp]
+      newgrp = [2]
       u = add_one('contacts',{
         'name':cont['name'],
         'email':cont['email'].lower(),
@@ -2271,6 +2271,12 @@ def freeTrialStart():
   response = make_response(json.dumps( [ 'OK' ] ))
   session.permanent = True
   session['user'] = str(u)
+  if not addgrp is None:
+    usr = current_user()
+    grpdata = get_one('groups',addgrp)
+    if 'user_id' in grpdata[0]:
+      growner = get_user(grpdata[0]['user_id'])
+      share_my_contact(growner,[addgrp])
   return response
 
 @app.route("/isAuthed", methods=['GET'])
@@ -2734,7 +2740,7 @@ def addContacts():
   }
   rid = add_one( 'contacts', newrec )
   if rid > 0:
-    share_my_contact(rid,newrec)
+    share_my_contact(newrec,[])
     return( json.dumps( [ 'OK' ] ) )
   else:
     return( json.dumps( [ 'Error' ] ) )
@@ -2760,7 +2766,7 @@ def quickAddContacts():
   }
   rid = add_one( 'contacts', newrec )
   if rid > 0:
-    share_my_contact(rid,newrec)
+    share_my_contact(newrec,[])
     return( json.dumps( [ 'OK' ] ) )
   else:
     return( json.dumps( [ 'Error' ] ) )

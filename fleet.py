@@ -326,7 +326,7 @@ def get_parent(id):
             return con
   return rows[0]
 
-def share_my_contact(rid,newrec):
+def share_my_contact(newrec,grps):
   usr = []
   user = current_user()
   if len(newrec['phone']) > 0:
@@ -334,20 +334,24 @@ def share_my_contact(rid,newrec):
     usr = get_one_by('contacts',loginuser,'phone')
   if len(newrec['email']) > 0:
     loginuser = newrec['email']
-    usr = get_one_by('contacts',loginuser,'email')
+    usr = get_one_by('contacts',loginuser.lower(),'email')
   if len(usr) > 0:
     for u in usr:
       if u['user_id'] is None:
         contacts = get_one_by('contacts',u['id'],'user_id')
         exists = False
         for con in contacts:
-          if user['phone'] == con['phone'] or user['email'] == con['email']:
-            exists = True
+          if len(con['phone']) > 0:
+            if user['phone'] == con['phone']:
+              exists = True
+          if len(con['email']) > 0:
+            if user['email'] == con['email']:
+              exists = True
         if not exists:
           ra = randomword(6)
           copy = current_user()
           copy['user_id'] = u['id']
-          copy['groups'] = json.dumps([])
+          copy['groups'] = json.dumps(grps)
           copy['code'] = ra
           del copy['id']
           con = add_one( 'contacts', copy )
