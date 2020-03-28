@@ -193,7 +193,7 @@
                   }
                   this.sent = true
                   this.inputhidden = false
-                  this.sentcode = ' your email address'
+                  this.sentcode = 'A code was just sent to your email address'
                   this.loginHidden = true
                 })
               } else {
@@ -218,7 +218,7 @@
                   }
                   this.inputhidden = false
                   this.sent = true
-                  this.sentcode = ' your phone'
+                  this.sentcode = 'A code was just sent to your phone'
                   this.loginHidden = true
                  /* MintUI.Toast({
                     message: 'Check your text messages for a link!',
@@ -2245,7 +2245,7 @@ def freeTrialStart():
     if 'user_id' in exists and exists['user_id'] is None:
       u = exists['id']
     else:
-      newgrp = [2]
+      newgrp = []
       u = add_one('contacts',{
         'name':cont['name'],
         'email':cont['email'].lower(),
@@ -2774,11 +2774,11 @@ def quickAddContacts():
 @app.route('/doJoin',methods=['GET','POST'])
 def doJoin():
   if request.form.get("phone") == '' and request.form.get("email") == '':
-    items = get_one_by( 'groups', request.form.get('grp'), 'key' )
-    user = current_user()
-    groups = json.loads(user['groups'])
-    groups.append(items[0]['id'])
-    con = mod_one('contacts',{'groups': json.dumps(groups)},user['id'])
+    grpdata = get_one_by( 'groups', request.form.get('grp'), 'key' )
+    if 'user_id' in grpdata[0]:
+      addgrp = grpdata[0]['id']
+      growner = get_user(grpdata[0]['user_id'])
+      share_my_contact(growner,[addgrp])
     return 'OK'
   items = get_one_by( 'groups', request.form.get('grp'), 'key' )
   ra = randomword(6)
