@@ -2518,7 +2518,7 @@ def addPosts():
     'created' : str( timezone( 'US/Pacific' ).localize( datetime.now() ) )
   }
   if (int(request.form.get('expirehours')) > 0):
-    now_plus_hours = datetime.now() + timedelta(minutes=int(request.form.get('expirehours')))
+    now_plus_hours = datetime.now() + timedelta(hours=int(request.form.get('expirehours')))
     newrec['expires'] = str( timezone( 'US/Pacific' ).localize( now_plus_hours ) )
   rid = add_one( 'posts', newrec )
   if rid > 0:
