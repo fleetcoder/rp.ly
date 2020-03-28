@@ -340,13 +340,16 @@ def share_my_contact(newrec,grps):
       if u['user_id'] is None:
         contacts = get_one_by('contacts',u['id'],'user_id')
         exists = False
+        existscon = {}
         for con in contacts:
           if len(con['phone']) > 0:
             if user['phone'] == con['phone']:
               exists = True
+              existscon = con
           if len(con['email']) > 0:
             if user['email'] == con['email']:
               exists = True
+              existscon = con
         if not exists:
           ra = randomword(6)
           copy = current_user()
@@ -355,6 +358,13 @@ def share_my_contact(newrec,grps):
           copy['code'] = ra
           del copy['id']
           con = add_one( 'contacts', copy )
+        else:
+          if len(grps) > 0:
+            items = get_one( 'groups', grps[0] )
+            user = get_user(existscon['id'])
+            groups = json.loads(user['groups'])
+            groups.append(items[0]['id'])
+            con = mod_one('contacts',{'groups': json.dumps(groups)},existscon['id'])
   return
 
 def notify_photo(id,grpcode):
