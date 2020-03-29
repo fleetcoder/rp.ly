@@ -763,7 +763,15 @@
             subs: [],
             btAuth: '',
             plan: 'fans50',
-            plans:[{label: 'Great - $3.00 every 6 months',value: 'fans50'},{label: 'Super - $3.00 every month',value: 'fans300'}]
+            plans:[{label: '$3 / 6 months',value: 'fans50'},{label: '$3 / month',value: 'fans300'}],
+            cangrps: [],
+            sponsorGroup: '',
+            sponsorGroupName: '',
+            btLoaded:false,
+            formHidden: true,
+            btSpinnerHidden:false,
+            subsVisible: false,
+            subsHidden: true
           }
         },
         watch: {
@@ -797,8 +805,6 @@
           })
         },
         methods: {
-          addSponsor() {
-          },
           closeSponsor() {
             this.sponsorVisible = !this.sponsorVisible
           },
@@ -809,7 +815,20 @@
           onExpireChange(){
             //this.doExpire = !this.doExpire
           },
+          showSubs() {
+            this.linkVisible = false
+            this.subsVisible = true
+          },
           showLink() {
+            if (this.subs.length < 1) {
+              if (typeof braintree !== "undefined") {
+                Vue.http.post( 'btSubs', {
+                }).then( ( response ) => {
+                  this.subs = response.body[0]
+                  this.subsHidden = false
+                })
+              }
+            }
             this.linkVisible = true
           },
           aftRec(data){
@@ -872,9 +891,6 @@
                 this.items = response.body[0]
                 this.groups = response.body[1]
                 this.abilities = response.body[2]
-                if (this.abilities.indexOf("modSource Code") > -1) {
-                  this.editHidden = false
-                }
                 if (this.groups.length < 2) {
                   this.groupsHidden = true
                   this.postto = [this.groups[0].value]
@@ -887,14 +903,35 @@
                 if (this.$route.path == '/myContacts') {
                   //this.selected = 'tab2'
                 }
-                //this.btAuth = response.body[4]
                 this.createHostedFields()
-                console.log(response.body[4])
-                //this.subs = response.body[5]
+                for (var j = 0; j < response.body[4].length; j++) {
+                  var grid = response.body[4][j]
+                  Vue.http.post( 'joinGroup', {
+                    grp:grid
+                  }).then( ( response ) => {
+                    this.cangrps.push({gname:response.body[1] + '',glink:grid,guser:response.body[0]})
+                  })
+                }
               }
               this.spinnerHidden = true
             })
             
+          },
+          showSponsor(gr){
+            this.sponsorGroup = gr.glink
+            this.sponsorGroupName = 'Subscribe to ' + gr.gname
+            this.sponsorVisible = true
+            if (false === this.btLoaded) {
+              Vue.http.post( 'btSetup', {
+              }).then( ( response ) => {
+                this.btAuth = response.body[0]
+                this.subs = response.body[1]
+                this.createHostedFields()
+                this.btLoaded = true
+                this.formHidden = false
+                this.btSpinnerHidden = true
+              })
+            }
           },
           addPosts(){
             if (this.postto.length == 0) {
@@ -932,7 +969,7 @@
           },
           createHostedFields() {
             var postsobj = this
-            if (typeof braintree !== "undefined") {
+            if (typeof braintree !== "undefined" && this.btAuth != '') {
               braintree.setup(this.btAuth, "custom", {
                 id: "cardForm",
                 hostedFields: {
@@ -973,10 +1010,11 @@
                 onPaymentMethodReceived: function (nonce) {
                   Vue.http.post( 'doSponsor', {
                     method:JSON.stringify(nonce),
-                    plan_id:postsobj.plan
+                    plan_id:postsobj.plan,
+                    group_id:this.sponsorGroup
                   }).then( ( response ) => {
                     MintUI.Toast({
-                      message: 'Your subscription was created - cancel any time from the Settings menu',
+                      message: 'Thank you! Bills as FLEETCODER on your Credit Card Statement.',
                       iconClass: 'icon icon-error',
                       duration: 2000
                     })
@@ -1175,6 +1213,9 @@
                 }
               }
             }
+          },
+          closeSubs(){
+            this.subsVisible = false
           }
         },
         template: `
@@ -1183,6 +1224,7 @@
             <mt-tab-container v-model="selected">
               <mt-tab-container-item id="tab1">
                 <router-view v-bind:items="items" v-bind:editHidden="editHidden" @on-update-list="getPosts" @on-tabs-hidden="hideTabs" @on-show-menu="showLink" />
+                <mt-cell v-for="grp in cangrps" :title="'Do you love it when ' + grp.guser + ' posts in ' + grp.gname + '?'"><mt-button type="primary" size="small" v-on:click="showSponsor(grp)">Become a Sponsor</mt-button></mt-cell>
                 <mt-cell>&nbsp;</mt-cell>
               </mt-tab-container-item>
               <mt-tab-container-item id="tab2">
@@ -1243,13 +1285,9 @@
                   <mt-button>X</mt-button>
                 </a>
               </mt-header>
-              <mt-cell v-for="(artist, idx) in subs">
-                <mt-field v-model="artist.name"></mt-field>
-                <a v-on:click="dropSponsor(idx)">
-                  <mt-button>X</mt-button>
-                </a>
-              </mt-cell>
-              <form action="/" method="post" id="cardForm" >
+              <mt-cell :title="sponsorGroupName"></mt-cell>
+              <mt-spinner v-bind:class="{'is-hidden':btSpinnerHidden}" type="snake"></mt-spinner>
+              <form action="/" method="post" id="cardForm" v-bind:class="{'is-hidden':formHidden}">
                 <label class="hosted-fields--label" for="card-number">Card Number</label>
                 <div id="card-number" class="hosted-field"></div>
                 <label class="hosted-fields--label" for="expiration-date">Expiration Date</label>
@@ -1281,6 +1319,20 @@
               <mt-field placeholder="Paste a feed link..." v-model="addFeed"></mt-field>
               <mt-button v-on:click="doAddFeed()" size="large">Save Feed</mt-button>
             </mt-popup>
+
+            <mt-popup v-model="subsVisible" position="middle">
+              <mt-header>
+                <a v-on:click="closeSubs()" slot="left">
+                  <mt-button>X</mt-button>
+                </a>
+              </mt-header>
+              <mt-cell v-for="(artist, idx) in subs">
+                <mt-field v-model="artist.name"></mt-field>
+                <a v-on:click="dropSponsor(idx)">
+                  <mt-button>X</mt-button>
+                </a>
+              </mt-cell>
+            </mt-popup>
             
             <mt-popup v-model="linkVisible" position="middle">
               <mt-header>
@@ -1289,6 +1341,8 @@
                 </a>
               </mt-header>
               <mt-cell></mt-cell>
+              <mt-button v-bind:class="{'is-hidden':subsHidden}" v-on:click="showSubs()" size="large">Subscriptions</mt-button>
+              <mt-cell v-bind:class="{'is-hidden':subsHidden}"></mt-cell>
               <mt-cell title="Manage what you see in your rp.ly newsfeed by adding other rp ly sites or blogs"></mt-cell>
               <mt-button v-on:click="showFeeds()" size="large">Feeds</mt-button>
               <mt-cell></mt-cell>
@@ -1988,8 +2042,57 @@ def delSponsor():
   result = gateway.subscription.cancel(request.form.get('id'))
   return 'OK'
 
+@app.route('/btSubs', methods=['GET','POST'])
+def btSubs():
+  subs = []
+  if not os.getenv('BT_ID') is None:
+    curr = current_user()
+    collection = gateway.customer.search(
+      braintree.CustomerSearch.phone == curr['phone']
+    )
+    if len(list(collection.items)) > 0:
+      customer = list(collection.items)[0]
+    else:
+      collection = gateway.customer.search(
+        braintree.CustomerSearch.email == curr['email']
+      )
+      if len(list(collection.items)) > 0:
+        customer = list(collection.items)[0]
+    if len(list(collection.items)) > 0:
+      for sub in customer.credit_cards[0].subscriptions:
+        if sub.status == 'Active':
+          subs.append({'name':'bills $3 on ' + str(sub.next_billing_date),'id':str(sub.id)})
+  return( json.dumps( [subs] ) )
+
+@app.route('/btSetup', methods=['GET','POST'])
+def btSetup():
+  subs = []
+  tok = ''
+  if not os.getenv('BT_ID') is None:
+    tok = gateway.client_token.generate()
+    return( json.dumps( [tok,subs] ) )
+    curr = current_user()
+    collection = gateway.customer.search(
+      braintree.CustomerSearch.phone == curr['phone']
+    )
+    if len(list(collection.items)) > 0:
+      customer = list(collection.items)[0]
+    else:
+      collection = gateway.customer.search(
+        braintree.CustomerSearch.email == curr['email']
+      )
+      if len(list(collection.items)) > 0:
+        customer = list(collection.items)[0]
+    if len(list(collection.items)) > 0:
+      for sub in customer.credit_cards[0].subscriptions:
+        if sub.status == 'Active':
+          subs.append({'name':'bills $3 on ' + str(sub.next_billing_date),'id':str(sub.id)})
+  return( json.dumps( [tok,subs] ) )
+
 @app.route('/doSponsor', methods=['GET','POST'])
 def doSponsor():
+  print('SPONSORGING ' + request.form.get('group_id'))
+  return 'oOK'
   response = json.loads(request.form.get('method'))
   curr = current_user()
   collection = gateway.customer.search(
@@ -2367,6 +2470,10 @@ def getPosts():
   posts = []
   cangrps = []
   groups = json.loads(user['groups'])
+  ugrps = get_one_by('groups',user['id'],'user_id')
+  ugrids = []
+  for gr in ugrps:
+    ugrids.append(gr['id'])
   for item in recs:
     if can('get','posts',user,item):
       item['title'] = get_user(item['user_id'])['name'] + ': ' + item['title']
@@ -2380,6 +2487,10 @@ def getPosts():
       if item['image'] == '' and item['sound'] == '':
         item['textHidden'] = False
       posts.append(item)
+      pgrps = json.loads(item['groups'])
+      for pgrp in pgrps:
+        if not pgrp in cangrps and not pgrp in ugrids:
+          cangrps.append(pgrp)
     if expired(item):
       notify_del(item['user_id'])
       img = appdir + 'myfiles/' + item['image']
@@ -2389,11 +2500,6 @@ def getPosts():
       if os.path.exists(mus) and not item['sound'] == '':
         os.remove(mus)
       del_one( 'posts', item['id'] )
-    else:
-      pgrps = json.loads(item['groups'])
-      for pgrp in pgrps:
-        if not pgrp in cangrps and not pgrp in groups:
-          cangrps.append(pgrp)
   contacts = get_all('contacts')
   for cgrp in cangrps:
     newrec = {
@@ -2465,26 +2571,6 @@ def getPosts():
       items.append(item)
     posts = posts + items
   #posts.sort(key=lambda p: p['published'], reverse=True)
-  subs = []
-  tok = ''
-  if not os.getenv('BT_ID') is None:
-    tok = gateway.client_token.generate()
-    curr = current_user()
-    collection = gateway.customer.search(
-      braintree.CustomerSearch.phone == curr['phone']
-    )
-    if len(list(collection.items)) > 0:
-      customer = list(collection.items)[0]
-    else:
-      collection = gateway.customer.search(
-        braintree.CustomerSearch.email == curr['email']
-      )
-      if len(list(collection.items)) > 0:
-        customer = list(collection.items)[0]
-    if len(list(collection.items)) > 0:
-      for sub in customer.credit_cards[0].subscriptions:
-        if sub.status == 'Active':
-          subs.append({'name':'bills $3 on ' + str(sub.next_billing_date),'id':str(sub.id)})
   return( json.dumps( [posts,grps,abils,user['code'],cangrps] ) )
 
 @app.route('/dropFeed',methods=['GET','POST'])
@@ -2652,10 +2738,14 @@ def joinGroup():
     if int(session['user']) > 0:
       authd = 'AUTHED'
   items = get_one_by( 'groups', request.form.get('grp'), 'key' )
+  if not len(items) > 0:
+    items = get_one( 'groups', request.form.get('grp') )
   result = []
   if len(items) > 0:
     owner = get_user(items[0]['user_id'])
-    imgsrc = 'https://' + mydomain + '/grpFile?field=image&name=' + items[0]['image']
+    imgsrc = ''
+    if not items[0]['image'] is None:
+      imgsrc = 'https://' + mydomain + '/grpFile?field=image&name=' + items[0]['image']
     result = [owner['name'],items[0]['name'],imgsrc,authd]
   return json.dumps(result)
 
