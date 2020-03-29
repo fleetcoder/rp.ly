@@ -887,9 +887,10 @@
                 if (this.$route.path == '/myContacts') {
                   //this.selected = 'tab2'
                 }
-                this.btAuth = response.body[4]
+                //this.btAuth = response.body[4]
                 this.createHostedFields()
-                this.subs = response.body[5]
+                console.log(response.body[4])
+                //this.subs = response.body[5]
               }
               this.spinnerHidden = true
             })
@@ -2246,7 +2247,7 @@ def freeTrialStart():
     if 'user_id' in exists and exists['user_id'] is None:
       u = exists['id']
     else:
-      newgrp = []
+      newgrp = [2]
       u = add_one('contacts',{
         'name':cont['name'],
         'email':cont['email'].lower(),
@@ -2364,6 +2365,8 @@ def getPosts():
   user = current_user()
   recs = get_all('posts')
   posts = []
+  cangrps = []
+  groups = json.loads(user['groups'])
   for item in recs:
     if can('get','posts',user,item):
       item['title'] = get_user(item['user_id'])['name'] + ': ' + item['title']
@@ -2386,8 +2389,25 @@ def getPosts():
       if os.path.exists(mus) and not item['sound'] == '':
         os.remove(mus)
       del_one( 'posts', item['id'] )
+    else:
+      pgrps = json.loads(item['groups'])
+      for pgrp in pgrps:
+        if not pgrp in cangrps and not pgrp in groups:
+          cangrps.append(pgrp)
   contacts = get_all('contacts')
-  groups = json.loads(user['groups'])
+  for cgrp in cangrps:
+    newrec = {
+      'title' : 'this is an example <a href="/">link</a>',
+      'image' : '',
+      'sound' : '',
+      'groups' : '',
+      'user_id' : '',
+      'created' : str( timezone( 'US/Pacific' ).localize( datetime.now() ) ),
+      'imageHidden' : True,
+      'soundHidden' : True,
+      'textHidden' : False
+    }
+    #posts.append(newrec)
   abils = []
   grps = []
   for grp in groups:
@@ -2465,7 +2485,7 @@ def getPosts():
       for sub in customer.credit_cards[0].subscriptions:
         if sub.status == 'Active':
           subs.append({'name':'bills $3 on ' + str(sub.next_billing_date),'id':str(sub.id)})
-  return( json.dumps( [posts,grps,abils,user['code'],tok,subs] ) )
+  return( json.dumps( [posts,grps,abils,user['code'],cangrps] ) )
 
 @app.route('/dropFeed',methods=['GET','POST'])
 def dropFeed():
