@@ -1008,10 +1008,11 @@
                   checkout = integration
                 },
                 onPaymentMethodReceived: function (nonce) {
+                  
                   Vue.http.post( 'doSponsor', {
                     method:JSON.stringify(nonce),
                     plan_id:postsobj.plan,
-                    group_id:this.sponsorGroup
+                    group_id:postsobj.sponsorGroup
                   }).then( ( response ) => {
                     MintUI.Toast({
                       message: 'Thank you! Bills as FLEETCODER on your Credit Card Statement.',
@@ -2091,8 +2092,6 @@ def btSetup():
 
 @app.route('/doSponsor', methods=['GET','POST'])
 def doSponsor():
-  print('SPONSORGING ' + request.form.get('group_id'))
-  return 'oOK'
   response = json.loads(request.form.get('method'))
   curr = current_user()
   collection = gateway.customer.search(
@@ -2123,7 +2122,8 @@ def doSponsor():
     result = gateway.subscription.create({
       "payment_method_token": customer.payment_methods[0].token,
       "plan_id": request.form.get('plan_id'),
-      "merchant_account_id":'Fleetcoder_instant'
+      "merchant_account_id":'Fleetcoder_instant',
+      "id":randomword(6) + request.form.get('group_id')
     })
   else:
     print('CUSET NONE')
