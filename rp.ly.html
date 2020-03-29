@@ -771,7 +771,8 @@
             formHidden: true,
             btSpinnerHidden:false,
             subsVisible: false,
-            subsHidden: true
+            subsHidden: true,
+            settingsSpinnerHidden:true
           }
         },
         watch: {
@@ -822,10 +823,12 @@
           showLink() {
             if (this.subs.length < 1) {
               if (typeof braintree !== "undefined") {
+                this.settingsSpinnerHidden = false
                 Vue.http.post( 'btSubs', {
                 }).then( ( response ) => {
                   this.subs = response.body[0]
                   this.subsHidden = false
+                  this.settingsSpinnerHidden = true
                 })
               }
             }
@@ -903,7 +906,6 @@
                 if (this.$route.path == '/myContacts') {
                   //this.selected = 'tab2'
                 }
-                this.createHostedFields()
                 for (var j = 0; j < response.body[4].length; j++) {
                   var grid = response.body[4][j]
                   Vue.http.post( 'joinGroup', {
@@ -1328,10 +1330,11 @@
                 </a>
               </mt-header>
               <mt-cell v-for="(artist, idx) in subs">
-                <mt-field v-model="artist.name"></mt-field>
-                <a v-on:click="dropSponsor(idx)">
-                  <mt-button>X</mt-button>
-                </a>
+                <mt-cell :title="artist.name">
+                  <a v-on:click="dropSponsor(idx)">
+                    <mt-button>X</mt-button>
+                  </a>
+                </mt-cell>
               </mt-cell>
             </mt-popup>
             
@@ -1342,6 +1345,7 @@
                 </a>
               </mt-header>
               <mt-cell></mt-cell>
+              <mt-spinner v-bind:class="{'is-hidden':settingsSpinnerHidden}" type="snake"></mt-spinner>
               <mt-button v-bind:class="{'is-hidden':subsHidden}" v-on:click="showSubs()" size="large">Subscriptions</mt-button>
               <mt-cell v-bind:class="{'is-hidden':subsHidden}"></mt-cell>
               <mt-cell title="Manage what you see in your rp.ly newsfeed by adding other rp ly sites or blogs"></mt-cell>
@@ -2062,7 +2066,14 @@ def btSubs():
     if len(list(collection.items)) > 0:
       for sub in customer.credit_cards[0].subscriptions:
         if sub.status == 'Active':
-          subs.append({'name':'bills $3 on ' + str(sub.next_billing_date),'id':str(sub.id)})
+          owner = ''
+          grpn = ''
+          grpid = ''.join(x for x in sub.id if x.isdigit())
+          items = get_one( 'groups', grpid )
+          if len(items) > 0:
+            owner = get_user(items[0]['user_id'])
+            grpn = items[0]['name']
+          subs.append({'name':owner['name'] + '/' + grpn + ' renews ' + str(sub.next_billing_date),'id':str(sub.id)})
   return( json.dumps( [subs] ) )
 
 @app.route('/btSetup', methods=['GET','POST'])
