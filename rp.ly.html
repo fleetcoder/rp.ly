@@ -2066,7 +2066,7 @@ def btSubs():
     if len(list(collection.items)) > 0:
       for sub in customer.credit_cards[0].subscriptions:
         if sub.status == 'Active':
-          owner = ''
+          owner = {'name':''}
           grpn = ''
           grpid = ''.join(x for x in sub.id if x.isdigit())
           items = get_one( 'groups', grpid )
