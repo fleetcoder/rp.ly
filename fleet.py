@@ -98,10 +98,8 @@ def group(grpid):
   ht = ht + '  </head>' + "\n"
   #ht = ht + '  <body>Group Page</body>' + "\n"
   #ht = ht + '</html>' + "\n"
-  global fleet
-  if not os.getenv('DEV_IP') is None:
-    fleet = open(myapp).read()
-    fleet = fleet.replace('rp.ly',mydomain)
+  fleet = open(myapp).read()
+  fleet = fleet.replace('rp.ly',mydomain)
   fleet = fleet.replace('</head>',ht)
   response = make_response(fleet,200)
   return response
@@ -128,10 +126,8 @@ def groupuser(grpid):
   ht = ht + '  </head>' + "\n"
   #ht = ht + '  <body>Group Page</body>' + "\n"
   #ht = ht + '</html>' + "\n"
-  global fleet
-  if not os.getenv('DEV_IP') is None:
-    fleet = open(myapp).read()
-    fleet = fleet.replace('rp.ly',mydomain)
+  fleet = open(myapp).read()
+  fleet = fleet.replace('rp.ly',mydomain)
   fleet = fleet.replace('</head>',ht)
   response = make_response(fleet,200)
   return response
