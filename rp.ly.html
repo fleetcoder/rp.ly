@@ -2672,7 +2672,18 @@ def addPosts():
       mod_one( 'groups', newobj, grpdata[0]['id'] )
     session['image'] = ''
     session['sound'] = ''
-    sendcomet(recips,newrec)
+    item = newrec
+    item['title'] = current_user()['name'] + ': ' + item['title']
+    item['imageHidden'] = False
+    item['textHidden'] = True
+    if item['image'] == '':
+      item['imageHidden'] = True
+    item['soundHidden'] = False
+    if item['sound'] == '':
+      item['soundHidden'] = True
+    if item['image'] == '' and item['sound'] == '':
+      item['textHidden'] = False
+    sendcomet(recips,item)
     return response
   else:
     return( json.dumps( [ 'Error' ] ) )
