@@ -2139,6 +2139,8 @@ def doSponsor():
   else:
     print('CUSET NONE')
   if result.is_success:
+    if not customer is None:
+      notify_sponsor( request.form.get('plan_id'), request.form.get('group_id'), curr['name'] )
     print("success")
   else:
     print(result.errors)

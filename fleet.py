@@ -363,6 +363,32 @@ def share_my_contact(newrec,grps):
             con = mod_one('contacts',{'groups': json.dumps(groups)},existscon['id'])
   return
 
+def notify_sponsor(plan,addgrp,name):
+  grpdata = get_one('groups',addgrp)
+  if 'user_id' in grpdata[0]:
+    cont = get_user(grpdata[0]['user_id'])
+    if len(cont['phone']) > 0:
+      client = Client(twilio_id, twilio_token)
+      rl = name + " bought a " + plan + " subscription on " + mydomain
+      message = client.messages.create(
+        body=rl,
+        from_='+1' + os.getenv('TWILIO_FROM'),
+        to=cont['phone']
+      )
+      print('notify PAY ' + cont['phone'], file=sys.stderr)
+    if len(cont['email']) > 0:
+      owner = current_user()
+      em = cont['email']
+      message = Mail(
+        from_email=owner['name'] + ' via ' + mydomain + ' <' + os.getenv('SENDGRID_FROM') + '>',
+        to_emails=em,
+        subject=name + " bought a " + plan + " subscription on " + mydomain,
+        html_content='<strong><p>' + name + " bought a " + plan + " subscription on " + mydomain + '</p></strong>')
+      sg = SendGridAPIClient(sendgrid_token)
+      response = sg.send(message)
+      print('notify ' + em, file=sys.stderr)
+  return True
+
 def notify_photo(id,grpcode):
   num = randint(100, 999)
   cont = get_user(id)
