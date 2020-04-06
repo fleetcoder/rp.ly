@@ -911,7 +911,7 @@
                   Vue.http.post( 'joinGroup', {
                     grp:grid
                   }).then( ( response ) => {
-                    this.cangrps.push({gname:response.body[1] + '',glink:grid,guser:response.body[0]})
+                    this.cangrps.push({gname:response.body[1] + '',glink:response.body[4],guser:response.body[0]})
                   })
                 }
               }
@@ -2770,7 +2770,7 @@ def joinGroup():
     imgsrc = ''
     if not items[0]['image'] is None:
       imgsrc = 'https://' + mydomain + '/grpFile?field=image&name=' + items[0]['image']
-    result = [owner['name'],items[0]['name'],imgsrc,authd]
+    result = [owner['name'],items[0]['name'],imgsrc,authd,items[0]['id']]
   return json.dumps(result)
 
 @app.route('/addGroups',methods=['GET','POST'])
