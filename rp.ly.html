@@ -1227,7 +1227,7 @@
             <mt-tab-container v-model="selected">
               <mt-tab-container-item id="tab1">
                 <router-view v-bind:items="items" v-bind:editHidden="editHidden" @on-update-list="getPosts" @on-tabs-hidden="hideTabs" @on-show-menu="showLink" />
-                <mt-cell v-for="grp in cangrps" :title="'Do you love it when ' + grp.guser + ' posts in ' + grp.gname + '?'"><mt-button type="primary" size="small" v-on:click="showSponsor(grp.id)">Become a Sponsor</mt-button></mt-cell>
+                <mt-cell v-for="grp in cangrps" :title="'Do you love it when ' + grp.guser + ' posts in ' + grp.gname + '?'"><mt-button type="primary" size="small" v-on:click="showSponsor(grp)">Become a Sponsor</mt-button></mt-cell>
                 <mt-cell>&nbsp;</mt-cell>
               </mt-tab-container-item>
               <mt-tab-container-item id="tab2">
