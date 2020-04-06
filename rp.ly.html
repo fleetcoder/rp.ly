@@ -601,7 +601,7 @@
             ]">
               <p class="caption" v-text="item.title" v-bind:class="{'is-hidden':item.textHidden}"></p>
               <figure class="imagecell" v-bind:class="{'is-hidden':item.imageHidden}">
-                <img v-on:click="openImage(idx)" class="feedimg" :src="imageLink(item)" />
+                <img class="feedimg" :src="imageLink(item)" />
                 <figcaption class="caption" v-text="item.title"></figcaption>
               </figure>
               <audio-player :src="'myFile?field=sound&name=' + item.sound" v-bind:class="{'is-hidden':item.soundHidden}" />
