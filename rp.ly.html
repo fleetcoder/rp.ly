@@ -132,8 +132,40 @@
         padding: 1.875em;
       }
     </style>
-    
+    <style lang="scss">
+      .dropbox {
+        outline: 2px dashed grey;
+        outline-offset: -10px;
+        background: lightcyan;
+        color: dimgray;
+        padding: 10px 10px;
+        min-height: 200px;
+        position: relative;
+        cursor: pointer;
+      }
+
+      .input-file {
+        opacity: 0;
+        width: 100%;
+        height: 200px;
+        position: absolute;
+        cursor: pointer;
+      }
+
+      .dropbox:hover {
+        background: lightblue;
+      }
+
+      .dropbox p {
+        font-size: 1.2em;
+        text-align: center;
+        padding: 50px 0;
+      }
+    </style>
     <script id="client">
+      
+      const STATUS_INITIAL = 0, STATUS_SAVING = 1, STATUS_SUCCESS = 2, STATUS_FAILED = 3;
+      
       const freeTrial = {
         data() {
           return {
@@ -723,7 +755,7 @@
         data() {
           return {
             spinnerHidden : true,
-            uploadTo : 'uploadFile',
+            uploadTo : 'uploadMulti',
             selected : 'tab1',
             items : [],
             tabsHidden: false,
@@ -772,7 +804,25 @@
             btSpinnerHidden:false,
             subsVisible: false,
             subsHidden: true,
-            settingsSpinnerHidden:true
+            settingsSpinnerHidden:true,
+            uploadedFiles: [],
+            uploadError: null,
+            currentStatus: null,
+            uploadFieldName: 'photos'
+          }
+        },
+        computed: {
+          isInitial() {
+            return this.currentStatus === STATUS_INITIAL;
+          },
+          isSaving() {
+            return this.currentStatus === STATUS_SAVING;
+          },
+          isSuccess() {
+            return this.currentStatus === STATUS_SUCCESS;
+          },
+          isFailed() {
+            return this.currentStatus === STATUS_FAILED;
           }
         },
         watch: {
@@ -1219,7 +1269,36 @@
           },
           closeSubs(){
             this.subsVisible = false
+          },
+          reset() {
+            this.currentStatus = STATUS_INITIAL;
+            this.uploadedFiles = [];
+            this.uploadError = null;
+          },
+          save(formData) {
+            this.currentStatus = STATUS_SAVING;
+            this.$http.post ( this.uploadTo + '?field=image', formData ).then(function (x) {
+              this.currentStatus = STATUS_SUCCESS;
+            })
+          },
+          filesChange(fieldName, fileList) {
+            // handle file changes
+            const formData = new FormData();
+
+            if (!fileList.length) return;
+
+            Array
+              .from(Array(fileList.length).keys())
+              .map(x => {
+                formData.append(fieldName, fileList[x], fileList[x].name);
+              });
+
+            // save it
+            this.save(formData);
           }
+        },
+        mounted() {
+          this.reset();
         },
         template: `
           <div>
@@ -1251,7 +1330,21 @@
                 <mt-header title="rp.ly"></mt-header>
                 <mt-field v-bind:class="{'is-hidden':!textHidden}" placeholder="Title.." v-model="title"></mt-field>
                 <mt-cell v-bind:class="{'is-hidden':imgHidden}" title=""><img class="img" :src="'myFile?staged=1&field=image&name=' + image" /></mt-cell>
-                <file-upload v-bind:class="{'is-hidden':uploadHidden}" btn-label="Image" @change="stagedUpload('image')" :url="uploadTo + '?field=image'"></file-upload>
+                <mt-cell>
+                  <form enctype="multipart/form-data" novalidate v-if="isInitial || isSaving">
+                    <h1>Upload images</h1>
+                    <div class="dropbox">
+                      <input type="file" multiple :name="uploadFieldName" :disabled="isSaving" @change="filesChange($event.target.name, $event.target.files); fileCount = $event.target.files.length"
+                        accept="image/*" class="input-file">
+                        <p v-if="isInitial">
+                          Drag your file(s) here to begin<br> or click to browse
+                        </p>
+                        <p v-if="isSaving">
+                          Uploading {{ fileCount }} files...
+                        </p>
+                    </div>
+                  </form>
+                </mt-cell>
                 <audio-recorder v-bind:class="{'is-hidden':!audioHidden}" :upload-url="uploadTo + '?field=sound'" :after-recording="aftRec" />
                 <mt-checklist v-bind:class="{'is-hidden':groupsHidden}"
                   v-model="postto"
@@ -2626,69 +2719,74 @@ def addFeeds():
 
 @app.route('/addPosts',methods=['GET','POST'])
 def addPosts():
+  saveImage = [saveFile( 'image' )]
+  senditems = []
+  if 'imagemulti' in session:
+    saveImage = json.loads(session['imagemulti'])
   if not can('add','posts',current_user()):
     return( json.dumps( [ 'Error' ] ) )
-  newrec = {
-    'title' : request.form.get('title'),
-    'image' : saveFile( 'image' ),
-    'sound' : saveFile( 'sound' ),
-    'groups' : request.form.get('recips'),
-    'user_id' : session['user'],
-    'created' : str( timezone( 'US/Pacific' ).localize( datetime.now() ) )
-  }
-  if (int(request.form.get('expirehours')) > 0):
-    now_plus_hours = datetime.now() + timedelta(hours=int(request.form.get('expirehours')))
-    newrec['expires'] = str( timezone( 'US/Pacific' ).localize( now_plus_hours ) )
-  rid = add_one( 'posts', newrec )
-  if rid > 0:
-    dt = timezone( 'US/Pacific' ).localize( datetime.now() )
-    newrec['id'] = rid
-    newrec['title'] = current_user()['name'] + ': ' + newrec['title']
-    contacts = get_all('contacts')
-    recips = []
-    for con in contacts:
-      if can('get','posts',con,newrec):
-        grp = [value for value in json.loads(request.form.get('recips')) if value in json.loads(con['groups'])][0]
-        grpdata = get_one('groups',grp)
-        if not 'last_notif' in grpdata[0] or grpdata[0]['last_notif'] == None:
-          rid = add_one( 'groups', {'last_notif':''} )
-          if rid > 0:
-            del_one('groups',rid)
-        if not 'key' in grpdata[0] or grpdata[0]['key'] == None:
-          newobj = { 'key' : randomword(8) }
-          mod_one( 'groups', newobj, grpdata[0]['id'] )
-          grpdata[0]['key'] = newobj['key']
-        if not 'last_notif' in grpdata[0] or grpdata[0]['last_notif'] == None:
-          newobj = { 'last_notif' : str( timezone( 'US/Pacific' ).localize( datetime.now() - timedelta(hours=25) ) ) }
-          mod_one( 'groups', newobj, grpdata[0]['id'] )
-          grpdata[0]['last_notif'] = newobj['last_notif']
-        from dateutil import tz
-        tzinfos = {"-08:00": tz.gettz('US/Pacific')}
-        dt = parser.parse(grpdata[0]['last_notif'], tzinfos=tzinfos) + timedelta(hours=24)
-        if dt < timezone( 'US/Pacific' ).localize( datetime.now() ):
-          notify_photo( con['id'], grpdata[0]['key'] )
-        recips.append( con['id'] )
-    response = make_response(json.dumps( [ 'OK' ] ))
-    if dt < timezone( 'US/Pacific' ).localize( datetime.now() ):
-      newobj = { 'last_notif' : str( timezone( 'US/Pacific' ).localize( datetime.now() ) ) }
-      mod_one( 'groups', newobj, grpdata[0]['id'] )
-    session['image'] = ''
-    session['sound'] = ''
-    item = newrec
-    item['title'] = current_user()['name'] + ': ' + item['title']
-    item['imageHidden'] = False
-    item['textHidden'] = True
-    if item['image'] == '':
-      item['imageHidden'] = True
-    item['soundHidden'] = False
-    if item['sound'] == '':
-      item['soundHidden'] = True
-    if item['image'] == '' and item['sound'] == '':
-      item['textHidden'] = False
+  for savedImage in saveImage:
+    newrec = {
+      'title' : request.form.get('title'),
+      'image' : savedImage,
+      'sound' : saveFile( 'sound' ),
+      'groups' : request.form.get('recips'),
+      'user_id' : session['user'],
+      'created' : str( timezone( 'US/Pacific' ).localize( datetime.now() ) )
+    }
+    if (int(request.form.get('expirehours')) > 0):
+      now_plus_hours = datetime.now() + timedelta(hours=int(request.form.get('expirehours')))
+      newrec['expires'] = str( timezone( 'US/Pacific' ).localize( now_plus_hours ) )
+    rid = add_one( 'posts', newrec )
+    if rid > 0:
+      dt = timezone( 'US/Pacific' ).localize( datetime.now() )
+      newrec['id'] = rid
+      newrec['title'] = current_user()['name'] + ': ' + newrec['title']
+      contacts = get_all('contacts')
+      recips = []
+      for con in contacts:
+        if can('get','posts',con,newrec):
+          grp = [value for value in json.loads(request.form.get('recips')) if value in json.loads(con['groups'])][0]
+          grpdata = get_one('groups',grp)
+          if not 'last_notif' in grpdata[0] or grpdata[0]['last_notif'] == None:
+            rid = add_one( 'groups', {'last_notif':''} )
+            if rid > 0:
+              del_one('groups',rid)
+          if not 'key' in grpdata[0] or grpdata[0]['key'] == None:
+            newobj = { 'key' : randomword(8) }
+            mod_one( 'groups', newobj, grpdata[0]['id'] )
+            grpdata[0]['key'] = newobj['key']
+          if not 'last_notif' in grpdata[0] or grpdata[0]['last_notif'] == None:
+            newobj = { 'last_notif' : str( timezone( 'US/Pacific' ).localize( datetime.now() - timedelta(hours=25) ) ) }
+            mod_one( 'groups', newobj, grpdata[0]['id'] )
+            grpdata[0]['last_notif'] = newobj['last_notif']
+          from dateutil import tz
+          tzinfos = {"-08:00": tz.gettz('US/Pacific')}
+          dt = parser.parse(grpdata[0]['last_notif'], tzinfos=tzinfos) + timedelta(hours=24)
+          if dt < timezone( 'US/Pacific' ).localize( datetime.now() ):
+            notify_photo( con['id'], grpdata[0]['key'] )
+          recips.append( con['id'] )
+      if dt < timezone( 'US/Pacific' ).localize( datetime.now() ):
+        newobj = { 'last_notif' : str( timezone( 'US/Pacific' ).localize( datetime.now() ) ) }
+        mod_one( 'groups', newobj, grpdata[0]['id'] )
+      session['image'] = ''
+      session['sound'] = ''
+      item = newrec
+      item['title'] = current_user()['name'] + ': ' + item['title']
+      item['imageHidden'] = False
+      item['textHidden'] = True
+      if item['image'] == '':
+        item['imageHidden'] = True
+      item['soundHidden'] = False
+      if item['sound'] == '':
+        item['soundHidden'] = True
+      if item['image'] == '' and item['sound'] == '':
+        item['textHidden'] = False
+      senditems.append(item)
+  response = make_response(json.dumps( [ 'OK' ] ))
+        for item in senditems:
     sendcomet(recips,item)
-    return response
-  else:
-    return( json.dumps( [ 'Error' ] ) )
+  return response
 
 @app.route('/modPosts',methods=['GET','POST'])
 def modPosts():
@@ -3028,51 +3126,46 @@ def delContacts():
   else:
     return( json.dumps( [ 'Error' ] ) )
 
-@app.route('/uploadFile',methods=['GET','POST'])
-def uploadFile():
+@app.route('/uploadMulti',methods=['GET','POST'])
+def uploadMulti():
   filedata = {}
+  filenames = []
   if not os.path.exists(appdir + 'myfiles'):
     os.makedirs(appdir + 'myfiles')
   if request.method == 'POST':
-    if (sys.getsizeof(request.get_data()) > 5000):
-      fi = tempfile.NamedTemporaryFile(delete=False)
-      f = open(fi.name, 'w+b')
-      f.write(request.get_data())
-      f.close()
-      filedata['tmp_name'] = fi.name
-      filedata['name'] = time.strftime("%d_%m_%Y_%H_%M_%S_") + '.mp3'
-    if 'file' in request.files:
-      file = request.files['file']
-      if not file.filename == '':
+    if not request.files.getlist('photos') is None:
+      files = request.files.getlist('photos')
+      for file in files:
         if file and allowed_file(file.filename):
           fi = tempfile.NamedTemporaryFile(delete=False)
           file.save(fi.name)
           filedata['tmp_name'] = fi.name
           filedata['name'] = file.filename
-  if 'name' in filedata:
-    fname = time.strftime("%Y%m%d-%H%M%S") + filedata['name']
-    filepath = appdir + 'myfiles/' + fname
-    copyfile(filedata['tmp_name'], filepath)
-    if not (filepath[-3:] == 'mp3'):
-      try:
-        image=Image.open(filepath)
-        for orientation in ExifTags.TAGS.keys():
-          if ExifTags.TAGS[orientation]=='Orientation':
-            break
-        exif=dict(image._getexif().items())
-        if exif[orientation] == 3:
-          image=image.rotate(180, expand=True)
-        elif exif[orientation] == 6:
-          image=image.rotate(270, expand=True)
-        elif exif[orientation] == 8:
-          image=image.rotate(90, expand=True)
-        image.save(filepath)
-        image.close()
-      except (AttributeError, KeyError, IndexError):
-        # cases: image don't have getexif
-        pass
+          if 'name' in filedata:
+            fname = time.strftime("%Y%m%d-%H%M%S") + filedata['name']
+            filepath = appdir + 'myfiles/' + fname
+            filenames.append(fname)
+            copyfile(filedata['tmp_name'], filepath)
+            if not (filepath[-3:] == 'mp3'):
+              try:
+                image=Image.open(filepath)
+                for orientation in ExifTags.TAGS.keys():
+                  if ExifTags.TAGS[orientation]=='Orientation':
+                    break
+                exif=dict(image._getexif().items())
+                if exif[orientation] == 3:
+                  image=image.rotate(180, expand=True)
+                elif exif[orientation] == 6:
+                  image=image.rotate(270, expand=True)
+                elif exif[orientation] == 8:
+                  image=image.rotate(90, expand=True)
+                image.save(filepath)
+                image.close()
+              except (AttributeError, KeyError, IndexError):
+                # cases: image don't have getexif
+                pass
     response = make_response(json.dumps( [ 'OK' ] ))
-    session[request.args.get('field')] = fname
+    session[request.args.get('field') + 'multi'] = json.dumps(filenames)
     return response
   return 'OK'
 
