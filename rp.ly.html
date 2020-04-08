@@ -2784,7 +2784,7 @@ def addPosts():
         item['textHidden'] = False
       senditems.append(item)
   response = make_response(json.dumps( [ 'OK' ] ))
-        for item in senditems:
+  for item in senditems:
     sendcomet(recips,item)
   return response
 
