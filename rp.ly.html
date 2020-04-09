@@ -635,8 +635,9 @@
               <figure class="imagecell" v-bind:class="{'is-hidden':item.imageHidden}">
                 <img class="feedimg" :src="imageLink(item)" />
                 <figcaption class="caption" v-text="item.title"></figcaption>
+                <audio-player :src="'myFile?field=sound&name=' + item.sound" v-bind:class="{'is-hidden':item.soundHidden}" />
               </figure>
-              <audio-player :src="'myFile?field=sound&name=' + item.sound" v-bind:class="{'is-hidden':item.soundHidden}" />
+              <audio-player v-if="item.imageHidden" :src="'myFile?field=sound&name=' + item.sound" v-bind:class="{'is-hidden':item.soundHidden}" />
             </mt-cell-swipe>
           </div>`
       }
@@ -1345,7 +1346,7 @@
                     </div>
                   </form>
                 </mt-cell>
-                <audio-recorder v-bind:class="{'is-hidden':!audioHidden}" :upload-url="uploadTo + '?field=sound'" :after-recording="aftRec" />
+                <audio-recorder v-bind:class="{'is-hidden':!audioHidden}" :upload-url="'uploadFile?field=sound'" :after-recording="aftRec" />
                 <mt-checklist v-bind:class="{'is-hidden':groupsHidden}"
                   v-model="postto"
                   :options="groups"
@@ -2218,19 +2219,13 @@ def doSponsor():
     })
     if result.is_success:
       customer = result.customer
-    else:
-      print('FAIL ADDCST')
   if not customer is None:
-    print('ADDING ' + customer.payment_methods[0].token)
-    print('PLAN ' + request.form.get('plan_id'))
     result = gateway.subscription.create({
       "payment_method_token": customer.payment_methods[0].token,
       "plan_id": request.form.get('plan_id'),
       "merchant_account_id":'Fleetcoder_instant',
       "id":randomword(6) + request.form.get('group_id')
     })
-  else:
-    print('CUSET NONE')
   if result.is_success:
     if not customer is None:
       notify_sponsor( request.form.get('plan_id'), request.form.get('group_id'), curr['name'] )
@@ -2721,13 +2716,15 @@ def addFeeds():
 def addPosts():
   saveImage = [saveFile( 'image' )]
   senditems = []
-  if 'imagemulti' in session:
-    saveImage = json.loads(session['imagemulti'])
+  imageupl = saveFile('imagemulti')
+  title = request.form.get('title')
+  if len(imageupl) > 0:
+    saveImage = json.loads(imageupl)
   if not can('add','posts',current_user()):
     return( json.dumps( [ 'Error' ] ) )
   for savedImage in saveImage:
     newrec = {
-      'title' : request.form.get('title'),
+      'title' : title,
       'image' : savedImage,
       'sound' : saveFile( 'sound' ),
       'groups' : request.form.get('recips'),
@@ -2769,8 +2766,6 @@ def addPosts():
       if dt < timezone( 'US/Pacific' ).localize( datetime.now() ):
         newobj = { 'last_notif' : str( timezone( 'US/Pacific' ).localize( datetime.now() ) ) }
         mod_one( 'groups', newobj, grpdata[0]['id'] )
-      session['image'] = ''
-      session['sound'] = ''
       item = newrec
       item['title'] = current_user()['name'] + ': ' + item['title']
       item['imageHidden'] = False
@@ -2783,6 +2778,10 @@ def addPosts():
       if item['image'] == '' and item['sound'] == '':
         item['textHidden'] = False
       senditems.append(item)
+      clearSession('sound')
+      title = ''
+  clearSession('image')
+  clearSession('imagemulti')
   response = make_response(json.dumps( [ 'OK' ] ))
   for item in senditems:
     sendcomet(recips,item)
@@ -3170,7 +3169,7 @@ def uploadFile():
         # cases: image don't have getexif
         pass
     response = make_response(json.dumps( [ 'OK' ] ))
-    session[request.args.get('field')] = fname
+    setSession(request.args.get('field'),fname)
     return response
   return 'OK'
 
@@ -3213,16 +3212,13 @@ def uploadMulti():
                 # cases: image don't have getexif
                 pass
     response = make_response(json.dumps( [ 'OK' ] ))
-    session[request.args.get('field') + 'multi'] = json.dumps(filenames)
+    setSession('imagemulti',json.dumps(filenames))
     return response
   return 'OK'
 
 @app.route('/stagedFile',methods=['GET','POST'])
 def stagedFile():
-  if request.args.get('field') in session:
-    return(session[request.args.get('field')])
-  else:
-    return('Error')
+  return(saveFile(request.args.get('field')))
 
 @app.route('/grpFile',methods=['GET','POST'])
 def grpFile():
@@ -3239,8 +3235,8 @@ def grpFile():
 @app.route('/myFile',methods=['GET','POST'])
 def myFile():
   thefile = False
-  if request.args.get('field') in session and not request.args.get('staged') is None:
-    thefile = appdir + 'myfiles/' + session[request.args.get('field')]
+  if request.args.get('staged') is None:
+    thefile = appdir + 'myfiles/' + saveFile(request.args.get('field'))
   else:
     item = get_one_by( 'posts', request.args.get('name'), request.args.get('field') )
     if len(item) > 0:

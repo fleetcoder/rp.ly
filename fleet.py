@@ -148,12 +148,28 @@ def randomword(length):
    return ''.join(random.choice(letters) for i in range(length))
 
 def saveFile(field):
-  if field in session:
-    save = session[field]
-    #del request.cookies[field]
-    #setcookie(json.dumps(request.cookies))
+  curr = current_user()
+  sess = get_one_by('sessions',field + str(curr['id']),'field')
+  if len(sess) > 0:
+    save = sess[0]['data']
     return save
   return ''
+
+def setSession(field,data):
+  curr = current_user()
+  sess = get_one_by('sessions',field + str(curr['id']),'field')
+  if len(sess) > 0:
+    mod_one('sessions',{'data':data},sess[0]['id'])
+  else:
+    add_one('sessions',{'field':field + str(curr['id']),'data':data})
+  return True
+
+def clearSession(field):
+  curr = current_user()
+  sess = get_one_by('sessions',field + str(curr['id']),'field')
+  if len(sess) > 0:
+    mod_one('sessions',{'data':''},sess[0]['id'])
+  return True
 
 class FleetParser(HTMLParser):
   def __init__(self):
@@ -623,6 +639,7 @@ if not os.path.exists('sqlite.db'):
     'user_id':0,
     'created':str(datetime.now())
   })
+  add_one('sessions',{'field':'','data':''})
   print('CREATED DB')
 
 abilities = []
