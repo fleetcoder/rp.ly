@@ -3235,7 +3235,7 @@ def grpFile():
 @app.route('/myFile',methods=['GET','POST'])
 def myFile():
   thefile = False
-  if request.args.get('staged') is None:
+  if not request.args.get('staged') is None:
     thefile = appdir + 'myfiles/' + saveFile(request.args.get('field'))
   else:
     item = get_one_by( 'posts', request.args.get('name'), request.args.get('field') )
