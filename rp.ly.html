@@ -3126,6 +3126,54 @@ def delContacts():
   else:
     return( json.dumps( [ 'Error' ] ) )
 
+@app.route('/uploadFile',methods=['GET','POST'])
+def uploadFile():
+  filedata = {}
+  if not os.path.exists(appdir + 'myfiles'):
+    os.makedirs(appdir + 'myfiles')
+  if request.method == 'POST':
+    if (sys.getsizeof(request.get_data()) > 5000):
+      fi = tempfile.NamedTemporaryFile(delete=False)
+      f = open(fi.name, 'w+b')
+      f.write(request.get_data())
+      f.close()
+      filedata['tmp_name'] = fi.name
+      filedata['name'] = time.strftime("%d_%m_%Y_%H_%M_%S_") + '.mp3'
+    if 'file' in request.files:
+      file = request.files['file']
+      if not file.filename == '':
+        if file and allowed_file(file.filename):
+          fi = tempfile.NamedTemporaryFile(delete=False)
+          file.save(fi.name)
+          filedata['tmp_name'] = fi.name
+          filedata['name'] = file.filename
+  if 'name' in filedata:
+    fname = time.strftime("%Y%m%d-%H%M%S") + filedata['name']
+    filepath = appdir + 'myfiles/' + fname
+    copyfile(filedata['tmp_name'], filepath)
+    if not (filepath[-3:] == 'mp3'):
+      try:
+        image=Image.open(filepath)
+        for orientation in ExifTags.TAGS.keys():
+          if ExifTags.TAGS[orientation]=='Orientation':
+            break
+        exif=dict(image._getexif().items())
+        if exif[orientation] == 3:
+          image=image.rotate(180, expand=True)
+        elif exif[orientation] == 6:
+          image=image.rotate(270, expand=True)
+        elif exif[orientation] == 8:
+          image=image.rotate(90, expand=True)
+        image.save(filepath)
+        image.close()
+      except (AttributeError, KeyError, IndexError):
+        # cases: image don't have getexif
+        pass
+    response = make_response(json.dumps( [ 'OK' ] ))
+    session[request.args.get('field')] = fname
+    return response
+  return 'OK'
+
 @app.route('/uploadMulti',methods=['GET','POST'])
 def uploadMulti():
   filedata = {}
