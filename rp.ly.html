@@ -810,16 +810,16 @@
         },
         computed: {
           isInitial() {
-            return this.currentStatus === STATUS_INITIAL;
+            return this.currentStatus === STATUS_INITIAL
           },
           isSaving() {
-            return this.currentStatus === STATUS_SAVING;
+            return this.currentStatus === STATUS_SAVING
           },
           isSuccess() {
-            return this.currentStatus === STATUS_SUCCESS;
+            return this.currentStatus === STATUS_SUCCESS
           },
           isFailed() {
-            return this.currentStatus === STATUS_FAILED;
+            return this.currentStatus === STATUS_FAILED
           }
         },
         watch: {
@@ -1014,6 +1014,7 @@
               this.saveHidden = false
               this.uploadHidden = false
               this.groupsHidden = false
+              this.reset()
             })
           },
           createHostedFields() {
@@ -1268,38 +1269,33 @@
             this.subsVisible = false
           },
           reset() {
-            this.currentStatus = STATUS_INITIAL;
-            this.uploadedFiles = [];
-            this.uploadError = null;
+            this.currentStatus = STATUS_INITIAL
+            this.uploadedFiles = []
+            this.uploadError = null
           },
           save(formData) {
-            this.currentStatus = STATUS_SAVING;
+            this.currentStatus = STATUS_SAVING
             this.$http.post ( this.uploadTo + '?field=image', formData ).then(function (x) {
               this.uploadedFiles = x.body[0]
-              this.currentStatus = STATUS_SUCCESS;
+              this.currentStatus = STATUS_SUCCESS
             })
           },
           filesChange(fieldName, fileList) {
-            // handle file changes
-            const formData = new FormData();
-
-            if (!fileList.length) return;
-
+            const formData = new FormData()
+            if (!fileList.length) return
             Array
               .from(Array(fileList.length).keys())
               .map(x => {
-                formData.append(fieldName, fileList[x], fileList[x].name);
-              });
-
-            // save it
-            this.save(formData);
+                formData.append(fieldName, fileList[x], fileList[x].name)
+              })
+            this.save(formData)
           },
           startUpload(){
             document.querySelector('input.input-file').click()
           }
         },
         mounted() {
-          this.reset();
+          this.reset()
         },
         template: `
           <div>
