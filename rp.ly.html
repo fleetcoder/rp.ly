@@ -1339,7 +1339,7 @@
                   <h1>Upload images</h1>
                   <form enctype="multipart/form-data" novalidate v-if="isInitial || isSaving">
                     <div class="dropbox">
-                      <label class="uploadlabel" for="image_uploads">Click here to choose photos or drag photos onto this area</label>
+                      <label class="uploadlabel" for="image_uploads">Click here to choose photos or drag files onto this area</label>
                       <input id="image_uploads" type="file" multiple :name="uploadFieldName" :disabled="isSaving" @change="filesChange($event.target.name, $event.target.files); fileCount = $event.target.files.length"
                         accept="image/*" class="input-file">
                     </div>
@@ -1384,15 +1384,15 @@
             <mt-tabbar fixed="true" v-model="selected" v-bind:class="{'is-hidden':tabsHidden}">
               <mt-tab-item id="tab1">
                 <img slot="icon" src="/file/home.svg">
-                Posts
+                Gallery
               </mt-tab-item>
               <mt-tab-item id="tab2">
                 <img slot="icon" src="/file/users.svg">
-                Contacts
+                Groups
               </mt-tab-item>
               <mt-tab-item id="tab3">
                 <img slot="icon" src="/file/plus-circle.svg">
-                Add Post
+                Publish
               </mt-tab-item>
             </mt-tabbar>
 
