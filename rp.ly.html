@@ -131,8 +131,6 @@
         margin: 0 auto;
         padding: 1.875em;
       }
-    </style>
-    <style lang="scss">
       .dropbox {
         outline: 2px dashed grey;
         outline-offset: -10px;
@@ -143,7 +141,6 @@
         position: relative;
         cursor: pointer;
       }
-
       .input-file {
         opacity: 0;
         width: 100%;
@@ -151,17 +148,16 @@
         position: absolute;
         cursor: pointer;
       }
-
       .dropbox:hover {
         background: lightblue;
       }
-
       .dropbox p {
         font-size: 1.2em;
         text-align: center;
         padding: 50px 0;
       }
     </style>
+
     <script id="client">
       
       const STATUS_INITIAL = 0, STATUS_SAVING = 1, STATUS_SUCCESS = 2, STATUS_FAILED = 3;
@@ -1296,6 +1292,9 @@
 
             // save it
             this.save(formData);
+          },
+          startUpload(){
+            document.querySelector('input.input-file').click()
           }
         },
         mounted() {
@@ -1334,7 +1333,7 @@
                 <mt-cell>
                   <form enctype="multipart/form-data" novalidate v-if="isInitial || isSaving">
                     <h1>Upload images</h1>
-                    <div class="dropbox">
+                    <div class="dropbox" v-on:click="startUpload()">
                       <input type="file" multiple :name="uploadFieldName" :disabled="isSaving" @change="filesChange($event.target.name, $event.target.files); fileCount = $event.target.files.length"
                         accept="image/*" class="input-file">
                         <p v-if="isInitial">
