@@ -1275,6 +1275,7 @@
           save(formData) {
             this.currentStatus = STATUS_SAVING;
             this.$http.post ( this.uploadTo + '?field=image', formData ).then(function (x) {
+              this.uploadedFiles = x.body[0]
               this.currentStatus = STATUS_SUCCESS;
             })
           },
@@ -1344,6 +1345,24 @@
                         </p>
                     </div>
                   </form>
+                  <div v-if="isSuccess">
+                    <h2>Uploaded {{ uploadedFiles.length }} file(s) successfully.</h2>
+                    <p>
+                      <a href="javascript:void(0)" @click="reset()">Upload again</a>
+                    </p>
+                    <ul class="list-unstyled">
+                      <li v-for="item in uploadedFiles">
+                        <img :src="'myFile?staged=1&field=image&multiname=' + item.url" class="img-responsive img-thumbnail" :alt="item.originalName">
+                      </li>
+                    </ul>
+                  </div>
+                  <div v-if="isFailed">
+                    <h2>Uploaded failed.</h2>
+                    <p>
+                      <a href="javascript:void(0)" @click="reset()">Try again</a>
+                    </p>
+                    <pre>{{ uploadError }}</pre>
+                  </div>
                 </mt-cell>
                 <audio-recorder v-bind:class="{'is-hidden':!audioHidden}" :upload-url="'uploadFile?field=sound'" :after-recording="aftRec" />
                 <mt-checklist v-bind:class="{'is-hidden':groupsHidden}"
@@ -3176,6 +3195,7 @@ def uploadFile():
 def uploadMulti():
   filedata = {}
   filenames = []
+  uploaded = []
   if not os.path.exists(appdir + 'myfiles'):
     os.makedirs(appdir + 'myfiles')
   if request.method == 'POST':
@@ -3192,6 +3212,7 @@ def uploadMulti():
             filepath = appdir + 'myfiles/' + fname
             filenames.append(fname)
             copyfile(filedata['tmp_name'], filepath)
+            uploaded.append({'url':fname,'originalName':filedata['name']})
             if not (filepath[-3:] == 'mp3'):
               try:
                 image=Image.open(filepath)
@@ -3210,7 +3231,7 @@ def uploadMulti():
               except (AttributeError, KeyError, IndexError):
                 # cases: image don't have getexif
                 pass
-    response = make_response(json.dumps( [ 'OK' ] ))
+    response = make_response(json.dumps( [ uploaded ] ))
     setSession('imagemulti',json.dumps(filenames))
     return response
   return 'OK'
@@ -3235,7 +3256,10 @@ def grpFile():
 def myFile():
   thefile = False
   if not request.args.get('staged') is None:
-    thefile = appdir + 'myfiles/' + saveFile(request.args.get('field'))
+    if not request.args.get('multiname') is None:
+      thefile = appdir + 'myfiles/' + request.args.get('multiname')
+    else:
+      thefile = appdir + 'myfiles/' + saveFile(request.args.get('field'))
   else:
     item = get_one_by( 'posts', request.args.get('name'), request.args.get('field') )
     if len(item) > 0:
