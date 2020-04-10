@@ -626,21 +626,15 @@
               </a>
             </mt-header>
             <mt-spinner v-bind:class="{'is-hidden':spinnerHidden}" type="snake"></mt-spinner>
-            <mt-cell-swipe class="imagecell" v-for="(item, idx) in items" :title="item.name" :right="[
-              {
-                content: 'Delete',
-                style: { background: 'red', color: '#fff' },
-                handler: () => delPosts( item.id, idx )
-              }
-            ]">
+            <mt-cell class="imagecell" v-for="(item, idx) in items" :title="item.name">
               <p class="caption" v-text="item.title" v-bind:class="{'is-hidden':item.textHidden}"></p>
               <figure class="imagecell" v-bind:class="{'is-hidden':item.imageHidden}">
-                <img class="feedimg" :src="imageLink(item)" />
+                <img v-on:click="openImage(idx)" class="feedimg" :src="imageLink(item)" />
                 <figcaption class="caption" v-text="item.title"></figcaption>
                 <audio-player :src="'myFile?field=sound&name=' + item.sound" v-bind:class="{'is-hidden':item.soundHidden}" />
               </figure>
               <audio-player v-if="item.imageHidden" :src="'myFile?field=sound&name=' + item.sound" v-bind:class="{'is-hidden':item.soundHidden}" />
-            </mt-cell-swipe>
+            </mt-cell>
           </div>`
       }
       const showPosts = {
@@ -680,6 +674,28 @@
               this.imageHidden = true
             }
             this.$emit('on-tabs-hidden')
+          },
+          delPosts(){
+            var showposts = this
+            MintUI.MessageBox({
+              title: 'Delete',
+              message: 'Are you sure you want to delete this post?',
+              showCancelButton: true,
+              confirmButtonText: 'Confirm Delete',
+              cancelButtonText: 'Cancel'
+            }).then(action => {
+              if (action === 'confirm') {
+                showposts.spinnerHidden = false
+                Vue.http.post( 'delPosts', {
+                  id:showposts.id
+                }).then( ( response ) => {
+                  showposts.spinnerHidden = true
+                  showposts.items.splice( showposts.idx, 1 )
+                  router.push('/')
+                })
+              }
+            })
+
           }
         },
         template: `
@@ -688,14 +704,13 @@
               <router-link to="/" slot="left">
                 <mt-button icon="back">back</mt-button>
               </router-link>
-              <router-link :to="'/modPosts/' + idx" slot="right">
-                <mt-button icon="more"></mt-button>
-              </router-link>
             </mt-header>
             <mt-spinner v-bind:class="{'is-hidden':spinnerHidden}" type="snake"></mt-spinner>
-            <mt-cell title="Title:" :value="title"></mt-cell>
-            <mt-cell title="Image:" v-bind:class="{'is-hidden':imageHidden}"><img class="img" :src="'myFile?field=image&name=' + image" /></mt-cell>
-            <mt-cell title="Sound:" v-bind:class="{'is-hidden':soundHidden}"><audio-player :src="'myFile?field=sound&name=' + sound" /></mt-cell>
+            <mt-cell  :title="title"></mt-cell>
+            <mt-cell v-bind:class="{'is-hidden':imageHidden}"><img class="img" :src="'myFile?field=image&name=' + image" /></mt-cell>
+            <mt-cell v-bind:class="{'is-hidden':soundHidden}"><audio-player :src="'myFile?field=sound&name=' + sound" /></mt-cell>
+            <mt-button size="large" v-on:click="delPosts()">Delete Photo</mt-button>
+
           </div>`
       }
       const modPosts = {
