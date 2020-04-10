@@ -1850,7 +1850,9 @@
             newEmail:'',
             newPhone:'',
             showShareGroup: false,
-            groupLink: ''
+            groupLink: '',
+            maxRes: '1000',
+            doScale: true
           }
         },
         props: { items : Array },
@@ -1858,6 +1860,13 @@
           this.id = this.items[ this.idx ].id
           this.name = this.items[ this.idx ].name
           this.image = this.items[ this.idx ].image
+          var maxres = parseInt(this.items[ this.idx ].maxres)
+          if (maxres > 0) {
+            this.maxRes = this.items[ this.idx ].maxres
+          }
+          if (maxres === 0) {
+            this.doScale = false
+          }
           this.$emit('on-tabs-hidden')
         },
         methods: {
@@ -1928,9 +1937,19 @@
               })
               return
             }
+            var exp = this.expireHours
+            if (this.doExpire === false) {
+              exp = 0
+            }
+
+            var sca = this.maxRes
+            if (this.doScale === false) {
+              sca = 0
+            }
             Vue.http.post( 'modGroups', {
               id : this.id,
-              name : this.name
+              name : this.name,
+              maxres : sca
             }).then( ( response ) => {
               this.$emit('on-update-list')
               this.showShareGroup = true
@@ -1957,6 +1976,7 @@
             <mt-cell title=""><img class="img" :src="'myFile?staged=1&field=image&name=' + image" /></mt-cell>
             <file-upload btn-label="Set Group Image" @change="stagedUpload('image')" :url="uploadTo + '?field=image'"></file-upload>
             <mt-button v-on:click="quickContact()" size="large">Add Contact</mt-button>
+            <mt-cell title="Scale uploads to"><mt-field v-model="maxRes" label="pixels"></mt-field><mt-switch v-model="doScale"></mt-switch></mt-cell>
             <mt-button v-on:click="modGroups()" size="large">Save Group</mt-button>
             <mt-popup class="addcontact" v-model="showAddContact" position="middle">
               <mt-field :state="validName" placeholder="Name" @keyup.native="checkConName" v-model="newName"></mt-field>
@@ -2734,6 +2754,7 @@ def addFeeds():
 
 @app.route('/addPosts',methods=['GET','POST'])
 def addPosts():
+  maxRes = 0
   saveImage = [saveFile( 'image' )]
   senditems = []
   imageupl = saveFile('imagemulti')
@@ -2765,6 +2786,9 @@ def addPosts():
         if can('get','posts',con,newrec):
           grp = [value for value in json.loads(request.form.get('recips')) if value in json.loads(con['groups'])][0]
           grpdata = get_one('groups',grp)
+          if 'maxres' in grpdata[0]:
+            if not grpdata[0]['maxres'] is None:
+              maxRes = int(grpdata[0]['maxres'])
           if not 'last_notif' in grpdata[0] or grpdata[0]['last_notif'] == None:
             rid = add_one( 'groups', {'last_notif':''} )
             if rid > 0:
@@ -2802,6 +2826,27 @@ def addPosts():
       title = ''
   clearSession('image')
   clearSession('imagemulti')
+  if maxRes > 0:
+    for savedImage in saveImage:
+      filepath = appdir + 'myfiles/' + savedImage
+      if filepath[-3:].lower() == 'jpg' or filepath[-3:].lower() == 'jpeg':
+        try:
+          image=Image.open(filepath)
+          original_size = max(image.size[0], image.size[1])
+          if original_size >= maxRes:
+            resized_file = open(filepath.split('.')[0] + '_resized.jpg', "w")
+            if (image.size[0] > image.size[1]):
+              resized_width = maxRes
+              resized_height = int(round((maxRes/float(image.size[0]))*image.size[1])) 
+            else:
+              resized_height = maxRes
+              resized_width = int(round((maxRes/float(image.size[1]))*image.size[0]))
+            image = image.resize((resized_width, resized_height), Image.ANTIALIAS)
+            image.save(resized_file, 'JPEG')
+          image.save(filepath)
+          image.close()
+        except (AttributeError, KeyError, IndexError):
+          pass
   response = make_response(json.dumps( [ 'OK' ] ))
   for item in senditems:
     sendcomet(recips,item)
@@ -2914,13 +2959,17 @@ def modGroups():
   item = get_one( 'groups', request.form.get('id') )[0]
   if not can('mod','groups',current_user(),item):
     return( json.dumps( [ 'Error' ] ) )
-  if not 'image' in item or not 'key' in item:
-    rid = add_one( 'groups', {'image':'','key':''} )
+  if not 'image' in item or not 'key' or not 'maxres' in item:
+    rid = add_one( 'groups', {'image':'','key':'','maxres':'1000'} )
     if rid > 0:
       del_one('groups',rid)
+  scale = '0'
+  if (int(request.form.get('maxres')) > 0):
+    scale = request.form.get('maxres')
   newobj = {
     'name' : request.form.get('name'),
-    'image' : saveFile( 'image' )
+    'image' : saveFile( 'image' ),
+    'maxres' : scale
   }
   if newobj['image'] == '':
     del newobj['image']
