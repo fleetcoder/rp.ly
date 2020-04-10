@@ -36,6 +36,12 @@
       .mint-button--primary {
         background-color: gray
       }
+      .mint-button--normal {
+        background-color: rgb(174,223,253)
+      }
+      .mint-button--default {
+        background-color: rgb(174,223,253)
+      }
       .is-hidden {
         display: none
       }
@@ -2445,11 +2451,13 @@ def freeTrialLogin():
     if len(cont['phone']) > 0:
       loginuser = cont['phone']
       usr = get_one_by('contacts',loginuser,'phone')
-      exists = get_parent(usr[0]['id'])
+      if len(usr) > 0:
+        exists = get_parent(usr[0]['id'])
     if len(cont['email']) > 0:
       loginuser = cont['email']
       usr = get_one_by('contacts',loginuser,'email')
-      exists = get_parent(usr[0]['id'])
+      if len(usr) > 0:
+        exists = get_parent(usr[0]['id'])
     if not (len(usr) > 0 and exists['user_id'] is None):
       return json.dumps(['error'])
     num = randint(100, 999)
