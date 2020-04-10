@@ -1817,6 +1817,9 @@
             this.id = this.items[ this.idx ].id
             this.name = this.items[ this.idx ].name
             this.$emit('on-tabs-hidden')
+          },
+          goEdit(idx) {
+            router.push( '/modGroups/' + idx )
           }
         },
         template: `
@@ -1831,6 +1834,7 @@
             </mt-header>
             <mt-spinner v-bind:class="{'is-hidden':spinnerHidden}" type="snake"></mt-spinner>
             <mt-cell title="Name:" :value="name"></mt-cell>
+            <mt-button size="large" v-on:click="goEdit(idx)">Settings</mt-button>
           </div>`
       }
       const modGroups = {
