@@ -919,7 +919,17 @@
                 this.cgroups = response.body[0]
                 this.reloadGroups()
                 if (this.cgroups[this.cgroups.length - 1].name == 'Group 1') {
-                  //router.push( 'groups' )
+                  MintUI.MessageBox({
+                    title: 'Looks like you are new here',
+                    message: 'Would you like to set up your first photo gallery?',
+                    showCancelButton: true,
+                    confirmButtonText: 'Yes take me there',
+                    cancelButtonText: 'No thanks'
+                  }).then(action => {
+                    if (action === 'confirm') {
+                      router.push( 'groups' )
+                    }
+                  })
                 }
               }
             })
@@ -1855,7 +1865,7 @@
             newPhone:'',
             showShareGroup: false,
             groupLink: '',
-            maxRes: '1000',
+            maxRes: '2000',
             doScale: true
           }
         },
@@ -1980,7 +1990,7 @@
             <mt-cell title=""><img class="img" :src="'myFile?staged=1&field=image&name=' + image" /></mt-cell>
             <file-upload btn-label="Set Group Image" @change="stagedUpload('image')" :url="uploadTo + '?field=image'"></file-upload>
             <mt-button v-on:click="quickContact()" size="large">Add Contact</mt-button>
-            <mt-cell title="Scale uploads to"><mt-field v-model="maxRes" label="pixels"></mt-field><mt-switch v-model="doScale"></mt-switch></mt-cell>
+            <mt-cell title="Scale down uploaded files"><mt-field v-model="maxRes" label="maximum pixels"></mt-field><mt-switch v-model="doScale"></mt-switch></mt-cell>
             <mt-button v-on:click="modGroups()" size="large">Save Group</mt-button>
             <mt-popup class="addcontact" v-model="showAddContact" position="middle">
               <mt-field :state="validName" placeholder="Name" @keyup.native="checkConName" v-model="newName"></mt-field>
@@ -2964,7 +2974,7 @@ def modGroups():
   if not can('mod','groups',current_user(),item):
     return( json.dumps( [ 'Error' ] ) )
   if not 'image' in item or not 'key' or not 'maxres' in item:
-    rid = add_one( 'groups', {'image':'','key':'','maxres':'1000'} )
+    rid = add_one( 'groups', {'image':'','key':'','maxres':'2000'} )
     if rid > 0:
       del_one('groups',rid)
   scale = '0'
