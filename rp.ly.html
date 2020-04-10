@@ -1341,7 +1341,7 @@
                 <mt-field v-bind:class="{'is-hidden':!textHidden}" placeholder="Title.." v-model="title"></mt-field>
                 <mt-cell v-bind:class="{'is-hidden':imgHidden}" title=""><img class="img" :src="'myFile?staged=1&field=image&name=' + image" /></mt-cell>
                 <mt-cell>
-                  <form enctype="multipart/form-data" novalidate v-if="isInitial || isSaving">
+                  <form enctype="multipart/form-data" novalidate v-if="isInitial">
                     <div class="dropbox">
                       <label class="uploadlabel" for="image_uploads">Click here to choose photos, or drag files here</label>
                       <input id="image_uploads" type="file" multiple :name="uploadFieldName" :disabled="isSaving" @change="filesChange($event.target.name, $event.target.files); fileCount = $event.target.files.length"
@@ -1350,6 +1350,7 @@
                   </form>
                   <p class="dropboxp" v-if="isSaving">
                     Uploading {{ fileCount }} files...
+                    <mt-spinner type="snake"></mt-spinner>
                   </p>
                   <div v-if="isSuccess">
                     <h2>Uploaded {{ uploadedFiles.length }} file(s) successfully.</h2>
