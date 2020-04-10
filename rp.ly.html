@@ -168,6 +168,9 @@
       .uploadlabel {
         font-size: 1.4em;
       }
+      #savepostbutton {
+        margin-top: 10px;
+      }
     </style>
 
     <script id="client">
@@ -1402,7 +1405,7 @@
                 <mt-cell title="Expire after"><mt-field v-model="expireHours" label="hours"></mt-field><mt-switch v-model="doExpire" @change="onExpireChange()"></mt-switch></mt-cell>
                 <mt-button v-bind:class="{'is-hidden':optionsBtnHidden}" v-on:click="showOptions()" size="large">Options</mt-button>
                 <mt-cell v-bind:class="{'is-hidden':optionsHidden}"><mt-switch class="options" v-model="audioHidden">Podcast</mt-switch><mt-switch class="options" v-model="textHidden">Caption</mt-switch></mt-cell>
-                <mt-button v-bind:class="{'is-hidden':saveHidden}" v-on:click="addPosts()" size="large">Save</mt-button>
+                <mt-button v-bind:class="{'is-hidden':saveHidden}" v-on:click="addPosts()" size="large" id="savepostbutton">Save</mt-button>
                 <mt-cell>&nbsp;</mt-cell>
               </mt-tab-container-item>
             </mt-tab-container>
