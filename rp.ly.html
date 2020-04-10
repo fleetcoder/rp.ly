@@ -2978,8 +2978,7 @@ def modGroups():
   if newobj['image'] == '':
     del newobj['image']
   if not 'key' in item or item['key'] == None:
-    newobj = { 'key' : randomword(8) }
-    mod_one( 'groups', newobj, item['id'] )
+    newobj['key'] = randomword(8)
     item['key'] = newobj['key']
   if mod_one( 'groups', newobj, request.form.get('id') ):
     return( 'https://' + mydomain + '/grp/' + item['key'] )
