@@ -627,6 +627,9 @@
             } else {
               return 'myFile?field=image&name=' + item.image
             }
+          },
+          doContextMenu(e){
+            e.preventDefault()
           }
         },
         template: `
@@ -640,7 +643,7 @@
             <mt-cell class="imagecell" v-for="(item, idx) in items" :title="item.name">
               <p class="caption" v-text="item.title" v-bind:class="{'is-hidden':item.textHidden}"></p>
               <figure class="imagecell" v-bind:class="{'is-hidden':item.imageHidden}">
-                <img v-on:click="openImage(idx)" class="feedimg" :src="imageLink(item)" />
+                <img @contextmenu.prevent="doContextMenu" v-on:click="openImage(idx)" class="feedimg" :src="imageLink(item)" />
                 <figcaption class="caption" v-text="item.title"></figcaption>
                 <audio-player :src="'myFile?field=sound&name=' + item.sound" v-bind:class="{'is-hidden':item.soundHidden}" />
               </figure>
@@ -707,6 +710,9 @@
               }
             })
 
+          },
+          doContextMenu(e){
+            e.preventDefault()
           }
         },
         template: `
@@ -718,7 +724,7 @@
             </mt-header>
             <mt-spinner v-bind:class="{'is-hidden':spinnerHidden}" type="snake"></mt-spinner>
             <mt-cell  :title="title"></mt-cell>
-            <mt-cell v-bind:class="{'is-hidden':imageHidden}"><img class="img" :src="'myFile?field=image&name=' + image" /></mt-cell>
+            <mt-cell v-bind:class="{'is-hidden':imageHidden}"><img @contextmenu.prevent="doContextMenu" class="img" :src="'myFile?field=image&name=' + image" /></mt-cell>
             <mt-cell v-bind:class="{'is-hidden':soundHidden}"><audio-player :src="'myFile?field=sound&name=' + sound" /></mt-cell>
             <mt-button size="large" v-on:click="delPosts()">Delete Photo</mt-button>
 
