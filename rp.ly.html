@@ -1927,7 +1927,8 @@
             showShareGroup: false,
             groupLink: '',
             maxRes: '2000',
-            doScale: true
+            doScale: true,
+            blockDownloads: true
           }
         },
         props: { items : Array },
@@ -2052,6 +2053,7 @@
             <file-upload btn-label="Set Group Image" @change="stagedUpload('image')" :url="uploadTo + '?field=image'"></file-upload>
             <mt-button v-on:click="quickContact()" size="large">Add Contact</mt-button>
             <mt-cell title="Scale down uploaded files"><mt-field v-model="maxRes" label="maximum pixels"></mt-field><mt-switch v-model="doScale"></mt-switch></mt-cell>
+            <mt-cell title="Block user from downloading images"><mt-switch disabled v-model="blockDownloads"></mt-switch></mt-cell>
             <mt-button v-on:click="modGroups()" size="large">Save Group</mt-button>
             <mt-popup class="addcontact" v-model="showAddContact" position="middle">
               <mt-field :state="validName" placeholder="Name" @keyup.native="checkConName" v-model="newName"></mt-field>
