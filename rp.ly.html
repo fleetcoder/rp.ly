@@ -3,6 +3,7 @@
   <head><meta charset=utf-8>
     <meta name=viewport content="width=device-width,initial-scale=1">
     <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta http-equiv="imagetoolbar" content="no" /> 
 
     <title>rp.ly</title>
 
@@ -74,6 +75,29 @@
         height:auto
         padding:0;
         margin:0;
+      }
+      .oimg {
+          pointer-events: none;
+          position:relative;
+          width:100%;
+          height:auto
+          overflow:hidden;
+      }
+      .outer {
+          position:relative;
+          width:100%;
+          height:auto
+          overflow:hidden;
+      }
+      .overlay {
+          display: none;  
+      }
+      .text {
+          position: absolute;
+          top: 50%;
+          left: 50%;
+          transform:translate(-50%, -50%);
+          color:white;
       }
       .imagecell {
         position:relative;
@@ -642,11 +666,14 @@
             <mt-spinner v-bind:class="{'is-hidden':spinnerHidden}" type="snake"></mt-spinner>
             <mt-cell class="imagecell" v-for="(item, idx) in items" :title="item.name">
               <p class="caption" v-text="item.title" v-bind:class="{'is-hidden':item.textHidden}"></p>
-              <figure class="imagecell" v-bind:class="{'is-hidden':item.imageHidden}">
-                <img @contextmenu.prevent="doContextMenu" v-on:click="openImage(idx)" class="feedimg" :src="imageLink(item)" />
+              <div class="outer" v-on:click="openImage(idx)" v-bind:class="{'is-hidden':item.imageHidden}">
+                <img @contextmenu.prevent="doContextMenu" class="oimg" :src="imageLink(item)">
+                <div class="overlay">
+                  <p class="text">&nbsp;</p>
+                </div>
                 <figcaption class="caption" v-text="item.title"></figcaption>
                 <audio-player :src="'myFile?field=sound&name=' + item.sound" v-bind:class="{'is-hidden':item.soundHidden}" />
-              </figure>
+              </div>
               <audio-player v-if="item.imageHidden" :src="'myFile?field=sound&name=' + item.sound" v-bind:class="{'is-hidden':item.soundHidden}" />
             </mt-cell>
           </div>`
@@ -724,7 +751,14 @@
             </mt-header>
             <mt-spinner v-bind:class="{'is-hidden':spinnerHidden}" type="snake"></mt-spinner>
             <mt-cell  :title="title"></mt-cell>
-            <mt-cell v-bind:class="{'is-hidden':imageHidden}"><img @contextmenu.prevent="doContextMenu" class="img" :src="'myFile?field=image&name=' + image" /></mt-cell>
+            <mt-cell v-bind:class="{'is-hidden':imageHidden}">
+              <div class="outer">
+                <img @contextmenu.prevent="doContextMenu" class="oimg" :src="'myFile?field=image&name=' + image">
+                <div class="overlay">
+                  <p class="text">&nbsp;</p>
+                </div>
+              </div>
+            </mt-cell>
             <mt-cell v-bind:class="{'is-hidden':soundHidden}"><audio-player :src="'myFile?field=sound&name=' + sound" /></mt-cell>
             <mt-button size="large" v-on:click="delPosts()">Delete Photo</mt-button>
 
