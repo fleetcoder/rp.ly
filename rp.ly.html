@@ -2750,8 +2750,8 @@ def getPosts():
     groupname = ''
     if len(group) > 0:
       groupname = group[0]['name']
-    if not int(group[0]['user_id']) == int(user['id']):
-      continue
+      if not int(group[0]['user_id']) == int(user['id']):
+        continue
     glabel = ''
     comma = ''
     for con in contacts:
