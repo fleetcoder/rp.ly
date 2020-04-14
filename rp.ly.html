@@ -1901,12 +1901,9 @@
               <router-link to="/groups" slot="left">
                 <mt-button icon="back">back</mt-button>
               </router-link>
-              <router-link :to="'/modGroups/' + idx" slot="right">
-                <mt-button icon="more"></mt-button>
-              </router-link>
             </mt-header>
             <mt-spinner v-bind:class="{'is-hidden':spinnerHidden}" type="snake"></mt-spinner>
-            <mt-cell title="Name:" :value="name"></mt-cell>
+            <mt-cell title="" :value="name"></mt-cell>
             <mt-cell>
               <div class="outer">
                 <img class="oimg" :src="'grpFile?field=image&name=' + image">
@@ -3080,6 +3077,7 @@ def modGroups():
     newobj['key'] = randomword(8)
     item['key'] = newobj['key']
   if mod_one( 'groups', newobj, request.form.get('id') ):
+    clearSession('image')
     return( 'https://' + mydomain + '/grp/' + item['key'] )
   else:
     return( json.dumps( [ 'Error' ] ) )
