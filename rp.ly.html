@@ -1885,8 +1885,10 @@
         },
         methods: {
           setData(){
+            console.log(this.items[ this.idx ])
             this.id = this.items[ this.idx ].id
             this.name = this.items[ this.idx ].name
+            this.image = this.items[ this.idx ].image
             this.$emit('on-tabs-hidden')
           },
           goEdit(idx) {
@@ -1905,6 +1907,11 @@
             </mt-header>
             <mt-spinner v-bind:class="{'is-hidden':spinnerHidden}" type="snake"></mt-spinner>
             <mt-cell title="Name:" :value="name"></mt-cell>
+            <mt-cell>
+              <div class="outer">
+                <img class="oimg" :src="'grpFile?field=image&name=' + image">
+              </div>
+            </mt-cell>
             <mt-button size="large" v-on:click="goEdit(idx)">Settings</mt-button>
           </div>`
       }
@@ -2132,7 +2139,7 @@
                   //socket.on( 'new item', this.cometAdd )
                 }
                 for (var i = 0; i < this.items.length; i++) {
-                  if ("undefined" !== typeof this.items[i].image) {
+                  if ("undefined" == typeof this.items[i].image) {
                     this.items[i].image = ''
                   }
                 }
