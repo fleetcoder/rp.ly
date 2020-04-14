@@ -1928,7 +1928,8 @@
             groupLink: '',
             maxRes: '2000',
             doScale: true,
-            blockDownloads: true
+            blockDownloads: true,
+            allowPosts: false
           }
         },
         props: { items : Array },
@@ -2038,6 +2039,13 @@
                 this[field] = response.body
               }
             })
+          },
+          comingSoon(){
+            MintUI.Toast({
+              message: 'Sorry, this setting cannot be changed at this time',
+              iconClass: 'icon icon-error',
+              duration: 2000
+            })
           }
         },
         template: `
@@ -2053,7 +2061,8 @@
             <file-upload btn-label="Set Group Image" @change="stagedUpload('image')" :url="uploadTo + '?field=image'"></file-upload>
             <mt-button v-on:click="quickContact()" size="large">Add Contact</mt-button>
             <mt-cell title="Scale down uploaded files"><mt-field v-model="maxRes" label="maximum pixels"></mt-field><mt-switch v-model="doScale"></mt-switch></mt-cell>
-            <mt-cell title="Block user from downloading images"><mt-switch disabled v-model="blockDownloads"></mt-switch></mt-cell>
+            <mt-cell v-on:click.native="comingSoon()" title="Block members from saving images"><mt-switch disabled v-model="blockDownloads"></mt-switch></mt-cell>
+            <mt-cell v-on:click.native="comingSoon()" title="Allow members to add photos"><mt-switch disabled v-model="allowPosts"></mt-switch></mt-cell>
             <mt-button v-on:click="modGroups()" size="large">Save Group</mt-button>
             <mt-popup class="addcontact" v-model="showAddContact" position="middle">
               <mt-field :state="validName" placeholder="Name" @keyup.native="checkConName" v-model="newName"></mt-field>
@@ -2741,6 +2750,8 @@ def getPosts():
     groupname = ''
     if len(group) > 0:
       groupname = group[0]['name']
+    if not int(group[0]['user_id']) == int(user['id']):
+      continue
     glabel = ''
     comma = ''
     for con in contacts:
@@ -2834,13 +2845,14 @@ def addFeeds():
 @app.route('/addPosts',methods=['GET','POST'])
 def addPosts():
   maxRes = 0
+  curr = current_user()
   saveImage = [saveFile( 'image' )]
   senditems = []
   imageupl = saveFile('imagemulti')
   title = request.form.get('title')
   if len(imageupl) > 0:
     saveImage = json.loads(imageupl)
-  if not can('add','posts',current_user()):
+  if not can('add','posts',curr):
     return( json.dumps( [ 'Error' ] ) )
   for savedImage in saveImage:
     newrec = {
@@ -2854,6 +2866,11 @@ def addPosts():
     if (int(request.form.get('expirehours')) > 0):
       now_plus_hours = datetime.now() + timedelta(hours=int(request.form.get('expirehours')))
       newrec['expires'] = str( timezone( 'US/Pacific' ).localize( now_plus_hours ) )
+    for g in json.loads(request.form.get('recips')):
+       grpdata = get_one('groups',g)
+       if len(grpdata) > 0:
+         if not int(curr['id']) == int(grpdata[0]['user_id']):
+           return( json.dumps( [ 'Error' ] ) )
     rid = add_one( 'posts', newrec )
     if rid > 0:
       dt = timezone( 'US/Pacific' ).localize( datetime.now() )
