@@ -1404,7 +1404,6 @@
               </mt-tab-container-item>
               <mt-tab-container-item id="tab3">
                 <mt-header title="rp.ly"></mt-header>
-                <mt-field v-bind:class="{'is-hidden':!textHidden}" placeholder="Title.." v-model="title"></mt-field>
                 <mt-cell v-bind:class="{'is-hidden':imgHidden}" title=""><img class="img" :src="'myFile?staged=1&field=image&name=' + image" /></mt-cell>
                 <mt-cell>
                   <form enctype="multipart/form-data" novalidate v-if="isInitial">
@@ -1438,6 +1437,7 @@
                   </div>
                 </mt-cell>
                 <audio-recorder v-bind:class="{'is-hidden':!audioHidden}" :upload-url="'uploadFile?field=sound'" :after-recording="aftRec" />
+                <mt-field v-bind:class="{'is-hidden':!textHidden}" placeholder="Caption..." v-model="title"></mt-field>
                 <mt-checklist v-bind:class="{'is-hidden':groupsHidden}"
                   v-model="postto"
                   :options="groups"
