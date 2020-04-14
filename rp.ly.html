@@ -2277,28 +2277,27 @@ def btSubs():
   subs = []
   if not os.getenv('BT_ID') is None:
     curr = current_user()
-    collection = gateway.customer.search(
-      braintree.CustomerSearch.phone == curr['phone']
-    )
-    if len(list(collection.items)) > 0:
-      customer = list(collection.items)[0]
-    else:
+    if not curr['phone'] == '':
+      collection = gateway.customer.search(
+        braintree.CustomerSearch.phone == curr['phone']
+      )
+    if not curr['email'] == '':
       collection = gateway.customer.search(
         braintree.CustomerSearch.email == curr['email']
       )
+    if not collection is None:
       if len(list(collection.items)) > 0:
         customer = list(collection.items)[0]
-    if len(list(collection.items)) > 0:
-      for sub in customer.credit_cards[0].subscriptions:
-        if sub.status == 'Active':
-          owner = {'name':''}
-          grpn = ''
-          grpid = ''.join(x for x in sub.id if x.isdigit())
-          items = get_one( 'groups', grpid )
-          if len(items) > 0:
-            owner = get_user(items[0]['user_id'])
-            grpn = items[0]['name']
-          subs.append({'name':owner['name'] + '/' + grpn + ' renews ' + str(sub.next_billing_date),'id':str(sub.id)})
+        for sub in customer.credit_cards[0].subscriptions:
+          if sub.status == 'Active':
+            owner = {'name':''}
+            grpn = ''
+            grpid = ''.join(x for x in sub.id if x.isdigit())
+            items = get_one( 'groups', grpid )
+            if len(items) > 0:
+              owner = get_user(items[0]['user_id'])
+              grpn = items[0]['name']
+            subs.append({'name':owner['name'] + '/' + grpn + ' renews ' + str(sub.next_billing_date),'id':str(sub.id)})
   return( json.dumps( [subs] ) )
 
 @app.route('/btSetup', methods=['GET','POST'])
