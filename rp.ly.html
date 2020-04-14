@@ -2330,42 +2330,41 @@ def btSetup():
 def doSponsor():
   response = json.loads(request.form.get('method'))
   curr = current_user()
-  collection = gateway.customer.search(
-    braintree.CustomerSearch.phone == curr['phone']
-  )
-  if len(list(collection.items)) > 0:
-    customer = list(collection.items)[0]
-  else:
+  collection = 0
+  if not curr['phone'] == '':
+    collection = gateway.customer.search(
+      braintree.CustomerSearch.phone == curr['phone']
+    )
+  if not curr['email'] == '':
     collection = gateway.customer.search(
       braintree.CustomerSearch.email == curr['email']
     )
+  if not collection == 0:
     if len(list(collection.items)) > 0:
       customer = list(collection.items)[0]
-  if not len(list(collection.items)) > 0:
-    result = gateway.customer.create({
-      "first_name": curr['name'],
-      "payment_method_nonce": response['nonce'],
-      "email": curr['email'],
-      "phone": curr['phone']
-    })
-    if result.is_success:
-      customer = result.customer
-  if not customer is None:
-    result = gateway.subscription.create({
-      "payment_method_token": customer.payment_methods[0].token,
-      "plan_id": request.form.get('plan_id'),
-      "merchant_account_id":'Fleetcoder_instant',
-      "id":randomword(6) + request.form.get('group_id')
-    })
-  if result.is_success:
+    else:
+      result = gateway.customer.create({
+        "first_name": curr['name'],
+        "payment_method_nonce": response['nonce'],
+        "email": curr['email'],
+        "phone": curr['phone']
+      })
+      if result.is_success:
+        customer = result.customer
     if not customer is None:
-      notify_sponsor( request.form.get('plan_id'), request.form.get('group_id'), curr['name'] )
-    print("success")
-  else:
-    print(result.errors)
+      result = gateway.subscription.create({
+        "payment_method_token": customer.payment_methods[0].token,
+        "plan_id": request.form.get('plan_id'),
+        "merchant_account_id":'Fleetcoder_instant',
+        "id":randomword(6) + request.form.get('group_id')
+      })
+      if result.is_success:
+        if not customer is None:
+          notify_sponsor( request.form.get('plan_id'), request.form.get('group_id'), curr['name'] )
+        print("success")
+      else:
+        print(result.errors)
   return 'OK'
-
-
 
 @app.route('/doCode', methods=['GET','POST'])
 def doCode():
