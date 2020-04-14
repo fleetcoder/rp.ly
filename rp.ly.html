@@ -1616,6 +1616,9 @@
             this.email = this.items[ this.idx ].email
             this.phone = this.items[ this.idx ].phone
             this.$emit('on-tabs-hidden')
+          },
+          goEdit(idx) {
+            router.push( '/modContacts/' + idx )
           }
         },
         template: `
@@ -1624,14 +1627,12 @@
               <router-link to="/contacts" slot="left">
                 <mt-button icon="back">back</mt-button>
               </router-link>
-              <router-link :to="'/modContacts/' + idx" slot="right">
-                <mt-button icon="more"></mt-button>
-              </router-link>
             </mt-header>
             <mt-spinner v-bind:class="{'is-hidden':spinnerHidden}" type="snake"></mt-spinner>
             <mt-cell title="Name:" :value="name"></mt-cell>
             <mt-cell title="Email:" :value="email"></mt-cell>
             <mt-cell title="Phone:" :value="phone"></mt-cell>
+            <mt-button size="large" v-on:click="goEdit(idx)">Settings</mt-button>
           </div>`
       }
       const modContacts = {
