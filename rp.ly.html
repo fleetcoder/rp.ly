@@ -2389,6 +2389,21 @@ def doSponsor():
       if result.is_success:
         customer = result.customer
     if not customer is None:
+      if not len(customer.payment_methods) > 0:
+        result = gateway.payment_method.create({
+          "customer_id": customer.id,
+          "payment_method_nonce": response['nonce']
+        })
+        if not curr['phone'] == '':
+          collection = gateway.customer.search(
+            braintree.CustomerSearch.phone == curr['phone']
+          )
+        if not curr['email'] == '':
+          collection = gateway.customer.search(
+            braintree.CustomerSearch.email == curr['email']
+          )
+        if len(list(collection.items)) > 0:
+          customer = list(collection.items)[0]
       result = gateway.subscription.create({
         "payment_method_token": customer.payment_methods[0].token,
         "plan_id": request.form.get('plan_id'),
