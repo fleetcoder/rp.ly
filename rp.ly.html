@@ -7,7 +7,7 @@
 
     <title>rp.ly</title>
 
-    <link href=/file/app.f6299154743b22e4ec60751bc6631bb6.css rel=stylesheet>
+    <link href=/file/app.f6299154743b22e4ec60751bc6631bb6.css rel=stylesheet> 
     <script type=text/javascript src=/file/manifest.2ae2e69a05c33dfc65f8.js></script>
     <script type=text/javascript src=/file/vendor.0eb5480a7e9a156e90f2.js></script>
     <script type=text/javascript src=/file/app.be9945027a8323d84e7d.js></script>
@@ -502,13 +502,15 @@
             })
           },
           doJoin() {
-            if (this.validContact !== "success"){
-              MintUI.Toast({
-                message: 'Please enter a valid phone number or email address',
-                iconClass: 'icon icon-error',
-                duration: 2000
-              })
-              return
+            if (!this.signupHidden) {
+              if (this.validContact !== "success"){
+                MintUI.Toast({
+                  message: 'Please enter a valid phone number or email address',
+                  iconClass: 'icon icon-error',
+                  duration: 2000
+                })
+                return
+              }
             }
             if (!this.signupHidden) {
               if (this.newContact.length == 0) {
