@@ -668,9 +668,9 @@
             <mt-spinner v-bind:class="{'is-hidden':spinnerHidden}" type="snake"></mt-spinner>
             <mt-cell class="imagecell" v-for="(item, idx) in items" :title="item.name">
               <p class="caption" v-text="item.title" v-bind:class="{'is-hidden':item.textHidden}"></p>
-              <div class="outer" v-on:click="openImage(idx)" v-bind:class="{'is-hidden':item.imageHidden}" v-bind:class="{'can-click':!item.allowDownload}">
+              <div class="outer" v-on:click="openImage(idx)" v-bind:class="{'is-hidden':item.imageHidden}">
                 <img class="oimg" :src="imageLink(item)" v-if="item.allowDownload" />
-                <img @contextmenu.prevent="doContextMenu" class="oimg" :src="imageLink(item)" v-else />
+                <img @contextmenu.prevent="doContextMenu" class="oimg" :src="imageLink(item)" class="can-click" v-else />
                 <figcaption class="caption" v-text="item.title"></figcaption>
                 <audio-player :src="'myFile?field=sound&name=' + item.sound" v-bind:class="{'is-hidden':item.soundHidden}" />
               </div>
