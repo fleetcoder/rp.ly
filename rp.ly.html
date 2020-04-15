@@ -76,8 +76,10 @@
         padding:0;
         margin:0;
       }
+      .can-click{
+        pointer-events: none;
+      }
       .oimg {
-          pointer-events: none;
           position:relative;
           width:100%;
           height:auto
@@ -666,11 +668,9 @@
             <mt-spinner v-bind:class="{'is-hidden':spinnerHidden}" type="snake"></mt-spinner>
             <mt-cell class="imagecell" v-for="(item, idx) in items" :title="item.name">
               <p class="caption" v-text="item.title" v-bind:class="{'is-hidden':item.textHidden}"></p>
-              <div class="outer" v-on:click="openImage(idx)" v-bind:class="{'is-hidden':item.imageHidden}">
-                <img @contextmenu.prevent="doContextMenu" class="oimg" :src="imageLink(item)">
-                <div class="overlay">
-                  <p class="text">&nbsp;</p>
-                </div>
+              <div class="outer" v-on:click="openImage(idx)" v-bind:class="{'is-hidden':item.imageHidden}" v-bind:class="{'can-click':!item.allowDownload}">
+                <img class="oimg" :src="imageLink(item)" v-if="item.allowDownload" />
+                <img @contextmenu.prevent="doContextMenu" class="oimg" :src="imageLink(item)" v-else />
                 <figcaption class="caption" v-text="item.title"></figcaption>
                 <audio-player :src="'myFile?field=sound&name=' + item.sound" v-bind:class="{'is-hidden':item.soundHidden}" />
               </div>
@@ -1521,6 +1521,7 @@
                   </a>
                 </mt-cell>
               </mt-cell>
+              <p>&nbsp;</p>
             </mt-popup>
             
             <mt-popup v-model="linkVisible" position="middle">
@@ -1942,6 +1943,12 @@
           this.id = this.items[ this.idx ].id
           this.name = this.items[ this.idx ].name
           this.image = this.items[ this.idx ].image
+          if (this.items[ this.idx ].blockDownloads == '0') {
+            this.blockDownloads = false
+          }
+          if (this.items[ this.idx ].allowPosts == '1') {
+            this.allowPosts = true
+          }
           var maxres = parseInt(this.items[ this.idx ].maxres)
           if (maxres > 0) {
             this.maxRes = this.items[ this.idx ].maxres
@@ -2031,7 +2038,9 @@
             Vue.http.post( 'modGroups', {
               id : this.id,
               name : this.name,
-              maxres : sca
+              maxres : sca,
+              allowPosts : this.allowPosts,
+              blockDownloads: this.blockDownloads
             }).then( ( response ) => {
               this.$emit('on-update-list')
               this.showShareGroup = true
@@ -2066,8 +2075,8 @@
             <file-upload btn-label="Set Group Image" @change="stagedUpload('image')" :url="uploadTo + '?field=image'"></file-upload>
             <mt-button v-on:click="quickContact()" size="large">Add Contact</mt-button>
             <mt-cell title="Scale down uploaded files"><mt-field v-model="maxRes" label="maximum pixels"></mt-field><mt-switch v-model="doScale"></mt-switch></mt-cell>
-            <mt-cell v-on:click.native="comingSoon()" title="Block members from saving images"><mt-switch disabled v-model="blockDownloads"></mt-switch></mt-cell>
-            <mt-cell v-on:click.native="comingSoon()" title="Allow members to add photos"><mt-switch disabled v-model="allowPosts"></mt-switch></mt-cell>
+            <mt-cell title="Block members from saving photos"><mt-switch v-model="blockDownloads"></mt-switch></mt-cell>
+            <mt-cell title="Allow members to add photos"><mt-switch v-model="allowPosts"></mt-switch></mt-cell>
             <mt-button v-on:click="modGroups()" size="large">Save Group</mt-button>
             <mt-popup class="addcontact" v-model="showAddContact" position="middle">
               <mt-field :state="validName" placeholder="Name" @keyup.native="checkConName" v-model="newName"></mt-field>
@@ -2697,6 +2706,11 @@ def getSettings():
 
 @app.route('/getPosts',methods=['GET','POST'])
 def getPosts():
+  allowgroups = get_one_by('groups','0','blockDownloads')
+  allowdownload = []
+  if len(allowgroups) > 0:
+    for all in allowgroups:
+      allowdownload.append(int(all['id']))
   user = current_user()
   recs = get_all('posts')
   posts = []
@@ -2710,6 +2724,7 @@ def getPosts():
     if can('get','posts',user,item):
       item['title'] = get_user(item['user_id'])['name'] + ': ' + item['title']
       item['imageHidden'] = False
+      item['allowDownload'] = False
       item['textHidden'] = True
       if item['image'] == '':
         item['imageHidden'] = True
@@ -2718,8 +2733,11 @@ def getPosts():
         item['soundHidden'] = True
       if item['image'] == '' and item['sound'] == '':
         item['textHidden'] = False
-      posts.append(item)
       pgrps = json.loads(item['groups'])
+      for p in pgrps:
+        if p in allowdownload:
+          item['allowDownload'] = True
+      posts.append(item)
       for pgrp in pgrps:
         if not pgrp in cangrps and not pgrp in ugrids and pgrp in groups:
           cangrps.append(pgrp)
@@ -3058,8 +3076,8 @@ def modGroups():
   item = get_one( 'groups', request.form.get('id') )[0]
   if not can('mod','groups',current_user(),item):
     return( json.dumps( [ 'Error' ] ) )
-  if not 'image' in item or not 'key' or not 'maxres' in item:
-    rid = add_one( 'groups', {'image':'','key':'','maxres':'2000'} )
+  if not 'image' in item or not 'key' or not 'maxres' in item or not 'allowPosts' in item or not 'blockDownloads' in item:
+    rid = add_one( 'groups', {'image':'','key':'','maxres':'2000','allowPosts':'0','blockDownloads':'1'} )
     if rid > 0:
       del_one('groups',rid)
   scale = '0'
@@ -3068,8 +3086,14 @@ def modGroups():
   newobj = {
     'name' : request.form.get('name'),
     'image' : saveFile( 'image' ),
-    'maxres' : scale
+    'maxres' : scale,
+    'allowPosts' : '0',
+    'blockDownloads' : '0'
   }
+  if str(request.form.get('allowPosts')) == 'true':
+    newobj['allowPosts'] = '1'
+  if str(request.form.get('blockDownloads')) == 'true':
+    newobj['blockDownloads'] = '1'
   if newobj['image'] == '':
     del newobj['image']
   if not 'key' in item or item['key'] == None:
