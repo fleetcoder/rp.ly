@@ -753,7 +753,7 @@
             <mt-cell  :title="title"></mt-cell>
             <mt-cell v-bind:class="{'is-hidden':imageHidden}">
               <div class="outer">
-                <img @contextmenu.prevent="doContextMenu" class="oimg" :src="'myFile?field=image&name=' + image">
+                <img @contextmenu.prevent="doContextMenu" class="oimg cant-click" :src="'myFile?field=image&name=' + image">
                 <div class="overlay">
                   <p class="text">&nbsp;</p>
                 </div>
