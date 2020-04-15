@@ -502,6 +502,34 @@
             })
           },
           doJoin() {
+            if (this.validContact !== "success"){
+              MintUI.Toast({
+                message: 'Please enter a valid phone number or email address',
+                iconClass: 'icon icon-error',
+                duration: 2000
+              })
+              return
+            }
+            if (!this.signupHidden) {
+              if (this.newContact.length == 0) {
+                MintUI.Toast({
+                  message: 'Please enter a phone number or email address',
+                  iconClass: 'icon icon-error',
+                  duration: 2000
+                })
+                return
+              }
+            }
+            if (!this.signupHidden) {
+              if (this.newName.length == 0) {
+                MintUI.Toast({
+                  message: 'Please enter your name',
+                  iconClass: 'icon icon-error',
+                  duration: 2000
+                })
+                return
+              }
+            }
             this.spinnerHidden = false
             this.inviteText = ''
             this.docodehidden = false
