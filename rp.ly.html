@@ -3063,6 +3063,12 @@ def getGroups():
   abils = []
   grps = []
   for grp in groups:
+    group = get_one( 'groups', grp )
+    groupname = ''
+    if len(group) > 0:
+      groupname = group[0]['name']
+      if not int(group[0]['user_id']) == int(user['id']):
+        continue
     glabel = ''
     comma = ''
     for con in contacts:
@@ -3072,7 +3078,7 @@ def getGroups():
           glabel = glabel + comma + con['name']
           comma = ', '
       if not glabel == '':
-        grps.append({'value':grp,'label':glabel})
+        grps.append({'value':grp,'label':groupname + ': ' + glabel})
     for abb in abilities:
       if abb['group_id'] == grp:
         for act in abb['actions']:
@@ -3340,6 +3346,12 @@ def modContactGroups():
   groups = json.loads(user['groups'])
   grps = []
   for grp in groups:
+    group = get_one( 'groups', grp )
+    groupname = ''
+    if len(group) > 0:
+      groupname = group[0]['name']
+      if not int(group[0]['user_id']) == int(user['id']):
+        continue
     glabel = ''
     comma = ''
     for con in contacts:
@@ -3349,7 +3361,7 @@ def modContactGroups():
           glabel = glabel + comma + con['name']
           comma = ', '
     if not glabel == '':
-      grps.append({'value':grp,'label':glabel})
+      grps.append({'value':grp,'label':groupname + ': ' + glabel})
   update_abilities()
   return( json.dumps( [ grps ] ) )
 
