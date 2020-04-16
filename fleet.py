@@ -381,11 +381,12 @@ def share_my_contact(newrec,grps):
 
 def notify_sponsor(plan,addgrp,name):
   grpdata = get_one('groups',addgrp)
+  plans = {'fans300':'$3/mo','fans50':'$6/yr'}
   if 'user_id' in grpdata[0]:
     cont = get_user(grpdata[0]['user_id'])
     if len(cont['phone']) > 0:
       client = Client(twilio_id, twilio_token)
-      rl = name + " bought a " + plan + " subscription on " + mydomain
+      rl = name + " paid for a " + plans[plan] + " subscription to " + grpdata[0]['name'] + " on " + mydomain
       message = client.messages.create(
         body=rl,
         from_='+1' + os.getenv('TWILIO_FROM'),
@@ -398,7 +399,7 @@ def notify_sponsor(plan,addgrp,name):
       message = Mail(
         from_email=owner['name'] + ' via ' + mydomain + ' <' + os.getenv('SENDGRID_FROM') + '>',
         to_emails=em,
-        subject=name + " bought a " + plan + " subscription on " + mydomain,
+        subject=name + " paid for a " + plans[plan] + " subscription to " + grpdata[0]['name'] + " on " + mydomain,
         html_content='<strong><p>' + name + " bought a " + plan + " subscription on " + mydomain + '</p></strong>')
       sg = SendGridAPIClient(sendgrid_token)
       response = sg.send(message)
