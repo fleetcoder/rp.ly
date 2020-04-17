@@ -663,7 +663,9 @@
         props: { items : Array, editHidden: Boolean },
         methods: {
           openImage(idx){
-            router.push( '/showPosts/' + idx )
+            if (this.items[idx].isOwner) {
+              router.push( '/showPosts/' + idx )
+            }
           },
           showLink(){
             this.$emit('on-show-menu')
@@ -2781,6 +2783,7 @@ def getPosts():
       item['title'] = get_user(item['user_id'])['name'] + ': ' + item['title']
       item['imageHidden'] = False
       item['allowDownload'] = False
+      item['isOwner'] = False
       item['textHidden'] = True
       if item['image'] == '':
         item['imageHidden'] = True
@@ -2793,6 +2796,8 @@ def getPosts():
       for p in pgrps:
         if p in allowdownload:
           item['allowDownload'] = True
+      if int(user['id']) == int(item['user_id']):
+        item['isOwner'] = True
       posts.append(item)
       for pgrp in pgrps:
         if not pgrp in cangrps and not pgrp in ugrids and pgrp in groups:
