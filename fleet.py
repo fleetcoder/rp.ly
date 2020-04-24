@@ -362,6 +362,7 @@ def share_my_contact(newrec,grps):
             if user['email'] == con['email']:
               exists = True
               existscon = con
+        name = ''
         if not exists:
           ra = randomword(6)
           copy = current_user()
@@ -370,6 +371,7 @@ def share_my_contact(newrec,grps):
           copy['code'] = ra
           del copy['id']
           con = add_one( 'contacts', copy )
+          name = copy['name']
         else:
           if len(grps) > 0:
             items = get_one( 'groups', grps[0] )
@@ -377,6 +379,30 @@ def share_my_contact(newrec,grps):
             groups = json.loads(user['groups'])
             groups.append(items[0]['id'])
             con = mod_one('contacts',{'groups': json.dumps(groups)},existscon['id'])
+            name = user['name']
+        if len(grps) > 0:
+          cont = u
+          grpdata = get_one('groups',grps[0])
+          if len(cont['phone']) > 0:
+            client = Client(twilio_id, twilio_token)
+            rl = name + " joined your gallery " + grpdata[0]['name'] + " on " + mydomain
+            message = client.messages.create(
+              body=rl,
+              from_='+1' + os.getenv('TWILIO_FROM'),
+              to=cont['phone']
+            )
+            print('notify JOIN ' + cont['phone'], file=sys.stderr)
+          if len(cont['email']) > 0:
+            owner = current_user()
+            em = cont['email']
+            message = Mail(
+              from_email=owner['name'] + ' via ' + mydomain + ' <' + os.getenv('SENDGRID_FROM') + '>',
+              to_emails=em,
+              subject=name + " joined your gallery " + grpdata[0]['name'] + " on " + mydomain,
+              html_content='<strong><p>' + name + " joined your gallery " + grpdata[0]['name'] + " on " + mydomain + '</p></strong>')
+            sg = SendGridAPIClient(sendgrid_token)
+            response = sg.send(message)
+            print('notify JOIN ' + em, file=sys.stderr)
   return
 
 def notify_sponsor(plan,addgrp,name):
@@ -403,7 +429,7 @@ def notify_sponsor(plan,addgrp,name):
         html_content='<strong><p>' + name + " bought a " + plan + " subscription on " + mydomain + '</p></strong>')
       sg = SendGridAPIClient(sendgrid_token)
       response = sg.send(message)
-      print('notify ' + em, file=sys.stderr)
+      print('notify PAY ' + em, file=sys.stderr)
   return True
 
 def notify_photo(id,grpcode):
