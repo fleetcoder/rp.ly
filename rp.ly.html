@@ -2981,7 +2981,7 @@ def addPosts():
             grpdata[0]['last_notif'] = newobj['last_notif']
           from dateutil import tz
           tzinfos = {"-08:00": tz.gettz('US/Pacific')}
-          dt = parser.parse(grpdata[0]['last_notif'], tzinfos=tzinfos) + timedelta(hours=24)
+          dt = parser.parse(grpdata[0]['last_notif'], tzinfos=tzinfos) + timedelta(hours=12)
           if dt < timezone( 'US/Pacific' ).localize( datetime.now() ):
             notify_photo( con['id'], grpdata[0]['key'] )
           recips.append( con['id'] )
