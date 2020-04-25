@@ -2623,7 +2623,7 @@ def freeTrialStart():
   cont = {}
   usr = []
   cont['phone'] = request.form.get("phone")
-  cont['email'] = request.form.get("email")
+  cont['email'] = request.form.get("email").lower()
   cont['name'] = request.form.get("name")
   newuser = ''
   if len(cont['phone']) > 0:
@@ -2634,11 +2634,16 @@ def freeTrialStart():
     usr = get_one_by('contacts',newuser,'email')
   os.chdir(appdir)
   tri = get_one_by('connectcodes',request.form.get("code"),'num')
-  email = tri[0]['email']
-  phone = tri[0]['phone']
+  email = ''
+  phone = ''
+  for cocode in tri:
+    email = cocode['email'].lower()
+    phone = cocode['phone']
+    if (cont['phone'] == phone or cont['email'] == email):
+      del_one( 'connectcodes', cocode['id'] )
+      break
   if not (cont['phone'] == phone or cont['email'] == email):
     return '0'
-  del_one( 'connectcodes', tri[0]['id'] )
   ra = randomword(6)
   if len(usr) > 0 and usr[0]['user_id'] is None:
     u = usr[0]['id']
