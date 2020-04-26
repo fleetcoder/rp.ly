@@ -660,7 +660,7 @@
             spinnerHidden : true
           }
         },
-        props: { items : Array, editHidden: Boolean },
+        props: { items : Array, editHidden: Boolean, cangrps : Array },
         methods: {
           openImage(idx){
             if (this.items[idx].isOwner) {
@@ -708,6 +708,7 @@
               </div>
               <audio-player v-if="item.imageHidden" :src="'myFile?field=sound&name=' + item.sound" v-bind:class="{'is-hidden':item.soundHidden}" />
             </mt-cell>
+            <mt-cell v-for="grp in cangrps" :title="'Would you like to see every post by ' + grp.guser + ' in ' + grp.gname + '?'"><mt-button type="primary" size="small" v-on:click="showSponsor(grp)">Become a Sponsor</mt-button></mt-cell>
           </div>`
       }
       const showPosts = {
@@ -1425,8 +1426,7 @@
             <mt-spinner v-bind:class="{'is-hidden':spinnerHidden}" type="snake"></mt-spinner>
             <mt-tab-container v-model="selected">
               <mt-tab-container-item id="tab1">
-                <router-view v-bind:items="items" v-bind:editHidden="editHidden" @on-update-list="getPosts" @on-tabs-hidden="hideTabs" @on-show-menu="showLink" />
-                <mt-cell v-for="grp in cangrps" :title="'Would you like to see every post by ' + grp.guser + ' in ' + grp.gname + '?'"><mt-button type="primary" size="small" v-on:click="showSponsor(grp)">Become a Sponsor</mt-button></mt-cell>
+                <router-view v-bind:items="items" v-bind:editHidden="editHidden" v-bind:cangrps="cangrps" @on-update-list="getPosts" @on-tabs-hidden="hideTabs" @on-show-menu="showLink" />
                 <mt-cell>&nbsp;</mt-cell>
               </mt-tab-container-item>
               <mt-tab-container-item id="tab2">
