@@ -2642,12 +2642,14 @@ def freeTrialStart():
   email = ''
   phone = ''
   for cocode in tri:
-    email = cocode['email'].lower()
+    email = cocode['email']
     phone = cocode['phone']
-    if (cont['phone'] == phone or cont['email'] == email):
+    if cont['email'] is None:
+      cont['email'] = ''
+    if (cont['phone'] == phone or cont['email'].lower() == email):
       del_one( 'connectcodes', cocode['id'] )
       break
-  if not (cont['phone'] == phone or cont['email'] == email):
+  if not (cont['phone'] == phone or cont['email'].lower() == email):
     return '0'
   ra = randomword(6)
   if len(usr) > 0 and usr[0]['user_id'] is None:
