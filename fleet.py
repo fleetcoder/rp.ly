@@ -20,6 +20,8 @@ from werkzeug.serving import WSGIRequestHandler
 from dateutil import parser
 from flask_talisman import Talisman
 from flask_seasurf import SeaSurf
+from pydub import AudioSegment
+
 
 appdir = os.getcwd() + '/'
 
