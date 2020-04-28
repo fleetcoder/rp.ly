@@ -657,7 +657,8 @@
       const listPosts = {
         data() {
           return {
-            spinnerHidden : true
+            spinnerHidden : true,
+            moreHidden : false
           }
         },
         props: { items : Array, editHidden: Boolean, cangrps : Array },
@@ -688,6 +689,9 @@
           },
           doContextMenu(e){
             e.preventDefault()
+          },
+          showMore(){
+            this.$emit('load-more-items')
           }
         },
         template: `
@@ -707,6 +711,9 @@
                 <audio-player :src="'myFile?field=sound&name=' + item.sound" v-bind:class="{'is-hidden':item.soundHidden}" />
               </div>
               <audio-player v-if="item.imageHidden" :src="'myFile?field=sound&name=' + item.sound" v-bind:class="{'is-hidden':item.soundHidden}" />
+            </mt-cell>
+            <mt-cell v-bind:class="{'is-hidden':moreHidden}" >
+              <mt-button size="large" v-on:click="showMore()">More..</mt-button>
             </mt-cell>
             <mt-cell v-for="grp in cangrps" :title="'Would you like to see every post by ' + grp.guser + ' in ' + grp.gname + '?'"><mt-button type="primary" size="small" v-on:click="showSponsor(grp)">Become a Sponsor</mt-button></mt-cell>
           </div>`
@@ -911,7 +918,8 @@
             uploadError: null,
             currentStatus: null,
             uploadFieldName: 'photos',
-            speedup:'1.1'
+            speedup:'1.1',
+            cursor:0
           }
         },
         computed: {
@@ -1062,9 +1070,15 @@
           },
           getPosts() {
             this.spinnerHidden = false
-            Vue.http.get( 'getPosts').then( ( response ) => { 
+            Vue.http.get( 'getPosts' + '?cursor=' + this.cursor.toString()).then( ( response ) => { 
               if ( !!response.body ) {
-                this.items = response.body[0]
+                if (this.cursor > 0) {
+                  for (var j = 0; j < response.body[0].length; j++) {
+                    this.items.push(response.body[0][j])
+                  }
+                } else {
+                  this.items = response.body[0]
+                }
                 this.groups = response.body[1]
                 this.abilities = response.body[2]
                 if (this.groups.length < 2) {
@@ -1418,6 +1432,10 @@
                 formData.append(fieldName, fileList[x], fileList[x].name)
               })
             this.save(formData)
+          },
+          moreItems(){
+            this.cursor = this.items.length
+            this.getPosts()
           }
         },
         mounted() {
@@ -1428,7 +1446,7 @@
             <mt-spinner v-bind:class="{'is-hidden':spinnerHidden}" type="snake"></mt-spinner>
             <mt-tab-container v-model="selected">
               <mt-tab-container-item id="tab1">
-                <router-view v-bind:items="items" v-bind:editHidden="editHidden" v-bind:cangrps="cangrps" @on-update-list="getPosts" @on-tabs-hidden="hideTabs" @on-show-menu="showLink" />
+                <router-view v-bind:items="items" v-bind:editHidden="editHidden" v-bind:cangrps="cangrps" @on-update-list="getPosts" @on-tabs-hidden="hideTabs" @on-show-menu="showLink" @load-more-items="moreItems" />
                 <mt-cell>&nbsp;</mt-cell>
               </mt-tab-container-item>
               <mt-tab-container-item id="tab2">
@@ -2790,6 +2808,8 @@ def getPosts():
   ugrids = []
   for gr in ugrps:
     ugrids.append(gr['id'])
+  posts_limit = 10
+  posts_skipped = 0
   for item in recs:
     if can('get','posts',user,item):
       item['title'] = get_user(item['user_id'])['name'] + ': ' + item['title']
@@ -2810,10 +2830,18 @@ def getPosts():
           item['allowDownload'] = True
       if int(user['id']) == int(item['user_id']):
         item['isOwner'] = True
-      posts.append(item)
+      if not request.args.get('cursor') is None:
+        if posts_skipped < int(request.args.get('cursor')):
+          posts_skipped = posts_skipped + 1
+        else:
+          posts.append(item)
+      else:
+        posts.append(item)
       for pgrp in pgrps:
         if not pgrp in cangrps and not pgrp in ugrids and pgrp in groups:
           cangrps.append(pgrp)
+      if len(posts) == posts_limit:
+        break
     if expired(item):
       notify_del(item['user_id'])
       img = appdir + 'myfiles/' + item['image']
