@@ -660,7 +660,7 @@
             spinnerHidden : true
           }
         },
-        props: { items : Array, editHidden: Boolean, cangrps : Array, moreHidden: Boolean },
+        props: { items : Array, editHidden: Boolean, cangrps : Array, moreHidden: Boolean, doSponsor: Object },
         methods: {
           created() {
             if (this.items.length == 0) {
@@ -699,6 +699,10 @@
             this.moreHidden = true
             this.$emit('load-more-items')
             this.spinnerHidden = true
+          },
+          showSponsor(grp) {
+            this.$emit('update:doSponsor', grp)
+            this.$emit('show-sponsor')
           }
         },
         template: `
@@ -927,7 +931,8 @@
             uploadFieldName: 'photos',
             speedup: '1.1',
             cursor: 0,
-            moreHidden: false
+            moreHidden: false,
+            doSponsor: {}
           }
         },
         computed: {
@@ -1078,6 +1083,7 @@
           },
           getPosts() {
             this.spinnerHidden = false
+            this.moreHidden = true
             Vue.http.get( 'getPosts' + '?cursor=' + this.cursor.toString()).then( ( response ) => { 
               if ( !!response.body ) {
                 if (this.cursor > 0) {
@@ -1445,6 +1451,9 @@
           moreItems(){
             this.cursor = this.items.length
             this.getPosts()
+          },
+          doShowSponsor(){
+            this.showSponsor(this.doSponsor)
           }
         },
         mounted() {
@@ -1455,7 +1464,7 @@
             <mt-spinner v-bind:class="{'is-hidden':spinnerHidden}" type="snake"></mt-spinner>
             <mt-tab-container v-model="selected">
               <mt-tab-container-item id="tab1">
-                <router-view v-bind:items="items" v-bind:editHidden="editHidden" v-bind:cangrps="cangrps" v-bind:moreHidden="moreHidden" @on-update-list="getPosts" @on-tabs-hidden="hideTabs" @on-show-menu="showLink" @load-more-items="moreItems" />
+                <router-view v-bind:items="items" v-bind:doSponsor.sync="doSponsor" v-bind:editHidden="editHidden" v-bind:cangrps="cangrps" v-bind:moreHidden="moreHidden" @on-update-list="getPosts" @on-tabs-hidden="hideTabs" @on-show-menu="showLink" @load-more-items="moreItems" @show-sponsor="doShowSponsor" />
                 <mt-cell>&nbsp;</mt-cell>
               </mt-tab-container-item>
               <mt-tab-container-item id="tab2">
