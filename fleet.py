@@ -691,8 +691,11 @@ if not sys.argv[0] == 'fleet.py':
 # export APP_HOSTNAME=photo.gy
 # export FLEET_APP=rp.ly.html
 # python3 fleet.py
+pport = 443
+if len(sys.argv) > 2:
+  pport = int(sys.argv[2])
 if sys.argv[0] == 'fleet.py':
   if __name__ == "__main__":
-    app.run(host=sys.argv[1],port=443,ssl_context=('fullchain.pem', 'privkey.pem'))
+    app.run(host=sys.argv[1],port=pport,ssl_context=('fullchain.pem', 'privkey.pem'))
 
 
