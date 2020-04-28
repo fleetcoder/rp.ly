@@ -1083,7 +1083,6 @@
           },
           getPosts() {
             this.spinnerHidden = false
-            this.moreHidden = true
             Vue.http.get( 'getPosts' + '?cursor=' + this.cursor.toString()).then( ( response ) => { 
               if ( !!response.body ) {
                 if (this.cursor > 0) {
