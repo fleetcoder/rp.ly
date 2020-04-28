@@ -237,6 +237,7 @@
                 window.location.href = '/'
               } else {
                 alert('Sorry, the code did not match')
+                this.spinnerHidden = true
               }
             })
           },
@@ -381,7 +382,7 @@
             <mt-button v-bind:class="{'is-hidden':loginHidden}" v-on:click="myLogin()" size="large">Submit</mt-button>
             <mt-cell v-bind:class="{'is-hidden':inputhidden}">{{sentcode}}</mt-cell>
             <mt-field v-bind:class="{'is-hidden':inputnamehidden}" label="Name:" placeholder="Your name..." v-model="name"></mt-field>
-            <mt-field v-bind:class="{'is-hidden':inputhidden}" label="Code:" placeholder="***" v-model="code"></mt-field>
+            <mt-field v-bind:class="{'is-hidden':inputhidden}" type="number" label="Code:" placeholder="***" v-model="code"></mt-field>
             <mt-button v-bind:class="{'is-hidden':inputhidden}" v-on:click="doCode()" size="large">Submit Code</mt-button>
             <mt-spinner v-bind:class="{'is-hidden':spinnerHidden}" type="snake"></mt-spinner>
             <div class="vid"></div></div>`
@@ -433,7 +434,7 @@
             <mt-header title="rp.ly">
             </mt-header>
             <mt-cell>{{sentcode}}</mt-cell>
-            <mt-field label="Code:" placeholder="***" v-model="code"></mt-field>
+            <mt-field type="number" label="Code:" placeholder="***" v-model="code"></mt-field>
             <mt-button v-on:click="doCode()" size="large">Submit Code</mt-button>
             <mt-spinner v-bind:class="{'is-hidden':spinnerHidden}" type="snake"></mt-spinner>
           </div>`
@@ -649,7 +650,7 @@
             <mt-field v-bind:class="{'is-hidden':signupHidden}" :state="validName" placeholder="Name" @keyup.native="checkConName" v-model="newName"></mt-field>
             <mt-field v-bind:class="{'is-hidden':signupHidden}" :state="validContact" @keyup.native="checkContact" placeholder="Email or Phone..." v-model="newContact" type="email"></mt-field>
             <mt-button v-bind:class="{'is-hidden':signupBtnHidden}" v-on:click="doJoin()" size="large">{{submitText}}</mt-button>
-            <mt-field v-bind:class="{'is-hidden':docodehidden}" label="Code:" placeholder="***" v-model="code"></mt-field>
+            <mt-field v-bind:class="{'is-hidden':docodehidden}" type="number" label="Code:" placeholder="***" v-model="code"></mt-field>
             <mt-button v-bind:class="{'is-hidden':docodehidden}" v-on:click="doCode()" size="large">Submit Code</mt-button>
             <mt-spinner v-bind:class="{'is-hidden':spinnerHidden}" type="snake"></mt-spinner>
           </div>`
@@ -2685,6 +2686,8 @@ def freeTrialStart():
       del_one( 'connectcodes', cocode['id'] )
       break
   if not (cont['phone'] == phone or cont['email'].lower() == email):
+    return '0'
+  if ('' == phone and '' == email):
     return '0'
   ra = randomword(6)
   if len(usr) > 0 and usr[0]['user_id'] is None:
