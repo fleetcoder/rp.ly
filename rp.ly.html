@@ -657,11 +657,10 @@
       const listPosts = {
         data() {
           return {
-            spinnerHidden : true,
-            moreHidden : false
+            spinnerHidden : true
           }
         },
-        props: { items : Array, editHidden: Boolean, cangrps : Array },
+        props: { items : Array, editHidden: Boolean, cangrps : Array, moreHidden: Boolean },
         methods: {
           created() {
             if (this.items.length == 0) {
@@ -700,7 +699,6 @@
             this.moreHidden = true
             this.$emit('load-more-items')
             this.spinnerHidden = true
-            this.moreHidden = false
           }
         },
         template: `
@@ -927,8 +925,9 @@
             uploadError: null,
             currentStatus: null,
             uploadFieldName: 'photos',
-            speedup:'1.1',
-            cursor:0
+            speedup: '1.1',
+            cursor: 0,
+            moreHidden: false
           }
         },
         computed: {
@@ -1085,6 +1084,7 @@
                   for (var j = 0; j < response.body[0].length; j++) {
                     this.items.push(response.body[0][j])
                   }
+                  this.moreHidden = false
                 } else {
                   this.items = response.body[0]
                 }
@@ -1455,7 +1455,7 @@
             <mt-spinner v-bind:class="{'is-hidden':spinnerHidden}" type="snake"></mt-spinner>
             <mt-tab-container v-model="selected">
               <mt-tab-container-item id="tab1">
-                <router-view v-bind:items="items" v-bind:editHidden="editHidden" v-bind:cangrps="cangrps" @on-update-list="getPosts" @on-tabs-hidden="hideTabs" @on-show-menu="showLink" @load-more-items="moreItems" />
+                <router-view v-bind:items="items" v-bind:editHidden="editHidden" v-bind:cangrps="cangrps" v-bind:moreHidden="moreHidden" @on-update-list="getPosts" @on-tabs-hidden="hideTabs" @on-show-menu="showLink" @load-more-items="moreItems" />
                 <mt-cell>&nbsp;</mt-cell>
               </mt-tab-container-item>
               <mt-tab-container-item id="tab2">
