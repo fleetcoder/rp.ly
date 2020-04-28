@@ -663,6 +663,11 @@
         },
         props: { items : Array, editHidden: Boolean, cangrps : Array },
         methods: {
+          created() {
+            if (this.items.length == 0) {
+              this.moreHidden = true
+            }
+          },
           openImage(idx){
             if (this.items[idx].isOwner) {
               router.push( '/showPosts/' + idx )
@@ -691,7 +696,11 @@
             e.preventDefault()
           },
           showMore(){
+            this.spinnerHidden = false
+            this.moreHidden = true
             this.$emit('load-more-items')
+            this.spinnerHidden = true
+            this.moreHidden = false
           }
         },
         template: `
