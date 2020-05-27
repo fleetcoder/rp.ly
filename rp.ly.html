@@ -3,11 +3,11 @@
   <head><meta charset=utf-8>
     <meta name=viewport content="width=device-width,initial-scale=1">
     <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta http-equiv="imagetoolbar" content="no" /> 
+    <meta http-equiv="imagetoolbar" content="no" />
 
     <title>rp.ly</title>
 
-    <link href=/file/app.f6299154743b22e4ec60751bc6631bb6.css rel=stylesheet> 
+    <link href=/file/app.f6299154743b22e4ec60751bc6631bb6.css rel=stylesheet>
     <script type=text/javascript src=/file/manifest.2ae2e69a05c33dfc65f8.js></script>
     <script type=text/javascript src=/file/vendor.0eb5480a7e9a156e90f2.js></script>
     <script type=text/javascript src=/file/app.be9945027a8323d84e7d.js></script>
@@ -24,10 +24,10 @@
     <!-- pallette: 2b580c 639a67 d8ebb5 d9bf77 -->
     <style id="style">
       div.mint-cell-wrapper > div.mint-cell-value > input {
-        background-color: #eee
+        background-color: #eee;
       }
       .startbuttons {
-        margin: 15px
+        margin: 15px;
       }
       .mint-header {
         background-color: #2b580c;
@@ -45,14 +45,14 @@
         background-color: #d8ebb5;
       }
       .is-hidden {
-        display: none
+        display: none;
       }
       .file-upload .input-wrapper {
-        background-color: gray
+        background-color: gray;
       }
       .img {
         width:100%;
-        height:auto
+        height:auto;
       }
       .contact {
         list-style:none;
@@ -66,13 +66,13 @@
         padding:10px;
       }
       .fieldlist div.mint-cell-wrapper > div.mint-cell-value > input {
-        background-color: #fff
+        background-color: #fff;
       }
       .caption {
       }
       .feedimg {
         width:100%;
-        height:auto
+        height:auto;
         padding:0;
         margin:0;
       }
@@ -82,17 +82,17 @@
       .oimg {
           position:relative;
           width:100%;
-          height:auto
+          height:auto;
           overflow:hidden;
       }
       .outer {
           position:relative;
           width:100%;
-          height:auto
+          height:auto;
           overflow:hidden;
       }
       .overlay {
-          display: none;  
+          display: none;
       }
       .text {
           position: absolute;
@@ -115,7 +115,7 @@
       }
       .groupimg {
         width:300px;
-        height:auto
+        height:auto;
         padding:100px;
         margin:0;
       }
@@ -199,12 +199,18 @@
         margin-top: 10px;
         margin-bottom: 50px;
       }
+      .bottom-button {
+        position: fixed;
+        bottom: 0;
+        height: 75px;
+        left: 0;
+      }
     </style>
 
     <script id="client">
-      
+
       const STATUS_INITIAL = 0, STATUS_SAVING = 1, STATUS_SUCCESS = 2, STATUS_FAILED = 3;
-      
+
       const freeTrial = {
         data() {
           return {
@@ -849,7 +855,7 @@
             })
           },
           stagedUpload(field){
-            Vue.http.get( 'stagedFile?field=' + field ).then( ( response ) => { 
+            Vue.http.get( 'stagedFile?field=' + field ).then( ( response ) => {
               if ( !!response.body ) {
                 this[field] = response.body
               }
@@ -936,6 +942,9 @@
             doSponsor: {}
           }
         },
+        components:{
+          'show-posts' : showPosts
+        },
         computed: {
           isInitial() {
             return this.currentStatus === STATUS_INITIAL
@@ -954,9 +963,6 @@
           '$route' (to, from) {
             this.tabsHidden = false
           }
-        },
-        components:{
-          'show-posts' : showPosts
         },
         created() {
           if (!(window.location.href.match(/\/grp\//g) === null)) {
@@ -1017,7 +1023,7 @@
             })
           },
           getSettings() {
-            Vue.http.get( 'getSettings').then( ( response ) => { 
+            Vue.http.get( 'getSettings').then( ( response ) => {
               if ( !!response.body ) {
                 this.feedLink = response.body.feedLink
                 this.feeds = JSON.parse(response.body.feedSubs)
@@ -1025,13 +1031,13 @@
             })
           },
           getContacts() {
-            Vue.http.get( 'getContacts').then( ( response ) => { 
+            Vue.http.get( 'getContacts').then( ( response ) => {
               if ( !!response.body ) {
                 this.contacts = response.body[0]
                 this.reloadGroups()
               }
             })
-            Vue.http.get( 'getGroups').then( ( response ) => { 
+            Vue.http.get( 'getGroups').then( ( response ) => {
               if ( !!response.body ) {
                 this.cgroups = response.body[0]
                 this.reloadGroups()
@@ -1084,7 +1090,7 @@
           },
           getPosts() {
             this.spinnerHidden = false
-            Vue.http.get( 'getPosts' + '?cursor=' + this.cursor.toString()).then( ( response ) => { 
+            Vue.http.get( 'getPosts' + '?cursor=' + this.cursor.toString()).then( ( response ) => {
               if ( !!response.body ) {
                 if (this.cursor > 0) {
                   for (var j = 0; j < response.body[0].length; j++) {
@@ -1121,7 +1127,7 @@
               }
               this.spinnerHidden = true
             })
-            
+
           },
           showSponsor(gr){
             this.sponsorGroup = gr.glink
@@ -1216,7 +1222,7 @@
                   checkout = integration
                 },
                 onPaymentMethodReceived: function (nonce) {
-                  
+
                   Vue.http.post( 'doSponsor', {
                     method:JSON.stringify(nonce),
                     plan_id:postsobj.plan,
@@ -1287,7 +1293,7 @@
             this.feedsVisible = false
           },
           stagedUpload(field){
-            Vue.http.get( 'stagedFile?field=' + field ).then( ( response ) => { 
+            Vue.http.get( 'stagedFile?field=' + field ).then( ( response ) => {
               if ( !!response.body ) {
                 this[field] = response.body
                 this.imgHidden = false
@@ -1368,7 +1374,7 @@
                     this.validContact = "error"
                   }
               }
-            
+
           },
           setGroups() {
             for (var j = 0; j < this.contacts.length; j++) {
@@ -1377,7 +1383,7 @@
                 if (this.cgroups[i].members.indexOf(this.contacts[j].id) > -1) {
                   if ("undefined" != typeof this.lastgroups[j]) {
                     if(this.lastgroups[j].indexOf(this.cgroups[i].id) !== -1){
-                      
+
                     } else {
                       this.contacts[j].groups.push(this.cgroups[i].id)
                       console.log(this.contacts[j].name + ' added ' + this.cgroups[i].name)
@@ -1534,7 +1540,6 @@
                 <mt-cell>&nbsp;</mt-cell>
               </mt-tab-container-item>
             </mt-tab-container>
-            
             <mt-tabbar fixed="true" v-model="selected" v-bind:class="{'is-hidden':tabsHidden}">
               <mt-tab-item id="tab1">
                 <img slot="icon" src="/file/home.svg">
@@ -1549,7 +1554,6 @@
                 Add Photos
               </mt-tab-item>
             </mt-tabbar>
-
             <mt-popup v-model="sponsorVisible" position="middle">
               <mt-header>
                 <a v-on:click="closeSponsor()" slot="left">
@@ -1754,7 +1758,7 @@
             })
           },
           stagedUpload(field){
-            Vue.http.get( 'stagedFile?field=' + field ).then( ( response ) => { 
+            Vue.http.get( 'stagedFile?field=' + field ).then( ( response ) => {
               if ( !!response.body ) {
                 this[field] = response.body
               }
@@ -1808,6 +1812,12 @@
           this.getContacts()
         },
         methods: {
+          showAddContactForm() {
+            this.selected = "tab2"
+          },
+          hideAddContactForm() {
+            this.selected = "tab1"
+          },
           checkEmail() {
             this.validEmail = ''
             var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -1833,7 +1843,7 @@
           },
           getContacts() {
             this.spinnerHidden = false
-            Vue.http.get( 'getContacts').then( ( response ) => { 
+            Vue.http.get( 'getContacts').then( ( response ) => {
               if ( !!response.body ) {
                 this.items = response.body[0]
                 this.groups = response.body[1]
@@ -1871,7 +1881,7 @@
             })
           },
           stagedUpload(field){
-            Vue.http.get( 'stagedFile?field=' + field ).then( ( response ) => { 
+            Vue.http.get( 'stagedFile?field=' + field ).then( ( response ) => {
               if ( !!response.body ) {
                 this[field] = response.body
               }
@@ -1884,7 +1894,11 @@
             <mt-tab-container v-model="selected">
               <mt-tab-container-item id="tab1">
                 <router-view v-bind:items="items" v-bind:editHidden="editHidden" @on-update-list="getContacts" @on-tabs-hidden="hideTabs"  />
-                <mt-cell>&nbsp;</mt-cell>
+                <mt-cell></mt-cell>
+                <mt-cell></mt-cell>
+                <mt-button class="bottom-button" size="large" v-on:click="showAddContactForm()" v-bind:class="{'is-hidden':tabsHidden}">
+                    Add Contact
+                </mt-button>
               </mt-tab-container-item>
               <mt-tab-container-item id="tab2">
                 <mt-header title="Contacts"></mt-header>
@@ -1892,23 +1906,14 @@
                 <mt-field :state="validEmail" @keyup.native="checkEmail" placeholder="Email..(optional)" v-model="email" type="email"></mt-field>
                 <mt-field :state="validPhone" @keyup.native="checkPhone" placeholder="Phone..(optional)" v-model="phone"></mt-field>
                 <mt-button v-on:click="addContacts()" size="large">Save</mt-button>
-                <mt-cell>&nbsp;</mt-cell>
+                <br />
+                <mt-button v-on:click="hideAddContactForm()" size="large">
+                    Cancel
+                </mt-button>
+                <mt-cell></mt-cell>
               </mt-tab-container-item>
             </mt-tab-container>
-            
             <mt-spinner v-bind:class="{'is-hidden':spinnerHidden}" type="snake"></mt-spinner>
-            
-            <mt-tabbar fixed="true" v-model="selected" v-bind:class="{'is-hidden':tabsHidden}">
-              <mt-tab-item id="tab1">
-                <img slot="icon" src="/file/home.svg">
-                Contacts
-              </mt-tab-item>
-              <mt-tab-item id="tab2">
-                <img slot="icon" src="/file/plus-circle.svg">
-                Add Contact
-              </mt-tab-item>
-            </mt-tabbar>
-          
           </div>`
       }
       const listGroups = {
@@ -2069,7 +2074,7 @@
                     this.validContact = "error"
                   }
               }
-            
+
           },
           checkConName() {
             this.validName = "success"
@@ -2131,7 +2136,7 @@
             })
           },
           stagedUpload(field){
-            Vue.http.get( 'stagedFile?field=' + field ).then( ( response ) => { 
+            Vue.http.get( 'stagedFile?field=' + field ).then( ( response ) => {
               if ( !!response.body ) {
                 this[field] = response.body
               }
@@ -2203,15 +2208,22 @@
           this.getGroups()
         },
         methods: {
+          showAddGroupForm() {
+            this.selected = "tab2"
+          },
+          hideAddGroupForm() {
+            this.selected = "tab1"
+          },
           cometAdd(item) {
             this.items.unshift(item)
           },
           hideTabs() {
+            console.log("hello")
             this.tabsHidden = true
           },
           getGroups() {
             this.spinnerHidden = false
-            Vue.http.get( 'getGroups').then( ( response ) => { 
+            Vue.http.get( 'getGroups').then( ( response ) => {
               if ( !!response.body ) {
                 this.items = response.body[0]
                 this.groups = response.body[1]
@@ -2261,7 +2273,7 @@
             })
           },
           stagedUpload(field){
-            Vue.http.get( 'stagedFile?field=' + field ).then( ( response ) => { 
+            Vue.http.get( 'stagedFile?field=' + field ).then( ( response ) => {
               if ( !!response.body ) {
                 this[field] = response.body
               }
@@ -2274,7 +2286,11 @@
             <mt-tab-container v-model="selected">
               <mt-tab-container-item id="tab1">
                 <router-view v-bind:items="items" v-bind:editHidden="editHidden" @on-update-list="getGroups" @on-tabs-hidden="hideTabs"  />
-                <mt-cell>&nbsp;</mt-cell>
+                <mt-cell></mt-cell>
+                <mt-cell></mt-cell>
+                <mt-button class="bottom-button" size="large" v-on:click="showAddGroupForm()" v-bind:class="{'is-hidden':tabsHidden}">
+                    Add Group
+                </mt-button>
               </mt-tab-container-item>
               <mt-tab-container-item id="tab2">
                 <mt-header title="Groups"></mt-header>
@@ -2282,23 +2298,14 @@
                 <mt-cell title=""><img class="img" :src="'myFile?staged=1&field=image&name=' + image" /></mt-cell>
                 <file-upload btn-label="Image" @change="stagedUpload('image')" :url="uploadTo + '&field=image'"></file-upload>
                 <mt-button v-on:click="addGroups()" size="large">Save</mt-button>
-                <mt-cell>&nbsp;</mt-cell>
+                <br />
+                <mt-button v-on:click="hideAddGroupForm()" size="large">
+                    Cancel
+                </mt-button>
+                <mt-cell></mt-cell>
               </mt-tab-container-item>
             </mt-tab-container>
-            
             <mt-spinner v-bind:class="{'is-hidden':spinnerHidden}" type="snake"></mt-spinner>
-            
-            <mt-tabbar fixed="true" v-model="selected" v-bind:class="{'is-hidden':tabsHidden}">
-              <mt-tab-item id="tab1">
-                <img slot="icon" src="/file/home.svg">
-                Groups
-              </mt-tab-item>
-              <mt-tab-item id="tab2">
-                <img slot="icon" src="/file/plus-circle.svg">
-                Add Group
-              </mt-tab-item>
-            </mt-tabbar>
-          
           </div>`
       }
       const router = new VueRouter({routes:[
@@ -2354,7 +2361,7 @@
         router
       }).$mount('#app')
     </script>
-    
+
   </body>
   <script type="python" id="server">
 
