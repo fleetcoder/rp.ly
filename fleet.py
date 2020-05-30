@@ -21,6 +21,7 @@ from dateutil import parser
 from flask_talisman import Talisman
 from flask_seasurf import SeaSurf
 from pydub import AudioSegment
+import cv2
 
 
 appdir = os.getcwd() + '/'
@@ -69,7 +70,7 @@ myapp = appdir + os.getenv('FLEET_APP')
 mydomain = os.getenv('APP_HOSTNAME')
 
 UPLOAD_FOLDER = appdir + 'myfiles/'
-ALLOWED_EXTENSIONS = set(['opml','txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif'])
+ALLOWED_EXTENSIONS = set(['opml','txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif', 'mov', 'mp4', 'mp3'])
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 @app.route('/file/<filename>')
