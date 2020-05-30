@@ -52,7 +52,7 @@
 ------------------
 2. Download Python software
 
-```pip3 install flask flask_socketio python-dateutil lxml feedparser flask_cors pillow sendgrid twilio gunicorn pytz flask_talisman flask_seasurf pydub```
+```pip3 install flask flask_socketio python-dateutil lxml feedparser flask_cors pillow sendgrid twilio gunicorn pytz flask_talisman flask_seasurf pydub opencv-python```
 
 ------------------
 3. Download rp.ly

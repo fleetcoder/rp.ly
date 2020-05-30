@@ -7,10 +7,10 @@
 
     <title>rp.ly</title>
 
-    <link href=/file/app.f6299154743b22e4ec60751bc6631bb6.css rel=stylesheet>
+    <link href=/file/app.506bce4b8453f5098f6a.css rel=stylesheet>
     <script type=text/javascript src=/file/manifest.2ae2e69a05c33dfc65f8.js></script>
     <script type=text/javascript src=/file/vendor.0eb5480a7e9a156e90f2.js></script>
-    <script type=text/javascript src=/file/app.be9945027a8323d84e7d.js></script>
+    <script type=text/javascript src=/file/app.7e42ddabe5d445687cc3.js></script>
     <!-- <script type=text/javascript src=/file/socket.io.js></script> -->
     <link rel="apple-touch-icon-precomposed" sizes="57x57" href="/file/rply57.png" />
     <link rel="apple-touch-icon-precomposed" sizes="72x72" href="/file/rply72.png" />
@@ -728,6 +728,9 @@
                 <figcaption class="caption" v-text="item.title"></figcaption>
                 <audio-player :src="'myFile?field=sound&name=' + item.sound" v-bind:class="{'is-hidden':item.soundHidden}" />
               </div>
+              <vue-plyr v-if="item.isVideo">
+                <video :poster="item.image" :src="'myFile?field=video&name=' + item.video" controls data-plyr-config='{ "iconUrl": "file/plyr.svg" }' />
+              </vue-plyr>
               <audio-player v-if="item.imageHidden" :src="'myFile?field=sound&name=' + item.sound" v-bind:class="{'is-hidden':item.soundHidden}" />
             </mt-cell>
             <mt-cell v-bind:class="{'is-hidden':moreHidden}" >
@@ -1498,7 +1501,7 @@
                     <div class="dropbox">
                       <label class="uploadlabel" for="image_uploads">Click here to choose photos, or drag files here</label>
                       <input id="image_uploads" type="file" multiple :name="uploadFieldName" :disabled="isSaving" @change="filesChange($event.target.name, $event.target.files); fileCount = $event.target.files.length"
-                        accept="image/*" class="input-file">
+                        accept="image/*,video/mp4,video/x-m4v,video/*,audio/x-m4a,audio/*" class="input-file">
                     </div>
                   </form>
                   <p class="dropboxp" v-if="isSaving">
@@ -2851,6 +2854,9 @@ def getPosts():
         item['soundHidden'] = True
       if item['image'] == '' and item['sound'] == '':
         item['textHidden'] = False
+      item['isVideo'] = False
+      if not item['video'] == '':
+        item['isVideo'] = True
       pgrps = json.loads(item['groups'])
       for p in pgrps:
         if p in allowdownload:
@@ -3004,10 +3010,14 @@ def addPosts():
   if not can('add','posts',curr):
     return( json.dumps( [ 'Error' ] ) )
   for savedImage in saveImage:
+    videoFile = ''
+    if (savedImage[-7:].lower() == 'mov.jpg'):
+      videoFile = savedImage[:-4]
     newrec = {
       'title' : title,
       'image' : savedImage,
       'sound' : saveFile( 'sound' ),
+      'video' : videoFile,
       'groups' : request.form.get('recips'),
       'user_id' : session['user'],
       'created' : str( timezone( 'US/Pacific' ).localize( datetime.now() ) )
@@ -3528,9 +3538,22 @@ def uploadMulti():
           if 'name' in filedata:
             fname = time.strftime("%Y%m%d-%H%M%S") + filedata['name']
             filepath = appdir + 'myfiles/' + fname
-            filenames.append(fname)
             copyfile(filedata['tmp_name'], filepath)
-            uploaded.append({'url':fname,'originalName':filedata['name']})
+            if filepath[-3:].lower() == 'mov':
+              uploaded.append({'url':fname + '.jpg','originalName':filedata['name'] + '.jpg'})
+              filenames.append(fname + '.jpg')
+            else:
+              uploaded.append({'url':fname,'originalName':filedata['name']})
+              filenames.append(fname)
+            if filepath[-3:].lower() == 'mov':
+              vidcap = cv2.VideoCapture(filepath)
+              success,image = vidcap.read()
+              filepath = filepath + '.jpg'
+              cv2.imwrite(filepath, image)
+              image=Image.open(filepath)
+              image=image.rotate(180, expand=True)
+              image.save(filepath)
+              image.close()
             if not (filepath[-3:] == 'mp3'):
               try:
                 image=Image.open(filepath)
@@ -3584,8 +3607,10 @@ def myFile():
       thefile = appdir + 'myfiles/' + item[0][request.args.get('field')]
   ftype = 'image/jpeg'
   if thefile and not os.path.isdir(thefile):
-    if (thefile[-3:] == 'mp3'):
+    if (thefile[-3:].lower() == 'mp3'):
       ftype = 'audio/mp3'
+    if (thefile[-3:].lower() == 'mov'):
+      ftype = 'video/quicktime'
     print(thefile,file=sys.stderr)
     return send_file( thefile, mimetype=ftype)
   return 'Error'
