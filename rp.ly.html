@@ -3610,7 +3610,7 @@ def myFile():
     if (thefile[-3:].lower() == 'mp3'):
       ftype = 'audio/mp3'
     if (thefile[-3:].lower() == 'mov'):
-      ftype = 'video/quicktime'
+      return send_from_directory(appdir + 'myfiles/', request.args.get('name'), conditional=True)
     print(thefile,file=sys.stderr)
     return send_file( thefile, mimetype=ftype)
   return 'Error'
