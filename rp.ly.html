@@ -668,12 +668,12 @@
           }
         },
         props: { items : Array, editHidden: Boolean, cangrps : Array, moreHidden: Boolean, doSponsor: Object },
+        created() {
+          if (this.items.length == 0) {
+            this.moreHidden = true
+          }
+        },
         methods: {
-          created() {
-            if (this.items.length == 0) {
-              this.moreHidden = true
-            }
-          },
           openImage(idx){
             if (this.items[idx].isOwner) {
               router.push( '/showPosts/' + idx )
@@ -941,7 +941,7 @@
             uploadFieldName: 'photos',
             speedup: '1.1',
             cursor: 0,
-            moreHidden: false,
+            moreHidden: true,
             doSponsor: {}
           }
         },
@@ -1096,6 +1096,9 @@
             Vue.http.get( 'getPosts' + '?cursor=' + this.cursor.toString()).then( ( response ) => {
               if ( !!response.body ) {
                 if (this.cursor > 0) {
+                  if (response.body[0].length < 10) {
+                    this.moreHidden = true
+                  }
                   for (var j = 0; j < response.body[0].length; j++) {
                     this.items.push(response.body[0][j])
                   }
