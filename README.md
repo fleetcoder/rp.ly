@@ -1,8 +1,7 @@
 # rp.ly
 
-## photo, voice and text chat newsfeed for groups
+## micro-blog network with private groups with audio, video and photo
 
-## try it free:
 
 - [https://rp.ly](https://rp.ly "https://rp.ly")
 
@@ -11,10 +10,11 @@
 
 ### the feed can also be accessed from podcast apps, feed readers and other rp.ly sites
 
-## other free rp.ly sites:
+## other rp.ly sites:
 
 - [https://photo.gy](https://photo.gy "https://photo.gy")
 - [https://audio.gy](https://audio.gy "https://audio.gy")
+- [https://movie.gd](https://movie.gd "https://movie.gd")
 
 ## Screenshots
 
@@ -47,7 +47,7 @@
 ------------------
 1. Download System software
 
-```apt install python3-pip unzip python3-certbot-apache ffmpeg```
+```apt install python3-pip unzip python3-certbot-apache ffmpeg libsm6```
 
 ------------------
 2. Download Python software
