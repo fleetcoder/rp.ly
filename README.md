@@ -1,6 +1,6 @@
 # rp.ly
 
-## micro-blog network with private groups with audio, video and photo
+## private photo/podcast/vlog microblog network, decentralized via standard feeds 
 
 
 - [https://rp.ly](https://rp.ly "https://rp.ly")
