@@ -1511,6 +1511,7 @@
                 </mt-cell>
                 <mt-cell is-link to="/contacts" title="Contacts"></mt-cell>
                 <mt-cell is-link to="/groups" title="Groups"></mt-cell>
+                <mt-cell v-if="subsHidden" is-link to="/subs" title="Payments"></mt-cell>
                 <mt-cell></mt-cell>
               </mt-tab-container-item>
               <mt-tab-container-item id="tab3">
@@ -2331,6 +2332,43 @@
             <mt-spinner v-bind:class="{'is-hidden':spinnerHidden}" type="snake"></mt-spinner>
           </div>`
       }
+      const Subscribers = {
+        data() {
+          return {
+            spinnerHidden : true,
+            items : [],
+            comet : ''
+          }
+        },
+        created() {
+          this.getSubscribers()
+        },
+        methods: {
+          cometAdd(item) {
+            this.items.unshift(item)
+          },
+          getSubscribers() {
+            this.spinnerHidden = false
+            Vue.http.get( 'getSubscribers').then( ( response ) => {
+              if ( !!response.body ) {
+                this.items = response.body
+              }
+              this.spinnerHidden = true
+            })
+          }
+        },
+        template: `
+          <div>
+            <mt-header title="Payments">
+              <router-link to="/myContacts" slot="left">
+                <mt-button icon="back">back</mt-button>
+              </router-link>
+            </mt-header>
+            <mt-cell title="Amount - Date - Gallery - From"></mt-cell>
+            <mt-cell v-for="(item, idx) in items" :title="item.amount + ' - ' + item.date + ' - ' + item.gallery + ' - ' + item.name"></mt-cell>
+            <mt-spinner v-bind:class="{'is-hidden':spinnerHidden}" type="snake"></mt-spinner>
+          </div>`
+      }
       const router = new VueRouter({routes:[
         { path: '', component: Posts,
           children: [{
@@ -2378,6 +2416,9 @@
         },{
             path: '/auth',
             component: freeTrial
+        },{
+            path: '/subs',
+            component: Subscribers
         }
       ]})
       const vueApp = new Vue({
@@ -2388,6 +2429,35 @@
   </body>
   <script type="python" id="server">
 
+@app.route('/getSubscribers', methods=['GET','POST'])
+def getSubscribers():
+  subs = []
+  curr = current_user()
+  ugrps = get_one_by('groups',curr['id'],'user_id')
+  ugrids = []
+  for gr in ugrps:
+    ugrids.append(str(gr['id']))
+  if not os.getenv('BT_ID') is None:
+    search_results = gateway.subscription.search(
+      braintree.SubscriptionSearch.status.in_list(
+        braintree.Subscription.Status.Active,
+        braintree.Subscription.Status.Canceled,
+        braintree.Subscription.Status.Expired,
+        braintree.Subscription.Status.PastDue,
+        braintree.Subscription.Status.Pending
+      )
+    )
+    for sub in search_results:
+      grpid = ''.join(x for x in sub.id if x.isdigit())
+      if int(grpid) in ugrids:
+        items = get_one( 'groups', grpid )
+        items = [3]
+        if len(items) > 0:
+          owner = get_user(items[0]['user_id'])
+          grpn = items[0]['name']
+          for tr in sub.transactions:
+            subs.append({'name':tr.customer_details.first_name,'gallery':grpn,'date':str(sub.created_at),'amount':'${:0,.2f}'.format(round(float(tr.amount) * 0.9,3))})
+  return( json.dumps( subs ) )
 
 @app.route('/delSponsor', methods=['GET','POST'])
 def delSponsor():
