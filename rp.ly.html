@@ -2865,12 +2865,15 @@ def feed():
     for post in items:
       item = etree.Element('item')
       etree.SubElement(item,'title').text = post['title']
-      etree.SubElement(item,'pubDate').text = post['created']
+      d = post['created']
+      if ":" == d[-3]:
+        d = d[:-3]+d[-2:]
+      etree.SubElement(item,'pubDate').text = utils.format_datetime(datetime.strptime(d, "%Y-%m-%d %H:%M:%S.%f%z"))
       enc = etree.Element('enclosure')
       mtype = mimetypes.MimeTypes().guess_type(post['sound'])[0]
       if not mtype is None:
         if post['sound'][-3:] == 'mp3':
-          enc.set('url', 'https://' + mydomain + '/myFile?name=' + post['sound'] + '&field=sound')
+          enc.set('url', 'https://' + mydomain + '/myFile?name=' + urllib.parse.quote(post['sound']) + '&field=sound')
           enc.set('length', str(os.path.getsize('myfiles/' + post['sound'])))
           enc.set('type', mtype)
           item.append(enc)
@@ -2878,7 +2881,7 @@ def feed():
         enc = etree.Element('enclosure')
         mtype = mimetypes.MimeTypes().guess_type(post['image'])[0]
         if not mtype is None:
-          enc.set('url', 'https://' + mydomain + '/myFile?name=' + post['image'] + '&field=image')
+          enc.set('url', 'https://' + mydomain + '/myFile?name=' + urllib.parse.quote(post['image']) + '&field=image')
           enc.set('length', str(os.path.getsize('myfiles/' + post['image'])))
           enc.set('type', mtype)
           item.append(enc)
@@ -2886,7 +2889,9 @@ def feed():
     root = etree.Element('rss')
     root.set('version', '2.0')
     root.append(channel)
-    return etree.tostring(root, pretty_print=True).decode('utf-8')
+    resp = make_response(etree.tostring(root, pretty_print=True).decode('utf-8'))
+    resp.mimetype = "application/rss+xml"
+    return resp
   return str(0)
 
 @app.route('/getSettings',methods=['GET','POST'])
