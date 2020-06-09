@@ -1632,7 +1632,6 @@
                 <a v-on:click="closeSubs()" slot="left">
                   <mt-button>X</mt-button>
                 </a>
-                <p v-model="noSubsTxt"></p>
               </mt-header>
               <mt-cell v-for="(artist, idx) in subs">
                 <mt-cell :title="artist.name">
@@ -1641,6 +1640,7 @@
                   </a>
                 </mt-cell>
               </mt-cell>
+              <p v-text="noSubsTxt"></p>
               <p>&nbsp;</p>
             </mt-popup>
             
