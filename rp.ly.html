@@ -1005,6 +1005,9 @@
               this.getSettings()
             }
           })
+          if (typeof braintree !== "undefined") {
+            this.subsHidden = false
+          }
         },
         methods: {
           closeSponsor() {
@@ -1030,9 +1033,6 @@
             }
           },
           showLink() {
-            if (typeof braintree !== "undefined") {
-              this.subsHidden = false
-            }
             this.linkVisible = true
           },
           aftRec(data){
@@ -1515,7 +1515,7 @@
                 </mt-cell>
                 <mt-cell is-link to="/contacts" title="Contacts"></mt-cell>
                 <mt-cell is-link to="/groups" title="Groups"></mt-cell>
-                <mt-cell v-if="subsHidden" is-link to="/subs" title="Payments"></mt-cell>
+                <mt-cell v-if="!subsHidden" is-link to="/subs" title="Payments"></mt-cell>
                 <mt-cell></mt-cell>
               </mt-tab-container-item>
               <mt-tab-container-item id="tab3">
