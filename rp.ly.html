@@ -959,7 +959,8 @@
             speedup: '1.1',
             cursor: 0,
             moreHidden: true,
-            doSponsor: {}
+            doSponsor: {},
+            noSubsTxt: 'No subscriptions'
           }
         },
         components:{
@@ -1028,6 +1029,7 @@
                 this.linkVisible = false
                 if (response.body[0].length > 0) {
                   this.subs = response.body[0]
+                  this.noSubsTxt = ''
                 }
                 this.settingsSpinnerHidden = true
                 this.subsVisible = true
@@ -1630,6 +1632,7 @@
                 <a v-on:click="closeSubs()" slot="left">
                   <mt-button>X</mt-button>
                 </a>
+                <p v-model="noSubsTxt"></p>
               </mt-header>
               <mt-cell v-for="(artist, idx) in subs">
                 <mt-cell :title="artist.name">
