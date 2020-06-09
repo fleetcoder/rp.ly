@@ -36,6 +36,10 @@
       div.mint-cell-wrapper > div.mint-cell-value > input {
         background-color: #eee;
       }
+      .headericon {
+        -webkit-filter: invert(.75);
+                filter: invert(.75);
+      }
       .startbuttons {
         margin: 15px;
       }
@@ -727,7 +731,7 @@
           <div>
             <mt-header title="rp.ly">
               <a v-on:click="showLink()" slot="right">
-                <mt-button icon="more"></mt-button>
+                <img class="headericon" slot="icon" src="file/settings.svg">
               </a>
             </mt-header>
             <mt-spinner v-bind:class="{'is-hidden':spinnerHidden}" type="snake"></mt-spinner>
