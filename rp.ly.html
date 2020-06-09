@@ -1026,7 +1026,9 @@
               Vue.http.post( 'btSubs', {
               }).then( ( response ) => {
                 this.linkVisible = false
-                this.subs = response.body[0]
+                if (response.body[0].length > 0) {
+                  this.subs = response.body[0]
+                }
                 this.settingsSpinnerHidden = true
                 this.subsVisible = true
               })
