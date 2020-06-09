@@ -939,7 +939,7 @@
             optionsBtnHidden: false,
             optionsHidden: true,
             sponsorVisible: false,
-            subs: [],
+            subs: [{'name':'No subscriptions'}],
             btAuth: '',
             plan: 'fans50',
             plans:[{label: '$3 / 6 months',value: 'fans50'},{label: '$3 / month',value: 'fans300'}],
@@ -1018,20 +1018,20 @@
             //this.doExpire = !this.doExpire
           },
           showSubs() {
-            this.linkVisible = false
-            this.subsVisible = true
+            if (typeof braintree !== "undefined") {
+              this.settingsSpinnerHidden = false
+              Vue.http.post( 'btSubs', {
+              }).then( ( response ) => {
+                this.linkVisible = false
+                this.subs = response.body[0]
+                this.settingsSpinnerHidden = true
+                this.subsVisible = true
+              })
+            }
           },
           showLink() {
-            if (this.subs.length < 1) {
-              if (typeof braintree !== "undefined") {
-                this.settingsSpinnerHidden = false
-                Vue.http.post( 'btSubs', {
-                }).then( ( response ) => {
-                  this.subs = response.body[0]
-                  this.subsHidden = false
-                  this.settingsSpinnerHidden = true
-                })
-              }
+            if (typeof braintree !== "undefined") {
+              this.subsHidden = false
             }
             this.linkVisible = true
           },
