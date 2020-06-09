@@ -12,15 +12,15 @@
 
 ## other rp.ly sites:
 
+- [https://movie.gd](https://movie.gd "https://movie.gd")
 - [https://photo.gy](https://photo.gy "https://photo.gy")
 - [https://audio.gy](https://audio.gy "https://audio.gy")
-- [https://movie.gd](https://movie.gd "https://movie.gd")
 
 ## Screenshots
 
 |  |  |  |
 | ------------- | ------------- | ------------- |
-| <img src="https://rp.ly/file/screenshot10.jpg"> | <img src="https://rp.ly/file/screenshot11.jpg"> | <img src="https://rp.ly/file/screenshot12.jpg"> |
+| <img src="https://rp.ly/file/rply2-1.jpg"> | <img src="https://rp.ly/file/rply2-2.jpg"> | <img src="https://rp.ly/file/rply2-3.jpg"> |
 
 
 ## Prerequisites
