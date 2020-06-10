@@ -3,7 +3,7 @@
 ## private photo/podcast/vlog microblog network, decentralized via standard feeds 
 
 
-- [https://rp.ly/#/auth](https://rp.ly "https://rp.ly")
+- [https://rp.ly](https://rp.ly/#/auth "https://rp.ly")
 
 
 ### the rp.ly newsfeed can include (private & public) remote content from other rp.ly sites and RSS feeds
