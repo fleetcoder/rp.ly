@@ -691,8 +691,8 @@ if not sys.argv[0] == 'fleet.py':
 
 # export APP_HOSTNAME=photo.gy
 # export FLEET_APP=rp.ly.html
-# python3 fleet.py
-# python3 fleet.py 4000
+# python3 fleet.py 165.227.57.132
+# python3 fleet.py 165.227.57.132 3000
 if sys.argv[0] == 'fleet.py':
   pport = 443
   if len(sys.argv) > 2:
