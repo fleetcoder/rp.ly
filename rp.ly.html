@@ -2041,8 +2041,8 @@
             Vue.http.post( 'joinGroup', {
               grp:this.items[ this.idx ].key
             }).then( ( response ) => {
-              this.groupEmbed = '<div style="width:90%"><img style="height:auto;padding:30px;display:block;margin-left:auto;margin-right:auto;width:50%;padding:10px;" src="https://rp.ly/grpFile?field=image&name='
-              this.groupEmbed = this.groupEmbed + this.items[ this.idx ].image + '" /><p style="text-align:center;font-family:courier,monospace;display:block;padding:10px;">' + response.body[0] + this.inviteText + response.body[1] + '</p><a style="text-align:center;background-color:#32e0c4;display:block;color:black;text-decoration:none;padding:10px;" href="https://rp.ly/grp/' +  this.items[ this.idx ].key + '">' + 'Join ' + response.body[0] + "'s Group" + '</a></p></div>'
+              this.groupEmbed = '<div style="font-family:courier,monospace;width:90%"><img style="height:auto;padding:30px;display:block;margin-left:auto;margin-right:auto;width:50%;padding:10px;" src="https://rp.ly/grpFile?field=image&name='
+              this.groupEmbed = this.groupEmbed + encodeURIComponent(this.items[ this.idx ].image) + '" /><p style="text-align:center;display:block;padding:10px;">' + response.body[0] + this.inviteText + response.body[1] + '</p><a style="text-align:center;background-color:#32e0c4;display:block;color:black;text-decoration:none;padding:10px;" href="https://rp.ly/grp/' +  this.items[ this.idx ].key + '">' + 'Join ' + response.body[0] + "'s Group" + '</a></p></div>'
             })
             this.$emit('on-tabs-hidden')
           },
