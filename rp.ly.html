@@ -7,10 +7,10 @@
 
     <title>rp.ly</title>
 
-    <link href=/file/app.506bce4b8453f5098f6a.css rel=stylesheet>
+    <link href=/file/app.0dcb9922d69daabe8848.css rel=stylesheet>
     <script type=text/javascript src=/file/manifest.2ae2e69a05c33dfc65f8.js></script>
     <script type=text/javascript src=/file/vendor.0eb5480a7e9a156e90f2.js></script>
-    <script type=text/javascript src=/file/app.7e42ddabe5d445687cc3.js></script>
+    <script type=text/javascript src=/file/app.5bebe20bf1bba69db56d.js></script>
     <!-- <script type=text/javascript src=/file/socket.io.js></script> -->
     <link rel="apple-touch-icon-precomposed" sizes="57x57" href="/file/rply57.png" />
     <link rel="apple-touch-icon-precomposed" sizes="72x72" href="/file/rply72.png" />
@@ -2200,6 +2200,21 @@
               iconClass: 'icon icon-error',
               duration: 2000
             })
+          },
+          copyGroupLink(){
+            router.push( '/' )
+            MintUI.Toast({
+              message: 'You just copied the group link to your clipboard',
+              iconClass: 'icon icon-error',
+              duration: 2000
+            })
+          },
+          copyError(){
+            MintUI.Toast({
+              message: 'Sorry, there was an error copying the group link',
+              iconClass: 'icon icon-error',
+              duration: 2000
+            })
           }
         },
         template: `
@@ -2226,6 +2241,7 @@
             <mt-popup class="addcontact" v-model="showShareGroup" position="middle">
               <mt-cell title="Copy and share this group link:"></mt-cell>
               <mt-field v-model="groupLink"></mt-field>
+              <mt-button v-clipboard:copy="groupLink" v-clipboard:success="copyGroupLink" v-clipboard:error="copyError">Copy Link</mt-button>
               <mt-button v-on:click="closeShareGroup()">Close</mt-button>
             </mt-popup>
           </div>`
