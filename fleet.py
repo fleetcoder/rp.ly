@@ -440,8 +440,9 @@ def notify_photo(id,grpcode):
   cont = get_user(id)
   if len(cont['phone']) > 0:
     urlsrc = 'https://' + mydomain + '/g/' + grpcode + '#/connect/' + cont['code']
+    items = get_one_by( 'groups', grpcode, 'key' )
     client = Client(twilio_id, twilio_token)
-    rl = current_user()['name'] + " shared a post with you " + urlsrc
+    rl = current_user()['name'] + " updated the gallery " + items[0]['name'] + ' ' + urlsrc
     message = client.messages.create(
       body=rl,
       from_='+1' + os.getenv('TWILIO_FROM'),
@@ -451,11 +452,18 @@ def notify_photo(id,grpcode):
   if len(cont['email']) > 0:
     owner = current_user()
     em = cont['email']
+    invitetext = ' updated the gallery '
+    items = get_one_by( 'groups', grpcode, 'key' )
+    imgsrc = ''
+    if not items[0]['image'] is None:
+      imgsrc = urllib.parse.quote(items[0]['image'])
+    html = '<div style="font-family:courier,monospace;width:90%"><img alt="group image for ' + items[0]['name'] + '" style="height:auto;padding:30px;display:block;margin-left:auto;margin-right:auto;width:50%;padding:10px;" src="https://' + mydomain + '/grpFile?field=image&name='
+    html = html + imgsrc + '" /><p style="text-align:center;display:block;padding:10px;">' + owner['name'] + invitetext + items[0]['name'] + '</p><a style="text-align:center;background-color:#32e0c4;display:block;color:black;text-decoration:none;padding:10px;" href="https://' + mydomain + '/g/' + grpcode + '#/connect/' + cont['code'] + '">View Gallery</a></div>'
     message = Mail(
       from_email=owner['name'] + ' via ' + mydomain + ' <' + os.getenv('SENDGRID_FROM') + '>',
       to_emails=em,
-      subject=current_user()['name'] + " shared a post ",
-      html_content='<strong><p>' + current_user()['name'] + " shared a post with you on " + mydomain + " </p><a href=\"" + 'https://' + mydomain + '/g/' + grpcode + '#/connect/' + cont['code'] + '">' + owner['name'] + "'s post" + '</a></strong>')
+      subject="I updated my gallery, " + items[0]['name'],
+      html_content=html)
     sg = SendGridAPIClient(sendgrid_token)
     response = sg.send(message)
     print('notify ' + em, file=sys.stderr)
