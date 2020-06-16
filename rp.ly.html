@@ -2016,7 +2016,6 @@
             name : '',
             image : '',
             groupLink : '',
-            groupEmbed : '',
             inviteText: ' invited you to join '
           }
         },
@@ -2038,23 +2037,19 @@
             this.name = this.items[ this.idx ].name
             this.image = this.items[ this.idx ].image
             this.groupLink = 'https://rp.ly/grp/' + this.items[ this.idx ].key
-            Vue.http.post( 'joinGroup', {
+            /*Vue.http.post( 'joinGroup', {
               grp:this.items[ this.idx ].key
             }).then( ( response ) => {
               this.groupEmbed = '<div style="font-family:courier,monospace;width:90%"><img style="height:auto;padding:30px;display:block;margin-left:auto;margin-right:auto;width:50%;padding:10px;" src="https://rp.ly/grpFile?field=image&name='
               this.groupEmbed = this.groupEmbed + encodeURIComponent(this.items[ this.idx ].image) + '" /><p style="text-align:center;display:block;padding:10px;">' + response.body[0] + this.inviteText + response.body[1] + '</p><a style="text-align:center;background-color:#32e0c4;display:block;color:black;text-decoration:none;padding:10px;" href="https://rp.ly/grp/' +  this.items[ this.idx ].key + '">' + 'Join ' + response.body[0] + "'s Group" + '</a></p></div>'
-            })
+            })*/
             this.$emit('on-tabs-hidden')
           },
           goEdit(idx) {
             router.push( '/modGroups/' + idx )
           },
           copyGroupEmbed(){
-            MintUI.Toast({
-              message: 'You just copied the group embed code to your clipboard',
-              iconClass: 'icon icon-error',
-              duration: 2000
-            })
+            window.location.href = 'https://rp.ly/getGroupEmbed?grp=' + this.items[ this.idx ].key
           },
           copyGroupLink(){
             MintUI.Toast({
@@ -2086,7 +2081,7 @@
               </div>
             </mt-cell>
             <mt-button size="large" v-clipboard:copy="groupLink" v-clipboard:success="copyGroupLink" v-clipboard:error="copyError" class="buttonset">Copy Group Link</mt-button>
-            <mt-button size="large" v-clipboard:copy="groupEmbed" v-clipboard:success="copyGroupEmbed" v-clipboard:error="copyError" class="buttonset">Copy Group Embed Code</mt-button>
+            <mt-button size="large" class="buttonset" v-on:click="copyGroupEmbed">Download Group HTML File</mt-button>
             <mt-button size="large" class="buttonset" v-on:click="goEdit(idx)">Edit Group</mt-button>
           </div>`
       }
@@ -2507,6 +2502,27 @@
 
   </body>
   <script type="python" id="server">
+
+@app.route('/getGroupEmbed',methods=['GET','POST'])
+def getGroupEmbed():
+  invitetext = ' invited you to join '
+  os.chdir(appdir)
+  items = get_one_by( 'groups', request.args.get('grp'), 'key' )
+  if not len(items) > 0:
+    items = get_one( 'groups', request.args.get('grp') )
+  result = []
+  if len(items) > 0:
+    owner = get_user(items[0]['user_id'])
+    imgsrc = ''
+    if not items[0]['image'] is None:
+      imgsrc = urllib.parse.quote(items[0]['image'])
+    html = '<div style="font-family:courier,monospace;width:90%"><img alt="group image for ' + items[0]['name'] + '" style="height:auto;padding:30px;display:block;margin-left:auto;margin-right:auto;width:50%;padding:10px;" src="https://' + mydomain + '/grpFile?field=image&name='
+    html = html + imgsrc + '" /><p style="text-align:center;display:block;padding:10px;">' + owner['name'] + invitetext + items[0]['name'] + '</p><a style="text-align:center;background-color:#32e0c4;display:block;color:black;text-decoration:none;padding:10px;" href="https://' + mydomain + '/grp/' +  items[0]['key'] + '">' + 'Join ' + owner['name'] + "'s Group" + '</a></div>'
+    response = make_response(html)
+    response.mimetype = "text/html"
+    response.headers["Content-disposition"] = "attachment; filename=" + items[0]['name'] + '.html'
+    return response
+  return 'Error'
 
 @app.route('/getSubscribers', methods=['GET','POST'])
 def getSubscribers():
