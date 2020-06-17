@@ -462,7 +462,7 @@ def notify_photo(id,grpcode):
     message = Mail(
       from_email=owner['name'] + ' via ' + mydomain + ' <' + os.getenv('SENDGRID_FROM') + '>',
       to_emails=em,
-      subject="I updated my gallery, " + items[0]['name'],
+      subject="Updated gallery, " + items[0]['name'],
       html_content=html)
     sg = SendGridAPIClient(sendgrid_token)
     response = sg.send(message)
