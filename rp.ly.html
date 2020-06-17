@@ -3790,7 +3790,12 @@ def myFile():
     if not request.args.get('multiname') is None:
       thefile = appdir + 'myfiles/' + request.args.get('multiname')
     else:
-      thefile = appdir + 'myfiles/' + saveFile(request.args.get('field'))
+      if not saveFile(request.args.get('field')) == '':
+        thefile = appdir + 'myfiles/' + saveFile(request.args.get('field'))
+      else:
+        item = get_one_by( 'groups', request.args.get('name'), request.args.get('field') )
+        if len(item) > 0:
+          thefile = appdir + 'myfiles/' + item[0][request.args.get('field')]
   else:
     item = get_one_by( 'posts', request.args.get('name'), request.args.get('field') )
     if len(item) > 0:
