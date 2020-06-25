@@ -3201,7 +3201,7 @@ def addPosts():
     return( json.dumps( [ 'Error' ] ) )
   for savedImage in saveImage:
     videoFile = ''
-    if (savedImage[-7:].lower() == 'mov.jpg'):
+    if (savedImage[-7:].lower() in ['mov.jpg','mp4.jpg']):
       videoFile = savedImage[:-4]
     newrec = {
       'title' : title,
@@ -3729,13 +3729,13 @@ def uploadMulti():
             fname = time.strftime("%Y%m%d-%H%M%S") + filedata['name']
             filepath = appdir + 'myfiles/' + fname
             copyfile(filedata['tmp_name'], filepath)
-            if filepath[-3:].lower() == 'mov':
+            if filepath[-3:].lower() in ['mov','mp4']:
               uploaded.append({'url':fname + '.jpg','originalName':filedata['name'] + '.jpg'})
               filenames.append(fname + '.jpg')
             else:
               uploaded.append({'url':fname,'originalName':filedata['name']})
               filenames.append(fname)
-            if filepath[-3:].lower() == 'mov':
+            if filepath[-3:].lower() in ['mov','mp4']:
               vidcap = cv2.VideoCapture(filepath)
               success,image = vidcap.read()
               filepath = filepath + '.jpg'
@@ -3804,7 +3804,7 @@ def myFile():
   if thefile and not os.path.isdir(thefile):
     if (thefile[-3:].lower() == 'mp3'):
       ftype = 'audio/mp3'
-    if (thefile[-3:].lower() == 'mov'):
+    if (thefile[-3:].lower() in ['mov','mp4']):
       return send_from_directory(appdir + 'myfiles/', request.args.get('name'), conditional=True)
     print(thefile,file=sys.stderr)
     return send_file( thefile, mimetype=ftype)
