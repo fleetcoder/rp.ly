@@ -3200,13 +3200,17 @@ def addPosts():
   if not can('add','posts',curr):
     return( json.dumps( [ 'Error' ] ) )
   for savedImage in saveImage:
+    soundFile = saveFile( 'sound' )
     videoFile = ''
     if (savedImage[-7:].lower() in ['mov.jpg','mp4.jpg']):
       videoFile = savedImage[:-4]
+    if (savedImage[-3:].lower() in ['mp3']):
+      soundFile = savedImage
+      savedImage = ''
     newrec = {
       'title' : title,
       'image' : savedImage,
-      'sound' : saveFile( 'sound' ),
+      'sound' : soundFile,
       'video' : videoFile,
       'groups' : request.form.get('recips'),
       'user_id' : session['user'],
