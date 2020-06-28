@@ -457,7 +457,7 @@
         },
         template: `
           <div>
-            <mt-header title="rp.ly">
+            <mt-header title="">
             </mt-header>
             <mt-cell>{{sentcode}}</mt-cell>
             <mt-field type="number" label="Code:" placeholder="***" v-model="code"></mt-field>
@@ -686,7 +686,7 @@
         },
         template: `
           <div>
-            <mt-header title="rp.ly">
+            <mt-header title="">
             </mt-header>
             <img v-bind:class="{'is-hidden':imgHidden}" class="groupimg" :src="groupPic" />
             <mt-cell :title="inviteText"></mt-cell>
@@ -751,7 +751,7 @@
         },
         template: `
           <div>
-            <mt-header title="rp.ly">
+            <mt-header title="">
               <a v-on:click="showLink()" slot="right">
                 <img class="headericon" slot="icon" src="file/settings.svg">
               </a>
@@ -844,7 +844,7 @@
         },
         template: `
           <div>
-            <mt-header title="rp.ly">
+            <mt-header title="">
               <router-link to="/" slot="left">
                 <mt-button icon="back">back</mt-button>
               </router-link>
@@ -906,7 +906,7 @@
         },
         template: `
           <div>
-            <mt-header title="rp.ly">
+            <mt-header title="">
               <router-link :to="'/showPosts/' + idx" slot="left">
                 <mt-button icon="back">back</mt-button>
               </router-link>
@@ -1527,7 +1527,7 @@
                 <mt-cell>&nbsp;</mt-cell>
               </mt-tab-container-item>
               <mt-tab-container-item id="tab2">
-                <mt-header title="rp.ly"></mt-header>
+                <mt-header title=""></mt-header>
                 <mt-cell>
                   <ul class="contacts">
                     <li class="contact" v-for="friend in contacts">{{ friend.name }}</li>
@@ -1545,7 +1545,7 @@
                 <mt-cell></mt-cell>
               </mt-tab-container-item>
               <mt-tab-container-item id="tab3">
-                <mt-header title="rp.ly"></mt-header>
+                <mt-header title=""></mt-header>
                 <mt-cell v-bind:class="{'is-hidden':imgHidden}" title=""><img class="img" :src="'myFile?staged=1&field=image&name=' + image" /></mt-cell>
                 <mt-cell>
                   <form enctype="multipart/form-data" novalidate v-if="isInitial">
