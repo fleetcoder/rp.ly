@@ -1154,7 +1154,15 @@
             }
           },
           cometAdd(item) {
-            this.items.unshift(item)
+            if (item.inreplyto.length > 0) {
+              for (var j = 0; j < this.items.length; j++) {
+                if (parseInt(this.items[j].id) === parseInt(item.inreplyto)) {
+                  this.items[j].comments.unshift(item)
+                }
+              }
+            } else {
+              this.items.unshift(item)
+            }
           },
           hideTabs() {
             this.tabsHidden = true
@@ -3299,7 +3307,6 @@ def addPosts():
         newobj = { 'last_notif' : str( timezone( 'US/Pacific' ).localize( datetime.now() ) ) }
         mod_one( 'groups', newobj, grpdata[0]['id'] )
       item = newrec
-      item['title'] = current_user()['name'] + ': ' + item['title']
       item['imageHidden'] = False
       item['textHidden'] = True
       if item['image'] == '':
