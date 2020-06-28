@@ -791,6 +791,7 @@
                 <figcaption class="caption" v-text="item.title"></figcaption>
               </vue-plyr>
               <audio-player v-if="item.imageHidden" :src="'myFile?field=sound&name=' + item.sound" v-bind:class="{'is-hidden':item.soundHidden}" />
+              <p v-for="(comm, cidx) in item.comments" v-text="comm.title"></p>
               <p v-bind:class="{'is-hidden':item.showCommentField}" class="caption" v-on:click="addComment(idx)"><img class="comment" slot="icon" src="file/message-square.svg" /></p>
               <mt-field v-bind:class="{'is-hidden':!item.showCommentField}" placeholder="Comment..." v-model="item.comment"></mt-field>
               <mt-button v-bind:class="{'is-hidden':!item.showCommentField}" size="large" v-on:click="saveComment(item,idx)">Save Comment</mt-button>
@@ -3053,6 +3054,8 @@ def getPosts():
   posts_limit = 10
   posts_skipped = 0
   for item in recs:
+    if not item['inreplyto'] == '':
+      continue
     if can('get','posts',user,item):
       item['author'] = get_user(item['user_id'])['name']
       item['imageHidden'] = False
@@ -3060,6 +3063,10 @@ def getPosts():
       item['isOwner'] = False
       item['textHidden'] = True
       item['showCommentField'] = False
+      item['comments'] = []
+      comms = get_one_by('posts',item['id'],'inreplyto')
+      for comm in comms:
+        item['comments'].append(comm)
       if item['image'] == '':
         item['imageHidden'] = True
       item['soundHidden'] = False
