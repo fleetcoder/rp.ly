@@ -36,6 +36,10 @@
       div.mint-cell-wrapper > div.mint-cell-value > input {
         background-color: #eee;
       }
+      .comment {
+        -webkit-filter: invert(.75);
+                filter: invert(.75);
+      }
       .headericon {
         -webkit-filter: invert(.75);
                 filter: invert(.75);
@@ -84,12 +88,6 @@
       }
       .caption {
         margin-left: 20px;
-      }
-      .feedimg {
-        width:100%;
-        height:auto;
-        padding:0;
-        margin:0;
       }
       .cant-click{
         pointer-events: none;
@@ -747,13 +745,35 @@
           showSponsor(grp) {
             this.$emit('update:doSponsor', grp)
             this.$emit('show-sponsor')
+          },
+          addComment(idx) {
+            this.items[idx].showCommentField = true
+          },
+          saveComment(post,idx) {
+            this.spinnerHidden = false
+            Vue.http.post( 'addPosts', {
+              recips: post.groups,
+              title: post.comment,
+              inreplyto: post.id,
+              expirehours: 0,
+              speedup: ''
+            }).then( ( response ) => {
+              this.items[idx].comment = ''
+              this.spinnerHidden = true
+              this.items[idx].showCommentField = false
+              MintUI.Toast({
+                message: 'Comment Saved',
+                iconClass: 'icon icon-success',
+                duration: 1000
+              })
+            })
           }
         },
         template: `
           <div>
             <mt-header title="">
               <a v-on:click="showLink()" slot="right">
-                <img class="headericon" slot="icon" src="file/settings.svg">
+                <img class="headericon" slot="icon" src="file/settings.svg" />
               </a>
             </mt-header>
             <mt-spinner v-bind:class="{'is-hidden':spinnerHidden}" type="snake"></mt-spinner>
@@ -771,6 +791,9 @@
                 <figcaption class="caption" v-text="item.title"></figcaption>
               </vue-plyr>
               <audio-player v-if="item.imageHidden" :src="'myFile?field=sound&name=' + item.sound" v-bind:class="{'is-hidden':item.soundHidden}" />
+              <p v-bind:class="{'is-hidden':item.showCommentField}" class="caption" v-on:click="addComment(idx)"><img class="comment" slot="icon" src="file/message-square.svg" /></p>
+              <mt-field v-bind:class="{'is-hidden':!item.showCommentField}" placeholder="Comment..." v-model="item.comment"></mt-field>
+              <mt-button v-bind:class="{'is-hidden':!item.showCommentField}" size="large" v-on:click="saveComment(item,idx)">Save Comment</mt-button>
             </mt-cell>
             <mt-cell v-bind:class="{'is-hidden':moreHidden}" >
               <mt-button size="large" v-on:click="showMore()">More..</mt-button>
@@ -853,7 +876,7 @@
             <mt-cell  :title="title"></mt-cell>
             <mt-cell v-bind:class="{'is-hidden':imageHidden}">
               <div class="outer">
-                <img @contextmenu.prevent="doContextMenu" class="oimg cant-click" :src="'myFile?field=image&name=' + image">
+                <img @contextmenu.prevent="doContextMenu" class="oimg cant-click" :src="'myFile?field=image&name=' + image" />
                 <div class="overlay">
                   <p class="text">&nbsp;</p>
                 </div>
@@ -1566,7 +1589,7 @@
                     </p>
                     <ul class="list-unstyled">
                       <li v-for="item in uploadedFiles">
-                        <img :src="'myFile?staged=1&field=image&multiname=' + item.url" class="img-responsive img-thumbnail" :alt="item.originalName">
+                        <img :src="'myFile?staged=1&field=image&multiname=' + item.url" class="img-responsive img-thumbnail" :alt="item.originalName" />
                       </li>
                     </ul>
                   </div>
@@ -1596,15 +1619,15 @@
             </mt-tab-container>
             <mt-tabbar fixed="true" v-model="selected" v-bind:class="{'is-hidden':tabsHidden}">
               <mt-tab-item id="tab1">
-                <img slot="icon" src="/file/home.svg">
+                <img slot="icon" src="/file/home.svg" />
                 Gallery
               </mt-tab-item>
               <mt-tab-item id="tab2">
-                <img slot="icon" src="/file/users.svg">
+                <img slot="icon" src="/file/users.svg" />
                 Manage
               </mt-tab-item>
               <mt-tab-item id="tab3">
-                <img slot="icon" src="/file/plus-circle.svg">
+                <img slot="icon" src="/file/plus-circle.svg" />
                 Add Photos
               </mt-tab-item>
             </mt-tabbar>
@@ -2077,7 +2100,7 @@
             <mt-cell title="" :value="name"></mt-cell>
             <mt-cell>
               <div class="outer">
-                <img class="oimg" :src="'grpFile?field=image&name=' + image">
+                <img class="oimg" :src="'grpFile?field=image&name=' + image" />
               </div>
             </mt-cell>
             <mt-button size="large" v-clipboard:copy="groupLink" v-clipboard:success="copyGroupLink" v-clipboard:error="copyError" class="buttonset">Copy Group Link</mt-button>
@@ -3036,6 +3059,7 @@ def getPosts():
       item['allowDownload'] = False
       item['isOwner'] = False
       item['textHidden'] = True
+      item['showCommentField'] = False
       if item['image'] == '':
         item['imageHidden'] = True
       item['soundHidden'] = False
@@ -3207,12 +3231,16 @@ def addPosts():
     if (savedImage[-3:].lower() in ['mp3']):
       soundFile = savedImage
       savedImage = ''
+    in_reply_to = ''
+    if not request.form.get('inreplyto') is None:
+      in_reply_to = request.form.get('inreplyto')
     newrec = {
       'title' : title,
       'image' : savedImage,
       'sound' : soundFile,
       'video' : videoFile,
       'groups' : request.form.get('recips'),
+      'inreplyto' : in_reply_to,
       'user_id' : session['user'],
       'created' : str( timezone( 'US/Pacific' ).localize( datetime.now() ) )
     }
