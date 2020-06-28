@@ -3266,11 +3266,12 @@ def addPosts():
     if (int(request.form.get('expirehours')) > 0):
       now_plus_hours = datetime.now() + timedelta(hours=int(request.form.get('expirehours')))
       newrec['expires'] = str( timezone( 'US/Pacific' ).localize( now_plus_hours ) )
-    for g in json.loads(request.form.get('recips')):
-       grpdata = get_one('groups',g)
-       if len(grpdata) > 0:
-         if not int(curr['id']) == int(grpdata[0]['user_id']):
-           return( json.dumps( [ 'Error' ] ) )
+    if not len(in_reply_to) > 0:
+      for g in json.loads(request.form.get('recips')):
+         grpdata = get_one('groups',g)
+         if len(grpdata) > 0:
+           if not int(curr['id']) == int(grpdata[0]['user_id']):
+             return( json.dumps( [ 'Error' ] ) )
     rid = add_one( 'posts', newrec )
     if rid > 0:
       dt = timezone( 'US/Pacific' ).localize( datetime.now() )
