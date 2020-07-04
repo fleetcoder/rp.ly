@@ -3346,6 +3346,9 @@ def addPosts():
   response = make_response(json.dumps( [ 'OK' ] ))
   for item in senditems:
     sendcomet(recips,item)
+  if not request.form.get('inreplyto') is None:
+    for grp in json.loads(request.form.get('recips')):
+      notify_comment( grp, curr['name'] )
   return response
 
 @app.route('/modPosts',methods=['GET','POST'])

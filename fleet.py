@@ -408,6 +408,32 @@ def share_my_contact(newrec,grps):
             print('notify JOIN ' + em, file=sys.stderr)
   return
 
+def notify_comment(addgrp,name):
+  grpdata = get_one('groups',addgrp)
+  if 'user_id' in grpdata[0]:
+    cont = get_user(grpdata[0]['user_id'])
+    if len(cont['phone']) > 0:
+      client = Client(twilio_id, twilio_token)
+      rl = name + " commented in your gallery " + grpdata[0]['name'] + " on " + mydomain
+      message = client.messages.create(
+        body=rl,
+        from_='+1' + os.getenv('TWILIO_FROM'),
+        to=cont['phone']
+      )
+      print('notify COMMENT ' + cont['phone'], file=sys.stderr)
+    if len(cont['email']) > 0:
+      owner = current_user()
+      em = cont['email']
+      message = Mail(
+        from_email=owner['name'] + ' via ' + mydomain + ' <' + os.getenv('SENDGRID_FROM') + '>',
+        to_emails=em,
+        subject=name + " commented in your gallery " + grpdata[0]['name'] + " on " + mydomain,
+        html_content='<strong><p>' + name + " commented in your gallery " + grpdata[0]['name'] + " on " + mydomain + '</p></strong>')
+      sg = SendGridAPIClient(sendgrid_token)
+      response = sg.send(message)
+      print('notify COMMENT ' + em, file=sys.stderr)
+  return
+
 def notify_sponsor(plan,addgrp,name):
   grpdata = get_one('groups',addgrp)
   plans = {'fans300':'$3/mo','fans50':'$6/yr'}
