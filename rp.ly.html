@@ -3073,7 +3073,7 @@ def getPosts():
       item['showCommentField'] = False
       item['comments'] = []
       comms = get_one_by('posts',item['id'],'inreplyto')
-      for comm in comms:
+      for comm in list(reversed(comms)):
         comm['author'] = get_user(comm['user_id'])['name']
         item['comments'].append(comm)
       if item['image'] == '':
@@ -3277,7 +3277,6 @@ def addPosts():
     if rid > 0:
       dt = timezone( 'US/Pacific' ).localize( datetime.now() )
       newrec['id'] = rid
-      newrec['title'] = current_user()['name'] + ': ' + newrec['title']
       contacts = get_all('contacts')
       recips = []
       for con in contacts:
@@ -3346,6 +3345,7 @@ def addPosts():
           pass
   response = make_response(json.dumps( [ 'OK' ] ))
   for item in senditems:
+    item['author'] = get_user(item['user_id'])['name']
     sendcomet(recips,item)
   if not request.form.get('inreplyto') is None:
     for grp in json.loads(request.form.get('recips')):
