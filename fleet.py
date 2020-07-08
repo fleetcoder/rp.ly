@@ -152,6 +152,8 @@ def randomword(length):
 
 def saveFile(field):
   curr = current_user()
+  if not 'id' in curr:
+    return ''
   sess = get_one_by('sessions',field + str(curr['id']),'field')
   if len(sess) > 0:
     save = sess[0]['data']
@@ -160,6 +162,8 @@ def saveFile(field):
 
 def setSession(field,data):
   curr = current_user()
+  if not 'id' in curr:
+    return ''
   sess = get_one_by('sessions',field + str(curr['id']),'field')
   if len(sess) > 0:
     mod_one('sessions',{'data':data},sess[0]['id'])
@@ -169,6 +173,8 @@ def setSession(field,data):
 
 def clearSession(field):
   curr = current_user()
+  if not 'id' in curr:
+    return ''
   sess = get_one_by('sessions',field + str(curr['id']),'field')
   if len(sess) > 0:
     mod_one('sessions',{'data':''},sess[0]['id'])
