@@ -235,6 +235,10 @@
         width:90%;
         overflow-y: scroll;
       }
+      .gettingstarted {
+        margin:20px;
+        text-align:left;
+      }
     </style>
 
     <script id="client">
@@ -998,7 +1002,7 @@
             newContact:'',
             newEmail:'',
             newPhone:'',
-            doExpire: true,
+            doExpire: false,
             expireHours: '24',
             optionsBtnHidden: false,
             optionsHidden: true,
@@ -1033,7 +1037,8 @@
             help5: false,
             help6: false,
             help7: false,
-            help8: false
+            help8: false,
+            gettingStarted:false
           }
         },
         components:{
@@ -1214,6 +1219,9 @@
                   this.items = response.body[0]
                   if (this.items.length > 9) {
                     this.moreHidden = false
+                  }
+                  if (this.items.length === 0) {
+                    this.gettingStarted = true
                   }
                 }
                 this.groups = response.body[1]
@@ -1593,6 +1601,17 @@
             <mt-tab-container v-model="selected">
               <mt-tab-container-item id="tab1">
                 <router-view v-bind:items="items" v-bind:doSponsor.sync="doSponsor" v-bind:editHidden="editHidden" v-bind:cangrps="cangrps" v-bind:moreHidden="moreHidden" @on-update-list="getPosts" @on-tabs-hidden="hideTabs" @on-show-menu="showLink" @on-show-help="showHelp" @load-more-items="moreItems" @show-sponsor="doShowSponsor" />
+                <h3 v-if="gettingStarted">Getting Started:</h3>
+                <h5 class="gettingstarted" v-if="gettingStarted">1) Configure a gallery</h5>
+                <p class="gettingstarted" v-if="gettingStarted">Your first gallery needs a name and a header photo, you can click the following link to go to the settings for your gallery:</p>
+                <p class="gettingstarted" v-if="gettingStarted"><a href="/#/groups">Gallery 1 Settings</a></p>
+                <h5 class="gettingstarted" v-if="gettingStarted">2) Add photos</h5>
+                <p class="gettingstarted" v-if="gettingStarted">At the bottom is an &quot;Add Photos&quot; tab - click the pink square to choose some photos.</p>
+                <p class="gettingstarted" v-if="gettingStarted">On the right are radio buttons for each gallery, choose at least one.</p>
+                <p class="gettingstarted" v-if="gettingStarted">Now you can click &quot;Save&quot; to publish the photos.</p>
+                <h5 class="gettingstarted" v-if="gettingStarted">3) Share the link!</h5>
+                <p class="gettingstarted" v-if="gettingStarted">Click your gallery, then click &quot;Copy Group Link&quot;</p>
+                <p class="gettingstarted" v-if="gettingStarted"><a href="/#/groups">My Galleries</a></p>
                 <mt-cell>&nbsp;</mt-cell>
               </mt-tab-container-item>
               <mt-tab-container-item id="tab2">
@@ -2470,9 +2489,9 @@
                     this.items[i].image = ''
                   }
                 }
-                /*if (this.items[this.items.length - 1].name == 'Group 1') {
+                if (this.items[this.items.length - 1].name == 'Group 1') {
                   router.push('/modGroups/' + (this.items.length - 1))
-                }*/
+                }
               }
               this.spinnerHidden = true
             })
