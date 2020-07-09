@@ -483,28 +483,31 @@
         data() {
           return {
             grp:'',
-            spinnerHidden:false,
+            spinnerHidden: false,
             inviteText: ' invited you to join ',
             submitText: '',
             validName: '',
             validContact: '',
-            newName:'',
+            newName: '',
             newContact:'',
-            newEmail:'',
-            newPhone:'',
+            newEmail: '',
+            newPhone: '',
             imgHidden: true,
             groupPic: '',
-            signupHidden : false,
+            signupHidden: false,
             ownname: '',
             grpname: '',
-            emailstatus : '',
-            docodehidden : true,
+            emailstatus: '',
+            docodehidden: true,
             code: '',
-            signupBtnHidden : false
+            signupBtnHidden: false,
+            isInstagram: false
           }
         },
         props: {},
         created() {
+          var ua = navigator.userAgent || navigator.vendor || window.opera
+          this.isInstagram = (ua.indexOf('Instagram') > -1) ? true : false
           this.spinnerHidden = false
           Vue.http.post( 'joinGroup', {
             grp:this.$route.params.grp
@@ -704,12 +707,19 @@
             </mt-header>
             <img v-bind:class="{'is-hidden':imgHidden}" class="groupimg" :src="groupPic" />
             <mt-cell :title="inviteText"></mt-cell>
-            <mt-field v-bind:class="{'is-hidden':signupHidden}" :state="validName" placeholder="Name" @keyup.native="checkConName" v-model="newName"></mt-field>
-            <mt-field v-bind:class="{'is-hidden':signupHidden}" :state="validContact" @keyup.native="checkContact" placeholder="Email or Phone..." v-model="newContact" type="email"></mt-field>
-            <mt-button v-bind:class="{'is-hidden':signupBtnHidden}" v-on:click="doJoin()" size="large">{{submitText}}</mt-button>
-            <mt-field v-bind:class="{'is-hidden':docodehidden}" type="number" label="Code:" placeholder="***" v-model="code"></mt-field>
-            <mt-button v-bind:class="{'is-hidden':docodehidden}" v-on:click="doCode()" size="large">Submit Code</mt-button>
-            <mt-spinner v-bind:class="{'is-hidden':spinnerHidden}" type="snake"></mt-spinner>
+            <div v-if="isInstagram">
+              <h3>You're almost there!</h3>
+              <p>It looks like you're using Instagram's built-in Web browser.</p>
+              <p>Please click "..." at top-right and then click "Open in Safari" (Or use any mobile web browser)</p>
+            </div>
+            <div v-else>
+              <mt-field v-bind:class="{'is-hidden':signupHidden}" :state="validName" placeholder="Name" @keyup.native="checkConName" v-model="newName"></mt-field>
+              <mt-field v-bind:class="{'is-hidden':signupHidden}" :state="validContact" @keyup.native="checkContact" placeholder="Email or Phone..." v-model="newContact" type="email"></mt-field>
+              <mt-button v-bind:class="{'is-hidden':signupBtnHidden}" v-on:click="doJoin()" size="large">{{submitText}}</mt-button>
+              <mt-field v-bind:class="{'is-hidden':docodehidden}" type="number" label="Code:" placeholder="***" v-model="code"></mt-field>
+              <mt-button v-bind:class="{'is-hidden':docodehidden}" v-on:click="doCode()" size="large">Submit Code</mt-button>
+              <mt-spinner v-bind:class="{'is-hidden':spinnerHidden}" type="snake"></mt-spinner>
+            </div>
           </div>`
       }
       const listPosts = {
