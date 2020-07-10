@@ -515,6 +515,9 @@
             if (response.body[3] == 'AUTHED') {
               this.signupHidden = true
               this.signupBtnHidden = false
+              if (response.body[5] == 'MEMBER') {
+                window.location.href = '/'
+              }
             } else {
               this.signupHidden = false
               this.signupBtnHidden = false
@@ -3550,6 +3553,8 @@ def getGroups():
 def joinGroup():
   os.chdir(appdir)
   authd = ''
+  member = ''
+  groups = []
   if 'user' in session:
     if int(session['user']) > 0:
       authd = 'AUTHED'
@@ -3558,11 +3563,17 @@ def joinGroup():
     items = get_one( 'groups', request.form.get('grp') )
   result = []
   if len(items) > 0:
+    if 'user' in session:
+      if int(session['user']) > 0:
+        curr = current_user()
+        groups = json.loads(curr['groups'])
+        if int(items[0]['id']) in groups:
+          member = 'MEMBER'
     owner = get_user(items[0]['user_id'])
     imgsrc = ''
     if not items[0]['image'] is None:
       imgsrc = 'https://' + mydomain + '/grpFile?field=image&name=' + items[0]['image']
-    result = [owner['name'],items[0]['name'],imgsrc,authd,items[0]['id']]
+    result = [owner['name'],items[0]['name'],imgsrc,authd,items[0]['id'],member]
   return json.dumps(result)
 
 @app.route('/addGroups',methods=['GET','POST'])
