@@ -1051,7 +1051,9 @@
             help6: false,
             help7: false,
             help8: false,
-            gettingStarted:false
+            gettingStarted:false,
+            template1: '',
+            template2: ''
           }
         },
         components:{
@@ -1809,6 +1811,8 @@
 <p v-if="help6" class="help_para">Go to your Instagram profile and click “Edit Profile”.</p>
 <p v-if="help6" class="help_para">Click “Website” and paste your gallery link and click “Done”.</p>
 <p v-if="help6" class="help_para">Ideally you will have multiple photos to publish, you can publish one of them to Instagram and make sure to include a comment “Click link in bio for more images…”.</p>
+<p v-if="help6" class="help_para"><h4 v-if="help6">Template: Instagram photo caption:</h4><mt-field v-if="help6" type="textarea" rows="3" v-model="template1">I'm using RP.LY to share an expanded photo selection with those who join my gallery for (occasional) email or text message notifications. Click link in bio to join my new gallery.</mt-field></p>
+<p v-if="help6" class="help_para"><h4 v-if="help6">Template: Instagram Direct Message:</h4><mt-field v-if="help6" type="textarea" rows="3" v-model="template2">I'm using RP.LY to share an expanded photo selection with those who join my gallery for (occasional) email or text message notifications. Click this link to join my new gallery.</mt-field></p>
 
 <h4 class="help_header" v-on:click="showHelpSection('help7')">Sharing a gallery to Facebook</h4>
 <p v-if="help7" class="help_para">Follow the instructions in [Sharing a gallery by text message] to copy the gallery link to your clipboard.</p>
