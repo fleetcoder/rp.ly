@@ -1610,6 +1610,7 @@
             this[section] = true
           },
           copyTemplate1(){
+            this.helpVisible = false
             MintUI.Toast({
               message: 'You just copied the photo caption text to your clipboard',
               iconClass: 'icon icon-error',
@@ -1617,25 +1618,16 @@
             })
           },
           copyTemplate2(){
+            this.helpVisible = false
             MintUI.Toast({
-              message: 'You just copied the Direct Message text to your clipboard',
+              message: 'You just copied the direct message text to your clipboard',
               iconClass: 'icon icon-error',
               duration: 2000
             })
           },
           copyError(){
-            MintUI.Toast({
-              message: 'Sorry there was an error copying to the clipboard',
-              iconClass: 'icon icon-error',
-              duration: 2000
-            })
           },
           copyError2(){
-            MintUI.Toast({
-              message: 'Sorry there was an error copying to the clipboard',
-              iconClass: 'icon icon-error',
-              duration: 2000
-            })
           }
         },
         mounted() {
