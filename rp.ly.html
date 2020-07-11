@@ -2714,7 +2714,9 @@ def getGroupEmbed():
     html = html + imgsrc + '" /><p style="text-align:center;display:block;padding:10px;">' + owner['name'] + invitetext + items[0]['name'] + '</p><a style="text-align:center;background-color:#32e0c4;display:block;color:black;text-decoration:none;padding:10px;" href="https://' + mydomain + '/grp/' +  items[0]['key'] + '">' + 'Join ' + owner['name'] + "'s Group" + '</a></div>'
     response = make_response(html)
     response.mimetype = "text/html"
-    response.headers["Content-disposition"] = "attachment; filename=" + items[0]['name'] + '.html'
+    regex = re.compile('[^a-zA-Z]')
+    finame = regex.sub('', items[0]['name'])
+    response.headers["Content-disposition"] = "attachment; filename=" + finame + '.html'
     return response
   return 'Error'
 
