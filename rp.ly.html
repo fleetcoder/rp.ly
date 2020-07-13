@@ -816,7 +816,11 @@
             </mt-header>
             <mt-spinner v-bind:class="{'is-hidden':spinnerHidden}" type="snake"></mt-spinner>
             <mt-cell class="imagecell" v-for="(item, idx) in items" :title="item.name">
-              <p class="caption" v-text="item.author"></p>
+              <p class="caption">
+                <span v-text="item.author"></span>
+                <img class="headericon" src="file/chevron-right.svg" />
+                <span v-text="item.to"></span>
+              </p>
               <p class="caption" v-text="item.title" v-bind:class="{'is-hidden':item.textHidden}"></p>
               <div class="outer" v-on:click="openImage(idx)" v-bind:class="{'is-hidden':item.imageHidden}">
                 <img class="oimg" :src="imageLink(item)" v-if="item.allowDownload" />
@@ -3230,6 +3234,7 @@ def getPosts():
       continue
     if can('get','posts',user,item):
       item['author'] = get_user(item['user_id'])['name']
+      item['to'] = ''
       item['imageHidden'] = False
       item['allowDownload'] = False
       item['isOwner'] = False
@@ -3265,6 +3270,10 @@ def getPosts():
       else:
         posts.append(item)
       for pgrp in pgrps:
+        if pgrp in groups:
+          thisgroup = get_one( 'groups', pgrp )
+          if len(thisgroup) > 0:
+            item['to'] = thisgroup[0]['name']
         if not pgrp in cangrps and not pgrp in ugrids and pgrp in groups:
           cangrps.append(pgrp)
       if len(posts) == posts_limit:
