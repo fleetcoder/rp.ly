@@ -1058,7 +1058,8 @@
             help8: false,
             gettingStarted:false,
             template1: 'I\'m using RP.LY to share an expanded photo selection with those who join my gallery for (occasional) email or text message notifications. Click link in bio to join my new gallery.',
-            template2: 'I\'m using RP.LY to share an expanded photo selection with those who join my gallery for (occasional) email or text message notifications. Click this link to join my new gallery.'
+            template2: 'I\'m using RP.LY to share an expanded photo selection with those who join my gallery for (occasional) email or text message notifications. Click this link to join my new gallery.',
+            following:[]
           }
         },
         components:{
@@ -1268,6 +1269,7 @@
                     })
                   }
                 }
+                this.following = response.body[5]
               }
               this.spinnerHidden = true
             })
@@ -1630,6 +1632,9 @@
           copyError(){
           },
           copyError2(){
+          },
+          onNotifChange(){
+            
           }
         },
         mounted() {
@@ -1862,12 +1867,18 @@
 
             </mt-popup>
 
-            <mt-popup v-model="linkVisible" position="middle">
+            <mt-popup class="help_popup" v-model="linkVisible" position="middle">
               <mt-header>
                 <a v-on:click="closeSettings()" slot="left">
                   <mt-button>X</mt-button>
                 </a>
               </mt-header>
+              <h3>Notifications</h3>
+              <div v-for="(item,idx) in following">
+                <mt-cell :title="item.name"></mt-cell>
+                <mt-switch v-model="item.email" @change="onNotifChange()">Email</mt-switch>
+                <mt-switch v-model="item.phone" @change="onNotifChange()">Text Msg</mt-switch>
+              </div>
               <mt-cell></mt-cell>
               <mt-spinner v-bind:class="{'is-hidden':settingsSpinnerHidden}" type="snake"></mt-spinner>
               <mt-button v-bind:class="{'is-hidden':subsHidden}" v-on:click="showSubs()" size="large">Subscriptions</mt-button>
@@ -3358,7 +3369,15 @@ def getPosts():
       items.append(item)
     posts = posts + items
   #posts.sort(key=lambda p: p['published'], reverse=True)
-  return( json.dumps( [posts,grps,abils,user['code'],cangrps] ) )
+  following = []
+  for pgrp in groups:
+    if not pgrp in ugrids:
+      group = get_one( 'groups', pgrp )
+      groupname = ''
+      if len(group) > 0:
+        groupname = group[0]['name']
+      following.append({'id':pgrp,'name':groupname,'phone':False,'email':True})
+  return( json.dumps( [posts,grps,abils,user['code'],cangrps,following] ) )
 
 @app.route('/dropFeed',methods=['GET','POST'])
 def dropFeed():
