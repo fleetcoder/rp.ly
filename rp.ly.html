@@ -242,6 +242,14 @@
       .templtext {
         background-color:#ccc;
       }
+      .notifswitch {
+        margin-right:15px;
+      }
+      .freqrange {
+        margin-left:10px;
+        margin-right:10px;
+        margin-bottom:4px;
+      }
     </style>
 
     <script id="client">
@@ -1633,8 +1641,14 @@
           },
           copyError2(){
           },
-          onNotifChange(){
-            
+          onNotifChange(gid,type){
+            this.spinnerHidden = false
+            Vue.http.post( 'modGroupNotif', {
+              id : gid,
+              type : type
+            }).then( ( response ) => {
+              this.spinnerHidden = true
+            })
           }
         },
         mounted() {
@@ -1875,11 +1889,28 @@
               </mt-header>
               <h3>Notifications</h3>
               <div v-for="(item,idx) in following">
-                <mt-cell :title="item.name"></mt-cell>
-                <mt-switch v-model="item.email" @change="onNotifChange()">Email</mt-switch>
-                <mt-switch v-model="item.phone" @change="onNotifChange()">Text Msg</mt-switch>
+                <h4 v-text="item.name"></h4>
+                <div>
+                  <h5 v-text="'Limit: ' + item.freq + ' per ' + item.interval"></h5>
+                  <mt-radio
+                    v-model="item.interval"
+                    :options="['Day', 'Week']">
+                  </mt-radio>
+                  <mt-range class="freqrange"
+                    v-model="item.freq"
+                    :min="1"
+                    :max="10"
+                    :step="1"
+                    :bar-height="5">
+                    <div slot="start">1</div>
+                    <div slot="end">10</div>
+                  </mt-range>
+                  <mt-cell>
+                    <mt-switch class="notifswitch" v-model="item.email" @change="onNotifChange(item.id,'email')">Email</mt-switch>
+                    <mt-switch class="notifswitch" v-model="item.phone" @change="onNotifChange(item.id,'phone')">Text Msg</mt-switch>
+                  </mt-cell>
+                </div>
               </div>
-              <mt-cell></mt-cell>
               <mt-spinner v-bind:class="{'is-hidden':settingsSpinnerHidden}" type="snake"></mt-spinner>
               <mt-button v-bind:class="{'is-hidden':subsHidden}" v-on:click="showSubs()" size="large">Subscriptions</mt-button>
               <mt-cell v-bind:class="{'is-hidden':subsHidden}"></mt-cell>
@@ -2710,6 +2741,22 @@
   </body>
   <script type="python" id="server">
 
+@app.route('/modGroupNotif',methods=['GET','POST'])
+def modGroupNotif():
+  item = get_one( 'groups', request.form.get('id') )[0]
+  settkey = str(session['user']) + '_' + request.form.get('type') + '_' + request.form.get('id')
+  items = get_one_by( 'settings', settkey, 'name' )
+  if not len(items) > 0:
+    sett = add_one('settings',{
+      'name': settkey,
+      'value': '0',
+      'user_id':session['user']
+    })
+    print('ADD ' + settkey)
+  else:
+    print('EXIST' + settkey)
+  return 'OK'
+
 @app.route('/getGroupEmbed',methods=['GET','POST'])
 def getGroupEmbed():
   invitetext = ' invited you to join '
@@ -3376,7 +3423,7 @@ def getPosts():
       groupname = ''
       if len(group) > 0:
         groupname = group[0]['name']
-      following.append({'id':pgrp,'name':groupname,'phone':False,'email':True})
+      following.append({'id':pgrp,'name':groupname,'phone':False,'email':True,'freq':2,'interval':'Day'})
   return( json.dumps( [posts,grps,abils,user['code'],cangrps,following] ) )
 
 @app.route('/dropFeed',methods=['GET','POST'])
