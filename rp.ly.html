@@ -1641,11 +1641,12 @@
           },
           copyError2(){
           },
-          onNotifChange(gid,type){
+          onNotifChange(gid,type,value){
             this.spinnerHidden = false
             Vue.http.post( 'modGroupNotif', {
-              id : gid,
-              type : type
+              id: gid,
+              type: type,
+              value: value
             }).then( ( response ) => {
               this.spinnerHidden = true
             })
@@ -1893,10 +1894,12 @@
                 <div>
                   <h5 v-text="'Limit: ' + item.freq + ' per ' + item.interval"></h5>
                   <mt-radio
+                    @change="onNotifChange(item.id,'interval',item.interval)"
                     v-model="item.interval"
                     :options="['Day', 'Week']">
                   </mt-radio>
                   <mt-range class="freqrange"
+                    @change="onNotifChange(item.id,'freq',item.freq)"
                     v-model="item.freq"
                     :min="1"
                     :max="10"
@@ -1906,8 +1909,8 @@
                     <div slot="end">10</div>
                   </mt-range>
                   <mt-cell>
-                    <mt-switch class="notifswitch" v-model="item.email" @change="onNotifChange(item.id,'email')">Email</mt-switch>
-                    <mt-switch class="notifswitch" v-model="item.phone" @change="onNotifChange(item.id,'phone')">Text Msg</mt-switch>
+                    <mt-switch class="notifswitch" v-model="item.email" @change="onNotifChange(item.id,'email',item.email)">Email</mt-switch>
+                    <mt-switch class="notifswitch" v-model="item.phone" @change="onNotifChange(item.id,'phone',item.phone)">Text Msg</mt-switch>
                   </mt-cell>
                 </div>
               </div>
@@ -2744,17 +2747,43 @@
 @app.route('/modGroupNotif',methods=['GET','POST'])
 def modGroupNotif():
   item = get_one( 'groups', request.form.get('id') )[0]
-  settkey = str(session['user']) + '_' + request.form.get('type') + '_' + request.form.get('id')
+  settkey = 'group_' + request.form.get('id')
   items = get_one_by( 'settings', settkey, 'name' )
+  mysett = {
+    'phone':'1',
+    'email':'1',
+    'freq':'2',
+    'interval':'Day'
+  }
+  if len(items) > 0:
+    for sett in items:
+      if int(session['user']) == int(sett['user_id']):
+        mysett = json.loads(sett['value'])
+  if request.form.get('type') == 'freq':
+    mysett['freq'] = request.form.get('value')
+  if request.form.get('type') == 'interval':
+    mysett['interval'] = request.form.get('value')
+  if request.form.get('type') == 'email':
+    if request.form.get('value') == 'true':
+      mysett['email'] = '1'
+    else:
+      mysett['email'] = '0'
+  if request.form.get('type') == 'phone':
+    if request.form.get('value') == 'true':
+      mysett['phone'] = '1'
+    else:
+      mysett['phone'] = '0'
   if not len(items) > 0:
     sett = add_one('settings',{
-      'name': settkey,
-      'value': '0',
-      'user_id':session['user']
+      'user_id':session['user'],
+      'name':settkey,
+      'value':json.dumps(mysett)
     })
-    print('ADD ' + settkey)
   else:
-    print('EXIST' + settkey)
+    for sett in items:
+      if int(session['user']) == int(sett['user_id']):
+        mod_one('settings',{'value':json.dumps(mysett)},sett['id'])
+  items = get_one_by( 'settings', settkey, 'name' )
   return 'OK'
 
 @app.route('/getGroupEmbed',methods=['GET','POST'])
@@ -3423,7 +3452,31 @@ def getPosts():
       groupname = ''
       if len(group) > 0:
         groupname = group[0]['name']
-      following.append({'id':pgrp,'name':groupname,'phone':False,'email':True,'freq':2,'interval':'Day'})
+        mysett = {
+          'name':groupname,
+          'id':group[0]['id'],
+          'phone':True,
+          'email':True,
+          'freq':2,
+          'interval':'Day'
+        }
+        settkey = 'group_' + str(group[0]['id'])
+        items = get_one_by( 'settings', settkey, 'name' )
+        for sett in items:
+          if int(session['user']) == int(sett['user_id']):
+            mysett = json.loads(sett['value'])
+            mysett['name'] = groupname
+            mysett['id'] = group[0]['id']
+            mysett['freq'] = int(mysett['freq'])
+            if mysett['phone'] == '1':
+              mysett['phone'] = 'true'
+            else:
+              mysett['phone'] = 'false'
+            if mysett['email'] == '1':
+              mysett['email'] = 'true'
+            else:
+              mysett['email'] = 'false'
+        following.append(mysett)
   return( json.dumps( [posts,grps,abils,user['code'],cangrps,following] ) )
 
 @app.route('/dropFeed',methods=['GET','POST'])
