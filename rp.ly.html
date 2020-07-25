@@ -883,7 +883,7 @@
                 <figcaption class="caption" v-text="item.title"></figcaption>
               </vue-plyr>
               <audio-player v-if="item.imageHidden" :src="'myFile?field=sound&name=' + item.sound" v-bind:class="{'is-hidden':item.soundHidden}" />
-              <p v-for="(comm, cidx) in item.comments" v-text="comm.author + ': ' + comm.title"></p>
+              <p class="caption" v-for="(comm, cidx) in item.comments" v-text="comm.author + ': ' + comm.title"></p>
               <p v-bind:class="{'is-hidden':item.showCommentField}" class="caption" v-on:click="addComment(idx)"><img class="comment" slot="icon" src="file/message-square.svg" /></p>
               <mt-field v-bind:class="{'is-hidden':!item.showCommentField}" placeholder="Comment..." v-model="item.comment"></mt-field>
               <mt-button v-bind:class="{'is-hidden':!item.showCommentField}" size="large" v-on:click="saveComment(item,idx)">Save Comment</mt-button>
