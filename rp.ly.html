@@ -769,10 +769,6 @@
                   <div slot="start">1</div>
                   <div slot="end">10</div>
                 </mt-range>
-                <mt-cell class="joinswitches">
-                  <mt-switch class="notifswitch" v-model="email">Email</mt-switch>
-                  <mt-switch class="notifswitch" v-model="phone">Text Msg</mt-switch>
-                </mt-cell>
               </div>
               <mt-button class="joinbutton" v-bind:class="{'is-hidden':signupBtnHidden}" v-on:click="doJoin()" size="large">{{submitText}}</mt-button>
               <mt-field v-bind:class="{'is-hidden':docodehidden}" type="number" label="Code:" placeholder="***" v-model="code"></mt-field>
