@@ -252,11 +252,11 @@
       }
       @media only screen and (min-width: 1025px) {
         body {
-          width: 800px;
+          width: 700px;
           margin: 0px auto;
         }
         .mint-tabbar {
-          width: 800px;
+          width: 700px;
           margin: 0px auto;
         }
       }
@@ -546,7 +546,7 @@
             this.ownname = response.body[0]
             this.grpname = response.body[1]
             this.inviteText = response.body[0] + this.inviteText + response.body[1]
-            this.submitText = 'Join ' + response.body[0] + "'s Group"
+            this.submitText = 'Join ' + response.body[0] + "'s Gallery"
             this.groupPic = response.body[2]
             this.imgHidden = false
             this.spinnerHidden = true
@@ -636,7 +636,7 @@
                   return
                 }
                 MintUI.Toast({
-                  message: 'You have been added to the group',
+                  message: 'You have been added to the gallery',
                   iconClass: 'icon icon-success',
                   duration: 2000
                 })
@@ -1314,7 +1314,7 @@
           addPosts(){
             if (this.postto.length == 0) {
               MintUI.Toast({
-                message: 'Select group(s) for your post',
+                message: 'Select gallery(s) for your post',
                 iconClass: 'icon icon-success',
                 duration: 4000
               })
@@ -1682,7 +1682,7 @@
                 <p class="gettingstarted" v-if="gettingStarted">On the right are radio buttons for each gallery, choose at least one.</p>
                 <p class="gettingstarted" v-if="gettingStarted">Now you can click &quot;Save&quot; to publish the photos.</p>
                 <h5 class="gettingstarted" v-if="gettingStarted">3) Share the link!</h5>
-                <p class="gettingstarted" v-if="gettingStarted">Click your gallery, then click &quot;Copy Group Link&quot;</p>
+                <p class="gettingstarted" v-if="gettingStarted">Click your gallery, then click &quot;Copy Gallery Link&quot;</p>
                 <p class="gettingstarted" v-if="gettingStarted"><a href="/#/groups">My Galleries</a></p>
                 <mt-cell>&nbsp;</mt-cell>
               </mt-tab-container-item>
@@ -1700,7 +1700,7 @@
                   </mt-checklist>
                 </mt-cell>
                 <mt-cell is-link to="/contacts" title="Contacts"></mt-cell>
-                <mt-cell is-link to="/groups" title="Groups"></mt-cell>
+                <mt-cell is-link to="/groups" title="Galleries"></mt-cell>
                 <mt-cell v-if="!subsHidden" is-link to="/subs" title="Payments"></mt-cell>
                 <mt-cell></mt-cell>
               </mt-tab-container-item>
@@ -1840,9 +1840,9 @@
 
 <h4 class="help_header" v-on:click="showHelpSection('help2')">Setting up a gallery</h4>
 <p v-if="help2" class="help_para">After you register or log in, you will see an empty gallery/feed. At the bottom are three tabs: Gallery, Manage and Add Photos.</p>
-<p v-if="help2" class="help_para">To set up your first gallery, click on Manage -> Groups -> Group 1 -> Edit Group.</p>
+<p v-if="help2" class="help_para">To set up your first gallery, click on Manage -> Galleries -> Group 1 -> Edit Gallery.</p>
 <p v-if="help2" class="help_para">Now you should see your Gallery’s settings including the Name (change it from “Group 1” to something else).</p>
-<p v-if="help2" class="help_para">Click the “Set Group Image” button to upload a header image - this will be the public image for your gallery, this image will be visible to friends when you share the gallery with them, even before they click through and enter your gallery. You can use any size image for this photo and it will be used unmodified, we will add more specific size guidelines in the future. The gallery header image can be vertical or horizontal.</p>
+<p v-if="help2" class="help_para">Click the “Set Gallery Image” button to upload a header image - this will be the public image for your gallery, this image will be visible to friends when you share the gallery with them, even before they click through and enter your gallery. You can use any size image for this photo and it will be used unmodified, we will add more specific size guidelines in the future. The gallery header image can be vertical or horizontal.</p>
 <p v-if="help2" class="help_para">Options:</p>
 <p v-if="help2" class="help_para">a) Scale down uploaded files - this setting will automatically reduce the size of the images you publish, if you set it to 1000pixels then all of your published horizontal images will be 1000pixels wide or smaller, and your vertical images will be 1000pixels tall or smaller. This setting can be disabled completely by sliding the switch so that the blue part is hidden.</p>
 <p v-if="help2" class="help_para">b) Block members from saving photos - this setting will block gallery visitors from saving your images to their phone’s camera roll.</p>
@@ -1859,8 +1859,8 @@
 <p v-if="help4" class="help_para">Disbursement is currently a manual process and can be requested by emailing info@rp.ly - PayPal and Venmo are the current disbursement options.</p>
 
 <h4 class="help_header" v-on:click="showHelpSection('help5')">Sharing a gallery by text message</h4>
-<p v-if="help5" class="help_para">To share a gallery by text message, click Manage -> Groups -> [YOUR GALLERY].</p>
-<p v-if="help5" class="help_para">Click the button that says “Copy Group Link” and that will copy the gallery link into your clipboard.</p>
+<p v-if="help5" class="help_para">To share a gallery by text message, click Manage -> Galleries -> [YOUR GALLERY].</p>
+<p v-if="help5" class="help_para">Click the button that says “Copy Gallery Link” and that will copy the gallery link into your clipboard.</p>
 <p v-if="help5" class="help_para">You can paste this link to a group-text of friends and they will see your gallery name and your gallery header image as a preview.</p>
 
 <h4 class="help_header" v-on:click="showHelpSection('help6')">Sharing a gallery to Instagram</h4>
@@ -1886,8 +1886,8 @@
 
 <h4 class="help_header" v-on:click="showHelpSection('help8')">Sharing a gallery by email</h4>
 <p v-if="help8" class="help_para">You will need to use a Desktop computer for the following step, you can log in with your same phone number or email that you signed up with.</p>
-<p v-if="help8" class="help_para">To share a gallery by email, click Manage -> Groups -> [YOUR GALLERY]</p>
-<p v-if="help8" class="help_para">Click the button that says “Download Group HTML File” and that will cause your computer to start downloading a file - save the file to your Desktop - or anywhere that you can find it.</p>
+<p v-if="help8" class="help_para">To share a gallery by email, click Manage -> Galleries -> [YOUR GALLERY]</p>
+<p v-if="help8" class="help_para">Click the button that says “Download Gallery HTML File” and that will cause your computer to start downloading a file - save the file to your Desktop - or anywhere that you can find it.</p>
 <p v-if="help8" class="help_para">Double-click the file to open it in Safari (this procedure has been tested in Safari but not other browsers). You should see your gallery name and gallery header image.</p>
 <p v-if="help8" class="help_para">Now you can select-all and copy the contents of the browser window. On a Mac this is done with Command-A and then Command-C. On Windows you can Control-A and Control-C.</p>
 <p v-if="help8" class="help_para">After you copy the content, you will be able to paste it into a new Gmail message or other mail app.</p>
@@ -2244,7 +2244,7 @@
         },
         template: `
           <div>
-            <mt-header title="Groups">
+            <mt-header title="Galleries">
               <router-link to="/myContacts" slot="left">
                 <mt-button icon="back">back</mt-button>
               </router-link>
@@ -2294,7 +2294,7 @@
               grp:this.items[ this.idx ].key
             }).then( ( response ) => {
               this.groupEmbed = '<div style="font-family:courier,monospace;width:90%"><img style="height:auto;padding:30px;display:block;margin-left:auto;margin-right:auto;width:50%;padding:10px;" src="https://rp.ly/grpFile?field=image&name='
-              this.groupEmbed = this.groupEmbed + encodeURIComponent(this.items[ this.idx ].image) + '" /><p style="text-align:center;display:block;padding:10px;">' + response.body[0] + this.inviteText + response.body[1] + '</p><a style="text-align:center;background-color:#32e0c4;display:block;color:black;text-decoration:none;padding:10px;" href="https://rp.ly/grp/' +  this.items[ this.idx ].key + '">' + 'Join ' + response.body[0] + "'s Group" + '</a></p></div>'
+              this.groupEmbed = this.groupEmbed + encodeURIComponent(this.items[ this.idx ].image) + '" /><p style="text-align:center;display:block;padding:10px;">' + response.body[0] + this.inviteText + response.body[1] + '</p><a style="text-align:center;background-color:#32e0c4;display:block;color:black;text-decoration:none;padding:10px;" href="https://rp.ly/grp/' +  this.items[ this.idx ].key + '">' + 'Join ' + response.body[0] + "'s Gallery" + '</a></p></div>'
             })*/
             this.$emit('on-tabs-hidden')
           },
@@ -2306,14 +2306,14 @@
           },
           copyGroupLink(){
             MintUI.Toast({
-              message: 'You just copied the group link to your clipboard',
+              message: 'You just copied the gallery link to your clipboard',
               iconClass: 'icon icon-error',
               duration: 2000
             })
           },
           copyError(){
             MintUI.Toast({
-              message: 'Sorry, there was an error copying the group data',
+              message: 'Sorry, there was an error copying the gallery data',
               iconClass: 'icon icon-error',
               duration: 2000
             })
@@ -2321,7 +2321,7 @@
         },
         template: `
           <div>
-            <mt-header title="Groups">
+            <mt-header title="Galleries">
               <router-link to="/groups" slot="left">
                 <mt-button icon="back">back</mt-button>
               </router-link>
@@ -2333,9 +2333,9 @@
                 <img class="oimg" :src="'grpFile?field=image&name=' + image" />
               </div>
             </mt-cell>
-            <mt-button size="large" v-clipboard:copy="groupLink" v-clipboard:success="copyGroupLink" v-clipboard:error="copyError" class="buttonset">Copy Group Link</mt-button>
-            <mt-button size="large" class="buttonset" v-on:click="copyGroupEmbed">Download Group HTML File</mt-button>
-            <mt-button size="large" class="buttonset" v-on:click="goEdit(idx)">Edit Group</mt-button>
+            <mt-button size="large" v-clipboard:copy="groupLink" v-clipboard:success="copyGroupLink" v-clipboard:error="copyError" class="buttonset">Copy Gallery Link</mt-button>
+            <mt-button size="large" class="buttonset" v-on:click="copyGroupEmbed">Download Gallery HTML File</mt-button>
+            <mt-button size="large" class="buttonset" v-on:click="goEdit(idx)">Edit Gallery</mt-button>
           </div>`
       }
       const modGroups = {
@@ -2444,7 +2444,7 @@
             this.spinnerHidden = false
             if (this.name == 'Group 1') {
               MintUI.Toast({
-                message: 'Error, choose a different group name',
+                message: 'Error, choose a different gallery name',
                 iconClass: 'icon icon-error',
                 duration: 2000
               })
@@ -2488,14 +2488,14 @@
           copyGroupLink(){
             router.push( '/' )
             MintUI.Toast({
-              message: 'You just copied the group link to your clipboard',
+              message: 'You just copied the gallery link to your clipboard',
               iconClass: 'icon icon-error',
               duration: 2000
             })
           },
           copyError(){
             MintUI.Toast({
-              message: 'Sorry, there was an error copying the group link',
+              message: 'Sorry, there was an error copying the gallery link',
               iconClass: 'icon icon-error',
               duration: 2000
             })
@@ -2503,7 +2503,7 @@
         },
         template: `
           <div>
-            <mt-header title="Groups">
+            <mt-header title="Galleries">
               <router-link :to="'/showGroups/' + idx" slot="left">
                 <mt-button icon="back">back</mt-button>
               </router-link>
@@ -2511,19 +2511,19 @@
             <mt-spinner v-bind:class="{'is-hidden':spinnerHidden}" type="snake"></mt-spinner>
             <mt-field label="Name:" placeholder="Name.." v-model="name"></mt-field>
             <mt-cell title=""><img class="img" :src="'myFile?staged=1&field=image&name=' + image" /></mt-cell>
-            <file-upload btn-label="Set Group Image" @change="stagedUpload('image')" :url="uploadTo + '?field=image'"></file-upload>
+            <file-upload btn-label="Set Gallery Image" @change="stagedUpload('image')" :url="uploadTo + '?field=image'"></file-upload>
             <mt-button v-on:click="quickContact()" size="large">Add Contact</mt-button>
             <mt-cell title="Scale down uploaded files"><mt-field v-model="maxRes" label="maximum pixels"></mt-field><mt-switch v-model="doScale"></mt-switch></mt-cell>
             <mt-cell title="Block members from saving photos"><mt-switch v-model="blockDownloads"></mt-switch></mt-cell>
             <mt-cell title="Allow members to add photos"><mt-switch v-model="allowPosts"></mt-switch></mt-cell>
-            <mt-button v-on:click="modGroups()" size="large">Save Group</mt-button>
+            <mt-button v-on:click="modGroups()" size="large">Save Gallery</mt-button>
             <mt-popup class="addcontact" v-model="showAddContact" position="middle">
               <mt-field :state="validName" placeholder="Name" @keyup.native="checkConName" v-model="newName"></mt-field>
               <mt-field :state="validContact" @keyup.native="checkContact" placeholder="Email or Phone..." v-model="newContact" type="email"></mt-field>
               <mt-button v-on:click="cancelContact()">Cancel</mt-button>&nbsp;<mt-button v-on:click="saveContact()" type="primary">Add Contact</mt-button>
             </mt-popup>
             <mt-popup class="addcontact" v-model="showShareGroup" position="middle">
-              <mt-cell title="Copy and share this group link:"></mt-cell>
+              <mt-cell title="Copy and share this gallery link:"></mt-cell>
               <mt-field v-model="groupLink"></mt-field>
               <mt-button v-clipboard:copy="groupLink" v-clipboard:success="copyGroupLink" v-clipboard:error="copyError">Copy Link</mt-button>
               <mt-button v-on:click="closeShareGroup()">Close</mt-button>
@@ -2607,7 +2607,7 @@
             this.spinnerHidden = false
             if (this.name == 'Group 1') {
               MintUI.Toast({
-                message: 'Error, choose a different group name',
+                message: 'Error, choose a different gallery name',
                 iconClass: 'icon icon-error',
                 duration: 2000
               })
@@ -2640,11 +2640,11 @@
                 <mt-cell></mt-cell>
                 <mt-cell></mt-cell>
                 <mt-button class="bottom-button" size="large" v-on:click="showAddGroupForm()" v-bind:class="{'is-hidden':tabsHidden}">
-                    Add Group
+                    Add Gallery
                 </mt-button>
               </mt-tab-container-item>
               <mt-tab-container-item id="tab2">
-                <mt-header title="Groups"></mt-header>
+                <mt-header title="Galleries"></mt-header>
                 <mt-field placeholder="Name.." v-model="name"></mt-field>
                 <mt-cell title=""><img class="img" :src="'myFile?staged=1&field=image&name=' + image" /></mt-cell>
                 <file-upload btn-label="Image" @change="stagedUpload('image')" :url="uploadTo + '&field=image'"></file-upload>
@@ -2811,8 +2811,8 @@ def getGroupEmbed():
     imgsrc = ''
     if not items[0]['image'] is None:
       imgsrc = urllib.parse.quote(items[0]['image'])
-    html = '<div style="font-family:courier,monospace;width:90%"><img alt="group image for ' + items[0]['name'] + '" style="height:auto;padding:30px;display:block;margin-left:auto;margin-right:auto;width:50%;padding:10px;" src="https://' + mydomain + '/grpFile?field=image&name='
-    html = html + imgsrc + '" /><p style="text-align:center;display:block;padding:10px;">' + owner['name'] + invitetext + items[0]['name'] + '</p><a style="text-align:center;background-color:#32e0c4;display:block;color:black;text-decoration:none;padding:10px;" href="https://' + mydomain + '/grp/' +  items[0]['key'] + '">' + 'Join ' + owner['name'] + "'s Group" + '</a></div>'
+    html = '<div style="font-family:courier,monospace;width:90%"><img alt="gallery image for ' + items[0]['name'] + '" style="height:auto;padding:30px;display:block;margin-left:auto;margin-right:auto;width:50%;padding:10px;" src="https://' + mydomain + '/grpFile?field=image&name='
+    html = html + imgsrc + '" /><p style="text-align:center;display:block;padding:10px;">' + owner['name'] + invitetext + items[0]['name'] + '</p><a style="text-align:center;background-color:#32e0c4;display:block;color:black;text-decoration:none;padding:10px;" href="https://' + mydomain + '/grp/' +  items[0]['key'] + '">' + 'Join ' + owner['name'] + "'s Gallery" + '</a></div>'
     response = make_response(html)
     response.mimetype = "text/html"
     regex = re.compile('[^a-zA-Z]')
