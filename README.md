@@ -1,17 +1,9 @@
 # rp.ly
 
-## private photo/podcast/vlog microblog network, decentralized via standard feeds 
+## private, decentralized micro-blog
 
 
 - [https://rp.ly](https://rp.ly/#/auth "https://rp.ly")
-
-
-### the rp.ly newsfeed can include (private & public) remote content from other rp.ly sites and RSS feeds
-
-### the feed can also be accessed from podcast apps, feed readers and other rp.ly sites
-
-## other rp.ly sites:
-
 - [https://movie.gd](https://movie.gd "https://movie.gd")
 - [https://photo.gy](https://photo.gy "https://photo.gy")
 - [https://audio.gy](https://audio.gy "https://audio.gy")
@@ -23,7 +15,7 @@
 | <img src="https://rp.ly/file/rply2-1.jpg"> | <img src="https://rp.ly/file/rply2-2.jpg"> | <img src="https://rp.ly/file/rply2-3.jpg"> |
 
 
-## Prerequisites
+## Items needed to install rp.ly
 ####
 
 
@@ -40,7 +32,7 @@
 4. Sendgrid Account (for notifying friends via Email)
 
 
-## Installation
+## How to install rp.ly
 #### (tested with Ubuntu Linux 18.04)
 
 
