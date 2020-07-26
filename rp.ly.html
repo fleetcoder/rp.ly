@@ -3700,7 +3700,17 @@ def addPosts():
           for nprefs in notifprefs:
             if int(nprefs['user_id']) == int(pcontact['id']):
               hasprefs = True
+              notiprefs = json.loads(nprefs['value'])
           if not hasprefs:
+            if dt < timezone( 'US/Pacific' ).localize( datetime.now() ):
+              notify_photo( con['id'], grpdata[0]['key'] )
+          else:
+            interv = 24
+            if notiprefs['interval'] == 'Week':
+              interv = 168
+            hrs = interv / int(notiprefs['freq'])
+            print('HRS' + str(hrs))
+            dt = parser.parse(notiprefs['last_notif'], tzinfos=tzinfos) + timedelta(hours=int(hrs))
             if dt < timezone( 'US/Pacific' ).localize( datetime.now() ):
               notify_photo( con['id'], grpdata[0]['key'] )
           recips.append( con['id'] )
