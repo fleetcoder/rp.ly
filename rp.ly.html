@@ -766,7 +766,7 @@
             <div v-else>
               <mt-field v-bind:class="{'is-hidden':signupHidden}" :state="validName" placeholder="Name" @keyup.native="checkConName" v-model="newName"></mt-field>
               <mt-field v-bind:class="{'is-hidden':signupHidden}" :state="validContact" @keyup.native="checkContact" placeholder="Email or Phone..." v-model="newContact" type="email"></mt-field>
-              <div class="joinnotif">
+              <div v-bind:class="{'is-hidden':signupBtnHidden}" class="joinnotif">
                 <h5 v-text="'Notifications Limit: ' + freq + ' per ' + interval"></h5>
                 <mt-radio
                   v-model="interval"
