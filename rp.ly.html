@@ -2808,7 +2808,8 @@ def setGroupNotif():
     'phone':'1',
     'email':'1',
     'freq':'2',
-    'interval':'Day'
+    'interval':'Day',
+    'last_notif':str( timezone( 'US/Pacific' ).localize( datetime.now() - timedelta(hours=25) ) )
   }
   if len(items) > 0:
     for sett in items:
@@ -2845,7 +2846,8 @@ def modGroupNotif():
     'phone':'1',
     'email':'1',
     'freq':'2',
-    'interval':'Day'
+    'interval':'Day',
+    'last_notif':str( timezone( 'US/Pacific' ).localize( datetime.now() - timedelta(hours=25) ) )
   }
   if len(items) > 0:
     for sett in items:
@@ -3558,7 +3560,8 @@ def getPosts():
           'phone':True,
           'email':True,
           'freq':2,
-          'interval':'Day'
+          'interval':'Day',
+          'last_notif':str( timezone( 'US/Pacific' ).localize( datetime.now() - timedelta(hours=25) ) )
         }
         settkey = 'group_' + str(group[0]['id'])
         items = get_one_by( 'settings', settkey, 'name' )
