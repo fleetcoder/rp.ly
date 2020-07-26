@@ -3676,6 +3676,7 @@ def addPosts():
         if can('get','posts',con,newrec):
           grp = [value for value in json.loads(request.form.get('recips')) if value in json.loads(con['groups'])][0]
           grpdata = get_one('groups',grp)
+          notifprefs = get_one_by( 'settings', 'group_' + str(grp), 'name' )
           if 'maxres' in grpdata[0]:
             if not grpdata[0]['maxres'] is None:
               maxRes = int(grpdata[0]['maxres'])
@@ -3694,8 +3695,14 @@ def addPosts():
           from dateutil import tz
           tzinfos = {"-08:00": tz.gettz('US/Pacific')}
           dt = parser.parse(grpdata[0]['last_notif'], tzinfos=tzinfos) + timedelta(hours=12)
-          if dt < timezone( 'US/Pacific' ).localize( datetime.now() ):
-            notify_photo( con['id'], grpdata[0]['key'] )
+          pcontact = get_parent(con['id'])
+          hasprefs = False
+          for nprefs in notifprefs:
+            if int(nprefs['user_id']) == int(pcontact['id']):
+              hasprefs = True
+          if not hasprefs:
+            if dt < timezone( 'US/Pacific' ).localize( datetime.now() ):
+              notify_photo( con['id'], grpdata[0]['key'] )
           recips.append( con['id'] )
       if dt < timezone( 'US/Pacific' ).localize( datetime.now() ):
         newobj = { 'last_notif' : str( timezone( 'US/Pacific' ).localize( datetime.now() ) ) }
