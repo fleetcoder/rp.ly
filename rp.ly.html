@@ -3701,6 +3701,7 @@ def addPosts():
             if int(nprefs['user_id']) == int(pcontact['id']):
               hasprefs = True
               notiprefs = json.loads(nprefs['value'])
+              prefid = nprefs['id']
           if not hasprefs:
             if dt < timezone( 'US/Pacific' ).localize( datetime.now() ):
               notify_photo( con['id'], grpdata[0]['key'] )
@@ -3709,10 +3710,11 @@ def addPosts():
             if notiprefs['interval'] == 'Week':
               interv = 168
             hrs = interv / int(notiprefs['freq'])
-            print('HRS' + str(hrs))
             dt = parser.parse(notiprefs['last_notif'], tzinfos=tzinfos) + timedelta(hours=int(hrs))
             if dt < timezone( 'US/Pacific' ).localize( datetime.now() ):
               notify_photo( con['id'], grpdata[0]['key'] )
+              notiprefs['last_notif'] = str( timezone( 'US/Pacific' ).localize( datetime.now() ) )
+              mod_one('settings',{'value':json.dumps(notiprefs)},prefid)
           recips.append( con['id'] )
       if dt < timezone( 'US/Pacific' ).localize( datetime.now() ):
         newobj = { 'last_notif' : str( timezone( 'US/Pacific' ).localize( datetime.now() ) ) }
