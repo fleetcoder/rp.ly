@@ -1322,14 +1322,16 @@
                 if (this.$route.path == '/myContacts') {
                   //this.selected = 'tab2'
                 }
-                if (this.cangrps.length == 0) {
-                  for (var j = 0; j < response.body[4].length; j++) {
-                    var grid = response.body[4][j]
-                    Vue.http.post( 'joinGroup', {
-                      grp:grid
-                    }).then( ( response ) => {
-                      this.cangrps.push({gname:response.body[1] + '',glink:response.body[4],guser:response.body[0]})
-                    })
+                if (typeof braintree !== "undefined") {
+                  if (this.cangrps.length == 0) {
+                    for (var j = 0; j < response.body[4].length; j++) {
+                      var grid = response.body[4][j]
+                      Vue.http.post( 'joinGroup', {
+                        grp:grid
+                      }).then( ( response ) => {
+                        this.cangrps.push({gname:response.body[1] + '',glink:response.body[4],guser:response.body[0]})
+                      })
+                    }
                   }
                 }
                 this.following = response.body[5]
