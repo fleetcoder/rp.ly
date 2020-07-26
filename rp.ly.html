@@ -537,9 +537,7 @@
             signupBtnHidden: false,
             isInstagram: false,
             freq:2,
-            interval:'Day',
-            email: true,
-            phone: true
+            interval:'Day'
           }
         },
         props: {},
@@ -580,7 +578,14 @@
               phone : this.newPhone
             }).then( ( response ) => {
               if (response.body[0] == 'OK') {
-                window.location.href = '/'
+                this.spinnerHidden = false
+                Vue.http.post( 'setGroupNotif', {
+                  grp : this.$route.params.grp,
+                  freq : this.freq,
+                  interval : this.interval
+                }).then( ( response ) => {
+                  window.location.href = '/'
+                })
               } else {
                 alert('Sorry, the code did not match')
               }
@@ -652,13 +657,20 @@
                   })
                   return
                 }
-                MintUI.Toast({
-                  message: 'You have been added to the gallery',
-                  iconClass: 'icon icon-success',
-                  duration: 2000
+                this.spinnerHidden = false
+                Vue.http.post( 'setGroupNotif', {
+                  grp : this.$route.params.grp,
+                  freq : this.freq,
+                  interval : this.interval
+                }).then( ( response ) => {
+                  MintUI.Toast({
+                    message: 'You have been added to the gallery',
+                    iconClass: 'icon icon-success',
+                    duration: 2000
+                  })
+                  this.spinnerHidden = true
+                  router.push('/')
                 })
-                this.spinnerHidden = true
-                router.push('/')
               })
             } else if (this.newContact.indexOf('@') !== -1) {
               var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
@@ -2787,6 +2799,43 @@
   </body>
   <script type="python" id="server">
 
+@app.route('/setGroupNotif',methods=['GET','POST'])
+def setGroupNotif():
+  item = get_one_by( 'groups', request.form.get('grp'), 'key' )[0]
+  settkey = 'group_' + str(item['id'])
+  items = get_one_by( 'settings', settkey, 'name' )
+  mysett = {
+    'phone':'1',
+    'email':'1',
+    'freq':'2',
+    'interval':'Day'
+  }
+  if len(items) > 0:
+    for sett in items:
+      if int(session['user']) == int(sett['user_id']):
+        mysett = json.loads(sett['value'])
+  mysett['freq'] = request.form.get('freq')
+  mysett['interval'] = request.form.get('interval')
+  if not len(items) > 0:
+    sett = add_one('settings',{
+      'user_id':session['user'],
+      'name':settkey,
+      'value':json.dumps(mysett)
+    })
+  else:
+    found = False
+    for sett in items:
+      if int(session['user']) == int(sett['user_id']):
+        mod_one('settings',{'value':json.dumps(mysett)},sett['id'])
+        found = True
+    if not found:
+      sett = add_one('settings',{
+        'user_id':session['user'],
+        'name':settkey,
+        'value':json.dumps(mysett)
+      })
+  return 'OK'
+
 @app.route('/modGroupNotif',methods=['GET','POST'])
 def modGroupNotif():
   item = get_one( 'groups', request.form.get('id') )[0]
@@ -2817,16 +2866,24 @@ def modGroupNotif():
     else:
       mysett['phone'] = '0'
   if not len(items) > 0:
+    found = False
     sett = add_one('settings',{
       'user_id':session['user'],
       'name':settkey,
       'value':json.dumps(mysett)
     })
   else:
+    found = False
     for sett in items:
       if int(session['user']) == int(sett['user_id']):
         mod_one('settings',{'value':json.dumps(mysett)},sett['id'])
-  items = get_one_by( 'settings', settkey, 'name' )
+        found = True
+    if not found:
+      sett = add_one('settings',{
+        'user_id':session['user'],
+        'name':settkey,
+        'value':json.dumps(mysett)
+      })
   return 'OK'
 
 @app.route('/getGroupEmbed',methods=['GET','POST'])

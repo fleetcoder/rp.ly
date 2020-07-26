@@ -630,7 +630,7 @@ def clearcodes():
 
 @app.route('/reportit',methods=['GET'])
 def reportit():
-  if not request.remote_addr == os.getenv('DEV_IP'):
+  if not request.remote_addr == '76.105.188.52':
     print(request.remote_addr)
     quit()
   html = '<table>'
