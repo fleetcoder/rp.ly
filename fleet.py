@@ -472,10 +472,10 @@ def notify_sponsor(plan,addgrp,name):
       print('notify PAY ' + em, file=sys.stderr)
   return True
 
-def notify_photo(id,grpcode):
+def notify_photo(id,grpcode,email,phone):
   num = randint(100, 999)
   cont = get_user(id)
-  if len(cont['phone']) > 0:
+  if len(cont['phone']) > 0 and phone:
     urlsrc = 'https://' + mydomain + '/g/' + grpcode + '#/connect/' + cont['code']
     items = get_one_by( 'groups', grpcode, 'key' )
     client = Client(twilio_id, twilio_token)
@@ -486,7 +486,7 @@ def notify_photo(id,grpcode):
       to=cont['phone']
     )
     print('notify ' + cont['phone'], file=sys.stderr)
-  if len(cont['email']) > 0:
+  if len(cont['email']) > 0 and email:
     owner = current_user()
     em = cont['email']
     invitetext = ' updated the gallery '
