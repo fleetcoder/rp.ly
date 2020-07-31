@@ -144,6 +144,11 @@ def index():
     fleet = open(myapp).read()
     fleet = fleet.replace('rp.ly',mydomain)
     return fleet
+  #pall = '2794eb bff8d4 47d6b6 17b3c1'.split()
+  #fleet = fleet.replace('222831',pall[0])
+  #fleet = fleet.replace('393e46',pall[1])
+  #fleet = fleet.replace('32e0c4',pall[2])
+  #fleet = fleet.replace('ffd3e1',pall[3])
   return fleet
   
 def randomword(length):
