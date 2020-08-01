@@ -3585,13 +3585,13 @@ def getPosts():
             mysett['id'] = group[0]['id']
             mysett['freq'] = int(mysett['freq'])
             if mysett['phone'] == '1':
-              mysett['phone'] = 'true'
+              mysett['phone'] = True
             else:
-              mysett['phone'] = 'false'
+              mysett['phone'] = False
             if mysett['email'] == '1':
-              mysett['email'] = 'true'
+              mysett['email'] = True
             else:
-              mysett['email'] = 'false'
+              mysett['email'] = False
         following.append(mysett)
   return( json.dumps( [posts,grps,abils,user['code'],cangrps,following] ) )
 
