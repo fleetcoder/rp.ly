@@ -273,8 +273,8 @@
       .underpic {
         margin-top:10px;
       }
-      .logintabs {
-        margin-top:100px;
+      .loginlink {
+        margin:30px
       }
     </style>
 
@@ -449,32 +449,25 @@
                 this.emailstatus = 'error'
               }
             }
+          },
+          goLogin() {
+            this.selected = "tab2"
           }
         },
         template: `
           <div>
             <mt-tabbar fixed="true" v-model="selected">
               <mt-tab-item id="tab1">
-                <img slot="icon" src="/file/home.svg" />
-                Log In
-              </mt-tab-item>
-              <mt-tab-item id="tab2">
                 <img slot="icon" src="/file/users.svg" />
                 Sign Up
+              </mt-tab-item>
+              <mt-tab-item id="tab2">
+                <img slot="icon" src="/file/home.svg" />
+                Log In
               </mt-tab-item>
             </mt-tabbar>
             <mt-tab-container v-model="selected">
               <mt-tab-container-item id="tab1">
-                <mt-header title="Log In"></mt-header>
-                <h4>Welcome! Type an e-mail address or phone number to receive a login code:</h4>
-                <mt-field v-bind:class="{'is-hidden':loginHidden}" placeholder="Email or Phone Number..." type="email" :state="emailstatus" v-model="email"></mt-field>
-                <mt-button v-bind:class="{'is-hidden':loginHidden}" v-on:click="myLogin()" size="large">Log In</mt-button>
-                <mt-cell v-bind:class="{'is-hidden':inputhidden}">{{sentcode}}</mt-cell>
-                <mt-field v-bind:class="{'is-hidden':inputhidden}" type="number" label="Code:" placeholder="***" v-model="code"></mt-field>
-                <mt-button v-bind:class="{'is-hidden':inputhidden}" v-on:click="doCode()" size="large">Submit Code</mt-button>
-                <mt-spinner v-bind:class="{'is-hidden':spinnerHidden}" type="snake"></mt-spinner>
-              </mt-tab-container-item>
-              <mt-tab-container-item id="tab2">
                 <mt-header title="Sign Up"></mt-header>
                 <h4>It's easy to start! You will receive an e-mail or text message with a login code:</h4>
                 <mt-field v-bind:class="{'is-hidden':inputnamehidden}" placeholder="Your name..." v-model="name"></mt-field>
@@ -483,6 +476,17 @@
                 <mt-cell v-bind:class="{'is-hidden':signuphidden}">{{sentcode}}</mt-cell>
                 <mt-field v-bind:class="{'is-hidden':signuphidden}" type="number" label="Code:" placeholder="***" v-model="code"></mt-field>
                 <mt-button v-bind:class="{'is-hidden':signuphidden}" v-on:click="doCode()" size="large">Submit Code</mt-button>
+                <div class="loginlink"><a href="javascript:void(0)" @click="goLogin()">Already Registered?</a></div>
+                <mt-spinner v-bind:class="{'is-hidden':spinnerHidden}" type="snake"></mt-spinner>
+              </mt-tab-container-item>
+              <mt-tab-container-item id="tab2">
+                <mt-header title="Log In"></mt-header>
+                <h4>Welcome! Type an e-mail address or phone number to receive a login code:</h4>
+                <mt-field v-bind:class="{'is-hidden':loginHidden}" placeholder="Email or Phone Number..." type="email" :state="emailstatus" v-model="email"></mt-field>
+                <mt-button v-bind:class="{'is-hidden':loginHidden}" v-on:click="myLogin()" size="large">Log In</mt-button>
+                <mt-cell v-bind:class="{'is-hidden':inputhidden}">{{sentcode}}</mt-cell>
+                <mt-field v-bind:class="{'is-hidden':inputhidden}" type="number" label="Code:" placeholder="***" v-model="code"></mt-field>
+                <mt-button v-bind:class="{'is-hidden':inputhidden}" v-on:click="doCode()" size="large">Submit Code</mt-button>
                 <mt-spinner v-bind:class="{'is-hidden':spinnerHidden}" type="snake"></mt-spinner>
               </mt-tab-container-item>
             </mt-tab-container>
