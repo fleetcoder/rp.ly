@@ -1277,7 +1277,7 @@
               if ( !!response.body ) {
                 this.cgroups = response.body[0]
                 this.reloadGroups()
-                if (this.cgroups[this.cgroups.length - 1].name == 'Group 1') {
+                if (this.cgroups[this.cgroups.length - 1].name == 'My Photos') {
                   this.gettingStarted = true
                   /*
                   MintUI.MessageBox({
@@ -1928,8 +1928,8 @@
 
 <h4 class="help_header" v-on:click="showHelpSection('help2')">Setting up a gallery</h4>
 <p v-if="help2" class="help_para">After you register or log in, you will see an empty gallery/feed. At the bottom are three tabs: Gallery, Manage and Add Photos.</p>
-<p v-if="help2" class="help_para">To set up your first gallery, click on Manage -> Galleries -> Group 1 -> Edit Gallery.</p>
-<p v-if="help2" class="help_para">Now you should see your Gallery’s settings including the Name (change it from “Group 1” to something else).</p>
+<p v-if="help2" class="help_para">To set up your first gallery, click on Manage -> Galleries -> My Photos -> Edit Gallery.</p>
+<p v-if="help2" class="help_para">Now you should see your Gallery’s settings including the Name (change it from “My Photos” to something else).</p>
 <p v-if="help2" class="help_para">Click the “Set Gallery Image” button to upload a header image - this will be the public image for your gallery, this image will be visible to friends when you share the gallery with them, even before they click through and enter your gallery. You can use any size image for this photo and it will be used unmodified, we will add more specific size guidelines in the future. The gallery header image can be vertical or horizontal.</p>
 <p v-if="help2" class="help_para">Options:</p>
 <p v-if="help2" class="help_para">a) Scale down uploaded files - this setting will automatically reduce the size of the images you publish, if you set it to 1000pixels then all of your published horizontal images will be 1000pixels wide or smaller, and your vertical images will be 1000pixels tall or smaller. This setting can be disabled completely by sliding the switch so that the blue part is hidden.</p>
@@ -2534,7 +2534,7 @@
           },
           modGroups(){
             this.spinnerHidden = false
-            if (this.name == 'Group 1') {
+            if (this.name == 'My Photos') {
               this.spinnerHidden = true
               MintUI.Toast({
                 message: 'Error, choose a different gallery name',
@@ -2690,7 +2690,7 @@
                     this.items[i].image = ''
                   }
                 }
-                if (this.items[this.items.length - 1].name == 'Group 1') {
+                if (this.items[this.items.length - 1].name == 'My Photos') {
                   router.push('/modGroups/' + (this.items.length - 1))
                 }
               }
@@ -2699,7 +2699,7 @@
           },
           addGroups(){
             this.spinnerHidden = false
-            if (this.name == 'Group 1') {
+            if (this.name == 'My Photos') {
               this.spinnerHidden = true
               MintUI.Toast({
                 message: 'Error, choose a different gallery name',
@@ -3133,18 +3133,12 @@ def doCode():
                   'created':str(datetime.now())
                 })
                 newrec = {
-                  'name' : 'Group 1',
+                  'name' : 'My Photos',
                   'user_id' : u,
                   'created' : str( timezone( 'US/Pacific' ).localize( datetime.now() ) )
                 }
                 gr1 = add_one( 'groups', newrec )
-                newrec = {
-                  'name' : 'Group 2',
-                  'user_id' : u,
-                  'created' : str( timezone( 'US/Pacific' ).localize( datetime.now() ) )
-                }
-                gr2 = add_one( 'groups', newrec )
-                con = mod_one('contacts',{'groups': json.dumps([2,gr1,gr2])},u)
+                con = mod_one('contacts',{'groups': json.dumps([2,gr1])},u)
                 update_abilities()
                 ra = randomword(6)
                 copy = get_user(usr[0]['user_id'])
@@ -3342,18 +3336,12 @@ def freeTrialStart():
         'created':str(datetime.now())
       })
       newrec = {
-        'name' : 'Group 1',
+        'name' : 'My Photos',
         'user_id' : u,
         'created' : str( timezone( 'US/Pacific' ).localize( datetime.now() ) )
       }
       gr1 = add_one( 'groups', newrec )
-      newrec = {
-        'name' : 'Group 2',
-        'user_id' : u,
-        'created' : str( timezone( 'US/Pacific' ).localize( datetime.now() ) )
-      }
-      gr2 = add_one( 'groups', newrec )
-      con = mod_one('contacts',{'groups': json.dumps(newgrp + [gr1,gr2])},u)
+      con = mod_one('contacts',{'groups': json.dumps(newgrp + [gr1])},u)
       update_abilities()
   response = make_response(json.dumps( [ 'OK' ] ))
   session.permanent = True
