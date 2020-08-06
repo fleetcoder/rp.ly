@@ -1767,11 +1767,7 @@
                 <p v-if="gettingStarted"><a href="/#/groups">Take me there</a></p>
               </mt-tab-container-item>
               <mt-tab-container-item id="tab2">
-                <router-view name="middletab" />
-                <mt-cell is-link to="/groups" title="Galleries"></mt-cell>
-                <mt-cell is-link to="/contacts" title="Contacts"></mt-cell>
-                <mt-cell v-if="!subsHidden" is-link to="/subs" title="Payments"></mt-cell>
-                <mt-cell></mt-cell>
+                <router-view name="middletab" v-bind:subsHidden="subsHidden" />
               </mt-tab-container-item>
               <mt-tab-container-item id="tab3">
                 <mt-header title=""></mt-header>
@@ -2771,6 +2767,26 @@
             <mt-spinner v-bind:class="{'is-hidden':spinnerHidden}" type="snake"></mt-spinner>
           </div>`
       }
+      const MidMenu = {
+        data() {
+          return {
+          }
+        },
+        props: {subsHidden: Boolean},
+        created() {
+        },
+        methods: {
+        },
+        template: `
+          <div>
+            <mt-header title="">
+            </mt-header>
+            <mt-cell is-link to="/groups" title="Galleries"></mt-cell>
+            <mt-cell is-link to="/contacts" title="Contacts"></mt-cell>
+            <mt-cell v-if="!subsHidden" is-link to="/subs" title="Payments"></mt-cell>
+            <mt-cell></mt-cell>
+          </div>`
+      }
       const router = new VueRouter({routes:[
         { path: '', component: Posts,
           children: [{
@@ -2781,7 +2797,7 @@
             component: modPosts
         },{
             path: '',
-            component: listPosts
+            components:{ default: listPosts, middletab: MidMenu }
         },{
           path: '/groups', components:{middletab: Groups},
                     children: [{
