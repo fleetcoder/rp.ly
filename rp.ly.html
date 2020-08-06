@@ -1197,12 +1197,6 @@
             window.location.href = 'https://' + window.location.hostname + '/#/group/' + grp
             return
           }
-          if (this.$route.path == '/myContacts') {
-            router.push('/')
-            setTimeout(function (el){
-              el.selected = 'tab2'
-            }, 300, this)
-          }
           Vue.http.get('isAuthed').then((response) => {
             if(parseInt(response.body) != 1) {
               router.push('auth')
@@ -1364,9 +1358,6 @@
                   this.comet = response.body[3]
                   //var socket = io( '/rply/' + response.body[3] )
                   //socket.on( 'new item', this.cometAdd )
-                }
-                if (this.$route.path == '/myContacts') {
-                  //this.selected = 'tab2'
                 }
                 if (typeof braintree !== "undefined") {
                   if (this.cangrps.length == 0) {
@@ -1776,18 +1767,7 @@
                 <p v-if="gettingStarted"><a href="/#/groups">Take me there</a></p>
               </mt-tab-container-item>
               <mt-tab-container-item id="tab2">
-                <mt-header title=""></mt-header>
-                <mt-cell v-if="!mbshpsHidden">
-                  <ul class="contacts">
-                    <li class="contact" v-for="friend in contacts">{{ friend.name }}</li>
-                  </ul>
-                  <mt-checklist v-for="(group,idx) in cgroups" :title="cgroups[idx].name"
-                    v-model="cgroups[idx].members"
-                    :options="cgroups[idx].perms"
-                    align="right"
-                    v-on:change="setGroups()">
-                  </mt-checklist>
-                </mt-cell>
+                <router-view name="middletab" />
                 <mt-cell is-link to="/groups" title="Galleries"></mt-cell>
                 <mt-cell is-link to="/contacts" title="Contacts"></mt-cell>
                 <mt-cell v-if="!subsHidden" is-link to="/subs" title="Payments"></mt-cell>
@@ -2058,7 +2038,7 @@
         template: `
           <div>
             <mt-header title="Contacts">
-              <router-link to="/myContacts" slot="left">
+              <router-link to="/" slot="left">
                 <mt-button icon="back">back</mt-button>
               </router-link>
             </mt-header>
@@ -2335,7 +2315,7 @@
         template: `
           <div>
             <mt-header title="Galleries">
-              <router-link to="/myContacts" slot="left">
+              <router-link to="/" slot="left">
                 <mt-button icon="back">back</mt-button>
               </router-link>
             </mt-header>
@@ -2782,7 +2762,7 @@
         template: `
           <div>
             <mt-header title="Payments">
-              <router-link to="/myContacts" slot="left">
+              <router-link to="/" slot="left">
                 <mt-button icon="back">back</mt-button>
               </router-link>
             </mt-header>
@@ -2800,13 +2780,10 @@
             path: 'modPosts/:idx',
             component: modPosts
         },{
-            path: 'myContacts',
-            component: listPosts
-        },{
             path: '',
             component: listPosts
-        }]},{
-          path: '/groups', component: Groups,
+        },{
+          path: '/groups', components:{groups: Groups},
                     children: [{
                       path: '/showGroups/:idx',
                       component: showGroups
@@ -2818,7 +2795,7 @@
                       component: listGroups
                   }]
         },{
-          path: '/contacts', component: Contacts,
+          path: '/contacts', components:{groups: Contacts},
                     children: [{
                       path: '/showContacts/:idx',
                       component: showContacts
@@ -2830,6 +2807,11 @@
                       component: listContacts
                   }]
         },{
+            path: '/subs',
+            component: Subscribers
+        }
+      
+      ]},{
             path: '/connect/:code',
             component: connect
         },{
@@ -2838,9 +2820,6 @@
         },{
             path: '/auth',
             component: freeTrial
-        },{
-            path: '/subs',
-            component: Subscribers
         }
       ]})
       const vueApp = new Vue({
