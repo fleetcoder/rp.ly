@@ -2800,7 +2800,7 @@
             path: '',
             components:{ default: listPosts, middletab: MidMenu }
         },{
-          path: '/groups', components:{middletab: Groups},
+          path: '/groups', components:{default: listPosts, middletab: Groups},
                     children: [{
                       path: '/showGroups/:idx',
                       component: showGroups
@@ -2812,7 +2812,7 @@
                       component: listGroups
                   }]
         },{
-          path: '/contacts', components:{middletab: Contacts},
+          path: '/contacts', components:{default: listPosts, middletab: Contacts},
                     children: [{
                       path: '/showContacts/:idx',
                       component: showContacts
@@ -2825,7 +2825,7 @@
                   }]
         },{
             path: '/subs',
-            components:{middletab: Subscribers}
+            components:{default: listPosts, middletab: Subscribers}
         }
       
       ]},{
