@@ -2783,7 +2783,7 @@
             path: '',
             component: listPosts
         },{
-          path: '/groups', components:{groups: Groups},
+          path: '/groups', components:{middletab: Groups},
                     children: [{
                       path: '/showGroups/:idx',
                       component: showGroups
@@ -2795,7 +2795,7 @@
                       component: listGroups
                   }]
         },{
-          path: '/contacts', components:{groups: Contacts},
+          path: '/contacts', components:{middletab: Contacts},
                     children: [{
                       path: '/showContacts/:idx',
                       component: showContacts
