@@ -584,7 +584,8 @@
             signupBtnHidden: false,
             isInstagram: false,
             freq:2,
-            interval:'Day'
+            interval:'Day',
+            helpVisible: false
           }
         },
         props: {},
@@ -797,11 +798,23 @@
                   this.validContact = "error"
                 }
             }
+          },
+          showHelp() {
+            this.helpVisible = true
+          },
+          closeHelp(){
+            this.helpVisible = false
           }
         },
         template: `
           <div>
             <mt-header title="">
+              <a href="/" slot="left">
+                <img class="headericon" slot="icon" src="file/home.svg" />
+              </a>
+              <a v-on:click="showHelp()" slot="right">
+                <img class="headericon" slot="icon" src="file/help-circle.svg" />
+              </a>
             </mt-header>
             <img v-bind:class="{'is-hidden':imgHidden}" class="groupimg" :src="groupPic" />
             <mt-cell :title="inviteText"></mt-cell>
@@ -834,6 +847,15 @@
               <mt-button v-bind:class="{'is-hidden':docodehidden}" v-on:click="doCode()" size="large">Submit Code</mt-button>
               <mt-spinner v-bind:class="{'is-hidden':spinnerHidden}" type="snake"></mt-spinner>
             </div>
+            <mt-popup class="help_popup" v-model="helpVisible" position="middle">
+              <mt-header>
+                <a v-on:click="closeHelp()" slot="left">
+                  <mt-button>X</mt-button>
+                </a>
+              </mt-header>
+              <h4 class="help_header">What is this?</h4>
+              <p class="help_para">RP.LY is a new kind of digital photo gallery that helps photographers offer an expanded set of images.</p>
+            </mt-popup>
           </div>`
       }
       const listPosts = {
