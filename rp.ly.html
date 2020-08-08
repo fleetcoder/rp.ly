@@ -289,6 +289,9 @@
         overflow:hidden;
         margin:20px;
       }
+      .feedwrap {
+        padding-bottom:100px;
+      }
     </style>
 
     <script id="client">
@@ -910,7 +913,7 @@
           }
         },
         template: `
-          <div>
+          <div class="feedwrap">
             <mt-header title="">
               <a v-on:click="showHelp()" slot="left">
                 <img class="headericon" slot="icon" src="file/help-circle.svg" />
@@ -1753,6 +1756,9 @@
               iconClass: 'icon icon-error',
               duration: 2000
             })
+          },
+          showAddContactForm(){
+            alert('SACF')
           }
         },
         mounted() {
@@ -2030,6 +2036,9 @@
               this.items.splice( idx, 1 )
               this.spinnerHidden = true
             })
+          },
+          showAddContact(){
+            this.$emit('on-show-add-contact')
           }
         },
         template: `
@@ -2038,6 +2047,8 @@
               <router-link to="/" slot="left">
                 <mt-button icon="back">back</mt-button>
               </router-link>
+                <mt-button slot="right"><img v-on:click="showAddContact()" class="headericon" slot="icon" src="/file/plus-circle.svg" />
+                </mt-button>
             </mt-header>
             <mt-spinner v-bind:class="{'is-hidden':spinnerHidden}" type="snake"></mt-spinner>
             <mt-cell-swipe v-for="(item, idx) in items" :title="item.name" is-link :to="'/showContacts/' + idx" :right="[
@@ -2268,12 +2279,7 @@
 
             <mt-tab-container v-model="selected">
               <mt-tab-container-item id="tab1">
-                <router-view v-bind:items="items" v-bind:editHidden="editHidden" @on-update-list="getContacts" @on-tabs-hidden="hideTabs"  />
-                <mt-cell></mt-cell>
-                <mt-cell></mt-cell>
-                <mt-button class="bottom-button" size="large" v-on:click="showAddContactForm()" v-bind:class="{'is-hidden':tabsHidden}">
-                    Add Contact
-                </mt-button>
+                <router-view v-bind:items="items" v-bind:editHidden="editHidden" @on-update-list="getContacts" @on-tabs-hidden="hideTabs" @on-show-add-contact="showAddContactForm"  />
               </mt-tab-container-item>
               <mt-tab-container-item id="tab2">
                 <mt-header title="Contacts"></mt-header>
@@ -2307,7 +2313,11 @@
               this.items.splice( idx, 1 )
               this.spinnerHidden = true
             })
+          },
+          showAddGroup(){
+            this.$emit('on-show-add-group')
           }
+
         },
         template: `
           <div>
@@ -2315,6 +2325,8 @@
               <router-link to="/" slot="left">
                 <mt-button icon="back">back</mt-button>
               </router-link>
+                <mt-button slot="right"><img v-on:click="showAddGroup()" class="headericon" slot="icon" src="/file/plus-circle.svg" />
+                </mt-button>
             </mt-header>
             <mt-spinner v-bind:class="{'is-hidden':spinnerHidden}" type="snake"></mt-spinner>
             <mt-cell-swipe v-for="(item, idx) in items" :title="item.name" is-link :to="'/showGroups/' + idx" :right="[
@@ -2708,12 +2720,7 @@
 
             <mt-tab-container v-model="selected">
               <mt-tab-container-item id="tab1">
-                <router-view v-bind:items="items" v-bind:editHidden="editHidden" @on-update-list="getGroups" @on-tabs-hidden="hideTabs"  />
-                <mt-cell></mt-cell>
-                <mt-cell></mt-cell>
-                <mt-button class="bottom-button" size="large" v-on:click="showAddGroupForm()" v-bind:class="{'is-hidden':tabsHidden}">
-                    Add Gallery
-                </mt-button>
+                <router-view v-bind:items="items" v-bind:editHidden="editHidden" @on-update-list="getGroups" @on-tabs-hidden="hideTabs" @on-show-add-group="showAddGroupForm" />
               </mt-tab-container-item>
               <mt-tab-container-item id="tab2">
                 <mt-header title="Galleries"></mt-header>
