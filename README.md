@@ -12,7 +12,7 @@
 
 |  |  |  |
 | ------------- | ------------- | ------------- |
-| <img src="https://rp.ly/file/rply2-1.jpg"> | <img src="https://rp.ly/file/rply2-2.jpg"> | <img src="https://rp.ly/file/rply2-3.jpg"> |
+| <img src="https://rp.ly/file/rply3-1.jpg"> | <img src="https://rp.ly/file/rply3-2.jpg"> | <img src="https://rp.ly/file/rply3-3.jpg"> |
 
 
 ## Items needed to install rp.ly
