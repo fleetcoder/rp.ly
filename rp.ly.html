@@ -2019,14 +2019,15 @@
                   </mt-cell>
                 </div>
               </div>
-              <mt-spinner v-bind:class="{'is-hidden':settingsSpinnerHidden}" type="snake"></mt-spinner>
-              <mt-button v-bind:class="{'is-hidden':subsHidden}" v-on:click="showSubs()" size="large">Subscriptions</mt-button>
+              <mt-cell></mt-cell>
+              <mt-cell title="Artists you sponsor"></mt-cell>
+              <mt-button v-bind:class="{'is-hidden':subsHidden}" v-on:click="showSubs()" size="large">Sponsorships</mt-button>
               <mt-cell v-bind:class="{'is-hidden':subsHidden}"></mt-cell>
               <mt-cell></mt-cell>
-              <mt-cell title="Paste feed links to see content from other sites"></mt-cell>
+              <mt-cell title="See content from other sites in your gallery"></mt-cell>
               <mt-button v-on:click="showFeeds()" size="large">Feeds</mt-button>
               <mt-cell></mt-cell>
-              <mt-cell title="Feed link with your password, access your private timeline from other apps"></mt-cell>
+              <mt-cell title="Password-link to access your gallery feed"></mt-cell>
               <mt-field v-model="feedLink"></mt-field>
               <mt-button size="large" v-clipboard:copy="feedLink" v-clipboard:success="copyFeedLink" v-clipboard:error="copyError">Copy To Clipboard</mt-button>
               <mt-cell></mt-cell>
