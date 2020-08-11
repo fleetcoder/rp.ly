@@ -1801,7 +1801,7 @@
                 <p v-if="gettingStarted"><a href="javascript:void(0)" @click="takeMeThere()">Take me there</a></p>
               </mt-tab-container-item>
               <mt-tab-container-item id="tab2">
-                <router-view name="middletab" v-bind:subsHidden="subsHidden" />
+                <router-view name="middletab" v-bind:subsHidden="subsHidden" @on-update-photos="getPosts" />
               </mt-tab-container-item>
               <mt-tab-container-item id="tab3">
                 <mt-header title=""></mt-header>
@@ -2577,6 +2577,7 @@
               blockDownloads: this.blockDownloads
             }).then( ( response ) => {
               this.$emit('on-update-list')
+              this.$emit('on-update-photos')
               this.showShareGroup = true
               this.groupLink = response.body
             })
@@ -2612,7 +2613,7 @@
           }
         },
         template: `
-          <div>
+          <div class="feedwrap">
             <mt-header title="Gallery Settings">
               <router-link :to="'/showGroups/' + idx" slot="left">
                 <mt-button icon="back">back</mt-button>
@@ -2741,6 +2742,9 @@
                 this[field] = response.body
               }
             })
+          },
+          getPosts(){
+            this.$emit('on-update-photos')
           }
         },
         template: `
@@ -2748,7 +2752,7 @@
 
             <mt-tab-container v-model="selected">
               <mt-tab-container-item id="tab1">
-                <router-view v-bind:items="items" v-bind:editHidden="editHidden" @on-update-list="getGroups" @on-tabs-hidden="hideTabs" @on-show-add-group="showAddGroupForm" />
+                <router-view v-bind:items="items" v-bind:editHidden="editHidden" @on-update-list="getGroups" @on-tabs-hidden="hideTabs" @on-show-add-group="showAddGroupForm" @on-update-photos="getPosts" />
               </mt-tab-container-item>
               <mt-tab-container-item id="tab2">
                 <mt-header title="Galleries"></mt-header>
@@ -3960,7 +3964,8 @@ def addGroups():
 @app.route('/modGroups',methods=['GET','POST'])
 def modGroups():
   item = get_one( 'groups', request.form.get('id') )[0]
-  if not can('mod','groups',current_user(),item):
+  curr = current_user()
+  if not can('mod','groups',curr,item):
     return( json.dumps( [ 'Error' ] ) )
   if not 'image' in item or not 'key' or not 'maxres' in item or not 'allowPosts' in item or not 'blockDownloads' in item:
     rid = add_one( 'groups', {'image':'','key':'','maxres':'2000','allowPosts':'0','blockDownloads':'1'} )
@@ -3986,6 +3991,21 @@ def modGroups():
     newobj['key'] = randomword(8)
     item['key'] = newobj['key']
   if mod_one( 'groups', newobj, request.form.get('id') ):
+    items = get_one_by( 'groups', curr['id'], 'user_id' )
+    if len(items) == 1:
+      savedImage = saveFile( 'image' )
+      in_reply_to = ''
+      newrec = {
+        'title' : '',
+        'image' : savedImage,
+        'sound' : '',
+        'video' : '',
+        'groups' : json.dumps([int(request.form.get('id'))]),
+        'inreplyto' : in_reply_to,
+        'user_id' : session['user'],
+        'created' : str( timezone( 'US/Pacific' ).localize( datetime.now() ) )
+      }
+      rid = add_one( 'posts', newrec )
     clearSession('image')
     return( 'https://' + mydomain + '/grp/' + item['key'] )
   else:
