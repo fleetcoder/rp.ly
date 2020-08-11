@@ -2755,13 +2755,12 @@
                 <router-view v-bind:items="items" v-bind:editHidden="editHidden" @on-update-list="getGroups" @on-tabs-hidden="hideTabs" @on-show-add-group="showAddGroupForm" @on-update-photos="getPosts" />
               </mt-tab-container-item>
               <mt-tab-container-item id="tab2">
-                <mt-header title="Galleries"></mt-header>
+                <mt-header title="Add New Gallery"></mt-header>
                 <mt-field placeholder="Name.." v-model="name"></mt-field>
                 <mt-cell title=""><img class="img" :src="'myFile?staged=1&field=image&name=' + image" /></mt-cell>
-                <file-upload btn-label="Image" @change="stagedUpload('image')" :url="uploadTo + '&field=image'"></file-upload>
-                <mt-button v-on:click="addGroups()" size="large">Save</mt-button>
-                <br />
-                <mt-button v-on:click="hideAddGroupForm()" size="large">
+                <file-upload btn-label="Set Header Photo" @change="stagedUpload('image')" :url="uploadTo + '?field=image'"></file-upload>
+                <mt-button class="buttonset" v-on:click="addGroups()" size="large">Add New Gallery</mt-button>
+                <mt-button class="buttonset" v-on:click="hideAddGroupForm()" size="large">
                     Cancel
                 </mt-button>
                 <mt-cell></mt-cell>
@@ -3948,7 +3947,10 @@ def addGroups():
     return( json.dumps( [ 'Error' ] ) )
   newrec = {
     'name' : request.form.get('name'),
-    'groups' : request.form.get('recips'),
+    'image' : saveFile( 'image' ),
+    'maxres' : '0',
+    'allowPosts' : '0',
+    'blockDownloads' : '0',
     'user_id' : session['user'],
     'created' : str( timezone( 'US/Pacific' ).localize( datetime.now() ) )
   }
@@ -3957,6 +3959,7 @@ def addGroups():
   grps.append(rid)
   mod_one('contacts',{'groups': json.dumps(grps)},current_user()['id'])
   if rid > 0:
+    clearSession('image')
     return( json.dumps( [ 'OK' ] ) )
   else:
     return( json.dumps( [ 'Error' ] ) )
