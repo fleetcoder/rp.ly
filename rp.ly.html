@@ -1866,7 +1866,7 @@
                 Add Photos
               </mt-tab-item>
             </mt-tabbar>
-            <mt-popup v-model="sponsorVisible" position="middle">
+            <mt-popup class="help_popup" v-model="sponsorVisible" position="middle">
               <mt-header>
                 <a v-on:click="closeSponsor()" slot="left">
                   <mt-button>X</mt-button>
@@ -1940,7 +1940,7 @@
 <p v-if="help2" class="help_para">After you register or log in, you will see an empty gallery/feed. At the bottom are three tabs: Gallery, Manage and Add Photos.</p>
 <p v-if="help2" class="help_para">To set up your first gallery, click on Manage -> Galleries -> My Photos -> Edit Gallery.</p>
 <p v-if="help2" class="help_para">Now you should see your Gallery’s settings including the Name (change it from “My Photos” to something else).</p>
-<p v-if="help2" class="help_para">Click the “Set Gallery Image” button to upload a header image - this will be the public image for your gallery, this image will be visible to friends when you share the gallery with them, even before they click through and enter your gallery. You can use any size image for this photo and it will be used unmodified, we will add more specific size guidelines in the future. The gallery header image can be vertical or horizontal.</p>
+<p v-if="help2" class="help_para">Click the “Set Header Photo” button to upload a header image - this will be the public image for your gallery, this image will be visible to friends when you share the gallery with them, even before they click through and enter your gallery. You can use any size image for this photo and it will be used unmodified, we will add more specific size guidelines in the future. The gallery header image can be vertical or horizontal.</p>
 <p v-if="help2" class="help_para">Options:</p>
 <p v-if="help2" class="help_para">a) Scale down uploaded files - this setting will automatically reduce the size of the images you publish, if you set it to 1000pixels then all of your published horizontal images will be 1000pixels wide or smaller, and your vertical images will be 1000pixels tall or smaller. This setting can be disabled completely by sliding the switch so that the blue part is hidden.</p>
 <p v-if="help2" class="help_para">b) Block members from saving photos - this setting will block gallery visitors from saving your images to their phone’s camera roll.</p>
@@ -2024,8 +2024,8 @@
                   </mt-cell>
                 </div>
               </div>
-              <mt-cell></mt-cell>
-              <mt-cell title="Artists you sponsor"></mt-cell>
+              <mt-cell v-bind:class="{'is-hidden':subsHidden}"></mt-cell>
+              <mt-cell v-bind:class="{'is-hidden':subsHidden}" title="Artists you sponsor"></mt-cell>
               <mt-button v-bind:class="{'is-hidden':subsHidden}" v-on:click="showSubs()" size="large">Sponsorships</mt-button>
               <mt-cell v-bind:class="{'is-hidden':subsHidden}"></mt-cell>
               <mt-cell></mt-cell>
@@ -2613,7 +2613,7 @@
         },
         template: `
           <div>
-            <mt-header title="Galleries">
+            <mt-header title="Gallery Settings">
               <router-link :to="'/showGroups/' + idx" slot="left">
                 <mt-button icon="back">back</mt-button>
               </router-link>
@@ -2621,13 +2621,13 @@
             <mt-spinner v-bind:class="{'is-hidden':spinnerHidden}" type="snake"></mt-spinner>
             <mt-field label="Name:" placeholder="Name.." v-model="name"></mt-field>
             <mt-cell title=""><img class="img" :src="'myFile?staged=1&field=image&name=' + image" /></mt-cell>
-            <file-upload btn-label="Set Gallery Image" @change="stagedUpload('image')" :url="uploadTo + '?field=image'"></file-upload>
+            <file-upload btn-label="Set Header Photo" @change="stagedUpload('image')" :url="uploadTo + '?field=image'"></file-upload>
             <!--<mt-button v-on:click="quickContact()" size="large">Add Contact</mt-button>-->
             <mt-cell title="Advanced Options"><mt-switch v-model="optsHidden"></mt-switch></mt-cell>
             <mt-cell v-bind:class="{'is-hidden':!optsHidden}"  title="Scale down uploaded files"><mt-field v-model="maxRes" label="maximum pixels"></mt-field><mt-switch v-model="doScale"></mt-switch></mt-cell>
             <mt-cell v-bind:class="{'is-hidden':!optsHidden}" title="Block members from saving photos"><mt-switch v-model="blockDownloads"></mt-switch></mt-cell>
             <!--<mt-cell title="Allow members to add photos"><mt-switch v-model="allowPosts"></mt-switch></mt-cell>-->
-            <mt-button class="underpic" v-on:click="modGroups()" size="large">Save Gallery</mt-button>
+            <mt-button class="underpic" v-on:click="modGroups()" size="large">Save Gallery Settings</mt-button>
             <mt-popup class="addcontact" v-model="showAddContact" position="middle">
               <mt-field :state="validName" placeholder="Name" @keyup.native="checkConName" v-model="newName"></mt-field>
               <mt-field :state="validContact" @keyup.native="checkContact" placeholder="Email or Phone..." v-model="newContact" type="email"></mt-field>
