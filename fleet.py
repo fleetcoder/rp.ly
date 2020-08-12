@@ -554,7 +554,22 @@ def get_user(id):
     result = conn.cursor().execute(sql,[id])
   except sqlite3.OperationalError:
     return []
-  return result.fetchall()[0]
+  rows = result.fetchall()
+  if len(rows) > 0:
+    if len(rows[0]['email']) > 0:
+      items = get_one_by( 'contacts', rows[0]['email'], 'email' )
+      if len(items) > 0:
+        for con in items:
+          rows[0]['groups'] = json.dumps(json.loads(rows[0]['groups']) + json.loads(con['groups']))
+    if len(rows[0]['phone']) > 0:
+      items = get_one_by( 'contacts', rows[0]['phone'], 'phone' )
+      if len(items) > 0:
+        for con in items:
+          rows[0]['groups'] = json.dumps(json.loads(rows[0]['groups']) + json.loads(con['groups']))
+    rows[0]['groups'] = json.dumps(list(set(json.loads(rows[0]['groups']))))
+    return rows[0]
+  else:
+    return []
 
 def current_user():
   rows = []

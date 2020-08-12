@@ -3430,17 +3430,19 @@ def feed():
       if not mtype is None:
         if post['sound'][-3:] == 'mp3':
           enc.set('url', 'https://' + mydomain + '/myFile?name=' + urllib.parse.quote(post['sound']) + '&field=sound')
-          enc.set('length', str(os.path.getsize('myfiles/' + post['sound'])))
-          enc.set('type', mtype)
-          item.append(enc)
+          if os.path.exists('myfiles/' + post['sound']):
+            enc.set('length', str(os.path.getsize('myfiles/' + post['sound'])))
+            enc.set('type', mtype)
+            item.append(enc)
       else:
         enc = etree.Element('enclosure')
         mtype = mimetypes.MimeTypes().guess_type(post['image'])[0]
         if not mtype is None:
           enc.set('url', 'https://' + mydomain + '/myFile?name=' + urllib.parse.quote(post['image']) + '&field=image')
-          enc.set('length', str(os.path.getsize('myfiles/' + post['image'])))
-          enc.set('type', mtype)
-          item.append(enc)
+          if os.path.exists('myfiles/' + post['image']):
+            enc.set('length', str(os.path.getsize('myfiles/' + post['image'])))
+            enc.set('type', mtype)
+            item.append(enc)
       channel.append(item)
     root = etree.Element('rss')
     root.set('version', '2.0')
