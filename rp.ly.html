@@ -1196,7 +1196,8 @@
             template1: 'I\'m using RP.LY to share an expanded photo selection with those who join my gallery for (occasional) email or text message notifications. Click link in bio to join my new gallery.',
             template2: 'I\'m using RP.LY to share an expanded photo selection with those who join my gallery for (occasional) email or text message notifications. Click this link to join my new gallery.',
             following:[],
-            mbshpsHidden: false
+            mbshpsHidden: false,
+            doSetHeader: true
           }
         },
         components:{
@@ -1445,7 +1446,8 @@
               recips:JSON.stringify(this.postto),
               title : this.title,
               expirehours: exp,
-              speedup: this.speedup
+              speedup: this.speedup,
+              doSetHeader: this.doSetHeader
             }).then( ( response ) => {
               this.selected = 'tab1'
               this.getPosts()
@@ -1824,8 +1826,9 @@
                       <a href="javascript:void(0)" @click="reset()">Replace These Files</a>
                     </p>
                     <ul class="list-unstyled">
-                      <li v-for="item in uploadedFiles">
+                      <li v-for="(item, idx) in uploadedFiles">
                         <img :src="'myFile?staged=1&field=image&multiname=' + item.url" class="img-responsive img-thumbnail" :alt="item.originalName" />
+                        <mt-cell v-if="idx == 0" title="Use As Gallery Header Photo"><mt-switch v-model="doSetHeader"></mt-switch></mt-cell>
                       </li>
                     </ul>
                   </div>
@@ -3706,11 +3709,14 @@ def addPosts():
   senditems = []
   imageupl = saveFile('imagemulti')
   title = request.form.get('title')
+  firstimg = ''
   if len(imageupl) > 0:
     saveImage = json.loads(imageupl)
   if not can('add','posts',curr):
     return( json.dumps( [ 'Error' ] ) )
   for savedImage in saveImage:
+    if firstimg == '':
+      firstimg = savedImage
     soundFile = saveFile( 'sound' )
     videoFile = ''
     if (savedImage[-7:].lower() in ['mov.jpg','mp4.jpg']):
@@ -3746,6 +3752,13 @@ def addPosts():
              return( json.dumps( [ 'Error' ] ) )
     rid = add_one( 'posts', newrec )
     if rid > 0:
+      if str(request.form.get('doSetHeader')) == 'true' and firstimg is not '':
+        newobj = {'image':firstimg}
+        for g in json.loads(request.form.get('recips')):
+          grpdata = get_one('groups',g)
+          growner = get_user(grpdata[0]['user_id'])
+          if int(curr['id']) == int(growner['id']):
+            mod_one( 'groups', newobj, g )
       dt = timezone( 'US/Pacific' ).localize( datetime.now() )
       newrec['id'] = rid
       contacts = get_all('contacts')
