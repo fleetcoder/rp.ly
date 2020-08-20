@@ -3437,6 +3437,14 @@ def feed():
             enc.set('length', str(os.path.getsize('myfiles/' + post['sound'])))
             enc.set('type', mtype)
             item.append(enc)
+      elif not mimetypes.MimeTypes().guess_type(post['video'])[0] is None:
+        mtype = mimetypes.MimeTypes().guess_type(post['video'])[0]
+        if post['video'][-3:].lower() in ['mov','mp4']:
+          enc.set('url', 'https://' + mydomain + '/myFile?name=' + urllib.parse.quote(post['video']) + '&field=video')
+          if os.path.exists('myfiles/' + post['video']):
+            enc.set('length', str(os.path.getsize('myfiles/' + post['video'])))
+            enc.set('type', mtype)
+            item.append(enc)
       else:
         enc = etree.Element('enclosure')
         mtype = mimetypes.MimeTypes().guess_type(post['image'])[0]
@@ -3612,8 +3620,13 @@ def getPosts():
             if 'type' in item['enclosures'][0]:
               item['media'] = item['enclosures'][0]['href']
               item['mediatype'] = item['enclosures'][0]['type']
+              item['isVideo'] = False
               if 'mp3' in item['enclosures'][0]['href']:
                 item['soundHidden'] = False
+              elif item['enclosures'][0]['href'][-3:].lower() in ['mov','mp4']:
+                item['textHidden'] = True
+                item['isVideo'] = True
+                item['video'] = item['enclosures'][0]['href']
               else:
                 item['imageHidden'] = False
       if not 'title' in item:
@@ -3625,7 +3638,10 @@ def getPosts():
             item['title'] = h2t.handle(str(item['content']))[:100]
           else:
             continue
+      if item['title'] == '':
+        item['title'] = '(untitled)'
       items.append(item)
+    print( 'POSTS ' + str(len(posts)) + ' and ITEMS ' + str(len(items)))
     posts = posts + items
   #posts.sort(key=lambda p: p['published'], reverse=True)
   following = []
