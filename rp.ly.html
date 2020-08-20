@@ -3738,8 +3738,10 @@ def addPosts():
       'created' : str( timezone( 'US/Pacific' ).localize( datetime.now() ) )
     }
     if (newrec['sound'][-3:] == 'mp3'):
+      #speedup = request.form.get('speedup')
+      speedup = 0.9
       sound = AudioSegment.from_file(appdir + 'myfiles/' + newrec['sound'])
-      sound_with_altered_frame_rate = sound._spawn(sound.raw_data, overrides={"frame_rate": int(sound.frame_rate * float(request.form.get('speedup')))})
+      sound_with_altered_frame_rate = sound._spawn(sound.raw_data, overrides={"frame_rate": int(sound.frame_rate * float(speedup))})
       sound_with_altered_frame_rate.export(appdir + 'myfiles/' + newrec['sound'], format="mp3")
     if (int(request.form.get('expirehours')) > 0):
       now_plus_hours = datetime.now() + timedelta(hours=int(request.form.get('expirehours')))
