@@ -564,6 +564,146 @@
             <mt-spinner v-bind:class="{'is-hidden':spinnerHidden}" type="snake"></mt-spinner>
           </div>`
       }
+      const ShowGroupPage = {
+        data() {
+          return {
+            spinnerHidden: true,
+            isInstagram: false,
+            publicName: '',
+            publicBio: '',
+            publicImage: '',
+            publicLink: '',
+            publicGroups: [],
+            grp:'',
+            image:'',
+            name:''
+          }
+        },
+        created() {
+          this.grp = this.$route.params.grp
+          var ua = navigator.userAgent || navigator.vendor || window.opera
+          this.isInstagram = (ua.indexOf('Instagram') > -1) ? true : false
+          this.spinnerHidden = false
+          Vue.http.post( 'joinGroup', {
+            grp:this.$route.params.grp
+          }).then( ( response ) => {
+            var publicData = JSON.parse(response.body[6])
+            if ("undefined" !== typeof publicData['publicName']) {
+              this.publicName = publicData['publicName']
+              this.publicBio = publicData['publicBio']
+              this.publicLink = publicData['publicLink']
+              this.publicImage = publicData['publicImage']
+              this.publicGroups = publicData['publicGroups']
+              this.image = response.body[2]
+              this.name = response.body[1]
+               //this.publicGroups.unshift({grp:this.$route.params.grp,image:,name:})
+              for(grp in this.publicGroups) {
+                //alert(this.publicGroups[grp].image)
+              }
+              this.spinnerHidden = true
+            } else {
+              router.push( '/showgroup/' + this.$route.params.grp )
+            }
+          })
+        },
+        methods: {
+        },
+        template: `
+          <div>
+            <mt-header title="">
+            </mt-header>
+            <img class="groupimg" :src="'grpFile?field=publicImage&name=' + publicImage" />
+            <h3 v-text="publicName"></h3>
+            <p><a href="publicLink" v-text="publicLink"></a></p>
+            <h5 v-text="publicBio"></h5>
+            <mt-spinner v-bind:class="{'is-hidden':spinnerHidden}" type="snake"></mt-spinner>
+            <mt-cell :title="name" is-link :to="'/pubgroup/' + grp">
+              <img class="grimg" :src="image" />
+            </mt-cell>
+            <mt-cell v-for="(item, idx) in publicGroups" :title="item.name" is-link :to="'/showgroup/' + item.grp">
+              <img class="grimg" :src="item.image" />
+            </mt-cell>
+          </div>`
+      }
+      const PublicGroupPage = {
+        data() {
+          return {
+            spinnerHidden: true,
+            isInstagram: false,
+            groupPic: '',
+            items: []
+          }
+        },
+        created() {
+          var ua = navigator.userAgent || navigator.vendor || window.opera
+          this.isInstagram = (ua.indexOf('Instagram') > -1) ? true : false
+          this.spinnerHidden = false
+          Vue.http.post( 'joinGroup', {
+            grp:this.$route.params.grp
+          }).then( ( response ) => {
+            this.groupPic = response.body[2]
+            var publicData = JSON.parse(response.body[6])
+            if ("undefined" !== typeof publicData['publicName']) {
+              Vue.http.get( 'getPosts' + '?grp=' + this.$route.params.grp).then( ( response ) => {
+                if ( !!response.body ) {
+                  if (this.cursor > 0) {
+                    if (response.body[0].length < 10) {
+                      this.moreHidden = true
+                    }
+                    for (var j = 0; j < response.body[0].length; j++) {
+                      this.items.push(response.body[0][j])
+                    }
+                    this.moreHidden = false
+                  } else {
+                    this.items = response.body[0]
+                    if (this.items.length > 9) {
+                      this.moreHidden = false
+                    }
+                  }
+                  console.log(this.items)
+                }
+                this.spinnerHidden = true
+              })
+              this.spinnerHidden = true
+            } else {
+            }
+          })
+        },
+        methods: {
+          imageLink(item){
+            if ("undefined" !== typeof item.media) {
+              return item.media
+            } else {
+              return 'myFile?field=image&name=' + item.image
+            }
+          }
+        },
+        template: `
+          <div>
+            <mt-header title="">
+            </mt-header>
+            <img class="groupimg" :src="'grpFile?field=image&name=' + groupPic" />
+            <mt-cell class="imagecell" v-for="(item, idx) in items" :title="item.name">
+              <p class="caption">
+                <span v-text="item.author"></span>
+                <img class="headericon" src="file/chevron-right.svg" />
+                <span v-text="item.to"></span>
+              </p>
+              <p class="caption" v-text="item.title" v-bind:class="{'is-hidden':item.textHidden}"></p>
+              <div class="outer">
+                <img class="oimg" :src="imageLink(item)" v-if="item.allowDownload" />
+                <img @contextmenu.prevent="doContextMenu" class="oimg cant-click" :src="imageLink(item)" v-else />
+                <figcaption class="caption underpic" v-text="item.title"></figcaption>
+                <audio-player :src="'myFile?field=sound&name=' + item.sound" v-bind:class="{'is-hidden':item.soundHidden}" />
+              </div>
+              <vue-plyr v-if="item.isVideo">
+                <video :poster="item.image" :src="'myFile?field=video&name=' + item.video" controls data-plyr-config='{ "iconUrl": "file/plyr.svg" }' />
+                <figcaption class="caption" v-text="item.title"></figcaption>
+              </vue-plyr>
+              <audio-player v-if="item.imageHidden" :src="'myFile?field=sound&name=' + item.sound" v-bind:class="{'is-hidden':item.soundHidden}" />
+            </mt-cell>
+          </div>`
+      }
       const GroupPage = {
         data() {
           return {
@@ -589,7 +729,12 @@
             isInstagram: false,
             freq:2,
             interval:'Day',
-            helpVisible: false
+            helpVisible: false,
+            publicName: '',
+            publicBio: '',
+            publicImage: '',
+            publicLink: '',
+            publicGroups: []
           }
         },
         props: {},
@@ -617,6 +762,14 @@
             this.groupPic = response.body[2]
             this.imgHidden = false
             this.spinnerHidden = true
+            var publicData = JSON.parse(response.body[6])
+            if ("undefined" !== typeof publicData['publicName']) {
+              this.publicName = publicData['publicName']
+              this.publicBio = publicData['publicBio']
+              this.publicLink = publicData['publicLink']
+              this.publicImage = publicData['publicImage']
+              this.publicGroups = publicData['publicGroups']
+            }
           })
         },
         methods: {
@@ -2909,8 +3062,14 @@
             path: '/connect/:code',
             component: connect
         },{
-            path: '/group/:grp',
+            path: '/showgroup/:grp',
             component: GroupPage
+        },{
+            path: '/pubgroup/:grp',
+            component: PublicGroupPage
+        },{
+            path: '/group/:grp',
+            component: ShowGroupPage
         },{
             path: '/auth',
             component: freeTrial
@@ -3533,16 +3692,30 @@ def getPosts():
   posts = []
   cangrps = []
   groups = json.loads(user['groups'])
-  ugrps = get_one_by('groups',user['id'],'user_id')
+  ugrps = []
+  if 'id' in user:
+    ugrps = get_one_by('groups',user['id'],'user_id')
   ugrids = []
   for gr in ugrps:
     ugrids.append(gr['id'])
   posts_limit = 10
   posts_skipped = 0
+  public_group = 0
+  if not request.args.get('grp') is None:
+    thisgroup = get_one_by( 'groups', request.args.get('grp'), 'key' )
+    if len(thisgroup) > 0:
+      if int(thisgroup[0]['public']) > 0:
+        public_group = thisgroup[0]['id']
   for item in recs:
+    is_public = False
     if not item['inreplyto'] == '':
       continue
-    if can('get','posts',user,item):
+    if public_group > 0:
+      grps = json.loads(item['groups'])
+      if len(grps) > 0:
+        if grps[0] == public_group:
+          is_public = True
+    if can('get','posts',user,item) or is_public:
       item['author'] = get_user(item['user_id'])['name']
       item['to'] = ''
       item['imageHidden'] = False
@@ -3572,8 +3745,9 @@ def getPosts():
       for p in pgrps:
         if p in allowdownload:
           item['allowDownload'] = True
-      if int(user['id']) == int(item['user_id']):
-        item['isOwner'] = True
+      if 'id' in user:
+        if int(user['id']) == int(item['user_id']):
+          item['isOwner'] = True
       if not request.args.get('cursor') is None:
         if posts_skipped < int(request.args.get('cursor')):
           posts_skipped = posts_skipped + 1
@@ -4009,7 +4183,22 @@ def joinGroup():
     imgsrc = ''
     if not items[0]['image'] is None:
       imgsrc = 'https://' + mydomain + '/grpFile?field=image&name=' + items[0]['image']
-    result = [owner['name'],items[0]['name'],imgsrc,authd,items[0]['id'],member]
+    publicData = '{}'
+    if int(items[0]['public']) > 0:
+      linkedgrps = []
+      linked = json.loads(items[0]['publicGroups'])
+      for grp in linked:
+        grpdata = get_one('groups',grp)
+        if len(grpdata) > 0:
+          linkedgrps.append({'grp':grpdata[0]['key'],'name':grpdata[0]['name'],'image':'https://' + mydomain + '/grpFile?field=image&name=' + grpdata[0]['image']})
+      publicData = json.dumps({
+        'publicImage':items[0]['publicImage'],
+        'publicName':items[0]['publicName'],
+        'publicBio':items[0]['publicBio'],
+        'publicLink':items[0]['publicLink'],
+        'publicGroups':linkedgrps
+      })
+    result = [owner['name'],items[0]['name'],imgsrc,authd,items[0]['id'],member,publicData]
   return json.dumps(result)
 
 @app.route('/addGroups',methods=['GET','POST'])
