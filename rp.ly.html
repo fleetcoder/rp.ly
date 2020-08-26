@@ -576,7 +576,9 @@
             publicGroups: [],
             grp:'',
             image:'',
-            name:''
+            name:'',
+            items:[],
+            moreHidden: true
           }
         },
         created() {
@@ -600,13 +602,38 @@
               for(grp in this.publicGroups) {
                 //alert(this.publicGroups[grp].image)
               }
-              this.spinnerHidden = true
+              Vue.http.get( 'getPosts' + '?grp=' + this.$route.params.grp).then( ( response ) => {
+                if ( !!response.body ) {
+                  if (this.cursor > 0) {
+                    if (response.body[0].length < 10) {
+                      this.moreHidden = true
+                    }
+                    for (var j = 0; j < response.body[0].length; j++) {
+                      this.items.push(response.body[0][j])
+                    }
+                    this.moreHidden = false
+                  } else {
+                    this.items = response.body[0]
+                    if (this.items.length > 9) {
+                      this.moreHidden = false
+                    }
+                  }
+                }
+                this.spinnerHidden = true
+              })
             } else {
               router.push( '/showgroup/' + this.$route.params.grp )
             }
           })
         },
         methods: {
+          imageLink(item){
+            if ("undefined" !== typeof item.media) {
+              return item.media
+            } else {
+              return 'myFile?field=image&name=' + item.image
+            }
+          }
         },
         template: `
           <div>
@@ -617,8 +644,22 @@
             <p><a href="publicLink" v-text="publicLink"></a></p>
             <h5 v-text="publicBio"></h5>
             <mt-spinner v-bind:class="{'is-hidden':spinnerHidden}" type="snake"></mt-spinner>
-            <mt-cell :title="name" is-link :to="'/pubgroup/' + grp">
+            <!--<mt-cell :title="name" is-link :to="'/pubgroup/' + grp">
               <img class="grimg" :src="image" />
+            </mt-cell>-->
+            <mt-cell class="imagecell" v-for="(item, idx) in items" :title="item.name">
+              <p class="caption" v-text="item.title" v-bind:class="{'is-hidden':item.textHidden}"></p>
+              <div class="outer">
+                <img class="oimg" :src="imageLink(item)" v-if="item.allowDownload" />
+                <img @contextmenu.prevent="doContextMenu" class="oimg cant-click" :src="imageLink(item)" v-else />
+                <figcaption class="caption underpic" v-text="item.title"></figcaption>
+                <audio-player :src="'myFile?field=sound&name=' + item.sound" v-bind:class="{'is-hidden':item.soundHidden}" />
+              </div>
+              <vue-plyr v-if="item.isVideo">
+                <video :poster="item.image" :src="'myFile?field=video&name=' + item.video" controls data-plyr-config='{ "iconUrl": "file/plyr.svg" }' />
+                <figcaption class="caption" v-text="item.title"></figcaption>
+              </vue-plyr>
+              <audio-player v-if="item.imageHidden" :src="'myFile?field=sound&name=' + item.sound" v-bind:class="{'is-hidden':item.soundHidden}" />
             </mt-cell>
             <mt-cell v-for="(item, idx) in publicGroups" :title="item.name" is-link :to="'/showgroup/' + item.grp">
               <img class="grimg" :src="item.image" />
@@ -3780,6 +3821,9 @@ def getPosts():
         item['imageHidden'] = True
         item['isVideo'] = True
       pgrps = json.loads(item['groups'])
+      if public_group > 0:
+        if not public_group in pgrps:
+          continue
       for p in pgrps:
         if p in allowdownload:
           item['allowDownload'] = True
