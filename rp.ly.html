@@ -1952,8 +1952,11 @@
             <mt-tab-container v-model="selected">
               <mt-tab-container-item id="tab1">
                 <router-view v-bind:items="items" v-bind:doSponsor.sync="doSponsor" v-bind:editHidden="editHidden" v-bind:cangrps="cangrps" v-bind:moreHidden="moreHidden" @on-update-list="getPosts" @on-tabs-hidden="hideTabs" @on-show-menu="showLink" @on-show-help="showHelp" @load-more-items="moreItems" @show-sponsor="doShowSponsor" />
-                <h3 v-if="gettingStarted">To get started, set up a photo gallery.</h3>
-                <p v-if="gettingStarted"><a href="javascript:void(0)" @click="takeMeThere()">Take me there</a></p>
+                <h3 v-if="gettingStarted">Click on Add Photos to share in a private gallery and send the link to friends.</h3>
+                <h3 v-if="gettingStarted">Or, click the Public option in settings to make a public landing page.</h3>
+                <p v-if="gettingStarted">
+                  <a href="javascript:void(0)" @click="takeMeThere()">Take me to settings</a>
+                </p>
               </mt-tab-container-item>
               <mt-tab-container-item id="tab2">
                 <router-view name="middletab" v-bind:subsHidden="subsHidden" @on-update-photos="getPosts" v-bind:groups="groups" />
