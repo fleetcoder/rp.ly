@@ -4352,6 +4352,8 @@ def modGroups():
     newobj['public'] = '1'
   if newobj['image'] == '':
     del newobj['image']
+  if newobj['publicImage'] == '':
+    del newobj['publicImage']
   if not 'key' in item or item['key'] == None:
     newobj['key'] = randomword(8)
     item['key'] = newobj['key']
