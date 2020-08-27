@@ -4182,7 +4182,7 @@ def addPosts():
         if not ug['publicGroups'] is None:
           for g in json.loads(ug['publicGroups']):
             if g in rcps:
-              resp = 'https://' + mydomain + '/grp/' + str(ug['id'])
+              resp = 'https://' + mydomain + '/grp/' + str(ug['key'])
               break
   response = make_response(json.dumps( [ resp ] ))
   for item in senditems:
