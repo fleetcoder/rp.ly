@@ -1649,6 +1649,11 @@
               speedup: this.speedup,
               doSetHeader: this.doSetHeader
             }).then( ( response ) => {
+              if ( !!response.body ) {
+                if (response.body[0].length > 3) {
+                  alert( this.title + ' ' + response.body)
+                }
+              }
               this.selected = 'tab1'
               this.getPosts()
               this.title = ''
@@ -4168,7 +4173,18 @@ def addPosts():
           image.close()
         except (AttributeError, KeyError, IndexError):
           pass
-  response = make_response(json.dumps( [ 'OK' ] ))
+  resp = 'OK'
+  if request.form.get('inreplyto') is None:
+    ugrps = get_one_by( 'groups', curr['id'], 'user_id' )
+    rcps = json.loads(request.form.get('recips'))
+    for ug in ugrps:
+      if int(ug['public']) > 0:
+        if not ug['publicGroups'] is None:
+          for g in json.loads(ug['publicGroups']):
+            if g in rcps:
+              resp = 'https://' + mydomain + '/grp/' + str(ug['id'])
+              break
+  response = make_response(json.dumps( [ resp ] ))
   for item in senditems:
     item['author'] = get_user(item['user_id'])['name']
     sendcomet(recips,item)
