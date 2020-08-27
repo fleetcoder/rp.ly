@@ -292,6 +292,12 @@
       .feedwrap {
         padding-bottom:100px;
       }
+      .public_bio {
+        margin:10px;
+      }
+      .public_img {
+        margin-top:15px;
+      }
     </style>
 
     <script id="client">
@@ -642,12 +648,12 @@
             <img class="groupimg" :src="'grpFile?field=publicImage&name=' + publicImage" />
             <h3 v-text="publicName"></h3>
             <p><a href="publicLink" v-text="publicLink"></a></p>
-            <h5 v-text="publicBio"></h5>
+            <h5 class="public_bio" v-text="publicBio"></h5>
             <mt-spinner v-bind:class="{'is-hidden':spinnerHidden}" type="snake"></mt-spinner>
             <!--<mt-cell :title="name" is-link :to="'/pubgroup/' + grp">
               <img class="grimg" :src="image" />
             </mt-cell>-->
-            <mt-cell class="imagecell" v-for="(item, idx) in items" :title="item.name">
+            <mt-cell class="imagecell public_img" v-for="(item, idx) in items" :title="item.name">
               <p class="caption" v-text="item.title" v-bind:class="{'is-hidden':item.textHidden}"></p>
               <div class="outer">
                 <img class="oimg" :src="imageLink(item)" v-if="item.allowDownload" />
