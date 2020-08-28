@@ -3949,7 +3949,6 @@ def getPosts():
           if thisgroup[0]['id'] in gall_counts:
             gall_counts[thisgroup[0]['id']] = gall_counts[thisgroup[0]['id']] + 1
             if gall_counts[thisgroup[0]['id']] > 2:
-              print('GALL LIMG')
               gall_limit = True
           else:
             gall_counts[thisgroup[0]['id']] = 1
@@ -3959,10 +3958,10 @@ def getPosts():
         if posts_skipped < int(request.args.get('cursor')):
           posts_skipped = posts_skipped + 1
         else:
-          if not gall_limit:
+          if not gall_limit or not request.args.get('grpid') is None:
             posts.append(item)
       else:
-        if not gall_limit:
+        if not gall_limit or not request.args.get('grpid') is None:
           posts.append(item)
       if len(posts) == posts_limit:
         break
