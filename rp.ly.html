@@ -3882,6 +3882,7 @@ def getPosts():
   posts_skipped = 0
   public_group = 0
   group_id = 0
+  gall_counts = {}
   if not request.args.get('grp') is None:
     thisgroup = get_one_by( 'groups', request.args.get('grp'), 'key' )
     if len(thisgroup) > 0:
@@ -3938,21 +3939,31 @@ def getPosts():
       if 'id' in user:
         if int(user['id']) == int(item['user_id']):
           item['isOwner'] = True
-      if not request.args.get('cursor') is None:
-        if posts_skipped < int(request.args.get('cursor')):
-          posts_skipped = posts_skipped + 1
-        else:
-          posts.append(item)
-      else:
-        posts.append(item)
+      gall_limit = False
       for pgrp in pgrps:
         if pgrp in groups:
           thisgroup = get_one( 'groups', pgrp )
           if len(thisgroup) > 0:
             item['to'] = thisgroup[0]['name']
             item['toid'] = thisgroup[0]['id']
+          if thisgroup[0]['id'] in gall_counts:
+            gall_counts[thisgroup[0]['id']] = gall_counts[thisgroup[0]['id']] + 1
+            if gall_counts[thisgroup[0]['id']] > 2:
+              print('GALL LIMG')
+              gall_limit = True
+          else:
+            gall_counts[thisgroup[0]['id']] = 1
         if not pgrp in cangrps and not pgrp in ugrids and pgrp in groups:
           cangrps.append(pgrp)
+      if not request.args.get('cursor') is None:
+        if posts_skipped < int(request.args.get('cursor')):
+          posts_skipped = posts_skipped + 1
+        else:
+          if not gall_limit:
+            posts.append(item)
+      else:
+        if not gall_limit:
+          posts.append(item)
       if len(posts) == posts_limit:
         break
     if expired(item):
