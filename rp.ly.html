@@ -1153,7 +1153,7 @@
               <p class="caption">
                 <span v-text="item.author"></span>
                 <img class="headericon" src="file/chevron-right.svg" />
-                <span v-text="item.to"></span>
+                <a :href="'/#/showGroupPosts/' + item.toid" v-text="item.to"></a>
               </p>
               <p class="caption" v-on:click="openImage(idx)" v-text="item.title" v-bind:class="{'is-hidden':item.textHidden}"></p>
               <div class="outer" v-on:click="openImage(idx)" v-bind:class="{'is-hidden':item.imageHidden}">
@@ -1176,6 +1176,93 @@
               <mt-button size="large" v-on:click="showMore()">More..</mt-button>
             </mt-cell>
             <mt-cell v-for="grp in cangrps" :title="'Would you like to see every post by ' + grp.guser + ' in ' + grp.gname + '?'"><mt-button type="primary" size="small" v-on:click="showSponsor(grp)">Become a Sponsor</mt-button></mt-cell>
+          </div>`
+      }
+      const showGroupPosts = {
+        data() {
+          return {
+            spinnerHidden : true,
+            idx: this.$route.params.idx,
+            items: [],
+            moreHidden: true,
+          }
+        },
+        props: { items : Array },
+        created() {
+          if (this.items.length == 0) {
+            this.$emit('on-update-list')
+            setTimeout( function (self) {
+              self.setData()
+            }, 2000, this)
+          } else {
+            this.setData()
+          }
+        },
+        methods: {
+          setData(){
+            Vue.http.get( 'getPosts' + '?grpid=' + this.$route.params.grpid).then( ( response ) => {
+              if ( !!response.body ) {
+                if (this.cursor > 0) {
+                  if (response.body[0].length < 10) {
+                    this.moreHidden = true
+                  }
+                  for (var j = 0; j < response.body[0].length; j++) {
+                    this.items.push(response.body[0][j])
+                  }
+                  this.moreHidden = false
+                } else {
+                  this.items = response.body[0]
+                  if (this.items.length > 9) {
+                    this.moreHidden = false
+                  }
+                }
+                console.log(this.items)
+              }
+              this.spinnerHidden = true
+            })
+          },
+          openImage(idx){
+            if (this.items[idx].isOwner) {
+              router.push( '/showPosts/' + idx )
+            }
+          },
+          imageLink(item){
+            if ("undefined" !== typeof item.media) {
+              return item.media
+            } else {
+              return 'myFile?field=image&name=' + item.image
+            }
+          }
+        },
+        template: `
+          <div>
+            <mt-header title="">
+              <router-link to="/" slot="left">
+                <mt-button icon="back">back</mt-button>
+              </router-link>
+            </mt-header>
+            <mt-spinner v-bind:class="{'is-hidden':spinnerHidden}" type="snake"></mt-spinner>
+            <mt-cell class="imagecell" v-for="(item, idx) in items" :title="item.name">
+              <p class="caption" v-on:click="openImage(idx)" v-text="item.title" v-bind:class="{'is-hidden':item.textHidden}"></p>
+              <div class="outer" v-on:click="openImage(idx)" v-bind:class="{'is-hidden':item.imageHidden}">
+                <img class="oimg" :src="imageLink(item)" v-if="item.allowDownload" />
+                <img @contextmenu.prevent="doContextMenu" class="oimg cant-click" :src="imageLink(item)" v-else />
+                <figcaption class="caption underpic" v-text="item.title"></figcaption>
+                <audio-player :src="'myFile?field=sound&name=' + item.sound" v-bind:class="{'is-hidden':item.soundHidden}" />
+              </div>
+              <vue-plyr v-if="item.isVideo">
+                <video :poster="item.image" :src="'myFile?field=video&name=' + item.video" controls data-plyr-config='{ "iconUrl": "file/plyr.svg" }' />
+                <figcaption class="caption" v-text="item.title"></figcaption>
+              </vue-plyr>
+              <audio-player v-if="item.imageHidden" :src="'myFile?field=sound&name=' + item.sound" v-bind:class="{'is-hidden':item.soundHidden}" />
+              <p class="caption" v-for="(comm, cidx) in item.comments" v-text="comm.author + ': ' + comm.title"></p>
+              <p v-bind:class="{'is-hidden':item.showCommentField}" class="caption" v-on:click="addComment(idx)"><img class="comment" slot="icon" src="file/message-square.svg" /></p>
+              <mt-field v-bind:class="{'is-hidden':!item.showCommentField}" placeholder="Comment..." v-model="item.comment"></mt-field>
+              <mt-button v-bind:class="{'is-hidden':!item.showCommentField}" size="large" v-on:click="saveComment(item,idx)">Save Comment</mt-button>
+            </mt-cell>
+            <mt-cell v-bind:class="{'is-hidden':moreHidden}" >
+              <mt-button size="large" v-on:click="showMore()">More..</mt-button>
+            </mt-cell>
           </div>`
       }
       const showPosts = {
@@ -3082,6 +3169,9 @@
             path: 'modPosts/:idx',
             component: modPosts
         },{
+            path: 'showGroupPosts/:grpid',
+            component: showGroupPosts
+        },{
             path: '',
             components:{ default: listPosts, middletab: MidMenu }
         },{
@@ -3791,11 +3881,15 @@ def getPosts():
   posts_limit = 10
   posts_skipped = 0
   public_group = 0
+  group_id = 0
   if not request.args.get('grp') is None:
     thisgroup = get_one_by( 'groups', request.args.get('grp'), 'key' )
     if len(thisgroup) > 0:
       if int(thisgroup[0]['public']) > 0:
         public_group = thisgroup[0]['id']
+  if not request.args.get('grpid') is None:
+    thisgroup = get_one( 'groups', request.args.get('grpid') )
+    group_id = thisgroup[0]['id']
   for item in recs:
     is_public = False
     if not item['inreplyto'] == '':
@@ -3835,6 +3929,9 @@ def getPosts():
       if public_group > 0:
         if not public_group in pgrps:
           continue
+      if group_id > 0:
+        if not group_id in pgrps:
+          continue
       for p in pgrps:
         if p in allowdownload:
           item['allowDownload'] = True
@@ -3853,6 +3950,7 @@ def getPosts():
           thisgroup = get_one( 'groups', pgrp )
           if len(thisgroup) > 0:
             item['to'] = thisgroup[0]['name']
+            item['toid'] = thisgroup[0]['id']
         if not pgrp in cangrps and not pgrp in ugrids and pgrp in groups:
           cangrps.append(pgrp)
       if len(posts) == posts_limit:
