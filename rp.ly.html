@@ -3947,7 +3947,8 @@ def getPosts():
           cangrps.append(pgrp)
       if not request.args.get('cursor') is None:
         if posts_skipped < int(request.args.get('cursor')):
-          posts_skipped = posts_skipped + 1
+          if not gall_limit or not request.args.get('grpid') is None:
+            posts_skipped = posts_skipped + 1
         else:
           if not gall_limit or not request.args.get('grpid') is None:
             posts.append(item)
