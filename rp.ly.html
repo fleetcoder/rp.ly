@@ -1075,7 +1075,7 @@
         methods: {
           openImage(idx){
             if (this.items[idx].isOwner) {
-              router.push( '/showPosts/' + idx )
+              //router.push( '/showPosts/' + idx )
             }
           },
           showLink(){
@@ -1181,16 +1181,17 @@
           return {
             spinnerHidden : true,
             idx: this.$route.params.idx,
-            posts: [],
             moreHidden: true,
             cursor: 0
           }
         },
+        props: { posts : Array },
         created() {
           this.loadPosts()
         },
         methods: {
           loadPosts(){
+            this.spinnerHidden = false
             Vue.http.get( 'getPosts' + '?grpid=' + this.$route.params.grpid + '&cursor=' + this.cursor.toString()).then( ( response ) => {
               if ( !!response.body ) {
                 if (this.cursor > 0) {
@@ -1209,6 +1210,7 @@
                 }
               }
               this.spinnerHidden = true
+              this.$emit('update:posts', this.posts)
             })
           },
           openImage(idx){
@@ -1272,9 +1274,9 @@
             imageHidden : false
           }
         },
-        props: { items : Array },
+        props: { posts : Array },
         created() {
-          if (this.items.length == 0) {
+          if (this.posts.length == 0) {
             this.$emit('on-update-list')
             setTimeout( function (self) {
               self.setData()
@@ -1285,10 +1287,10 @@
         },
         methods: {
           setData(){
-            this.id = this.items[ this.idx ].id
-            this.title = this.items[ this.idx ].title
-            this.image = this.items[ this.idx ].image
-            this.sound = this.items[ this.idx ].sound
+            this.id = this.posts[ this.idx ].id
+            this.title = this.posts[ this.idx ].title
+            this.image = this.posts[ this.idx ].image
+            this.sound = this.posts[ this.idx ].sound
             if (this.sound == '') {
               this.soundHidden = true
             }
@@ -1312,7 +1314,7 @@
                   id:showposts.id
                 }).then( ( response ) => {
                   showposts.spinnerHidden = true
-                  showposts.items.splice( showposts.idx, 1 )
+                  showposts.posts.splice( showposts.idx, 1 )
                   router.push('/')
                 })
               }
@@ -1474,9 +1476,10 @@
             gettingStarted:false,
             template1: 'I\'m using RP.LY to share an expanded photo selection with those who join my gallery for (occasional) email or text message notifications. Click link in bio to join my new gallery.',
             template2: 'I\'m using RP.LY to share an expanded photo selection with those who join my gallery for (occasional) email or text message notifications. Click this link to join my new gallery.',
-            following:[],
+            following: [],
             mbshpsHidden: false,
-            doSetHeader: true
+            doSetHeader: true,
+            posts: []
           }
         },
         components:{
@@ -2081,7 +2084,7 @@
             <mt-spinner v-bind:class="{'is-hidden':spinnerHidden}" type="snake"></mt-spinner>
             <mt-tab-container v-model="selected">
               <mt-tab-container-item id="tab1">
-                <router-view v-bind:items="items" v-bind:doSponsor.sync="doSponsor" v-bind:editHidden="editHidden" v-bind:cangrps="cangrps" v-bind:moreHidden="moreHidden" @on-update-list="getPosts" @on-tabs-hidden="hideTabs" @on-show-menu="showLink" @on-show-help="showHelp" @load-more-items="moreItems" @show-sponsor="doShowSponsor" />
+                <router-view v-bind:items="items" v-bind:posts.sync="posts" v-bind:doSponsor.sync="doSponsor" v-bind:editHidden="editHidden" v-bind:cangrps="cangrps" v-bind:moreHidden="moreHidden" @on-update-list="getPosts" @on-tabs-hidden="hideTabs" @on-show-menu="showLink" @on-show-help="showHelp" @load-more-items="moreItems" @show-sponsor="doShowSponsor" />
                 <h3 v-if="gettingStarted">Click on Add Photos to share in a private gallery and send the link to friends.</h3>
                 <h3 v-if="gettingStarted">Or, click the Public option in settings to make a public landing page.</h3>
                 <p v-if="gettingStarted">
