@@ -1326,9 +1326,7 @@
         template: `
           <div>
             <mt-header title="">
-              <router-link to="/" slot="left">
-                <mt-button icon="back">back</mt-button>
-              </router-link>
+              <mt-button slot="left" @click="$router.go(-1)" icon="back">back</mt-button>
             </mt-header>
             <mt-spinner v-bind:class="{'is-hidden':spinnerHidden}" type="snake"></mt-spinner>
             <mt-cell  :title="title"></mt-cell>
