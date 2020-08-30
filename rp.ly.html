@@ -1185,30 +1185,34 @@
             idx: this.$route.params.idx,
             posts: [],
             moreHidden: true,
+            cursor: 0
           }
         },
         created() {
-          Vue.http.get( 'getPosts' + '?grpid=' + this.$route.params.grpid).then( ( response ) => {
-            if ( !!response.body ) {
-              if (this.cursor > 0) {
-                if (response.body[0].length < 10) {
-                  this.moreHidden = true
-                }
-                for (var j = 0; j < response.body[0].length; j++) {
-                  this.posts.push(response.body[0][j])
-                }
-                this.moreHidden = false
-              } else {
-                this.posts = response.body[0]
-                if (this.posts.length > 9) {
-                  this.moreHidden = false
-                }
-              }
-            }
-            this.spinnerHidden = true
-          })
+          this.loadPosts()
         },
         methods: {
+          loadPosts(){
+            Vue.http.get( 'getPosts' + '?grpid=' + this.$route.params.grpid + '&cursor=' + this.cursor.toString()).then( ( response ) => {
+              if ( !!response.body ) {
+                if (this.cursor > 0) {
+                  if (response.body[0].length < 10) {
+                    this.moreHidden = true
+                  }
+                  for (var j = 0; j < response.body[0].length; j++) {
+                    this.posts.push(response.body[0][j])
+                  }
+                  this.moreHidden = false
+                } else {
+                  this.posts = response.body[0]
+                  if (this.posts.length > 9) {
+                    this.moreHidden = false
+                  }
+                }
+              }
+              this.spinnerHidden = true
+            })
+          },
           openImage(idx){
             if (this.posts[idx].isOwner) {
               router.push( '/showPosts/' + idx )
@@ -1220,6 +1224,10 @@
             } else {
               return 'myFile?field=image&name=' + item.image
             }
+          },
+          showMore(){
+            this.cursor = this.posts.length
+            this.getPosts()
           }
         },
         template: `
