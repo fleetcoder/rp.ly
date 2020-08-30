@@ -1183,46 +1183,34 @@
           return {
             spinnerHidden : true,
             idx: this.$route.params.idx,
-            items: [],
+            posts: [],
             moreHidden: true,
           }
         },
-        props: { items : Array },
         created() {
-          if (this.items.length == 0) {
-            this.$emit('on-update-list')
-            setTimeout( function (self) {
-              self.setData()
-            }, 2000, this)
-          } else {
-            this.setData()
-          }
+          Vue.http.get( 'getPosts' + '?grpid=' + this.$route.params.grpid).then( ( response ) => {
+            if ( !!response.body ) {
+              if (this.cursor > 0) {
+                if (response.body[0].length < 10) {
+                  this.moreHidden = true
+                }
+                for (var j = 0; j < response.body[0].length; j++) {
+                  this.posts.push(response.body[0][j])
+                }
+                this.moreHidden = false
+              } else {
+                this.posts = response.body[0]
+                if (this.posts.length > 9) {
+                  this.moreHidden = false
+                }
+              }
+            }
+            this.spinnerHidden = true
+          })
         },
         methods: {
-          setData(){
-            Vue.http.get( 'getPosts' + '?grpid=' + this.$route.params.grpid).then( ( response ) => {
-              if ( !!response.body ) {
-                if (this.cursor > 0) {
-                  if (response.body[0].length < 10) {
-                    this.moreHidden = true
-                  }
-                  for (var j = 0; j < response.body[0].length; j++) {
-                    this.items.push(response.body[0][j])
-                  }
-                  this.moreHidden = false
-                } else {
-                  this.items = response.body[0]
-                  if (this.items.length > 9) {
-                    this.moreHidden = false
-                  }
-                }
-                console.log(this.items)
-              }
-              this.spinnerHidden = true
-            })
-          },
           openImage(idx){
-            if (this.items[idx].isOwner) {
+            if (this.posts[idx].isOwner) {
               router.push( '/showPosts/' + idx )
             }
           },
@@ -1242,7 +1230,7 @@
               </router-link>
             </mt-header>
             <mt-spinner v-bind:class="{'is-hidden':spinnerHidden}" type="snake"></mt-spinner>
-            <mt-cell class="imagecell" v-for="(item, idx) in items" :title="item.name">
+            <mt-cell class="imagecell" v-for="(item, idx) in posts" :title="item.name">
               <p class="caption" v-on:click="openImage(idx)" v-text="item.title" v-bind:class="{'is-hidden':item.textHidden}"></p>
               <div class="outer" v-on:click="openImage(idx)" v-bind:class="{'is-hidden':item.imageHidden}">
                 <img class="oimg" :src="imageLink(item)" v-if="item.allowDownload" />
@@ -3170,7 +3158,7 @@
             component: modPosts
         },{
             path: 'showGroupPosts/:grpid',
-            component: showGroupPosts
+            components:{default: showGroupPosts, middletab: MidMenu}
         },{
             path: '',
             components:{ default: listPosts, middletab: MidMenu }
