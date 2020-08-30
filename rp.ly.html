@@ -1187,6 +1187,7 @@
         },
         props: { posts : Array },
         created() {
+          this.posts = []
           this.loadPosts()
         },
         methods: {
