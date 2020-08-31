@@ -3231,29 +3231,37 @@ def migrateGall():
   oldOwner = grp['user_id']
   pst = get_all( 'posts' )
   for p in pst:
-    grps = json.loads(p['groups'])
-    if gall in grps:
-      if len(grps) < 2:
-        obj = {'user_id':newOwner}
-        mod_one( 'posts', obj, p['id'] )
+    if 'groups' in p:
+      if p['groups'] is not None:
+        grps = json.loads(p['groups'])
+        if gall in grps:
+          if len(grps) < 2:
+            obj = {'user_id':newOwner}
+            mod_one( 'posts', obj, p['id'] )
   cts = get_all( 'contacts' )
   for c in cts:
-    grps = json.loads(c['groups'])
-    if gall in grps:
-      if len(grps) < 2:
-        obj = {'user_id':newOwner}
-        mod_one( 'contacts', obj, c['id'] )
+    if 'groups' in c:
+      if c['groups'] is not None:
+        grps = json.loads(c['groups'])
+        if gall in grps:
+          if len(grps) < 2:
+            obj = {'user_id':newOwner}
+            mod_one( 'contacts', obj, c['id'] )
   ct = get_one( 'contacts', oldOwner )[0]
-  grps = json.loads(ct['groups'])
-  if gall in grps:
-    grps.remove(gall)
-    obj = {'groups':json.dumps(grps)}
-    mod_one( 'contacts', obj, ct['id'] )
+  if 'groups' in ct:
+    if ct['groups'] is not None:
+      grps = json.loads(ct['groups'])
+      if gall in grps:
+        grps.remove(gall)
+        obj = {'groups':json.dumps(grps)}
+        mod_one( 'contacts', obj, ct['id'] )
   ct = get_one( 'contacts', newOwner )[0]
-  grps = json.loads(ct['groups'])
-  grps.append(gall)
-  obj = {'groups':json.dumps(grps)}
-  mod_one( 'contacts', obj, ct['id'] )
+  if 'groups' in ct:
+    if ct['groups'] is not None:
+      grps = json.loads(ct['groups'])
+      grps.append(gall)
+      obj = {'groups':json.dumps(grps)}
+      mod_one( 'contacts', obj, ct['id'] )
   obj = {'user_id':newOwner}
   mod_one( 'groups', obj, gall )
   return 'OK'
