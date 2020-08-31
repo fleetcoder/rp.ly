@@ -779,7 +779,9 @@
             publicBio: '',
             publicImage: '',
             publicLink: '',
-            publicGroups: []
+            publicGroups: [],
+            notMember: true,
+            memberText: 'You are already a member of '
           }
         },
         props: {},
@@ -794,7 +796,8 @@
               this.signupHidden = true
               this.signupBtnHidden = false
               if (response.body[5] == 'MEMBER') {
-                window.location.href = '/'
+                //window.location.href = '/'
+                this.notMember = false
               }
             } else {
               this.signupHidden = false
@@ -803,6 +806,7 @@
             this.ownname = response.body[0]
             this.grpname = response.body[1]
             this.inviteText = response.body[0] + this.inviteText + response.body[1]
+            this.memberText = this.memberText + response.body[1]
             this.submitText = 'Join ' + response.body[0] + "'s Gallery"
             this.groupPic = response.body[2]
             this.imgHidden = false
@@ -1006,6 +1010,9 @@
           },
           closeHelp(){
             this.helpVisible = false
+          },
+          doContinue(){
+            window.location.href = '/'
           }
         },
         template: `
@@ -1019,35 +1026,41 @@
               </a>
             </mt-header>
             <img v-bind:class="{'is-hidden':imgHidden}" class="groupimg" :src="groupPic" />
-            <mt-cell :title="inviteText"></mt-cell>
+            <mt-cell v-if="notMember" :title="inviteText"></mt-cell>
             <div v-if="isInstagram">
               <h3>You're almost there!</h3>
               <p>It looks like you're using Instagram's built-in Web browser.</p>
               <p>Please click "..." at top-right and then click "Open in Safari" (Or use any mobile web browser)</p>
             </div>
             <div v-else>
-              <mt-field v-bind:class="{'is-hidden':signupHidden}" :state="validName" placeholder="Name" @keyup.native="checkConName" v-model="newName"></mt-field>
-              <mt-field v-bind:class="{'is-hidden':signupHidden}" :state="validContact" @keyup.native="checkContact" placeholder="Email or Phone..." v-model="newContact" type="email"></mt-field>
-              <div v-bind:class="{'is-hidden':signupBtnHidden}" class="joinnotif">
-                <h5 v-text="'Notifications Limit: ' + freq + ' per ' + interval"></h5>
-                <mt-radio
-                  v-model="interval"
-                  :options="['Day', 'Week']">
-                </mt-radio>
-                <mt-range class="freqrange"
-                  v-model="freq"
-                  :min="1"
-                  :max="10"
-                  :step="1"
-                  :bar-height="5">
-                  <div slot="start">1</div>
-                  <div slot="end">10</div>
-                </mt-range>
+              <div v-if="notMember">
+                <mt-field v-bind:class="{'is-hidden':signupHidden}" :state="validName" placeholder="Name" @keyup.native="checkConName" v-model="newName"></mt-field>
+                <mt-field v-bind:class="{'is-hidden':signupHidden}" :state="validContact" @keyup.native="checkContact" placeholder="Email or Phone..." v-model="newContact" type="email"></mt-field>
+                <div v-bind:class="{'is-hidden':signupBtnHidden}" class="joinnotif">
+                  <h5 v-text="'Notifications Limit: ' + freq + ' per ' + interval"></h5>
+                  <mt-radio
+                    v-model="interval"
+                    :options="['Day', 'Week']">
+                  </mt-radio>
+                  <mt-range class="freqrange"
+                    v-model="freq"
+                    :min="1"
+                    :max="10"
+                    :step="1"
+                    :bar-height="5">
+                    <div slot="start">1</div>
+                    <div slot="end">10</div>
+                  </mt-range>
+                </div>
+                <mt-button class="joinbutton" v-bind:class="{'is-hidden':signupBtnHidden}" v-on:click="doJoin()" size="large">{{submitText}}</mt-button>
+                <mt-field v-bind:class="{'is-hidden':docodehidden}" type="number" label="Code:" placeholder="***" v-model="code"></mt-field>
+                <mt-button v-bind:class="{'is-hidden':docodehidden}" v-on:click="doCode()" size="large">Submit Code</mt-button>
+                <mt-spinner v-bind:class="{'is-hidden':spinnerHidden}" type="snake"></mt-spinner>
               </div>
-              <mt-button class="joinbutton" v-bind:class="{'is-hidden':signupBtnHidden}" v-on:click="doJoin()" size="large">{{submitText}}</mt-button>
-              <mt-field v-bind:class="{'is-hidden':docodehidden}" type="number" label="Code:" placeholder="***" v-model="code"></mt-field>
-              <mt-button v-bind:class="{'is-hidden':docodehidden}" v-on:click="doCode()" size="large">Submit Code</mt-button>
-              <mt-spinner v-bind:class="{'is-hidden':spinnerHidden}" type="snake"></mt-spinner>
+              <div v-if="!notMember">
+                <mt-cell :title="memberText"></mt-cell>
+                <mt-button v-on:click="doContinue()" size="large">Continue</mt-button>
+              </div>
             </div>
             <mt-popup class="help_popup" v-model="helpVisible" position="middle">
               <mt-header>
@@ -4406,7 +4419,8 @@ def joinGroup():
       for grp in linked:
         grpdata = get_one('groups',grp)
         if len(grpdata) > 0:
-          linkedgrps.append({'grp':grpdata[0]['key'],'name':grpdata[0]['name'],'image':'https://' + mydomain + '/grpFile?field=image&name=' + grpdata[0]['image']})
+          if not grpdata[0]['image'] is None:
+            linkedgrps.append({'grp':grpdata[0]['key'],'name':grpdata[0]['name'],'image':'https://' + mydomain + '/grpFile?field=image&name=' + grpdata[0]['image']})
       publicData = json.dumps({
         'publicImage':items[0]['publicImage'],
         'publicName':items[0]['publicName'],
