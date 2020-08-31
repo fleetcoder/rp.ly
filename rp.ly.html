@@ -643,6 +643,12 @@
         template: `
           <div>
             <mt-header title="">
+              <a href="/" slot="left">
+                <img class="headericon" slot="icon" src="file/home.svg" />
+              </a>
+              <a v-on:click="showHelp()" slot="right">
+                <img class="headericon" slot="icon" src="file/help-circle.svg" />
+              </a>
             </mt-header>
             <img class="groupimg" :src="'grpFile?field=publicImage&name=' + publicImage" />
             <h3 v-text="publicName"></h3>
