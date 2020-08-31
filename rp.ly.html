@@ -598,7 +598,7 @@
             var publicData = JSON.parse(response.body[6])
             if ("undefined" !== typeof publicData['publicName']) {
               this.publicName = publicData['publicName']
-              this.publicBio = publicData['publicBio']
+              this.publicBio = publicData['publicBio'].replace("\n","<br>")
               this.publicLink = publicData['publicLink']
               this.publicImage = publicData['publicImage']
               this.publicGroups = publicData['publicGroups']
@@ -647,7 +647,7 @@
             <img class="groupimg" :src="'grpFile?field=publicImage&name=' + publicImage" />
             <h3 v-text="publicName"></h3>
             <p><a href="publicLink" v-text="publicLink"></a></p>
-            <h5 class="public_bio" v-text="publicBio"></h5>
+            <h5 class="public_bio" v-html="publicBio"></h5>
             <mt-spinner v-bind:class="{'is-hidden':spinnerHidden}" type="snake"></mt-spinner>
             <!--<mt-cell :title="name" is-link :to="'/pubgroup/' + grp">
               <img class="grimg" :src="image" />
