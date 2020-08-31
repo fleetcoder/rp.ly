@@ -2998,7 +2998,15 @@
             postto:[],
             comet:'',
             name : '',
-            image: ''
+            image: '',
+            public: false,
+            publicName: '',
+            publicBio: '',
+            publicImage: '',
+            publicLink: '',
+            publicGroups: [],
+            pubHidden: false,
+            optGroups:[]
           }
         },
         props: {groups: Array},
@@ -3011,6 +3019,7 @@
           'show-groups' : showGroups
         },
         created() {
+          this.optGroups = this.groups
           this.getGroups()
         },
         methods: {
@@ -3070,11 +3079,20 @@
             }
             Vue.http.post( 'addGroups', {
               recips:JSON.stringify(this.postto),
-              name : this.name
+              name : this.name,
+              public: this.public,
+              publicName: this.publicName,
+              publicBio: this.publicBio,
+              publicLink: this.publicLink,
+              publicGroups: JSON.stringify(this.publicGroups)
             }).then( ( response ) => {
               this.selected = 'tab1'
               this.getGroups()
               this.name = ''
+              this.publicName = ''
+              this.publicBio = ''
+              this.publicLink = ''
+              this.publicGroups = []
               Posts.getContacts()
             })
           },
@@ -3087,11 +3105,13 @@
           },
           getPosts(){
             this.$emit('on-update-photos')
+          },
+          changePublic(){
+            this.pubHidden = !this.pubHidden
           }
         },
         template: `
           <div>
-
             <mt-tab-container v-model="selected">
               <mt-tab-container-item id="tab1">
                 <router-view v-bind:items="items" v-bind:groups="groups" v-bind:editHidden="editHidden" @on-update-list="getGroups" @on-tabs-hidden="hideTabs" @on-show-add-group="showAddGroupForm" @on-update-photos="getPosts" />
@@ -3099,8 +3119,18 @@
               <mt-tab-container-item id="tab2">
                 <mt-header title="Add New Gallery"></mt-header>
                 <mt-field placeholder="Name.." v-model="name"></mt-field>
-                <mt-cell title=""><img class="img" :src="'myFile?staged=1&field=image&name=' + image" /></mt-cell>
-                <file-upload btn-label="Set Header Photo" @change="stagedUpload('image')" :url="uploadTo + '?field=image'"></file-upload>
+                <mt-cell title="Public"><mt-switch v-model="public" @change="changePublic()"></mt-switch></mt-cell>
+                <mt-field v-bind:class="{'is-hidden':!pubHidden}" label="Name:" placeholder="Name.." v-model="publicName"></mt-field>
+                <mt-field v-bind:class="{'is-hidden':!pubHidden}" label="Bio:" placeholder="Bio" type="textarea" rows="4" v-model="publicBio"></mt-field>
+                <mt-field v-bind:class="{'is-hidden':!pubHidden}" label="Link:" placeholder="Link.." v-model="publicLink"></mt-field>
+                <h3 v-bind:class="{'is-hidden':!pubHidden}">Linked Galleries:</h3>
+                <mt-checklist v-bind:class="{'is-hidden':!pubHidden}"
+                  v-model="publicGroups"
+                  :options="optGroups"
+                  align="left">
+                </mt-checklist>
+                <mt-cell v-bind:class="{'is-hidden':!pubHidden}" title=""><img class="img" :src="'myFile?staged=1&field=publicImage&name=' + publicImage" /></mt-cell>
+                <file-upload v-bind:class="{'is-hidden':!pubHidden}" btn-label="Set Bio Photo" @change="stagedUpload('publicImage')" :url="uploadTo + '?field=publicImage'"></file-upload>
                 <mt-button class="buttonset" v-on:click="addGroups()" size="large">Add New Gallery</mt-button>
                 <mt-button class="buttonset" v-on:click="hideAddGroupForm()" size="large">
                     Cancel
@@ -4437,19 +4467,21 @@ def addGroups():
     return( json.dumps( [ 'Error' ] ) )
   newrec = {
     'name' : request.form.get('name'),
-    'image' : saveFile( 'image' ),
+    'image' : '',
     'maxres' : '0',
     'allowPosts' : '0',
     'blockDownloads' : '0',
     'public':'0',
-    'publicImage':'',
-    'publicName':'',
-    'publicBio':'',
-    'publicLink':'',
-    'publicGroups':'[]',
+    'publicImage': saveFile( 'publicImage' ),
+    'publicName': request.form.get('publicName'),
+    'publicBio': request.form.get('publicBio'),
+    'publicLink': request.form.get('publicLink'),
+    'publicGroups': request.form.get('publicGroups'),
     'user_id' : session['user'],
     'created' : str( timezone( 'US/Pacific' ).localize( datetime.now() ) )
   }
+  if str(request.form.get('public')) == 'true':
+    newrec['public'] = '1'
   rid = add_one( 'groups', newrec )
   grps = json.loads(get_user(current_user()['id'])['groups'])
   grps.append(rid)
