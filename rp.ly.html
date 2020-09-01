@@ -787,7 +787,17 @@
             publicLink: '',
             publicGroups: [],
             notMember: true,
-            memberText: 'You are already a member of '
+            memberText: 'You are already a member of ',
+            linked: false
+          }
+        },
+        beforeRouteEnter (to, from, next) {
+          if (from.path !== '/') {
+            next(vm => {
+              vm.linked = true
+            })
+          } else {
+            next()
           }
         },
         props: {},
@@ -1024,7 +1034,10 @@
         template: `
           <div>
             <mt-header title="">
-              <a href="/" slot="left">
+              <a v-if="linked" slot="left">
+                <mt-button slot="left" @click="$router.go(-1)" icon="back">back</mt-button>
+              </a>
+              <a v-else href="/" slot="left">
                 <img class="headericon" slot="icon" src="file/home.svg" />
               </a>
               <a v-on:click="showHelp()" slot="right">
