@@ -1217,7 +1217,8 @@
             spinnerHidden : true,
             idx: this.$route.params.idx,
             moreHidden: true,
-            cursor: 0
+            cursor: 0,
+            prevcursor: 0
           }
         },
         props: { posts : Array },
@@ -1228,26 +1229,31 @@
         methods: {
           loadPosts(){
             this.spinnerHidden = false
-            Vue.http.get( 'getPosts' + '?grpid=' + this.$route.params.grpid + '&cursor=' + this.cursor.toString()).then( ( response ) => {
-              if ( !!response.body ) {
-                if (this.cursor > 0) {
-                  if (response.body[0].length < 10) {
-                    this.moreHidden = true
-                  }
-                  for (var j = 0; j < response.body[0].length; j++) {
-                    this.posts.push(response.body[0][j])
-                  }
-                  this.moreHidden = false
-                } else {
-                  this.posts = response.body[0]
-                  if (this.posts.length > 9) {
+            if (this.cursor > 0 && (this.prevcursor === this.cursor)) {
+              
+            } else {
+              this.prevcursor = this.cursor
+              Vue.http.get( 'getPosts' + '?grpid=' + this.$route.params.grpid + '&cursor=' + this.cursor.toString()).then( ( response ) => {
+                if ( !!response.body ) {
+                  if (this.cursor > 0) {
+                    if (response.body[0].length < 10) {
+                      this.moreHidden = true
+                    }
+                    for (var j = 0; j < response.body[0].length; j++) {
+                      this.posts.push(response.body[0][j])
+                    }
                     this.moreHidden = false
+                  } else {
+                    this.posts = response.body[0]
+                    if (this.posts.length > 9) {
+                      this.moreHidden = false
+                    }
                   }
                 }
-              }
-              this.spinnerHidden = true
-              this.$emit('update:posts', this.posts)
-            })
+                this.spinnerHidden = true
+                this.$emit('update:posts', this.posts)
+              })
+            }
           },
           openImage(idx){
             if (this.posts[idx].isOwner) {
@@ -1307,7 +1313,7 @@
 
             <mt-cell v-infinite-scroll="loadMore"
                 infinite-scroll-disabled="loading"
-                infinite-scroll-distance="10"
+                infinite-scroll-distance="0"
                 class="imagecell"
                 v-for="(item, idx) in posts"
                 :title="item.name">
