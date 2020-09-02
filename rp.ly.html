@@ -1286,6 +1286,14 @@
                 duration: 1000
               })
             })
+          },
+          loadMore(){
+            this.loading = true
+            setTimeout(() => {
+              this.cursor = this.posts.length
+              this.loadPosts()
+              this.loading = false
+            }, 2500)
           }
         },
         template: `
@@ -1296,7 +1304,13 @@
               </router-link>
             </mt-header>
             <mt-spinner v-bind:class="{'is-hidden':spinnerHidden}" type="snake"></mt-spinner>
-            <mt-cell class="imagecell" v-for="(item, idx) in posts" :title="item.name">
+
+            <mt-cell v-infinite-scroll="loadMore"
+                infinite-scroll-disabled="loading"
+                infinite-scroll-distance="10"
+                class="imagecell"
+                v-for="(item, idx) in posts"
+                :title="item.name">
               <p class="caption" v-on:click="openImage(idx)" v-text="item.title" v-bind:class="{'is-hidden':item.textHidden}"></p>
               <div class="outer" v-on:click="openImage(idx)" v-bind:class="{'is-hidden':item.imageHidden}">
                 <img class="oimg" :src="imageLink(item)" v-if="item.allowDownload" />
@@ -1313,9 +1327,6 @@
               <p v-bind:class="{'is-hidden':item.showCommentField}" class="caption" v-on:click="addComment(idx)"><img class="comment" slot="icon" src="file/message-square.svg" /></p>
               <mt-field v-bind:class="{'is-hidden':!item.showCommentField}" placeholder="Comment..." v-model="item.comment"></mt-field>
               <mt-button v-bind:class="{'is-hidden':!item.showCommentField}" size="large" v-on:click="saveComment(item,idx)">Save Comment</mt-button>
-            </mt-cell>
-            <mt-cell v-bind:class="{'is-hidden':moreHidden}" >
-              <mt-button size="large" v-on:click="showMore()">More..</mt-button>
             </mt-cell>
           </div>`
       }
