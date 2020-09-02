@@ -1264,6 +1264,28 @@
           showMore(){
             this.cursor = this.posts.length
             this.loadPosts()
+          },
+          addComment(idx) {
+            this.posts[idx].showCommentField = true
+          },
+          saveComment(post,idx) {
+            this.spinnerHidden = false
+            Vue.http.post( 'addPosts', {
+              recips: post.groups,
+              title: post.comment,
+              inreplyto: post.id,
+              expirehours: 0,
+              speedup: ''
+            }).then( ( response ) => {
+              this.posts[idx].comment = ''
+              this.spinnerHidden = true
+              this.posts[idx].showCommentField = false
+              MintUI.Toast({
+                message: 'Comment Saved',
+                iconClass: 'icon icon-success',
+                duration: 1000
+              })
+            })
           }
         },
         template: `
