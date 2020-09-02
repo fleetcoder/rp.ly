@@ -655,7 +655,7 @@
             </mt-header>
             <img class="groupimg" :src="'grpFile?field=publicImage&name=' + publicImage" />
             <h3 v-text="publicName"></h3>
-            <p><a href="publicLink" v-text="publicLink"></a></p>
+            <p><a :href="publicLink" v-text="publicLink"></a></p>
             <h5 class="public_bio" v-html="publicBio"></h5>
             <mt-spinner v-bind:class="{'is-hidden':spinnerHidden}" type="snake"></mt-spinner>
             <!--<mt-cell :title="name" is-link :to="'/pubgroup/' + grp">
