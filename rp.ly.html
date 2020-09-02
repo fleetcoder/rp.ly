@@ -1205,9 +1205,6 @@
               <mt-field v-bind:class="{'is-hidden':!item.showCommentField}" placeholder="Comment..." v-model="item.comment"></mt-field>
               <mt-button v-bind:class="{'is-hidden':!item.showCommentField}" size="large" v-on:click="saveComment(item,idx)">Save Comment</mt-button>
             </mt-cell>
-            <mt-cell v-bind:class="{'is-hidden':moreHidden}" >
-              <mt-button size="large" v-on:click="showMore()">More..</mt-button>
-            </mt-cell>
             <mt-cell v-for="grp in cangrps" :title="'Would you like to see every post by ' + grp.guser + ' in ' + grp.gname + '?'"><mt-button type="primary" size="small" v-on:click="showSponsor(grp)">Become a Sponsor</mt-button></mt-cell>
           </div>`
       }
@@ -1768,7 +1765,7 @@
           },
           showSponsor(gr){
             this.sponsorGroup = gr.glink
-            this.sponsorGroupName = 'Subscribe to ' + gr.gname
+            this.sponsorGroupName = 'Sponsor ' + gr.gname + ' with a monthly subscription'
             this.sponsorVisible = true
             if (false === this.btLoaded) {
               Vue.http.post( 'btSetup', {
@@ -4099,7 +4096,7 @@ def getPosts():
       else:
         if not gall_limit or not request.args.get('grpid') is None:
           posts.append(item)
-      if len(posts) == posts_limit:
+      if len(posts) == posts_limit and not group_id == 0:
         break
     if expired(item):
       notify_del(item['user_id'])
