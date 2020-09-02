@@ -1515,7 +1515,9 @@
             following: [],
             mbshpsHidden: false,
             doSetHeader: true,
-            posts: []
+            posts: [],
+            showShareGroup: false,
+            groupLink: ''
           }
         },
         components:{
@@ -1768,7 +1770,8 @@
             }).then( ( response ) => {
               if ( !!response.body ) {
                 if (response.body[0].length > 3) {
-                  alert( this.title + ' ' + response.body)
+                  this.groupLink = this.title + ' ' + response.body
+                  this.showShareGroup = true
                 }
               }
               this.selected = 'tab1'
@@ -2110,6 +2113,24 @@
           takeMeThere(){
             router.push( '/groups' )
             this.selected = 'tab2'
+          },
+          copyGroupLink(){
+            this.showShareGroup = false
+            MintUI.Toast({
+              message: 'You just copied the caption and gallery link to your clipboard',
+              iconClass: 'icon icon-error',
+              duration: 2000
+            })
+          },
+          copyError(){
+            MintUI.Toast({
+              message: 'Sorry, there was an error copying the gallery link',
+              iconClass: 'icon icon-error',
+              duration: 2000
+            })
+          },
+          closeShareGroup(){
+            this.showShareGroup = false
           }
         },
         mounted() {
@@ -2372,6 +2393,13 @@
               <mt-field :state="validName" placeholder="Name" @keyup.native="checkConName" v-model="newName"></mt-field>
               <mt-field :state="validContact" @keyup.native="checkContact" placeholder="Email or Phone..." v-model="newContact" type="email"></mt-field>
               <mt-button v-on:click="cancelContact()">Cancel</mt-button>&nbsp;<mt-button v-on:click="saveContact()" type="primary">Add Contact</mt-button>
+            </mt-popup>
+        
+            <mt-popup class="addcontact" v-model="showShareGroup" position="middle">
+              <mt-cell title="Copy and share this gallery link:"></mt-cell>
+              <mt-field v-model="groupLink"></mt-field>
+              <mt-button v-clipboard:copy="groupLink" v-clipboard:success="copyGroupLink" v-clipboard:error="copyError">Copy Link</mt-button>
+              <mt-button v-on:click="closeShareGroup()">Close</mt-button>
             </mt-popup>
           
           </div>`
@@ -4283,17 +4311,18 @@ def addPosts():
             grpdata[0]['last_notif'] = newobj['last_notif']
           from dateutil import tz
           tzinfos = {"-08:00": tz.gettz('US/Pacific')}
-          dt = parser.parse(grpdata[0]['last_notif'], tzinfos=tzinfos) + timedelta(hours=12)
-          pcontact = get_parent(con['id'])
-          hasprefs = False
-          for nprefs in notifprefs:
-            if int(nprefs['user_id']) == int(pcontact['id']):
-              hasprefs = True
-              notiprefs = json.loads(nprefs['value'])
-              prefid = nprefs['id']
-          if not hasprefs:
-            if dt < timezone( 'US/Pacific' ).localize( datetime.now() ):
-              notify_photo( con['id'], grpdata[0]['key'], True, True )
+          if 'last_notif' in grpdata[0]:
+            dt = parser.parse(grpdata[0]['last_notif'], tzinfos=tzinfos) + timedelta(hours=12)
+            pcontact = get_parent(con['id'])
+            hasprefs = False
+            for nprefs in notifprefs:
+              if int(nprefs['user_id']) == int(pcontact['id']):
+                hasprefs = True
+                notiprefs = json.loads(nprefs['value'])
+                prefid = nprefs['id']
+            if not hasprefs:
+              if dt < timezone( 'US/Pacific' ).localize( datetime.now() ):
+                notify_photo( con['id'], grpdata[0]['key'], True, True )
           else:
             interv = 24
             sendemail = False
@@ -4305,11 +4334,12 @@ def addPosts():
             if notiprefs['interval'] == 'Week':
               interv = 168
             hrs = interv / int(notiprefs['freq'])
-            dt = parser.parse(notiprefs['last_notif'], tzinfos=tzinfos) + timedelta(hours=int(hrs))
-            if dt < timezone( 'US/Pacific' ).localize( datetime.now() ):
-              notify_photo( con['id'], grpdata[0]['key'], sendemail, sendphone )
-              notiprefs['last_notif'] = str( timezone( 'US/Pacific' ).localize( datetime.now() ) )
-              mod_one('settings',{'value':json.dumps(notiprefs)},prefid)
+            if 'last_notif' in notiprefs:
+              dt = parser.parse(notiprefs['last_notif'], tzinfos=tzinfos) + timedelta(hours=int(hrs))
+              if dt < timezone( 'US/Pacific' ).localize( datetime.now() ):
+                notify_photo( con['id'], grpdata[0]['key'], sendemail, sendphone )
+                notiprefs['last_notif'] = str( timezone( 'US/Pacific' ).localize( datetime.now() ) )
+                mod_one('settings',{'value':json.dumps(notiprefs)},prefid)
           recips.append( con['id'] )
       if dt < timezone( 'US/Pacific' ).localize( datetime.now() ):
         newobj = { 'last_notif' : str( timezone( 'US/Pacific' ).localize( datetime.now() ) ) }
@@ -4359,7 +4389,10 @@ def addPosts():
         if not ug['publicGroups'] is None:
           for g in json.loads(ug['publicGroups']):
             if g in rcps:
-              resp = 'https://' + mydomain + '/grp/' + str(ug['key'])
+              resp = ' 📷 #shareinanewway #rplyphoto #rplyshare https://' + mydomain + '/grp/' + str(ug['key'])
+              if str(request.form.get('doSetHeader')) == 'true' and firstimg is not '':
+                newobj = {'image':firstimg}
+                mod_one( 'groups', newobj, ug['id'] )
               break
   response = make_response(json.dumps( [ resp ] ))
   for item in senditems:
