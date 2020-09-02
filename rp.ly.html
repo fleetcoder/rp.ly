@@ -1225,10 +1225,10 @@
         },
         methods: {
           loadPosts(){
-            this.spinnerHidden = false
             if (this.cursor > 0 && (this.prevcursor === this.cursor)) {
               
             } else {
+              this.spinnerHidden = false
               this.prevcursor = this.cursor
               Vue.http.get( 'getPosts' + '?grpid=' + this.$route.params.grpid + '&cursor=' + this.cursor.toString()).then( ( response ) => {
                 if ( !!response.body ) {
