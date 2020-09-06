@@ -4591,6 +4591,15 @@ def addGroups():
   }
   if str(request.form.get('public')) == 'true':
     newrec['public'] = '1'
+  if not '' == newrec['publicPath']:
+    reserved = []
+    for rule in app.url_map.iter_rules():
+      reserved.append(rule.endpoint)
+    if newrec['publicPath'] in reserved:
+      return 'Error'
+    grps = get_one_by( 'groups', newrec['publicPath'], 'publicPath' )
+    if len(grps) > 0:
+      return 'Error'
   rid = add_one( 'groups', newrec )
   grps = json.loads(get_user(current_user()['id'])['groups'])
   grps.append(rid)
