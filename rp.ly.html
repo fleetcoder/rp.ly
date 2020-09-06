@@ -4475,7 +4475,10 @@ def addPosts():
         if not ug['publicGroups'] is None:
           for g in json.loads(ug['publicGroups']):
             if g in rcps:
-              resp = ' 📷 #shareinanewway #rplyphoto #rplyshare https://' + mydomain + '/grp/' + str(ug['key'])
+              linkpath = '/grp/' + str(ug['key'])
+              if not ug['path'] == '':
+                linkpath = '/' + ug['path']
+              resp = ' 📷 #shareinanewway #rplyphoto #rplyshare https://' + mydomain + linkpath
               if str(request.form.get('doSetHeader')) == 'true' and firstimg is not '':
                 newobj = {'image':firstimg}
                 mod_one( 'groups', newobj, ug['id'] )
