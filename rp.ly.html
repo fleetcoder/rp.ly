@@ -2251,6 +2251,7 @@
                       <li v-for="(item, idx) in uploadedFiles">
                         <img :src="'myFile?staged=1&field=image&multiname=' + item.url" class="img-responsive img-thumbnail" :alt="item.originalName" />
                         <mt-cell v-if="idx == 0" title="Use As Gallery Header Photo"><mt-switch v-model="doSetHeader"></mt-switch></mt-cell>
+                        <mt-field v-if="idx == 0" placeholder="Caption..." v-model="title"></mt-field>
                       </li>
                     </ul>
                   </div>
@@ -2264,7 +2265,6 @@
                 </mt-cell>
                 <audio-recorder v-bind:class="{'is-hidden':!audioHidden}" :upload-url="'uploadFile?field=sound'" :after-recording="aftRec" />
                 <mt-cell><mt-field v-bind:class="{'is-hidden':!audioHidden}" placeholder="Speedup..." v-model="speedup" label="Frame rate multiplier"></mt-field></mt-cell>
-                <mt-field v-bind:class="{'is-hidden':!textHidden}" placeholder="Caption..." v-model="title"></mt-field>
                 <mt-checklist v-bind:class="{'is-hidden':groupsHidden}"
                   v-model="postto"
                   :options="groups"
