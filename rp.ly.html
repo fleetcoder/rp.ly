@@ -2938,6 +2938,11 @@
           this.publicPath = this.items[ this.idx ].publicPath
           this.publicGroups = JSON.parse(this.items[ this.idx ].publicGroups)
           this.$emit('on-tabs-hidden')
+          Vue.http.get( 'getPosts' ).then( ( response ) => {
+            if ( !!response.body ) {
+              this.groups = response.body[1]
+            }
+          })
         },
         methods: {
           closeShareGroup(){
