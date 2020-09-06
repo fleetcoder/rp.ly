@@ -1219,7 +1219,9 @@
             idx: this.$route.params.idx,
             moreHidden: true,
             cursor: 0,
-            prevcursor: 0
+            prevcursor: 0,
+            cogHidden: false,
+            groups: []
           }
         },
         props: { posts : Array },
@@ -1246,9 +1248,28 @@
                     this.moreHidden = false
                   } else {
                     this.posts = response.body[0]
+                    this.groups = response.body[1]
                     if (this.posts.length > 9) {
                       this.moreHidden = false
                     }
+
+                    Vue.http.get( 'getGroups').then( ( response ) => {
+                      if ( !!response.body ) {
+                        this.groups = response.body[0]
+                        for (var i = 0; i < this.groups.length; i++) {
+                          if (parseInt(this.groups[i].id) == parseInt(this.$route.params.grpid)) {
+                            if (this.groups[i].isOwner === 'true') {
+                              this.cogHidden = true
+                            }
+                          }
+                        }
+                      }
+                    })
+
+                    //if (this.items[idx].isOwner) {
+                      //router.push( '/showPosts/' + idx )
+                      //}
+                    
                   }
                 }
                 this.spinnerHidden = true
@@ -1301,6 +1322,9 @@
               this.loadPosts()
               this.loading = false
             }, 2500)
+          },
+          gallSett(){
+            router.push('/groups/' + this.$route.params.grpid)
           }
         },
         template: `
@@ -1309,6 +1333,9 @@
               <router-link to="/" slot="left">
                 <mt-button icon="back">back</mt-button>
               </router-link>
+              <a v-if="!cogHidden" v-on:click="gallSett()" slot="right">
+                <img class="headericon" slot="icon" src="file/settings.svg" />
+              </a>
             </mt-header>
             <mt-spinner v-bind:class="{'is-hidden':spinnerHidden}" type="snake"></mt-spinner>
 
@@ -3047,9 +3074,10 @@
         template: `
           <div class="feedwrap">
             <mt-header title="Gallery Settings">
-              <router-link :to="'/showGroups/' + idx" slot="left">
+              <!--<router-link :to="'/showGroups/' + idx" slot="left">
                 <mt-button icon="back">back</mt-button>
-              </router-link>
+              </router-link>-->
+              <mt-button slot="left" @click="$router.go(-2)" icon="back">back</mt-button>
             </mt-header>
             <mt-spinner v-bind:class="{'is-hidden':spinnerHidden}" type="snake"></mt-spinner>
             <mt-field label="Name:" placeholder="Name.." v-model="name"></mt-field>
@@ -3066,8 +3094,8 @@
               align="left">
             </mt-checklist>
             <mt-cell v-bind:class="{'is-hidden':!pubHidden}" title=""><img class="img" :src="'myFile?staged=1&field=publicImage&name=' + publicImage" /></mt-cell>
-            <file-upload v-bind:class="{'is-hidden':!pubHidden}" btn-label="Set Bio Photo" @change="stagedUpload('publicImage')" :url="uploadTo + '?field=publicImage'"></file-upload>
-            <mt-field label="Custom Link" placeholder="rp.ly/CUSTOM" v-model="publicPath"></mt-field>
+            <file-upload v-bind:class="{'is-hidden':!pubHidden}" btn-label="Set Author Photo" @change="stagedUpload('publicImage')" :url="uploadTo + '?field=publicImage'"></file-upload>
+            <mt-field label="Custom Link Name" placeholder="&quot;nathan&quot;" v-model="publicPath"></mt-field>
             <mt-cell title="Advanced Options"><mt-switch v-model="optsHidden"></mt-switch></mt-cell>
             <mt-cell v-bind:class="{'is-hidden':!optsHidden}"  title="Scale down uploaded files"><mt-field v-model="maxRes" label="maximum pixels"></mt-field><mt-switch v-model="doScale"></mt-switch></mt-cell>
             <mt-cell v-bind:class="{'is-hidden':!optsHidden}" title="Block members from saving photos"><mt-switch v-model="blockDownloads"></mt-switch></mt-cell>
@@ -3161,6 +3189,9 @@
                 for (var i = 0; i < this.items.length; i++) {
                   if ("undefined" == typeof this.items[i].image) {
                     this.items[i].image = ''
+                  }
+                  if (parseInt(this.items[i].id) == parseInt(this.$route.params.grid)) {
+                    router.push('/modGroups/' + i)
                   }
                 }
                 if (this.items[this.items.length - 1].name == 'My Photos') {
@@ -3319,7 +3350,7 @@
             path: '',
             components:{ default: listPosts, middletab: MidMenu }
         },{
-          path: '/groups', components:{default: listPosts, middletab: Groups},
+          path: '/groups/:grid', components:{default: Groups},
                     children: [{
                       path: '/showGroups/:idx',
                       component: showGroups
@@ -4501,6 +4532,10 @@ def getGroups():
   items = []
   for item in recs:
     if can('get','groups',user,item):
+      item['isOwner'] = False
+      if 'id' in user:
+        if int(user['id']) == int(item['user_id']):
+          item['isOwner'] = True
       items.append(item)
   contacts = get_all('contacts')
   groups = json.loads(user['groups'])
