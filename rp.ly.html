@@ -1189,7 +1189,8 @@
               <p class="caption">
                 <span v-text="item.author"></span>
                 <img class="headericon" src="file/chevron-right.svg" />
-                <mt-button icon="more" v-on:click="openGall(item.toid)" v-text="item.to"></mt-button>
+                <span v-text="item.to"></span>
+                <mt-button icon="more" v-on:click="openGall(item.toid)"></mt-button>
               </p>
               <p class="caption" v-on:click="openImage(idx)" v-text="item.title" v-bind:class="{'is-hidden':item.textHidden}"></p>
               <div class="outer" v-on:click="openImage(idx)" v-bind:class="{'is-hidden':item.imageHidden}">
