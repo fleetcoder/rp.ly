@@ -109,6 +109,13 @@ def group(grpid):
   #ht = ht + '    <meta name="description" content="' + grps[0]['name'] + '" />'
   #ht = ht + '    <link rel="shortcut icon" href="' + imgsrc + '" type="image/x-icon" />'
 
+@app.route('/', defaults={'path': ''})
+@app.route('/<path:path>')
+def catch_all(path):
+  grps = get_one_by( 'groups', path, 'publicPath' )
+  urlsrc = 'https://' + mydomain + '/grp/' + grps[0]['key']
+  return redirect(urlsrc)
+
 @app.route('/g/<grpid>')
 def groupuser(grpid):
   grps = get_one_by( 'groups', grpid, 'key' )
@@ -136,7 +143,50 @@ def groupuser(grpid):
   return response
   #ht = ht + '    <meta name="description" content="' + grps[0]['name'] + '" />'
   #ht = ht + '    <link rel="shortcut icon" href="' + imgsrc + '" type="image/x-icon" />'
-  
+
+@app.route('/updater')
+def updater():
+  item = get_all('posts')[0]
+  if not 'video' in item:
+    rid = add_one( 'posts', {'video':''} )
+    if rid > 0:
+      del_one('posts',rid)
+    for p in get_all('posts'):
+      mod_one( 'posts', {'video':''}, p['id'])
+  item = get_all('posts')[0]
+  if not 'inreplyto' in item:
+    rid = add_one( 'posts', {'inreplyto':''} )
+    if rid > 0:
+      del_one('posts',rid)
+    for p in get_all('posts'):
+      mod_one( 'posts', {'inreplyto':''}, p['id'])
+  item = get_all('groups')[0]
+  if not 'publicBio' in item:
+    grobj = {
+      'public':'0',
+      'publicImage':'',
+      'publicName':'',
+      'publicBio':'',
+      'publicLink':'',
+      'publicGroups':'[]'
+    }
+    rid = add_one( 'groups', grobj )
+    if rid > 0:
+      del_one('groups',rid)
+    for i in get_all('groups'):
+      mod_one( 'groups', grobj, i['id'])
+  item = get_all('groups')[0]
+  if not 'publicPath' in item:
+    rid = add_one( 'groups', {'publicPath':''} )
+    if rid > 0:
+      del_one('groups',rid)
+    grobj = {
+      'publicPath':''
+    }
+    for i in get_all('groups'):
+      mod_one( 'groups', grobj, i['id'])
+  return 'UPDATED DB'
+
 @app.route('/')
 def index():
   global fleet
