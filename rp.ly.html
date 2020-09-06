@@ -3065,7 +3065,7 @@
             </mt-checklist>
             <mt-cell v-bind:class="{'is-hidden':!pubHidden}" title=""><img class="img" :src="'myFile?staged=1&field=publicImage&name=' + publicImage" /></mt-cell>
             <file-upload v-bind:class="{'is-hidden':!pubHidden}" btn-label="Set Bio Photo" @change="stagedUpload('publicImage')" :url="uploadTo + '?field=publicImage'"></file-upload>
-            <mt-field label="Custom Link" placeholder="rp.ly/..." v-model="publicPath"></mt-field>
+            <mt-field label="Custom Link" placeholder="rp.ly/CUSTOM" v-model="publicPath"></mt-field>
             <mt-cell title="Advanced Options"><mt-switch v-model="optsHidden"></mt-switch></mt-cell>
             <mt-cell v-bind:class="{'is-hidden':!optsHidden}"  title="Scale down uploaded files"><mt-field v-model="maxRes" label="maximum pixels"></mt-field><mt-switch v-model="doScale"></mt-switch></mt-cell>
             <mt-cell v-bind:class="{'is-hidden':!optsHidden}" title="Block members from saving photos"><mt-switch v-model="blockDownloads"></mt-switch></mt-cell>
@@ -3105,6 +3105,7 @@
             publicBio: '',
             publicImage: '',
             publicLink: '',
+            publicPath: '',
             publicGroups: [],
             pubHidden: false,
             optGroups:[]
@@ -3223,7 +3224,8 @@
                 <mt-cell title="Public"><mt-switch v-model="public" @change="changePublic()"></mt-switch></mt-cell>
                 <mt-field v-bind:class="{'is-hidden':!pubHidden}" label="Name:" placeholder="Name.." v-model="publicName"></mt-field>
                 <mt-field v-bind:class="{'is-hidden':!pubHidden}" label="Bio:" placeholder="Bio" type="textarea" rows="4" v-model="publicBio"></mt-field>
-                <mt-field v-bind:class="{'is-hidden':!pubHidden}" label="Link:" placeholder="Link.." v-model="publicLink"></mt-field>
+                <mt-field v-bind:class="{'is-hidden':!pubHidden}" label="Home Page:" placeholder="Home Page Link.." v-model="publicLink"></mt-field>
+                <mt-field v-bind:class="{'is-hidden':!pubHidden}" label="Custom Link:" placeholder="rp.ly/CUSTOM" v-model="publicPath"></mt-field>
                 <h3 v-bind:class="{'is-hidden':!pubHidden}">Linked Galleries:</h3>
                 <mt-checklist v-bind:class="{'is-hidden':!pubHidden}"
                   v-model="publicGroups"
@@ -4582,6 +4584,7 @@ def addGroups():
     'publicName': request.form.get('publicName'),
     'publicBio': request.form.get('publicBio'),
     'publicLink': request.form.get('publicLink'),
+    'publicPath': request.form.get('publicPath'),
     'publicGroups': request.form.get('publicGroups'),
     'user_id' : session['user'],
     'created' : str( timezone( 'US/Pacific' ).localize( datetime.now() ) )
