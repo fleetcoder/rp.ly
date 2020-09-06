@@ -1220,7 +1220,7 @@
             moreHidden: true,
             cursor: 0,
             prevcursor: 0,
-            cogHidden: false,
+            cogHidden: true,
             groups: []
           }
         },
@@ -1258,9 +1258,7 @@
                         this.groups = response.body[0]
                         for (var i = 0; i < this.groups.length; i++) {
                           if (parseInt(this.groups[i].id) == parseInt(this.$route.params.grpid)) {
-                            if (this.groups[i].isOwner === 'true') {
-                              this.cogHidden = true
-                            }
+                            this.cogHidden = !this.groups[i].isOwner
                           }
                         }
                       }
