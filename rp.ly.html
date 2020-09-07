@@ -4481,8 +4481,8 @@ def addPosts():
           for g in json.loads(ug['publicGroups']):
             if g in rcps:
               linkpath = '/grp/' + str(ug['key'])
-              if not ug['path'] == '':
-                linkpath = '/' + ug['path']
+              if not ug['publicPath'] == '':
+                linkpath = '/' + ug['publicPath']
               resp = ' 📷 #shareinanewway #rplyphoto #rplyshare https://' + mydomain + linkpath
               if str(request.form.get('doSetHeader')) == 'true' and firstimg is not '':
                 newobj = {'image':firstimg}
