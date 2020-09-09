@@ -2254,7 +2254,7 @@
                       <li v-for="(item, idx) in uploadedFiles">
                         <img :src="'myFile?staged=1&field=image&multiname=' + item.url" class="img-responsive img-thumbnail" :alt="item.originalName" />
                         <mt-cell v-if="idx == 0" title="Use As Gallery Header Photo"><mt-switch v-model="doSetHeader"></mt-switch></mt-cell>
-                        <mt-field v-if="idx == 0" placeholder="Caption..." v-model="title"></mt-field>
+                        <mt-field v-if="idx == 0" placeholder="Caption..." type="textarea" rows="4" v-model="title"></mt-field>
                       </li>
                     </ul>
                   </div>
@@ -2474,7 +2474,7 @@
         
             <mt-popup class="addcontact" v-model="showShareGroup" position="middle">
               <mt-cell title="Copy and share this gallery link:"></mt-cell>
-              <mt-field v-model="groupLink"></mt-field>
+              <mt-field type="textarea" rows="4" v-model="groupLink"></mt-field>
               <mt-button v-clipboard:copy="groupLink" v-clipboard:success="copyGroupLink" v-clipboard:error="copyError">Copy Link</mt-button>
               <mt-button v-on:click="closeShareGroup()">Close</mt-button>
             </mt-popup>
