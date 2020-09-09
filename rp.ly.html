@@ -2473,10 +2473,13 @@
             </mt-popup>
         
             <mt-popup class="addcontact" v-model="showShareGroup" position="middle">
-              <mt-cell title="Copy and share this gallery link:"></mt-cell>
+              <mt-header>
+                <a v-on:click="closeShareGroup()" slot="left">
+                  <mt-button>X</mt-button>
+                </a>
+              </mt-header>
               <mt-field type="textarea" rows="4" v-model="groupLink"></mt-field>
-              <mt-button v-clipboard:copy="groupLink" v-clipboard:success="copyGroupLink" v-clipboard:error="copyError">Copy Link</mt-button>
-              <mt-button v-on:click="closeShareGroup()">Close</mt-button>
+              <mt-button v-clipboard:copy="groupLink" v-clipboard:success="copyGroupLink" v-clipboard:error="copyError">Copy To Clipboard</mt-button><p></p>
             </mt-popup>
           
           </div>`
