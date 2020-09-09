@@ -301,6 +301,9 @@
       .addphotostab {
         padding-bottom: 50px;
       }
+      .choosegroups {
+        padding-top: 10px;
+      }
     </style>
 
     <script id="client">
@@ -2219,7 +2222,7 @@
                     <ul class="contacts">
                       <li class="contact" v-for="friend in contacts">{{ friend.name }}</li>
                     </ul>
-                    <mt-checklist v-for="(group,idx) in cgroups" :title="cgroups[idx].name"
+                    <mt-checklist class="choosegroups" v-for="(group,idx) in cgroups" :title="cgroups[idx].name"
                       v-model="cgroups[idx].members"
                       :options="cgroups[idx].perms"
                       align="right"
