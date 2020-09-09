@@ -304,6 +304,9 @@
       .choosegroups {
         padding-top: 10px;
       }
+      .secondtool {
+        padding-right:15px;
+      }
     </style>
 
     <script id="client">
@@ -1326,6 +1329,9 @@
           },
           gallSett(){
             router.push('/groups/' + this.$route.params.grpid)
+          },
+          newGall(){
+            router.push('/groups/new')
           }
         },
         template: `
@@ -1334,6 +1340,9 @@
               <router-link to="/" slot="left">
                 <mt-button icon="back">back</mt-button>
               </router-link>
+              <a v-on:click="newGall()" slot="right">
+                <img class="headericon secondtool" slot="icon" src="file/plus-circle.svg" />
+              </a>
               <a v-if="!cogHidden" v-on:click="gallSett()" slot="right">
                 <img class="headericon" slot="icon" src="file/settings.svg" />
               </a>
@@ -2209,7 +2218,7 @@
             <mt-spinner v-bind:class="{'is-hidden':spinnerHidden}" type="snake"></mt-spinner>
             <mt-tab-container v-model="selected">
               <mt-tab-container-item id="tab1">
-                <router-view v-bind:items="items" v-bind:posts.sync="posts" v-bind:doSponsor.sync="doSponsor" v-bind:editHidden="editHidden" v-bind:cangrps="cangrps" v-bind:moreHidden="moreHidden" @on-update-list="getPosts" @on-tabs-hidden="hideTabs" @on-show-menu="showLink" @on-show-help="showHelp" @load-more-items="moreItems" @show-sponsor="doShowSponsor" />
+                <router-view v-bind:items="items" v-bind:posts.sync="posts" v-bind:doSponsor.sync="doSponsor" v-bind:editHidden="editHidden" v-bind:cangrps="cangrps" v-bind:moreHidden="moreHidden" @on-update-list="getPosts" @on-update-groups="getContacts" @on-tabs-hidden="hideTabs" @on-show-menu="showLink" @on-show-help="showHelp" @load-more-items="moreItems" @show-sponsor="doShowSponsor" />
                 <h3 v-if="gettingStarted">Click on Add Photos to share in a private gallery and send the link to friends.</h3>
                 <h3 v-if="gettingStarted">Or, click the Public option in settings to make a public landing page.</h3>
                 <p v-if="gettingStarted">
@@ -3130,7 +3139,7 @@
           return {
             spinnerHidden : true,
             uploadTo : 'uploadFile',
-            selected : 'tab1',
+            selected : 'tab2',
             items : [],
             tabsHidden: false,
             groups: [],
@@ -3240,7 +3249,9 @@
               this.publicBio = ''
               this.publicLink = ''
               this.publicGroups = []
-              Posts.getContacts()
+              this.$emit('on-update-list')
+              router.push('/')
+              //Posts.getContacts()
             })
           },
           stagedUpload(field){
@@ -3264,7 +3275,11 @@
                 <router-view v-bind:items="items" v-bind:groups="groups" v-bind:editHidden="editHidden" @on-update-list="getGroups" @on-tabs-hidden="hideTabs" @on-show-add-group="showAddGroupForm" @on-update-photos="getPosts" />
               </mt-tab-container-item>
               <mt-tab-container-item id="tab2">
-                <mt-header title="Add New Gallery"></mt-header>
+                <mt-header title="Add New Gallery">
+                  <a slot="left">
+                    <mt-button slot="left" @click="$router.go(-1)" icon="back">back</mt-button>
+                  </a>
+                </mt-header>
                 <mt-field placeholder="Name.." v-model="name"></mt-field>
                 <mt-cell title="Public"><mt-switch v-model="public" @change="changePublic()"></mt-switch></mt-cell>
                 <mt-field v-bind:class="{'is-hidden':!pubHidden}" label="Author Name:" placeholder="Name.." v-model="publicName"></mt-field>
@@ -3280,9 +3295,9 @@
                 <mt-cell v-bind:class="{'is-hidden':!pubHidden}" title=""><img class="img" :src="'myFile?staged=1&field=publicImage&name=' + publicImage" /></mt-cell>
                 <file-upload v-bind:class="{'is-hidden':!pubHidden}" btn-label="Set Author Photo" @change="stagedUpload('publicImage')" :url="uploadTo + '?field=publicImage'"></file-upload>
                 <mt-button class="buttonset" v-on:click="addGroups()" size="large">Add New Gallery</mt-button>
-                <mt-button class="buttonset" v-on:click="hideAddGroupForm()" size="large">
+                <!--<mt-button class="buttonset" v-on:click="hideAddGroupForm()" size="large">
                     Cancel
-                </mt-button>
+                </mt-button>-->
                 <mt-cell></mt-cell>
               </mt-tab-container-item>
             </mt-tab-container>
@@ -3369,7 +3384,7 @@
                       path: '/modGroups/:idx',
                       component: modGroups
                   },{
-                      path: '',
+                      path: '/groups/new',
                       component: listGroups
                   }]
         },{
