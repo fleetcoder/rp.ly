@@ -3043,8 +3043,9 @@
             }).then( ( response ) => {
               this.$emit('on-update-list')
               this.$emit('on-update-photos')
-              this.showShareGroup = true
+              //this.showShareGroup = true
               this.groupLink = response.body
+              router.push('/')
             })
           },
           stagedUpload(field){
