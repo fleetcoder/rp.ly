@@ -4157,7 +4157,7 @@ def getPosts():
             item['toid'] = thisgroup[0]['id']
           if thisgroup[0]['id'] in gall_counts:
             gall_counts[thisgroup[0]['id']] = gall_counts[thisgroup[0]['id']] + 1
-            if gall_counts[thisgroup[0]['id']] > 2:
+            if gall_counts[thisgroup[0]['id']] > 0:
               gall_limit = True
           else:
             gall_counts[thisgroup[0]['id']] = 1
