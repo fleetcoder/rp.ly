@@ -1178,6 +1178,9 @@
           },
           openGall(toid){
             router.push( '/showGroupPosts/' + toid )
+          },
+          newGall(){
+            router.push('/groups/new')
           }
         },
         template: `
@@ -1185,6 +1188,9 @@
             <mt-header title="">
               <a v-on:click="showHelp()" slot="left">
                 <img class="headericon" slot="icon" src="file/help-circle.svg" />
+              </a>
+              <a v-on:click="newGall()" slot="right">
+                <img class="headericon secondtool" slot="icon" src="file/list.svg" />
               </a>
               <a v-on:click="showLink()" slot="right">
                 <img class="headericon" slot="icon" src="file/settings.svg" />
@@ -1340,9 +1346,6 @@
               <router-link to="/" slot="left">
                 <mt-button icon="back">back</mt-button>
               </router-link>
-              <a v-on:click="newGall()" slot="right">
-                <img class="headericon secondtool" slot="icon" src="file/plus-circle.svg" />
-              </a>
               <a v-if="!cogHidden" v-on:click="gallSett()" slot="right">
                 <img class="headericon" slot="icon" src="file/settings.svg" />
               </a>
@@ -2875,9 +2878,7 @@
         template: `
           <div>
             <mt-header title="Galleries">
-              <router-link to="/groups" slot="left">
-                <mt-button icon="back">back</mt-button>
-              </router-link>
+              <mt-button slot="left" @click="$router.go(-1)" icon="back">back</mt-button>
             </mt-header>
             <mt-spinner v-bind:class="{'is-hidden':spinnerHidden}" type="snake"></mt-spinner>
             <mt-cell title="" :value="name"></mt-cell>
@@ -3139,7 +3140,7 @@
           return {
             spinnerHidden : true,
             uploadTo : 'uploadFile',
-            selected : 'tab2',
+            selected : 'tab1',
             items : [],
             tabsHidden: false,
             groups: [],
