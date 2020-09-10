@@ -3172,8 +3172,12 @@
           'show-groups' : showGroups
         },
         created() {
-          this.optGroups = this.groups
           this.getGroups()
+          Vue.http.get( 'getPosts' ).then( ( response ) => {
+            if ( !!response.body ) {
+              this.optGroups = response.body[1]
+            }
+          })
         },
         methods: {
           showAddGroupForm() {
@@ -3215,9 +3219,9 @@
                     router.push('/modGroups/' + i)
                   }
                 }
-                if (this.items[this.items.length - 1].name == 'My Photos') {
-                  router.push('/modGroups/' + (this.items.length - 1))
-                }
+                //if (this.items[this.items.length - 1].name == 'My Photos') {
+                //  router.push('/modGroups/' + (this.items.length - 1))
+                //}
               }
               this.spinnerHidden = true
             })
