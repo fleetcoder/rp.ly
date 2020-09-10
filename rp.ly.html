@@ -4502,6 +4502,10 @@ def addPosts():
   if request.form.get('inreplyto') is None:
     ugrps = get_one_by( 'groups', curr['id'], 'user_id' )
     rcps = json.loads(request.form.get('recips'))
+    for g in rcps:
+      grpdata = get_one('groups',g)
+      linkpath = '/grp/' + str(grpdata[0]['key'])
+      resp = ' 📷 https://' + mydomain + linkpath
     for ug in ugrps:
       if int(ug['public']) > 0:
         if not ug['publicGroups'] is None:
