@@ -307,6 +307,9 @@
       .secondtool {
         padding-right:15px;
       }
+      .starttabscontent {
+        padding-bottom:50px;
+      }
     </style>
 
     <script id="client">
@@ -1597,7 +1600,9 @@
             doSetHeader: true,
             posts: [],
             showShareGroup: false,
-            groupLink: ''
+            groupLink: '',
+            startMode: 'private',
+            startstep: 'starttab1'
           }
         },
         components:{
@@ -2211,6 +2216,8 @@
           },
           closeShareGroup(){
             this.showShareGroup = false
+          },
+          setStartMode(){
           }
         },
         mounted() {
@@ -2222,11 +2229,36 @@
             <mt-tab-container v-model="selected">
               <mt-tab-container-item id="tab1">
                 <router-view v-bind:items="items" v-bind:posts.sync="posts" v-bind:doSponsor.sync="doSponsor" v-bind:editHidden="editHidden" v-bind:cangrps="cangrps" v-bind:moreHidden="moreHidden" @on-update-list="getPosts" @on-update-groups="getContacts" @on-tabs-hidden="hideTabs" @on-show-menu="showLink" @on-show-help="showHelp" @load-more-items="moreItems" @show-sponsor="doShowSponsor" />
-                <h3 v-if="gettingStarted">Click on Add Photos to share in a private gallery and send the link to friends.</h3>
+                <h3 v-if="gettingStarted">Upload photos and get a link to share.</h3>
+                <mt-radio v-if="gettingStarted"
+                  title=""
+                  v-model="startMode"
+                  :options="['with friends', 'on social media']"
+                  v-on:change="setStartMode()">
+                </mt-radio>
+                <div v-if="gettingStarted" v-if="startMode == 'with friends'">
+                  <h4><img slot="icon" src="/file/plus-circle.svg" /> at bottom</h4>
+                  <h4>&quot;Click here to choose photos&quot;</h4>
+                  <h4>&quot;Save&quot;</h4>
+                  <h4>&quot;Copy To Clipboard&quot;</h4>
+                </div>
+                <div v-if="gettingStarted" v-if="startMode == 'on social media'">
+                  <h4><img slot="icon" src="/file/list.svg" /> at top</h4>
+                  <h4><img slot="icon" src="/file/plus-circle.svg" /> at top</h4>
+                  <h4>&quot;Public&quot; option</h4>
+                  <h4>&quot;Save&quot;</h4>
+                  <h4><img slot="icon" src="/file/plus-circle.svg" /> at bottom</h4>
+                  <h4>&quot;Click here to choose photos&quot;</h4>
+                  <h4>&quot;Save&quot;</h4>
+                  <h4>&quot;Copy To Clipboard&quot;</h4>
+                </div>
+                <p>&nbsp;</p>
+                <!--
+                <h3 v-if="gettingStarted"> Click on Add Photos to share in a private gallery and send the link to friends.</h3>
                 <h3 v-if="gettingStarted">Or, click the Public option in settings to make a public landing page.</h3>
                 <p v-if="gettingStarted">
                   <a href="javascript:void(0)" @click="takeMeThere()">Take me to settings</a>
-                </p>
+                </p>-->
               </mt-tab-container-item>
               <mt-tab-container-item id="tab2">
                 <router-view name="middletab" v-bind:subsHidden="subsHidden" @on-update-photos="getPosts" v-bind:groups="groups" />
@@ -4507,18 +4539,19 @@ def addPosts():
       linkpath = '/grp/' + str(grpdata[0]['key'])
       resp = ' 📷 https://' + mydomain + linkpath
     for ug in ugrps:
-      if int(ug['public']) > 0:
-        if not ug['publicGroups'] is None:
-          for g in json.loads(ug['publicGroups']):
-            if g in rcps:
-              linkpath = '/grp/' + str(ug['key'])
-              if not ug['publicPath'] == '':
-                linkpath = '/' + ug['publicPath']
-              resp = ' 📷 #shareinanewway #rplyphoto #rplyshare https://' + mydomain + linkpath
-              if str(request.form.get('doSetHeader')) == 'true' and firstimg is not '':
-                newobj = {'image':firstimg}
-                mod_one( 'groups', newobj, ug['id'] )
-              break
+      if not ug['public'] is None:
+        if int(ug['public']) > 0:
+          if not ug['publicGroups'] is None:
+            for g in json.loads(ug['publicGroups']):
+              if g in rcps:
+                linkpath = '/grp/' + str(ug['key'])
+                if not ug['publicPath'] == '':
+                  linkpath = '/' + ug['publicPath']
+                resp = ' 📷 #shareinanewway #rplyphoto #rplyshare https://' + mydomain + linkpath
+                if str(request.form.get('doSetHeader')) == 'true' and firstimg is not '':
+                  newobj = {'image':firstimg}
+                  mod_one( 'groups', newobj, ug['id'] )
+                break
   response = make_response(json.dumps( [ resp ] ))
   for item in senditems:
     item['author'] = get_user(item['user_id'])['name']
