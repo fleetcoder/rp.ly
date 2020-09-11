@@ -4162,8 +4162,8 @@ def getPosts():
             item['toid'] = thisgroup[0]['id']
           if thisgroup[0]['id'] in gall_counts:
             gall_counts[thisgroup[0]['id']] = gall_counts[thisgroup[0]['id']] + 1
-            if gall_counts[thisgroup[0]['id']] > 0:
-              gall_limit = True
+            #if gall_counts[thisgroup[0]['id']] > 0:
+            #  gall_limit = True
           else:
             gall_counts[thisgroup[0]['id']] = 1
         if not pgrp in cangrps and not pgrp in ugrids and pgrp in groups:
@@ -4178,7 +4178,7 @@ def getPosts():
       else:
         if not gall_limit or not request.args.get('grpid') is None:
           posts.append(item)
-      if len(posts) == posts_limit and not group_id == 0:
+      if len(posts) == posts_limit:
         break
     if expired(item):
       notify_del(item['user_id'])
