@@ -2805,7 +2805,7 @@
                 </mt-button>
             </mt-header>
             <mt-spinner v-bind:class="{'is-hidden':spinnerHidden}" type="snake"></mt-spinner>
-            <mt-cell-swipe v-for="(item, idx) in items" :title="item.name" is-link :to="'/showGroups/' + idx" :right="[
+            <mt-cell-swipe v-for="(item, idx) in items" :title="item.name" is-link :to="'/showGroupPosts/' + item.id" :right="[
               {
                 content: 'Delete',
                 style: { background: 'red', color: '#fff' },
@@ -4584,8 +4584,8 @@ def getGroups():
     groupname = ''
     if len(group) > 0:
       groupname = group[0]['name']
-      if not int(group[0]['user_id']) == int(user['id']):
-        continue
+      #if not int(group[0]['user_id']) == int(user['id']):
+      #  continue
     glabel = ''
     comma = ''
     for con in contacts:
