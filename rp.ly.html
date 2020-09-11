@@ -4568,15 +4568,15 @@ def getGroups():
   user = current_user()
   recs = get_all('groups')
   items = []
+  groups = json.loads(user['groups'])
   for item in recs:
-    if can('get','groups',user,item):
+    if can('get','groups',user,item) or item['id'] in groups:
       item['isOwner'] = False
       if 'id' in user:
         if int(user['id']) == int(item['user_id']):
           item['isOwner'] = True
       items.append(item)
   contacts = get_all('contacts')
-  groups = json.loads(user['groups'])
   abils = []
   grps = []
   for grp in groups:
@@ -4584,8 +4584,8 @@ def getGroups():
     groupname = ''
     if len(group) > 0:
       groupname = group[0]['name']
-      #if not int(group[0]['user_id']) == int(user['id']):
-      #  continue
+      if not int(group[0]['user_id']) == int(user['id']):
+        continue
     glabel = ''
     comma = ''
     for con in contacts:
