@@ -314,6 +314,11 @@
       .firstHelp {
         text-align:left;
       }
+      .startVid {
+        width:300px;
+        height: auto;
+        text-align: center;
+      }
     </style>
 
     <script id="client">
@@ -681,7 +686,7 @@
                 <img @contextmenu.prevent="doContextMenu" class="oimg cant-click" :src="imageLink(item)" v-else />
                 <figcaption class="caption underpic" v-text="item.title"></figcaption>
                 <audio-player :src="'myFile?field=sound&name=' + item.sound" v-bind:class="{'is-hidden':item.soundHidden}" />
-              </div>
+              </div>https://rp.ly/myFile?field=video&name=20200914-095428rply_v1_howto.mp4
               <vue-plyr v-if="item.isVideo">
                 <video :poster="item.image" :src="'myFile?field=video&name=' + item.video" controls data-plyr-config='{ "iconUrl": "file/plyr.svg" }' />
                 <figcaption class="caption" v-text="item.title"></figcaption>
@@ -2448,10 +2453,9 @@
 -->
         <h4 class="help_header" v-on:click="showHelpSection('help1')">Share with friends</h4>
         <div class="firstHelp help_para" v-if="help1">
-                  <h4>1. <img slot="icon" src="/file/plus-circle.svg" /> at bottom</h4>
-                  <h4>2. &quot;Click here to choose photos&quot;</h4>
-                  <h4>3. &quot;Save&quot;</h4>
-                  <h4>4. &quot;Copy To Clipboard&quot;</h4>
+      <vue-plyr class="startVid">
+        <video poster="https://rp.ly/myFile?field=image&name=20200914-095428rply_v1_howto.mp4.jpg" src="https://rp.ly/myFile?field=video&name=20200914-095428rply_v1_howto.mp4" controls data-plyr-config='{ "iconUrl": "file/plyr.svg" }' />
+      </vue-plyr>
                 </div>
         <h4 class="help_header" v-on:click="showHelpSection('help2')">Share on social media</h4>
         <div class="firstHelp help_para" v-if="help2">
@@ -2544,10 +2548,9 @@
                   v-on:change="setStartMode()">
                 </mt-radio>
                 <div v-if="gettingStarted" v-if="startMode == 'with friends'" class="firstHelp">
-                  <h4>1. <img slot="icon" src="/file/plus-circle.svg" /> at bottom</h4>
-                  <h4>2. &quot;Click here to choose photos&quot;</h4>
-                  <h4>3. &quot;Save&quot;</h4>
-                  <h4>4. &quot;Copy To Clipboard&quot;</h4>
+                  <vue-plyr class="startVid">
+                    <video poster="https://rp.ly/myFile?field=image&name=20200914-095428rply_v1_howto.mp4.jpg" src="https://rp.ly/myFile?field=video&name=20200914-095428rply_v1_howto.mp4" controls data-plyr-config='{ "iconUrl": "file/plyr.svg" }' />
+                  </vue-plyr>
                 </div>
                 <div v-if="gettingStarted" v-if="startMode == 'on social media'" class="firstHelp">
                   <h4>1. <img slot="icon" src="/file/list.svg" /> at top</h4>
