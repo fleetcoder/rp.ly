@@ -4702,21 +4702,22 @@ def joinGroup():
     if not items[0]['image'] is None:
       imgsrc = 'https://' + mydomain + '/grpFile?field=image&name=' + items[0]['image']
     publicData = '{}'
-    if int(items[0]['public']) > 0:
-      linkedgrps = []
-      linked = json.loads(items[0]['publicGroups'])
-      for grp in linked:
-        grpdata = get_one('groups',grp)
-        if len(grpdata) > 0:
-          if not grpdata[0]['image'] is None:
-            linkedgrps.append({'grp':grpdata[0]['key'],'name':grpdata[0]['name'],'image':'https://' + mydomain + '/grpFile?field=image&name=' + grpdata[0]['image']})
-      publicData = json.dumps({
-        'publicImage':items[0]['publicImage'],
-        'publicName':items[0]['publicName'],
-        'publicBio':items[0]['publicBio'],
-        'publicLink':items[0]['publicLink'],
-        'publicGroups':linkedgrps
-      })
+    if not items[0]['public'] is None:
+      if int(items[0]['public']) > 0:
+        linkedgrps = []
+        linked = json.loads(items[0]['publicGroups'])
+        for grp in linked:
+          grpdata = get_one('groups',grp)
+          if len(grpdata) > 0:
+            if not grpdata[0]['image'] is None:
+              linkedgrps.append({'grp':grpdata[0]['key'],'name':grpdata[0]['name'],'image':'https://' + mydomain + '/grpFile?field=image&name=' + grpdata[0]['image']})
+        publicData = json.dumps({
+          'publicImage':items[0]['publicImage'],
+          'publicName':items[0]['publicName'],
+          'publicBio':items[0]['publicBio'],
+          'publicLink':items[0]['publicLink'],
+          'publicGroups':linkedgrps
+        })
     result = [owner['name'],items[0]['name'],imgsrc,authd,items[0]['id'],member,publicData]
   return json.dumps(result)
 
