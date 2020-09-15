@@ -319,6 +319,9 @@
         height: auto;
         text-align: center;
       }
+      .mailto {
+        text-align: center;
+      }
     </style>
 
     <script id="client">
@@ -2171,6 +2174,7 @@
           showHelpSection(section) {
             this['help1'] = false
             this['help2'] = false
+            this['help3'] = false
             this[section] = true
           },
           copyTemplate1(){
@@ -2453,20 +2457,19 @@
 -->
         <h4 class="help_header" v-on:click="showHelpSection('help1')">Share with friends</h4>
         <div class="firstHelp help_para" v-if="help1">
-      <vue-plyr class="startVid">
-        <video poster="https://rp.ly/myFile?field=image&name=20200914-095428rply_v1_howto.mp4.jpg" src="https://rp.ly/myFile?field=video&name=20200914-095428rply_v1_howto.mp4" controls data-plyr-config='{ "iconUrl": "file/plyr.svg" }' />
-      </vue-plyr>
-                </div>
+          <vue-plyr class="startVid">
+            <video src="https://rp.ly/file/demoprivate1.mp4" controls data-plyr-config='{ "iconUrl": "file/plyr.svg" }' />
+          </vue-plyr>
+        </div>
         <h4 class="help_header" v-on:click="showHelpSection('help2')">Share on social media</h4>
         <div class="firstHelp help_para" v-if="help2">
-                  <h4>1. <img slot="icon" src="/file/list.svg" /> at top</h4>
-                  <h4>2. <img slot="icon" src="/file/plus-circle.svg" /> at top</h4>
-                  <h4>3. enable &quot;Public&quot; option</h4>
-                  <h4>4. &quot;Add New Gallery&quot;</h4>
-                  <h4>5. <img slot="icon" src="/file/plus-circle.svg" /> at bottom</h4>
-                  <h4>6. &quot;Click here to choose photos&quot;</h4>
-                  <h4>7. &quot;Save&quot;</h4>
-                  <h4>8. &quot;Copy To Clipboard&quot;</h4>
+          <vue-plyr class="startVid">
+            <video src="https://rp.ly/file/demopublic1.mp4" controls data-plyr-config='{ "iconUrl": "file/plyr.svg" }' />
+          </vue-plyr>
+        </div>
+        <h4 class="help_header" v-on:click="showHelpSection('help3')">Contact Us</h4>
+        <div class="firstHelp help_para mailto" v-if="help3">
+            <a href="mailto:info@rp.ly">info@rp.ly</a>
         </div>
             </mt-popup>
 
@@ -2548,19 +2551,14 @@
                   v-on:change="setStartMode()">
                 </mt-radio>
                 <div v-if="gettingStarted" v-if="startMode == 'with friends'" class="firstHelp">
-                  <vue-plyr class="startVid">
-                    <video poster="https://rp.ly/myFile?field=image&name=20200914-095428rply_v1_howto.mp4.jpg" src="https://rp.ly/myFile?field=video&name=20200914-095428rply_v1_howto.mp4" controls data-plyr-config='{ "iconUrl": "file/plyr.svg" }' />
-                  </vue-plyr>
+          <vue-plyr class="startVid">
+            <video src="https://rp.ly/file/demoprivate1.mp4" controls data-plyr-config='{ "iconUrl": "file/plyr.svg" }' />
+          </vue-plyr>
                 </div>
                 <div v-if="gettingStarted" v-if="startMode == 'on social media'" class="firstHelp">
-                  <h4>1. <img slot="icon" src="/file/list.svg" /> at top</h4>
-                  <h4>2. <img slot="icon" src="/file/plus-circle.svg" /> at top</h4>
-                  <h4>3. enable &quot;Public&quot; option</h4>
-                  <h4>4. &quot;Add New Gallery&quot;</h4>
-                  <h4>5. <img slot="icon" src="/file/plus-circle.svg" /> at bottom</h4>
-                  <h4>6. &quot;Click here to choose photos&quot;</h4>
-                  <h4>7. &quot;Save&quot;</h4>
-                  <h4>8. &quot;Copy To Clipboard&quot;</h4>
+          <vue-plyr class="startVid">
+            <video src="https://rp.ly/file/demopublic1.mp4" controls data-plyr-config='{ "iconUrl": "file/plyr.svg" }' />
+          </vue-plyr>
                 </div>
                 <p>&nbsp;</p>
                 <!--
