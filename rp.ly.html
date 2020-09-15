@@ -686,7 +686,7 @@
                 <img @contextmenu.prevent="doContextMenu" class="oimg cant-click" :src="imageLink(item)" v-else />
                 <figcaption class="caption underpic" v-text="item.title"></figcaption>
                 <audio-player :src="'myFile?field=sound&name=' + item.sound" v-bind:class="{'is-hidden':item.soundHidden}" />
-              </div>https://rp.ly/myFile?field=video&name=20200914-095428rply_v1_howto.mp4
+              </div>
               <vue-plyr v-if="item.isVideo">
                 <video :poster="item.image" :src="'myFile?field=video&name=' + item.video" controls data-plyr-config='{ "iconUrl": "file/plyr.svg" }' />
                 <figcaption class="caption" v-text="item.title"></figcaption>
