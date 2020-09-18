@@ -315,12 +315,43 @@
         text-align:left;
       }
       .startVid {
-        width:300px;
+        width: 300px;
         height: auto;
         text-align: center;
       }
       .mailto {
         text-align: center;
+      }
+      .intro {
+        max-width: 250px;
+        max-height: 250px;
+        height: auto;
+      }
+      .intro_tall {
+        max-width: 250px;
+        max-height: 450px;
+        height: auto;
+      }
+      .introright {
+        margin-right: 30px;
+        float: right;
+      }
+      .introleft {
+        margin-left: 30px;
+        float: left;
+      }
+      .introblock {
+        clear:both;
+      }
+      .introcopy {
+        margin-left:100px;
+        margin-right:100px;
+        padding: 70px 0;
+        text-align: center;
+      }
+      .signupbox {
+        padding-top:50px;
+        padding-bottom:50px;
       }
     </style>
 
@@ -516,7 +547,29 @@
                 Log In
               </mt-tab-item>
             </mt-tabbar>
-            <mt-tab-container v-model="selected">
+            <div class="introblock">
+                <div class="introblock">
+                  <img class="intro introleft" src="file/rply1.jpg" />
+                  <p class="introright introcopy">Get a link to your photos</p>
+               </div>
+               <div class="introblock">
+                <img class="intro introright" src="file/rply2.jpg" />
+                  <p class="introleft introcopy">Share it on social media</p>
+               </div>
+               <div class="introblock">
+                <img class="intro introleft" src="file/rply3.jpg" />
+                  <p class="introright introcopy">Or in a text message</p>
+               </div>
+               <div class="introblock">
+                <img class="intro_tall introright" src="file/rply4.jpg" />
+                  <p class="introleft introcopy">Public gallery with<br>link to private gallery</p>
+               </div>
+               <div class="introblock">
+                <img class="intro_tall introleft" src="file/rply5.jpg" />
+                  <p class="introright introcopy">Private gallery</p>
+               </div>
+            </div>
+            <mt-tab-container v-model="selected" class="introblock signupbox">
               <mt-tab-container-item id="tab1">
                 <mt-header title="Sign Up"></mt-header>
                 <h4>It's easy to start! You will receive an e-mail or text message with a login code:</h4>
