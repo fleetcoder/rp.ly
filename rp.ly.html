@@ -333,25 +333,15 @@
         height: auto;
       }
       .introright {
-        margin-right: 30px;
-        float: right;
       }
       .introleft {
-        margin-left: 30px;
-        float: left;
       }
       .introblock {
-        clear:both;
+        margin-bottom:50px;
       }
       .introcopy {
-        margin-left:100px;
-        margin-right:100px;
-        padding: 70px 0;
-        text-align: center;
       }
       .signupbox {
-        padding-top:50px;
-        padding-bottom:50px;
       }
     </style>
 
@@ -536,7 +526,7 @@
           }
         },
         template: `
-          <div>
+          <div class="feedwrap">
             <mt-tabbar fixed="true" v-model="selected">
               <mt-tab-item id="tab1">
                 <img slot="icon" src="/file/users.svg" />
@@ -550,23 +540,23 @@
             <div class="introblock">
                 <div class="introblock">
                   <img class="intro introleft" src="file/rply1.jpg" />
-                  <p class="introright introcopy">Get a link to your photos</p>
-               </div>
-               <div class="introblock">
-                <img class="intro introright" src="file/rply2.jpg" />
-                  <p class="introleft introcopy">Share it on social media</p>
+                  <p class="introright introcopy">Upload and get a link</p>
                </div>
                <div class="introblock">
                 <img class="intro introleft" src="file/rply3.jpg" />
-                  <p class="introright introcopy">Or in a text message</p>
-               </div>
-               <div class="introblock">
-                <img class="intro_tall introright" src="file/rply4.jpg" />
-                  <p class="introleft introcopy">Public gallery with<br>link to private gallery</p>
+                  <p class="introright introcopy">Paste link as text message</p>
                </div>
                <div class="introblock">
                 <img class="intro_tall introleft" src="file/rply5.jpg" />
-                  <p class="introright introcopy">Private gallery</p>
+                  <p class="introright introcopy">Contact info required to see photos</p>
+               </div>
+               <div class="introblock">
+                <img class="intro introright" src="file/rply2.jpg" />
+                  <p class="introleft introcopy">Paste link to social networks</p>
+               </div>
+               <div class="introblock">
+                <img class="intro_tall introright" src="file/rply4.jpg" />
+                  <p class="introleft introcopy">Public gallery with link to contact-info-required gallery</p>
                </div>
             </div>
             <mt-tab-container v-model="selected" class="introblock signupbox">
