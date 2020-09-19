@@ -4707,6 +4707,9 @@ def getGroups():
           item['isOwner'] = True
           items.append(item)
         else:
+          growner = get_user(item['user_id'])
+          if 'name' in growner:
+            item['name'] = item['name'] + ' - ' + growner['name']
           othergrps.append(item)
   contacts = get_all('contacts')
   abils = []
