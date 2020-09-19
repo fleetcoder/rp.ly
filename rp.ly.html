@@ -3878,7 +3878,12 @@ def doCode():
                 })
                 newrec = {
                   'name' : 'My Photos',
+                  'image':'',
+                  'maxres':'2000',
+                  'allowPosts':'0',
+                  'blockDownloads':'0',
                   'user_id' : u,
+                  'key' : randomword(8),
                   'created' : str( timezone( 'US/Pacific' ).localize( datetime.now() ) )
                 }
                 gr1 = add_one( 'groups', newrec )
@@ -4081,7 +4086,12 @@ def freeTrialStart():
       })
       newrec = {
         'name' : 'My Photos',
+        'image':'',
+        'maxres':'2000',
+        'allowPosts':'0',
+        'blockDownloads':'0',
         'user_id' : u,
+        'key' : randomword(8),
         'created' : str( timezone( 'US/Pacific' ).localize( datetime.now() ) )
       }
       gr1 = add_one( 'groups', newrec )
