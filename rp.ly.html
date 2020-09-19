@@ -4334,10 +4334,15 @@ def getPosts():
   for grp in groups:
     group = get_one( 'groups', grp )
     groupname = ''
+    ispublic = False
     if len(group) > 0:
       groupname = group[0]['name']
       if not int(group[0]['user_id']) == int(user['id']):
         continue
+      if 'public' in group[0]:
+        if not group[0]['public'] is None:
+          if int(group[0]['public']) > 0:
+            ispublic = True
     glabel = ''
     comma = ''
     for con in contacts:
@@ -4346,8 +4351,12 @@ def getPosts():
         if grp in cgrps and not grp == 2:
           glabel = glabel + comma + con['name']
           comma = ', '
+    if ispublic == False:
+      grpnam = groupname + ': ' + glabel
+    else:
+      grpnam = groupname
     if not glabel == '':
-      grps.append({'value':grp,'label':groupname + ': ' + glabel})
+      grps.append({'value':grp,'label':grpnam})
     for abb in abilities:
       if abb['group_id'] == grp:
         for act in abb['actions']:
