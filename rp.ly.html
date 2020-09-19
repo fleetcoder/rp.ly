@@ -4698,13 +4698,16 @@ def getGroups():
   recs = get_all('groups')
   items = []
   groups = json.loads(user['groups'])
+  othergrps = []
   for item in recs:
     if can('get','groups',user,item) or item['id'] in groups:
       item['isOwner'] = False
       if 'id' in user:
         if int(user['id']) == int(item['user_id']):
           item['isOwner'] = True
-      items.append(item)
+          items.append(item)
+        else:
+          othergrps.append(item)
   contacts = get_all('contacts')
   abils = []
   grps = []
@@ -4729,7 +4732,7 @@ def getGroups():
       if abb['group_id'] == grp:
         for act in abb['actions']:
           abils.append(act + abb['resource'])
-  return( json.dumps( [items,grps,abils,user['code']] ) )
+  return( json.dumps( [items + othergrps,grps,abils,user['code']] ) )
 
 @app.route('/joinGroup',methods=['GET','POST'])
 def joinGroup():
