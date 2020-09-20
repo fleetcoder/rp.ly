@@ -3430,7 +3430,7 @@
                 </mt-checklist>
                 <mt-cell v-bind:class="{'is-hidden':!pubHidden}" title=""><img class="img" :src="'myFile?staged=1&field=publicImage&name=' + publicImage" /></mt-cell>
                 <file-upload v-bind:class="{'is-hidden':!pubHidden}" :btn-label="upLabel" @change="stagedUpload('publicImage')" :url="uploadTo + '?field=publicImage'"></file-upload>
-                <mt-button class="buttonset" v-on:click="addGroups()" size="large">Add New Gallery</mt-button>
+                <mt-button class="buttonset" v-on:click="addGroups()" size="large">Save</mt-button>
                 <!--<mt-button class="buttonset" v-on:click="hideAddGroupForm()" size="large">
                     Cancel
                 </mt-button>-->
