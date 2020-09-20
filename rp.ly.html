@@ -568,7 +568,7 @@
             </div>
             <mt-tab-container v-model="selected" class="introblock signupbox">
               <mt-tab-container-item id="tab1">
-                <mt-header title="Sign Up"></mt-header>
+                <mt-header title=""></mt-header>
                 <h4>It's easy to start! You will receive an e-mail or text message with a login code:</h4>
                 <mt-field v-bind:class="{'is-hidden':inputnamehidden}" placeholder="Your name..." v-model="name"></mt-field>
                 <mt-field v-bind:class="{'is-hidden':registerHidden}" placeholder="Email or Phone Number..." type="email" :state="emailstatus" v-model="email"></mt-field>
@@ -580,7 +580,7 @@
                 <mt-spinner v-bind:class="{'is-hidden':spinnerHidden}" type="snake"></mt-spinner>
               </mt-tab-container-item>
               <mt-tab-container-item id="tab2">
-                <mt-header title="Log In"></mt-header>
+                <mt-header title=""></mt-header>
                 <h4>Welcome! Type an e-mail address or phone number to receive a login code:</h4>
                 <mt-field v-bind:class="{'is-hidden':loginHidden}" placeholder="Email or Phone Number..." type="email" :state="emailstatus" v-model="email"></mt-field>
                 <mt-button v-bind:class="{'is-hidden':loginHidden}" v-on:click="myLogin()" size="large">Log In</mt-button>
@@ -2648,7 +2648,7 @@
         },
         template: `
           <div class="feedwrap">
-            <mt-header title="Contacts">
+            <mt-header title="">
               <router-link to="/" slot="left">
                 <mt-button icon="back">back</mt-button>
               </router-link>
@@ -2702,7 +2702,7 @@
         },
         template: `
           <div>
-            <mt-header title="Contacts">
+            <mt-header title="">
               <router-link to="/contacts" slot="left">
                 <mt-button icon="back">back</mt-button>
               </router-link>
@@ -2758,7 +2758,7 @@
         },
         template: `
           <div>
-            <mt-header title="Contacts">
+            <mt-header title="">
               <router-link :to="'/showContacts/' + idx" slot="left">
                 <mt-button icon="back">back</mt-button>
               </router-link>
@@ -2887,7 +2887,7 @@
                 <router-view v-bind:items="items" v-bind:editHidden="editHidden" @on-update-list="getContacts" @on-tabs-hidden="hideTabs" @on-show-add-contact="showAddContactForm"  />
               </mt-tab-container-item>
               <mt-tab-container-item id="tab2">
-                <mt-header title="Contacts"></mt-header>
+                <mt-header title=""></mt-header>
                 <mt-field placeholder="Name.." v-model="name"></mt-field>
                 <mt-field :state="validEmail" @keyup.native="checkEmail" placeholder="Email..(optional)" v-model="email" type="email"></mt-field>
                 <mt-field :state="validPhone" @keyup.native="checkPhone" placeholder="Phone..(optional)" v-model="phone"></mt-field>
@@ -2926,7 +2926,7 @@
         },
         template: `
           <div>
-            <mt-header title="Galleries">
+            <mt-header title="">
               <router-link to="/" slot="left">
                 <mt-button icon="back">back</mt-button>
               </router-link>
@@ -3006,7 +3006,7 @@
         },
         template: `
           <div>
-            <mt-header title="Galleries">
+            <mt-header title="">
               <mt-button slot="left" @click="$router.go(-1)" icon="back">back</mt-button>
             </mt-header>
             <mt-spinner v-bind:class="{'is-hidden':spinnerHidden}" type="snake"></mt-spinner>
@@ -3222,14 +3222,14 @@
         },
         template: `
           <div class="feedwrap">
-            <mt-header title="Gallery Settings">
+            <mt-header title="">
               <!--<router-link :to="'/showGroups/' + idx" slot="left">
                 <mt-button icon="back">back</mt-button>
               </router-link>-->
               <mt-button slot="left" @click="$router.go(-2)" icon="back">back</mt-button>
             </mt-header>
             <mt-spinner v-bind:class="{'is-hidden':spinnerHidden}" type="snake"></mt-spinner>
-            <mt-field label="Name:" placeholder="Name.." v-model="name"></mt-field>
+            <mt-field label="Gallery Name:" placeholder="Name.." v-model="name"></mt-field>
             <!--<mt-cell title=""><img class="img" :src="'myFile?staged=1&field=image&name=' + image" /></mt-cell>-->
             <!--<file-upload btn-label="Set Header Photo" @change="stagedUpload('image')" :url="uploadTo + '?field=image'"></file-upload>-->
             <!--<mt-button v-on:click="quickContact()" size="large">Add Contact</mt-button>-->
@@ -3244,8 +3244,8 @@
               align="left">
             </mt-checklist>
             <mt-cell v-bind:class="{'is-hidden':!pubHidden}" title=""><img class="img" :src="'myFile?staged=1&field=publicImage&name=' + publicImage" /></mt-cell>
-            <file-upload v-bind:class="{'is-hidden':!pubHidden}" btn-label="Set Author Photo" @change="stagedUpload('publicImage')" :url="uploadTo + '?field=publicImage'"></file-upload>
-            <mt-field label="Custom Link (rp.ly/nathan):" placeholder="nathan" v-model="publicPath"></mt-field>
+            <file-upload v-bind:class="{'is-hidden':!pubHidden}" btn-label="Change Author Photo" @change="stagedUpload('publicImage')" :url="uploadTo + '?field=publicImage'"></file-upload>
+            <mt-field label="Custom Link rp.ly/..." placeholder="linda" v-model="publicPath"></mt-field>
             <mt-cell title="Advanced Options"><mt-switch v-model="optsHidden"></mt-switch></mt-cell>
             <mt-cell v-bind:class="{'is-hidden':!optsHidden}"  title="Scale down uploaded files"><mt-field v-model="maxRes" label="maximum pixels"></mt-field><mt-switch v-model="doScale"></mt-switch></mt-cell>
             <mt-cell v-bind:class="{'is-hidden':!optsHidden}" title="Block members from saving photos"><mt-switch v-model="blockDownloads"></mt-switch></mt-cell>
@@ -3288,7 +3288,8 @@
             publicPath: '',
             publicGroups: [],
             pubHidden: false,
-            optGroups:[]
+            optGroups:[],
+            upLabel: 'Set Author Photo'
           }
         },
         props: {groups: Array},
@@ -3392,6 +3393,7 @@
             Vue.http.get( 'stagedFile?field=' + field ).then( ( response ) => {
               if ( !!response.body ) {
                 this[field] = response.body
+                this.upLabel = 'Change Author Photo'
               }
             })
           },
@@ -3409,17 +3411,17 @@
                 <router-view v-bind:items="items" v-bind:groups="groups" v-bind:editHidden="editHidden" @on-update-list="getGroups" @on-tabs-hidden="hideTabs" @on-show-add-group="showAddGroupForm" @on-update-photos="getPosts" />
               </mt-tab-container-item>
               <mt-tab-container-item id="tab2">
-                <mt-header title="Add New Gallery">
+                <mt-header title="">
                   <a slot="left">
                     <mt-button slot="left" @click="$router.go(-1)" icon="back">back</mt-button>
                   </a>
                 </mt-header>
-                <mt-field placeholder="Name.." v-model="name"></mt-field>
+                <mt-field label="Gallery Name:" placeholder="Your Gallery Name.." v-model="name"></mt-field>
                 <mt-cell title="Public"><mt-switch v-model="public" @change="changePublic()"></mt-switch></mt-cell>
                 <mt-field v-bind:class="{'is-hidden':!pubHidden}" label="Author Name:" placeholder="Name.." v-model="publicName"></mt-field>
                 <mt-field v-bind:class="{'is-hidden':!pubHidden}" label="Author Bio:" placeholder="Bio.." type="textarea" rows="4" v-model="publicBio"></mt-field>
                 <mt-field v-bind:class="{'is-hidden':!pubHidden}" label="Author Home Page:" placeholder="Link.." v-model="publicLink"></mt-field>
-                <mt-field v-bind:class="{'is-hidden':!pubHidden}" label="Custom Link (rp.ly/nathan):" placeholder="nathan" v-model="publicPath"></mt-field>
+                <mt-field v-bind:class="{'is-hidden':!pubHidden}" label="Custom Link rp.ly/..." placeholder="linda" v-model="publicPath"></mt-field>
                 <h3 v-bind:class="{'is-hidden':!pubHidden}">Linked Galleries:</h3>
                 <mt-checklist v-bind:class="{'is-hidden':!pubHidden}"
                   v-model="publicGroups"
@@ -3427,7 +3429,7 @@
                   align="left">
                 </mt-checklist>
                 <mt-cell v-bind:class="{'is-hidden':!pubHidden}" title=""><img class="img" :src="'myFile?staged=1&field=publicImage&name=' + publicImage" /></mt-cell>
-                <file-upload v-bind:class="{'is-hidden':!pubHidden}" btn-label="Set Author Photo" @change="stagedUpload('publicImage')" :url="uploadTo + '?field=publicImage'"></file-upload>
+                <file-upload v-bind:class="{'is-hidden':!pubHidden}" :btn-label="upLabel" @change="stagedUpload('publicImage')" :url="uploadTo + '?field=publicImage'"></file-upload>
                 <mt-button class="buttonset" v-on:click="addGroups()" size="large">Add New Gallery</mt-button>
                 <!--<mt-button class="buttonset" v-on:click="hideAddGroupForm()" size="large">
                     Cancel
@@ -3465,7 +3467,7 @@
         },
         template: `
           <div>
-            <mt-header title="Payments">
+            <mt-header title="">
               <router-link to="/" slot="left">
                 <mt-button icon="back">back</mt-button>
               </router-link>
