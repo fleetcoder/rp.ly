@@ -1405,13 +1405,13 @@
             router.push('/groups/new')
           },
           addToGallery(){
-            router.push('/')
             for (var i = 0; i < this.groups.length; i++) {
               if (parseInt(this.groups[i].id) == parseInt(this.$route.params.grpid)) {
                 this.$emit('update:postto', [this.groups[i].id])
               }
             }
             this.$emit('update:selected', 'tab3')
+            router.push('/')
           }
         },
         template: `
