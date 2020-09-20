@@ -4315,6 +4315,7 @@ def getPosts():
       item['textHidden'] = True
       item['showCommentField'] = False
       item['comments'] = []
+      item['published'] = item['created']
       comms = get_one_by('posts',item['id'],'inreplyto')
       for comm in list(reversed(comms)):
         comm['author'] = get_user(comm['user_id'])['name']
@@ -4470,7 +4471,7 @@ def getPosts():
       items.append(item)
     print( 'POSTS ' + str(len(posts)) + ' and ITEMS ' + str(len(items)))
     posts = posts + items
-  #posts.sort(key=lambda p: p['published'], reverse=True)
+  posts.sort(key=lambda p: p['published'], reverse=True)
   following = []
   for pgrp in groups:
     if not pgrp in ugrids:
