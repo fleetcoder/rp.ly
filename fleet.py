@@ -23,6 +23,7 @@ from flask_seasurf import SeaSurf
 from pydub import AudioSegment
 import cv2
 from email import utils
+import html
 
 appdir = os.getcwd() + '/'
 
@@ -55,6 +56,10 @@ talisman = Talisman(
       'data:',
     ],
     'img-src': [
+      '*',
+      'data:',
+    ],
+    'media-src': [
       '*',
       'data:',
     ],

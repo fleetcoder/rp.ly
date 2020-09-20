@@ -741,7 +741,7 @@
                 <audio-player :src="'myFile?field=sound&name=' + item.sound" v-bind:class="{'is-hidden':item.soundHidden}" />
               </div>
               <vue-plyr v-if="item.isVideo">
-                <video :poster="item.image" :src="'myFile?field=video&name=' + item.video" controls data-plyr-config='{ "iconUrl": "file/plyr.svg" }' />
+                <video :poster="item.image" :src="imageLink(item)" controls data-plyr-config='{ "iconUrl": "file/plyr.svg" }' />
                 <figcaption class="caption" v-text="item.title"></figcaption>
               </vue-plyr>
               <audio-player v-if="item.imageHidden" :src="'myFile?field=sound&name=' + item.sound" v-bind:class="{'is-hidden':item.soundHidden}" />
@@ -822,7 +822,7 @@
                 <audio-player :src="'myFile?field=sound&name=' + item.sound" v-bind:class="{'is-hidden':item.soundHidden}" />
               </div>
               <vue-plyr v-if="item.isVideo">
-                <video :poster="item.image" :src="'myFile?field=video&name=' + item.video" controls data-plyr-config='{ "iconUrl": "file/plyr.svg" }' />
+                <video :poster="item.image" :src="imageLink(item)" controls data-plyr-config='{ "iconUrl": "file/plyr.svg" }' />
                 <figcaption class="caption" v-text="item.title"></figcaption>
               </vue-plyr>
               <audio-player v-if="item.imageHidden" :src="'myFile?field=sound&name=' + item.sound" v-bind:class="{'is-hidden':item.soundHidden}" />
@@ -1277,7 +1277,7 @@
                 <audio-player :src="'myFile?field=sound&name=' + item.sound" v-bind:class="{'is-hidden':item.soundHidden}" />
               </div>
               <vue-plyr v-if="item.isVideo">
-                <video :poster="item.image" :src="'myFile?field=video&name=' + item.video" controls data-plyr-config='{ "iconUrl": "file/plyr.svg" }' />
+                <video :poster="item.image" :src="imageLink(item)" controls data-plyr-config='{ "iconUrl": "file/plyr.svg" }' />
                 <figcaption class="caption" v-text="item.title"></figcaption>
               </vue-plyr>
               <audio-player v-if="item.imageHidden" :src="'myFile?field=sound&name=' + item.sound" v-bind:class="{'is-hidden':item.soundHidden}" />
@@ -1438,7 +1438,7 @@
                 <audio-player :src="'myFile?field=sound&name=' + item.sound" v-bind:class="{'is-hidden':item.soundHidden}" />
               </div>
               <vue-plyr v-if="item.isVideo">
-                <video :poster="item.image" :src="'myFile?field=video&name=' + item.video" controls data-plyr-config='{ "iconUrl": "file/plyr.svg" }' />
+                <video :poster="item.image" :src="imageLink(item)" controls data-plyr-config='{ "iconUrl": "file/plyr.svg" }' />
                 <figcaption class="caption" v-text="item.title"></figcaption>
               </vue-plyr>
               <audio-player v-if="item.imageHidden" :src="'myFile?field=sound&name=' + item.sound" v-bind:class="{'is-hidden':item.soundHidden}" />
@@ -4156,6 +4156,7 @@ def logout():
 
 @app.route('/feed',methods=['GET','POST'])
 def feed():
+  limit = 25
   items = get_one_by( 'settings', 'https://' + mydomain + '/feed?k=' + request.args.get('k'), 'value' )
   if len(items) > 0:
     user = get_user(items[0]['user_id'])
@@ -4165,6 +4166,8 @@ def feed():
       if can('get','posts',user,item):
         item['title'] = get_user(item['user_id'])['name'] + ': ' + item['title']
         items.append(item)
+        if len(items) == limit:
+          break
     channel = etree.Element('channel')
     etree.SubElement(channel,'title').text = 'Feed'
     etree.SubElement(channel,'link').text = 'https://' + mydomain
@@ -4177,7 +4180,8 @@ def feed():
         d = d[:-3]+d[-2:]
       etree.SubElement(item,'pubDate').text = utils.format_datetime(datetime.strptime(d, "%Y-%m-%d %H:%M:%S.%f%z"))
       enc = etree.Element('enclosure')
-      mtype = mimetypes.MimeTypes().guess_type(post['sound'])[0]
+      if not post['sound'] is None:
+        mtype = mimetypes.MimeTypes().guess_type(post['sound'])[0]
       if not mtype is None:
         if post['sound'][-3:] == 'mp3':
           enc.set('url', 'https://' + mydomain + '/myFile?name=' + urllib.parse.quote(post['sound']) + '&field=sound')
@@ -4185,7 +4189,7 @@ def feed():
             enc.set('length', str(os.path.getsize('myfiles/' + post['sound'])))
             enc.set('type', mtype)
             item.append(enc)
-      elif not mimetypes.MimeTypes().guess_type(post['video'])[0] is None:
+      elif not post['video'] is None:
         mtype = mimetypes.MimeTypes().guess_type(post['video'])[0]
         if post['video'][-3:].lower() in ['mov','mp4']:
           enc.set('url', 'https://' + mydomain + '/myFile?name=' + urllib.parse.quote(post['video']) + '&field=video')
@@ -4195,7 +4199,8 @@ def feed():
             item.append(enc)
       else:
         enc = etree.Element('enclosure')
-        mtype = mimetypes.MimeTypes().guess_type(post['image'])[0]
+        if not post['image'] is None:
+          mtype = mimetypes.MimeTypes().guess_type(post['image'])[0]
         if not mtype is None:
           enc.set('url', 'https://' + mydomain + '/myFile?name=' + urllib.parse.quote(post['image']) + '&field=image')
           if os.path.exists('myfiles/' + post['image']):
@@ -4412,15 +4417,15 @@ def getPosts():
         if len(item['enclosures']) > 0:
           if 'href' in item['enclosures'][0]:
             if 'type' in item['enclosures'][0]:
-              item['media'] = item['enclosures'][0]['href']
+              item['media'] = html.unescape(item['enclosures'][0]['href'])
               item['mediatype'] = item['enclosures'][0]['type']
               item['isVideo'] = False
               if 'mp3' in item['enclosures'][0]['href']:
                 item['soundHidden'] = False
-              elif item['enclosures'][0]['href'][-3:].lower() in ['mov','mp4']:
+              elif any([substring in item['enclosures'][0]['href'].lower() for substring in ['.mov','.mp4']]):
                 item['textHidden'] = True
                 item['isVideo'] = True
-                item['video'] = item['enclosures'][0]['href']
+                print(item['media'])
               else:
                 item['imageHidden'] = False
       if not 'title' in item:
