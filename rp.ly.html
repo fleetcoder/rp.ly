@@ -2195,6 +2195,9 @@
             this.uploadedFiles = []
             this.uploadError = null
           },
+          cancelUpload(){
+            this.reset()
+          },
           save(formData) {
             this.currentStatus = STATUS_SAVING
             this.$http.post ( this.uploadTo + '?field=image', formData ).then(function (x) {
@@ -2203,14 +2206,16 @@
             })
           },
           filesChange(fieldName, fileList) {
-            const formData = new FormData()
-            if (!fileList.length) return
-            Array
-              .from(Array(fileList.length).keys())
-              .map(x => {
-                formData.append(fieldName, fileList[x], fileList[x].name)
-              })
-            this.save(formData)
+            //if (isSaving() || isSuccess()) {
+              const formData = new FormData()
+              if (!fileList.length) return
+              Array
+                .from(Array(fileList.length).keys())
+                .map(x => {
+                  formData.append(fieldName, fileList[x], fileList[x].name)
+                })
+              this.save(formData)
+           //}
           },
           moreItems(){
             this.cursor = this.items.length
@@ -2330,6 +2335,7 @@
                   </form>
                   <p class="dropboxp" v-if="isSaving">
                     Uploading {{ fileCount }} files...
+                    <mt-button type="primary" size="small" v-on:click="cancelUpload()">Cancel Uploading</mt-button>
                     <mt-spinner type="snake"></mt-spinner>
                   </p>
                   <div v-if="isSuccess">
