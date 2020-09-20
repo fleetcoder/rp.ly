@@ -712,6 +712,13 @@
             } else {
               return 'myFile?field=image&name=' + item.image
             }
+          },
+          videoLink(item){
+            if ("undefined" !== typeof item.media) {
+              return item.media
+            } else {
+              return 'myFile?field=video&name=' + item.image
+            }
           }
         },
         template: `
@@ -741,7 +748,7 @@
                 <audio-player :src="'myFile?field=sound&name=' + item.sound" v-bind:class="{'is-hidden':item.soundHidden}" />
               </div>
               <vue-plyr v-if="item.isVideo">
-                <video :poster="item.image" :src="imageLink(item)" controls data-plyr-config='{ "iconUrl": "file/plyr.svg" }' />
+                <video :poster="item.image" :src="videoLink(item)" controls data-plyr-config='{ "iconUrl": "file/plyr.svg" }' />
                 <figcaption class="caption" v-text="item.title"></figcaption>
               </vue-plyr>
               <audio-player v-if="item.imageHidden" :src="'myFile?field=sound&name=' + item.sound" v-bind:class="{'is-hidden':item.soundHidden}" />
@@ -801,6 +808,13 @@
             } else {
               return 'myFile?field=image&name=' + item.image
             }
+          },
+          videoLink(item){
+            if ("undefined" !== typeof item.media) {
+              return item.media
+            } else {
+              return 'myFile?field=video&name=' + item.image
+            }
           }
         },
         template: `
@@ -822,7 +836,7 @@
                 <audio-player :src="'myFile?field=sound&name=' + item.sound" v-bind:class="{'is-hidden':item.soundHidden}" />
               </div>
               <vue-plyr v-if="item.isVideo">
-                <video :poster="item.image" :src="imageLink(item)" controls data-plyr-config='{ "iconUrl": "file/plyr.svg" }' />
+                <video :poster="item.image" :src="videoLink(item)" controls data-plyr-config='{ "iconUrl": "file/plyr.svg" }' />
                 <figcaption class="caption" v-text="item.title"></figcaption>
               </vue-plyr>
               <audio-player v-if="item.imageHidden" :src="'myFile?field=sound&name=' + item.sound" v-bind:class="{'is-hidden':item.soundHidden}" />
@@ -1206,6 +1220,13 @@
               return 'myFile?field=image&name=' + item.image
             }
           },
+          videoLink(item){
+            if ("undefined" !== typeof item.media) {
+              return item.media
+            } else {
+              return 'myFile?field=video&name=' + item.image
+            }
+          },
           doContextMenu(e){
             e.preventDefault()
           },
@@ -1277,7 +1298,7 @@
                 <audio-player :src="'myFile?field=sound&name=' + item.sound" v-bind:class="{'is-hidden':item.soundHidden}" />
               </div>
               <vue-plyr v-if="item.isVideo">
-                <video :poster="item.image" :src="imageLink(item)" controls data-plyr-config='{ "iconUrl": "file/plyr.svg" }' />
+                <video :poster="item.image" :src="videoLink(item)" controls data-plyr-config='{ "iconUrl": "file/plyr.svg" }' />
                 <figcaption class="caption" v-text="item.title"></figcaption>
               </vue-plyr>
               <audio-player v-if="item.imageHidden" :src="'myFile?field=sound&name=' + item.sound" v-bind:class="{'is-hidden':item.soundHidden}" />
@@ -1364,6 +1385,13 @@
               return 'myFile?field=image&name=' + item.image
             }
           },
+          videoLink(item){
+            if ("undefined" !== typeof item.media) {
+              return item.media
+            } else {
+              return 'myFile?field=video&name=' + item.image
+            }
+          },
           showMore(){
             this.cursor = this.posts.length
             this.loadPosts()
@@ -1438,7 +1466,7 @@
                 <audio-player :src="'myFile?field=sound&name=' + item.sound" v-bind:class="{'is-hidden':item.soundHidden}" />
               </div>
               <vue-plyr v-if="item.isVideo">
-                <video :poster="item.image" :src="imageLink(item)" controls data-plyr-config='{ "iconUrl": "file/plyr.svg" }' />
+                <video :poster="item.image" :src="videoLink(item)" controls data-plyr-config='{ "iconUrl": "file/plyr.svg" }' />
                 <figcaption class="caption" v-text="item.title"></figcaption>
               </vue-plyr>
               <audio-player v-if="item.imageHidden" :src="'myFile?field=sound&name=' + item.sound" v-bind:class="{'is-hidden':item.soundHidden}" />
