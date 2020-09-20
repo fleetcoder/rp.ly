@@ -1301,7 +1301,7 @@
             groups: []
           }
         },
-        props: { posts : Array },
+        props: { posts : Array, selected: String, postto: Array },
         created() {
           this.posts = []
           this.loadPosts()
@@ -1403,6 +1403,15 @@
           },
           newGall(){
             router.push('/groups/new')
+          },
+          addToGallery(){
+            router.push('/')
+            for (var i = 0; i < this.groups.length; i++) {
+              if (parseInt(this.groups[i].id) == parseInt(this.$route.params.grpid)) {
+                this.$emit('update:postto', [this.groups[i].id])
+              }
+            }
+            this.$emit('update:selected', 'tab3')
           }
         },
         template: `
@@ -1438,6 +1447,7 @@
               <mt-field v-bind:class="{'is-hidden':!item.showCommentField}" placeholder="Comment..." v-model="item.comment"></mt-field>
               <mt-button v-bind:class="{'is-hidden':!item.showCommentField}" size="large" v-on:click="saveComment(item,idx)">Save Comment</mt-button>
             </mt-cell>
+            <mt-button v-if="!cogHidden" size="large" v-on:click="addToGallery()"><img slot="icon" src="/file/plus-circle.svg" /></mt-button>
           </div>`
       }
       const showPosts = {
@@ -2305,7 +2315,7 @@
             <mt-spinner v-bind:class="{'is-hidden':spinnerHidden}" type="snake"></mt-spinner>
             <mt-tab-container v-model="selected">
               <mt-tab-container-item id="tab1">
-                <router-view v-bind:items="items" v-bind:posts.sync="posts" v-bind:doSponsor.sync="doSponsor" v-bind:editHidden="editHidden" v-bind:cangrps="cangrps" v-bind:moreHidden="moreHidden" @on-update-list="getPosts" @on-update-groups="getContacts" @on-tabs-hidden="hideTabs" @on-show-menu="showLink" @on-show-help="showHelp" @load-more-items="moreItems" @show-sponsor="doShowSponsor" />
+                <router-view v-bind:items="items" v-bind:posts.sync="posts" v-bind:doSponsor.sync="doSponsor" v-bind:postto.sync="postto" v-bind:selected.sync="selected" v-bind:editHidden="editHidden" v-bind:cangrps="cangrps" v-bind:moreHidden="moreHidden" @on-update-list="getPosts" @on-update-groups="getContacts" @on-tabs-hidden="hideTabs" @on-show-menu="showLink" @on-show-help="showHelp" @load-more-items="moreItems" @show-sponsor="doShowSponsor" />
                 <h3 v-if="gettingStarted">Welcome!</h3>
               </mt-tab-container-item>
               <mt-tab-container-item id="tab2">
