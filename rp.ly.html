@@ -4446,7 +4446,7 @@ def getPosts():
   if request.args.get('grpid') is None:
     for fd in feeds:
       feed = feedparser.parse(fd)
-                            for item in feed.entries:
+      for item in feed.entries:
         item['imageHidden'] = True
         item['textHidden'] = False
         item['soundHidden'] = True
