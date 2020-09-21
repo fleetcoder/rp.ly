@@ -4189,10 +4189,17 @@ def feed():
   if len(items) > 0:
     user = get_user(items[0]['user_id'])
     recs = get_all('posts')
+    groups = json.loads(user['groups'])
     items = []
     for item in recs:
       if can('get','posts',user,item):
-        item['title'] = get_user(item['user_id'])['name'] + ': ' + item['title']
+        item['title'] = get_user(item['user_id'])['name']
+        pgrps = json.loads(item['groups'])
+        for pgrp in pgrps:
+          if pgrp in groups:
+            thisgroup = get_one( 'groups', pgrp )
+            if len(thisgroup) > 0:
+              item['title'] = item['title'] + ' - ' + thisgroup[0]['name']
         items.append(item)
         if len(items) == limit:
           break
