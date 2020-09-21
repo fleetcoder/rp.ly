@@ -4436,6 +4436,7 @@ def getPosts():
         for act in abb['actions']:
           abils.append(act + abb['resource'])
   feeds = []
+  items = []
   if 'user' in session:
     settings = get_one_by( 'settings', session['user'], 'user_id' )
     if len(settings) > 1:
@@ -4445,8 +4446,7 @@ def getPosts():
   if request.args.get('grpid') is None:
     for fd in feeds:
       feed = feedparser.parse(fd)
-      items = []
-      for item in feed.entries:
+                            for item in feed.entries:
         item['imageHidden'] = True
         item['textHidden'] = False
         item['soundHidden'] = True
