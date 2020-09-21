@@ -4442,40 +4442,41 @@ def getPosts():
       for it in settings:
         if it['name'] == 'feedSubs':
           feeds = json.loads(it['value'])
-  for fd in feeds:
-    feed = feedparser.parse(fd)
-    items = []
-    for item in feed.entries:
-      item['imageHidden'] = True
-      item['textHidden'] = False
-      item['soundHidden'] = True
-      if 'enclosures' in item:
-        if len(item['enclosures']) > 0:
-          if 'href' in item['enclosures'][0]:
-            if 'type' in item['enclosures'][0]:
-              item['media'] = html.unescape(item['enclosures'][0]['href'])
-              item['mediatype'] = item['enclosures'][0]['type']
-              item['isVideo'] = False
-              if 'mp3' in item['enclosures'][0]['href']:
-                item['soundHidden'] = False
-              elif any([substring in item['enclosures'][0]['href'].lower() for substring in ['.mov','.mp4']]):
-                item['textHidden'] = True
-                item['isVideo'] = True
-                print(item['media'])
-              else:
-                item['imageHidden'] = False
-      if not 'title' in item:
-        h2t.ignore_links = True
-        if 'description' in item:
-          item['title'] = h2t.handle(str(item['description']))[:100]
-        else:
-          if 'content' in item:
-            item['title'] = h2t.handle(str(item['content']))[:100]
+  if request.args.get('grpid') is None:
+    for fd in feeds:
+      feed = feedparser.parse(fd)
+      items = []
+      for item in feed.entries:
+        item['imageHidden'] = True
+        item['textHidden'] = False
+        item['soundHidden'] = True
+        if 'enclosures' in item:
+          if len(item['enclosures']) > 0:
+            if 'href' in item['enclosures'][0]:
+              if 'type' in item['enclosures'][0]:
+                item['media'] = html.unescape(item['enclosures'][0]['href'])
+                item['mediatype'] = item['enclosures'][0]['type']
+                item['isVideo'] = False
+                if 'mp3' in item['enclosures'][0]['href']:
+                  item['soundHidden'] = False
+                elif any([substring in item['enclosures'][0]['href'].lower() for substring in ['.mov','.mp4']]):
+                  item['textHidden'] = True
+                  item['isVideo'] = True
+                  print(item['media'])
+                else:
+                  item['imageHidden'] = False
+        if not 'title' in item:
+          h2t.ignore_links = True
+          if 'description' in item:
+            item['title'] = h2t.handle(str(item['description']))[:100]
           else:
-            continue
-      if item['title'] == '':
-        item['title'] = '(untitled)'
-      items.append(item)
+            if 'content' in item:
+              item['title'] = h2t.handle(str(item['content']))[:100]
+            else:
+              continue
+        if item['title'] == '':
+          item['title'] = '(untitled)'
+        items.append(item)
     print( 'POSTS ' + str(len(posts)) + ' and ITEMS ' + str(len(items)))
     posts = posts + items
   posts.sort(key=lambda p: p['published'], reverse=True)
