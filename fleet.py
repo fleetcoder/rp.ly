@@ -199,11 +199,18 @@ def index():
     fleet = open(myapp).read()
     fleet = fleet.replace('rp.ly',mydomain)
     return fleet
-  #pall = '2794eb bff8d4 47d6b6 17b3c1'.split()
-  #fleet = fleet.replace('222831',pall[0])
-  #fleet = fleet.replace('393e46',pall[1])
-  #fleet = fleet.replace('32e0c4',pall[2])
-  #fleet = fleet.replace('ffd3e1',pall[3])
+  pall = False
+  if mydomain == 'photo.gy':
+    pall = 'ef6c57 7ed3b2 b9e6d3 f2f2f2'.split()
+  if mydomain == 'audio.gy':
+    pall = '445c3c fda77f c9d99e fae8c8'.split()
+  if mydomain == 'movie.gd':
+    pall = '2794eb bff8d4 47d6b6 17b3c1'.split()
+  if pall:
+    fleet = fleet.replace('222831',pall[0])
+    fleet = fleet.replace('393e46',pall[1])
+    fleet = fleet.replace('32e0c4',pall[2])
+    fleet = fleet.replace('ffd3e1',pall[3])
   return fleet
   
 def randomword(length):
