@@ -205,7 +205,7 @@ def index():
   if mydomain == 'audio.gy':
     pall = '445c3c fda77f c9d99e fae8c8'.split()
   if mydomain == 'movie.gd':
-    pall = '2794eb bff8d4 47d6b6 17b3c1'.split()
+    pall = '557571 d49a89 d49a89 f4f4f4'.split()
   if pall:
     fleet = fleet.replace('222831',pall[0])
     fleet = fleet.replace('393e46',pall[1])
