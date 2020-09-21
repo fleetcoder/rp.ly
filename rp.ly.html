@@ -4208,7 +4208,7 @@ def feed():
         d = d[:-3]+d[-2:]
       etree.SubElement(item,'pubDate').text = utils.format_datetime(datetime.strptime(d, "%Y-%m-%d %H:%M:%S.%f%z"))
       enc = etree.Element('enclosure')
-      if not post['sound'] is None:
+      if not post['sound'] is None and not post['sound'] == '':
         mtype = mimetypes.MimeTypes().guess_type(post['sound'])[0]
       if not mtype is None:
         if post['sound'][-3:] == 'mp3':
@@ -4217,7 +4217,7 @@ def feed():
             enc.set('length', str(os.path.getsize('myfiles/' + post['sound'])))
             enc.set('type', mtype)
             item.append(enc)
-      elif not post['video'] is None:
+      elif not post['video'] is None and not post['video'] == '':
         mtype = mimetypes.MimeTypes().guess_type(post['video'])[0]
         if post['video'][-3:].lower() in ['mov','mp4']:
           enc.set('url', 'https://' + mydomain + '/myFile?name=' + urllib.parse.quote(post['video']) + '&field=video')
