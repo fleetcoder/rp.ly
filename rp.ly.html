@@ -4447,6 +4447,9 @@ def getPosts():
     for fd in feeds:
       feed = feedparser.parse(fd)
       for item in feed.entries:
+        print(item['description'])
+      for item in feed.entries:
+        print('A')
         item['imageHidden'] = True
         item['textHidden'] = False
         item['soundHidden'] = True
@@ -4466,17 +4469,19 @@ def getPosts():
                 else:
                   item['imageHidden'] = False
         if not 'title' in item:
-          h2t.ignore_links = True
+          print('B')
+          html2text.ignore_links = True
           if 'description' in item:
-            item['title'] = h2t.handle(str(item['description']))[:100]
+            item['title'] = html2text.html2text(str(item['description']))[:100]
           else:
             if 'content' in item:
-              item['title'] = h2t.handle(str(item['content']))[:100]
+              item['title'] = html2text.html2text(str(item['content']))[:100]
             else:
               continue
         if item['title'] == '':
           item['title'] = '(untitled)'
         upd = item['published']
+        print('C')
         if 'published_parsed' in item:
           upd = datetime.fromtimestamp(round(time.mktime(item['published_parsed'][:8] + (-1,))))
         elif 'updated_parsed' in item:
