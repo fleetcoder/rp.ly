@@ -1286,9 +1286,9 @@
             <mt-cell class="imagecell" v-for="(item, idx) in items" :title="item.name">
               <p class="caption">
                 <span v-text="item.author"></span>
-                <img class="headericon" src="file/chevron-right.svg" />
+                <img v-if="!item.isHtml" class="headericon" src="file/chevron-right.svg" />
                 <span v-text="item.to"></span>
-                <mt-button icon="more" v-on:click="openGall(item.toid)"></mt-button>
+                <mt-button v-if="!item.isHtml" icon="more" v-on:click="openGall(item.toid)"></mt-button>
               </p>
               <p v-if="item.isHtml" class="caption" v-on:click="openImage(idx)" v-html="item.title" v-bind:class="{'is-hidden':item.textHidden}"></p>
               <p v-else class="caption" v-on:click="openImage(idx)" v-text="item.title" v-bind:class="{'is-hidden':item.textHidden}"></p>
@@ -1304,7 +1304,7 @@
               </vue-plyr>
               <audio-player v-if="item.imageHidden" :src="'myFile?field=sound&name=' + item.sound" v-bind:class="{'is-hidden':item.soundHidden}" />
               <p class="caption" v-for="(comm, cidx) in item.comments" v-text="comm.author + ': ' + comm.title"></p>
-              <p v-bind:class="{'is-hidden':item.showCommentField}" class="caption" v-on:click="addComment(idx)"><img class="comment" slot="icon" src="file/message-square.svg" /></p>
+              <p v-if="!item.isHtml" v-bind:class="{'is-hidden':item.showCommentField}" class="caption" v-on:click="addComment(idx)"><img class="comment" slot="icon" src="file/message-square.svg" /></p>
               <mt-field v-bind:class="{'is-hidden':!item.showCommentField}" placeholder="Comment..." v-model="item.comment"></mt-field>
               <mt-button v-bind:class="{'is-hidden':!item.showCommentField}" size="large" v-on:click="saveComment(item,idx)">Save Comment</mt-button>
             </mt-cell>
@@ -4452,7 +4452,7 @@ def getPosts():
         item['imageHidden'] = True
         item['textHidden'] = False
         item['soundHidden'] = True
-        item['isHtml'] = False
+        item['isHtml'] = True
         if 'enclosures' in item:
           if len(item['enclosures']) > 0:
             if 'href' in item['enclosures'][0]:
@@ -4471,11 +4471,9 @@ def getPosts():
         if not 'title' in item:
           if 'description' in item:
             item['title'] = item['description']
-            item['isHtml'] = True
           else:
             if 'content' in item:
               item['title'] = item['content']
-              item['isHtml'] = True
             else:
               continue
         if item['title'] == '':
