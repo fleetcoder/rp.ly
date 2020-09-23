@@ -4417,20 +4417,20 @@ def getPosts():
         if not group[0]['public'] is None:
           if int(group[0]['public']) > 0:
             ispublic = True
-    glabel = ''
-    comma = ''
-    for con in contacts:
-      if not con['groups'] is None:
-        cgrps = json.loads(con['groups'])
-        if grp in cgrps and not grp == 2:
-          glabel = glabel + comma + con['name']
-          comma = ', '
-    if ispublic == False:
-      grpnam = groupname + ': ' + glabel
-    else:
-      grpnam = groupname
-    if not grpnam == '':
-      grps.append({'value':grp,'label':grpnam})
+      glabel = ''
+      comma = ''
+      for con in contacts:
+        if not con['groups'] is None:
+          cgrps = json.loads(con['groups'])
+          if grp in cgrps and not grp == 2:
+            glabel = glabel + comma + con['name']
+            comma = ', '
+      if ispublic == False:
+        grpnam = groupname + ': ' + glabel
+      else:
+        grpnam = groupname
+      if not grpnam == '':
+        grps.append({'value':grp,'label':grpnam})
     for abb in abilities:
       if abb['group_id'] == grp:
         for act in abb['actions']:
