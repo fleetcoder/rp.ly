@@ -24,7 +24,6 @@ from pydub import AudioSegment
 import cv2
 from email import utils
 import html
-import html2text
 
 appdir = os.getcwd() + '/'
 
