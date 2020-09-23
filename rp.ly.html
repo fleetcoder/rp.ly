@@ -4476,6 +4476,12 @@ def getPosts():
               continue
         if item['title'] == '':
           item['title'] = '(untitled)'
+        upd = item['published']
+        if 'published_parsed' in item:
+          upd = datetime.fromtimestamp(round(time.mktime(item['published_parsed'][:8] + (-1,))))
+        elif 'updated_parsed' in item:
+          upd = datetime.fromtimestamp(round(time.mktime(item['updated_parsed'][:8] + (-1,))))
+        item['published'] = str(upd)
         items.append(item)
     print( 'POSTS ' + str(len(posts)) + ' and ITEMS ' + str(len(items)))
     posts = posts + items
