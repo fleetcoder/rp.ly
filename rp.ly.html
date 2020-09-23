@@ -2560,8 +2560,14 @@
             <video src="https://rp.ly/file/demopublic1.mp4" controls data-plyr-config='{ "iconUrl": "file/plyr.svg" }' />
           </vue-plyr>
         </div>
-        <h4 class="help_header" v-on:click="showHelpSection('help3')">Contact Us</h4>
-        <div class="firstHelp help_para mailto" v-if="help3">
+        <h4 class="help_header" v-on:click="showHelpSection('help3')">It's a network</h4>
+        <div class="firstHelp help_para" v-if="help3">
+          <vue-plyr class="startVid">
+            <video src="https://rp.ly/file/demonetwork1.mp4" controls data-plyr-config='{ "iconUrl": "file/plyr.svg" }' />
+          </vue-plyr>
+        </div>
+        <h4 class="help_header" v-on:click="showHelpSection('help4')">Contact Us</h4>
+        <div class="firstHelp help_para mailto" v-if="help4">
             <a href="mailto:info@rp.ly">info@rp.ly</a>
         </div>
             </mt-popup>
