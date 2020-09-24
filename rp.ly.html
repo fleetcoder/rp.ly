@@ -349,6 +349,9 @@
       .codeinput {
         margin-right: 10px;
       }
+      .vidcaption {
+        margin-top:10px;
+      }
     </style>
 
     <script id="client">
@@ -1303,7 +1306,7 @@
               </div>
               <vue-plyr v-if="item.isVideo">
                 <video :poster="item.image" :src="videoLink(item)" controls data-plyr-config='{ "iconUrl": "file/plyr.svg" }' />
-                <figcaption class="caption" v-text="item.title"></figcaption>
+                <figcaption class="caption vidcaption" v-text="item.title"></figcaption>
               </vue-plyr>
               <audio-player v-if="item.imageHidden" :src="'myFile?field=sound&name=' + item.sound" v-bind:class="{'is-hidden':item.soundHidden}" />
               <p class="caption" v-for="(comm, cidx) in item.comments" v-text="comm.author + ': ' + comm.title"></p>
