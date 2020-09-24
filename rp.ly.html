@@ -346,6 +346,9 @@
       .rplycopy {
         margin: 20px;
       }
+      .codeinput {
+        margin-right: 10px;
+      }
     </style>
 
     <script id="client">
@@ -573,8 +576,8 @@
                 <mt-field v-bind:class="{'is-hidden':inputnamehidden}" placeholder="Your name..." v-model="name"></mt-field>
                 <mt-field v-bind:class="{'is-hidden':registerHidden}" placeholder="Email or Phone Number..." type="email" :state="emailstatus" v-model="email"></mt-field>
                 <mt-button v-bind:class="{'is-hidden':registerHidden}" v-on:click="doTrial()" size="large">Sign Up</mt-button>
-                <mt-cell v-bind:class="{'is-hidden':signuphidden}">{{sentcode}}</mt-cell>
-                <mt-field v-bind:class="{'is-hidden':signuphidden}" type="number" label="Code:" placeholder="***" v-model="code"></mt-field>
+                <mt-cell v-bind:class="{'is-hidden':signuphidden}" class="codeinput">{{sentcode}}</mt-cell>
+                <mt-field v-bind:class="{'is-hidden':signuphidden}" class="codeinput" type="number" label="Code:" placeholder="***" v-model="code"></mt-field>
                 <mt-button v-bind:class="{'is-hidden':signuphidden}" v-on:click="doCode()" size="large">Submit Code</mt-button>
                 <div class="loginlink"><a href="javascript:void(0)" @click="goLogin()">Already Registered?</a></div>
                 <mt-spinner v-bind:class="{'is-hidden':spinnerHidden}" type="snake"></mt-spinner>
@@ -584,8 +587,8 @@
                 <h4>Welcome! Type an e-mail address or phone number to receive a login code:</h4>
                 <mt-field v-bind:class="{'is-hidden':loginHidden}" placeholder="Email or Phone Number..." type="email" :state="emailstatus" v-model="email"></mt-field>
                 <mt-button v-bind:class="{'is-hidden':loginHidden}" v-on:click="myLogin()" size="large">Log In</mt-button>
-                <mt-cell v-bind:class="{'is-hidden':inputhidden}">{{sentcode}}</mt-cell>
-                <mt-field v-bind:class="{'is-hidden':inputhidden}" type="number" label="Code:" placeholder="***" v-model="code"></mt-field>
+                <mt-cell v-bind:class="{'is-hidden':inputhidden}" class="codeinput">{{sentcode}}</mt-cell>
+                <mt-field v-bind:class="{'is-hidden':inputhidden}" class="codeinput" type="number" label="Code:" placeholder="***" v-model="code"></mt-field>
                 <mt-button v-bind:class="{'is-hidden':inputhidden}" v-on:click="doCode()" size="large">Submit Code</mt-button>
                 <mt-spinner v-bind:class="{'is-hidden':spinnerHidden}" type="snake"></mt-spinner>
               </mt-tab-container-item>
@@ -639,7 +642,7 @@
             <mt-header title="">
             </mt-header>
             <mt-cell>{{sentcode}}</mt-cell>
-            <mt-field type="number" label="Code:" placeholder="***" v-model="code"></mt-field>
+            <mt-field type="number" class="codeinput" label="Code:" placeholder="***" v-model="code"></mt-field>
             <mt-button v-on:click="doCode()" size="large">Submit Code</mt-button>
             <mt-spinner v-bind:class="{'is-hidden':spinnerHidden}" type="snake"></mt-spinner>
           </div>`
@@ -1160,7 +1163,7 @@
                   </mt-range>
                 </div>
                 <mt-button class="joinbutton" v-bind:class="{'is-hidden':signupBtnHidden}" v-on:click="doJoin()" size="large">{{submitText}}</mt-button>
-                <mt-field v-bind:class="{'is-hidden':docodehidden}" type="number" label="Code:" placeholder="***" v-model="code"></mt-field>
+                <mt-field v-bind:class="{'is-hidden':docodehidden}" class="codeinput" type="number" label="Code:" placeholder="***" v-model="code"></mt-field>
                 <mt-button v-bind:class="{'is-hidden':docodehidden}" v-on:click="doCode()" size="large">Submit Code</mt-button>
                 <mt-spinner v-bind:class="{'is-hidden':spinnerHidden}" type="snake"></mt-spinner>
               </div>
