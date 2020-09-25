@@ -4666,19 +4666,20 @@ def addPosts():
             grpdata[0]['last_notif'] = newobj['last_notif']
           from dateutil import tz
           tzinfos = {"-08:00": tz.gettz('US/Pacific')}
+          hasprefs = False
+          for nprefs in notifprefs:
+            pcontact = get_parent(con['id'])
+            if int(nprefs['user_id']) == int(pcontact['id']):
+              hasprefs = True
+              notiprefs = json.loads(nprefs['value'])
+              prefid = nprefs['id']
           if 'last_notif' in grpdata[0]:
             dt = parser.parse(grpdata[0]['last_notif'], tzinfos=tzinfos) + timedelta(hours=12)
-            pcontact = get_parent(con['id'])
-            hasprefs = False
-            for nprefs in notifprefs:
-              if int(nprefs['user_id']) == int(pcontact['id']):
-                hasprefs = True
-                notiprefs = json.loads(nprefs['value'])
-                prefid = nprefs['id']
             if not hasprefs:
               if dt < timezone( 'US/Pacific' ).localize( datetime.now() ):
                 notify_photo( con['id'], grpdata[0]['key'], True, True )
-            else:
+          else:
+            if hasprefs:
               interv = 24
               sendemail = False
               if int(notiprefs['email']) == 1:
@@ -4695,7 +4696,9 @@ def addPosts():
                   notify_photo( con['id'], grpdata[0]['key'], sendemail, sendphone )
                   notiprefs['last_notif'] = str( timezone( 'US/Pacific' ).localize( datetime.now() ) )
                   mod_one('settings',{'value':json.dumps(notiprefs)},prefid)
-          recips.append( con['id'] )
+            else:
+              notify_photo( con['id'], grpdata[0]['key'], True, True )
+      recips.append( con['id'] )
       if dt < timezone( 'US/Pacific' ).localize( datetime.now() ):
         newobj = { 'last_notif' : str( timezone( 'US/Pacific' ).localize( datetime.now() ) ) }
         mod_one( 'groups', newobj, grpdata[0]['id'] )
