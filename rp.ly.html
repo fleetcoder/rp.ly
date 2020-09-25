@@ -4269,7 +4269,12 @@ def getSettings():
   if not 'user' in session:
     return json.dumps([])
   items = get_one_by( 'settings', session['user'], 'user_id' )
-  if not len(items) > 0:
+  has_key = False
+  if len(items) > 0:
+    for sett in items:
+      if sett['name'] == 'feedLink':
+        has_key = True
+  if not len(items) > 0 or not has_key:
     sett = add_one('settings',{
       'name':'feedLink',
       'value':'https://' + mydomain + '/feed?k=' + randomword(19),
