@@ -1474,7 +1474,7 @@
               </div>
               <vue-plyr v-if="item.isVideo">
                 <video :poster="item.image" :src="videoLink(item)" controls data-plyr-config='{ "iconUrl": "file/plyr.svg" }' />
-                <figcaption class="caption" v-text="item.title"></figcaption>
+                <figcaption class="caption" v-on:click="openImage(idx)" v-text="item.title"></figcaption>
               </vue-plyr>
               <audio-player v-if="item.imageHidden" :src="'myFile?field=sound&name=' + item.sound" v-bind:class="{'is-hidden':item.soundHidden}" />
               <p class="caption" v-for="(comm, cidx) in item.comments" v-text="comm.author + ': ' + comm.title"></p>
@@ -4359,6 +4359,8 @@ def getPosts():
       if not item['video'] == '':
         item['imageHidden'] = True
         item['isVideo'] = True
+        if item['title'] == '':
+          item['title'] = '(untitled)'
       pgrps = json.loads(item['groups'])
       if public_group > 0:
         if not public_group in pgrps:
