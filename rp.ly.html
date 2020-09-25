@@ -5290,6 +5290,20 @@ def uploadMulti():
             filepath = appdir + 'myfiles/' + fname
             copyfile(filedata['tmp_name'], filepath)
             if filepath[-3:].lower() in ['mov','mp4']:
+              if filepath[-3:].lower() == 'mov':
+                outfile = filepath.lower().replace('.mov','.mp4')
+                fname = fname.lower().replace('.mov','.mp4')
+                command = [
+                  'ffmpeg',
+                  '-i', filepath,
+                  '-q:v', '0',
+                  '-strict', '-2',
+                  '-y', '-hide_banner',
+                  '-nostats',
+                  '-loglevel', 'quiet',
+                  outfile ]
+                pipe = subprocess.call( command )
+                filepath = outfile
               uploaded.append({'url':fname + '.jpg','originalName':filedata['name'] + '.jpg'})
               filenames.append(fname + '.jpg')
             else:
@@ -5301,7 +5315,7 @@ def uploadMulti():
               filepath = filepath + '.jpg'
               cv2.imwrite(filepath, image)
               image=Image.open(filepath)
-              image=image.rotate(180, expand=True)
+              #image=image.rotate(180, expand=True)
               image.save(filepath)
               image.close()
             if not (filepath[-3:] == 'mp3'):
