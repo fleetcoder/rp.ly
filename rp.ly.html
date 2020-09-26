@@ -4698,7 +4698,7 @@ def addPosts():
                   mod_one('settings',{'value':json.dumps(notiprefs)},prefid)
             else:
               notify_photo( con['id'], grpdata[0]['key'], True, True )
-      recips.append( con['id'] )
+          recips.append( con['id'] )
       if dt < timezone( 'US/Pacific' ).localize( datetime.now() ):
         newobj = { 'last_notif' : str( timezone( 'US/Pacific' ).localize( datetime.now() ) ) }
         mod_one( 'groups', newobj, grpdata[0]['id'] )
