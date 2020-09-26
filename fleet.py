@@ -25,8 +25,17 @@ import cv2
 from email import utils
 import html
 import subprocess
+import html2text
+import requests
+import tensorflow as tf
+import tensorflow_hub as hub
+import pandas as pd
 
 appdir = os.getcwd() + '/'
+
+tf.get_logger().setLevel('ERROR')
+
+h2t = html2text.HTML2Text()
 
 twilio_id = os.getenv('TWILIO_ID')
 twilio_token = os.getenv('TWILIO_TOKEN')
@@ -800,7 +809,18 @@ if not os.path.exists('sqlite.db'):
 abilities = []
 all_abilities = []
 
-exec(server,globals(),{'app':app,'request':request,'abilities':abilities})
+embedded_text_feature_column = hub.text_embedding_column(
+  key="sentence",
+  module_spec="https://tfhub.dev/google/nnlm-en-dim128/1")
+
+estimator = tf.estimator.DNNClassifier(
+  model_dir=appdir + 'moderation_ai_model',
+  hidden_units=[500, 100],
+  feature_columns=[embedded_text_feature_column],
+  n_classes=2,
+  optimizer=tf.train.AdagradOptimizer(learning_rate=0.003))
+
+exec(server,globals(),{'app':app,'request':request,'abilities':abilities,'estimator':estimator})
 
 update_abilities()
 

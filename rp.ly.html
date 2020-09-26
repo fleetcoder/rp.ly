@@ -3624,6 +3624,27 @@
   </body>
   <script type="python" id="server">
 
+@app.route('/moderationCheck',methods=['GET','POST'])
+def moderationCheck():
+  url = request.form.get('url')
+  urlkey = re.findall('[a-zA-Z0-9_]',url)
+  h2t.ignore_links = True
+  user_agent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1985.143 Safari/537.36'
+  headers = {'User-Agent': user_agent}
+  html = requests.get(url,headers=headers)
+  story = h2t.handle(str(html.text))
+  data = {}
+  data["sentence"] = []
+  data["sentence"].append(story)
+  neg_df = pd.DataFrame.from_dict(data)
+  test_df = pd.concat([neg_df]).sample(frac=1).reset_index(drop=True)
+  predict_test_input_fn = tf.estimator.inputs.pandas_input_fn( test_df, shuffle=False )
+  test_predict_generator = estimator.predict( input_fn=predict_test_input_fn )
+  output = ''
+  for res in test_predict_generator:
+    output = output + str(res['class_ids'][0])
+  return output + "\n"
+
 @app.route('/migrateGall',methods=['GET','POST'])
 def migrateGall():
   gall = 0
