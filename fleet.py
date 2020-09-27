@@ -820,11 +820,13 @@ estimator = tf.estimator.DNNClassifier(
   n_classes=2,
   optimizer=tf.train.AdagradOptimizer(learning_rate=0.003))
 
-def moderationCheck(url):
+def moderationCheck(url,crawl):
   urlkey = ''.join(re.findall('[a-zA-Z0-9_]',url))
   saved = get_one_by( 'cached', urlkey, 'urlkey' )
   if len(saved) > 0:
     return int(saved[0]['result'])
+  if not crawl:
+    return 1
   h2t.ignore_links = True
   user_agent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1985.143 Safari/537.36'
   headers = {'User-Agent': user_agent}

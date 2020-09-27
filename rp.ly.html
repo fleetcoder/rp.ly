@@ -1723,7 +1723,8 @@
             showFirst: false,
             groupLink: '',
             startMode: 'private',
-            startstep: 'starttab1'
+            startstep: 'starttab1',
+            timers:[]
           }
         },
         components:{
@@ -1932,6 +1933,25 @@
                   }
                 }
                 this.following = response.body[5]
+                for (var i = 0; i < this.items.length; i++) {
+                  this.timers[i] = setTimeout(function (app, i) {
+                    if (app.items[i].link.substring(0,6) != '/post/') {
+                      app.items[i].spinnerHidden = false
+                      Vue.http.post('moderationFlag', {
+                        link:app.items[i].link
+                      }).then((response) => {
+                        if (!!response.body) {
+                          if (parseInt(response.body) > 0) {
+                            app.items[i].flagged = true
+                          } else {
+                            app.items[i].flagged = false
+                          }
+                        }
+                        app.items[i].spinnerHidden = true
+                      })
+                    }
+                  }, 4000 * i, this, i)
+                }
               }
               this.spinnerHidden = true
             })
@@ -3639,6 +3659,10 @@
   </body>
   <script type="python" id="server">
 
+@app.route('/moderationFlag',methods=['GET','POST'])
+def moderationFlag():
+  return str(moderationCheck(request.form.get('link'), True))
+
 @app.route('/migrateGall',methods=['GET','POST'])
 def migrateGall():
   gall = 0
@@ -4490,7 +4514,7 @@ def getPosts():
         item['isHtml'] = True
         item['flagged'] = False
         if 'link' in item:
-          result = moderationCheck(item['link'])
+          result = moderationCheck(item['link'], False)
           if int(result) > 0:
             item['flagged'] = True
         if 'enclosures' in item:
