@@ -358,6 +358,9 @@
       .vidcaption {
         margin-top:10px;
       }
+      .leftfloat {
+        float:left;
+      }
     </style>
 
     <script id="client">
@@ -1299,14 +1302,14 @@
               </a>
             </mt-header>
             <mt-spinner v-bind:class="{'is-hidden':spinnerHidden}" type="snake"></mt-spinner>
-            <mt-cell class="imagecell" v-for="(item, idx) in items" :title="item.name">
+            <mt-cell class="imagecell leftfloat" v-for="(item, idx) in items" :title="item.name">
               <p class="caption">
                 <span v-text="item.author"></span>
                 <img v-if="!item.isHtml" class="headericon" src="file/chevron-right.svg" />
                 <span v-text="item.to"></span>
                 <mt-button v-if="!item.isHtml" icon="more" v-on:click="openGall(item.toid)"></mt-button>
               </p>
-              <div v-if="item.isHtml" v-bind:class="{'is-hidden':item.textHidden}">
+              <div v-if="item.isHtml" v-bind:class="{'is-hidden':item.textHidden}" class="leftfloat">
                 <p v-if="item.flagged" class="caption is-flagged" v-html="item.title"></p>
                 <p v-else class="caption is-linked" v-on:click="openImage(idx)" v-html="item.title"></p>
               </div>
