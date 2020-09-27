@@ -558,7 +558,7 @@
             <div class="introblock">
         <h1>Rp.ly</h1>
         <h5 class="rplycopy">
-        Rp.ly is a decentralized photo sharing platform that connects photographers and users directly, Rp.ly is free from algorithm recommended accounts or for-profit ads, giving content creators a market place to use as they see fit.
+        Rp.ly is a photo sharing platform that connects photographers and users directly, Rp.ly is free from algorithm recommended accounts or for-profit ads, giving content creators a market place to use as they see fit.
         </h5>
                 <div class="introblock">
                   <img class="intro introleft" src="file/rply1.jpg" />
@@ -2319,6 +2319,8 @@
             this['help1'] = false
             this['help2'] = false
             this['help3'] = false
+            this['help4'] = false
+            this['help5'] = false
             this[section] = true
           },
           copyTemplate1(){
@@ -2636,26 +2638,32 @@
 <p v-if="help8" class="help_para">Now you can select-all and copy the contents of the browser window. On a Mac this is done with Command-A and then Command-C. On Windows you can Control-A and Control-C.</p>
 <p v-if="help8" class="help_para">After you copy the content, you will be able to paste it into a new Gmail message or other mail app.</p>
 -->
-        <h4 class="help_header" v-on:click="showHelpSection('help1')">Share with friends</h4>
+        <h4 class="help_header" v-on:click="showHelpSection('help1')">Share privately</h4>
         <div class="firstHelp help_para" v-if="help1">
           <vue-plyr class="startVid">
             <video src="https://rp.ly/file/demoprivate1.mp4" controls data-plyr-config='{ "iconUrl": "file/plyr.svg" }' />
           </vue-plyr>
         </div>
-        <h4 class="help_header" v-on:click="showHelpSection('help2')">Share on social media</h4>
+        <h4 class="help_header" v-on:click="showHelpSection('help2')">Share public/private</h4>
         <div class="firstHelp help_para" v-if="help2">
           <vue-plyr class="startVid">
             <video src="https://rp.ly/file/demopublic1.mp4" controls data-plyr-config='{ "iconUrl": "file/plyr.svg" }' />
           </vue-plyr>
         </div>
-        <h4 class="help_header" v-on:click="showHelpSection('help3')">It's a network</h4>
+        <h4 class="help_header" v-on:click="showHelpSection('help3')">Safety feed</h4>
         <div class="firstHelp help_para" v-if="help3">
           <vue-plyr class="startVid">
             <video src="https://rp.ly/file/demonetwork1.mp4" controls data-plyr-config='{ "iconUrl": "file/plyr.svg" }' />
           </vue-plyr>
         </div>
-        <h4 class="help_header" v-on:click="showHelpSection('help4')">Contact Us</h4>
-        <div class="firstHelp help_para mailto" v-if="help4">
+        <h4 class="help_header" v-on:click="showHelpSection('help4')">Follow other sites</h4>
+        <div class="firstHelp help_para" v-if="help4">
+          <vue-plyr class="startVid">
+            <video src="https://rp.ly/file/demonetwork1.mp4" controls data-plyr-config='{ "iconUrl": "file/plyr.svg" }' />
+          </vue-plyr>
+        </div>
+        <h4 class="help_header" v-on:click="showHelpSection('help5')">Contact Us</h4>
+        <div class="firstHelp help_para mailto" v-if="help5">
             <a href="mailto:info@rp.ly">info@rp.ly</a>
         </div>
             </mt-popup>
