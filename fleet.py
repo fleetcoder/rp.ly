@@ -30,6 +30,7 @@ import requests
 import tensorflow as tf
 import tensorflow_hub as hub
 import pandas as pd
+from socket import timeout
 
 appdir = os.getcwd() + '/'
 
