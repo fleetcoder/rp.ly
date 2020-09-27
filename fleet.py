@@ -820,6 +820,29 @@ estimator = tf.estimator.DNNClassifier(
   n_classes=2,
   optimizer=tf.train.AdagradOptimizer(learning_rate=0.003))
 
+def moderationCheck(url):
+  urlkey = ''.join(re.findall('[a-zA-Z0-9_]',url))
+  saved = get_one_by( 'cached', urlkey, 'urlkey' )
+  if len(saved) > 0:
+    return int(saved[0]['result'])
+  h2t.ignore_links = True
+  user_agent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1985.143 Safari/537.36'
+  headers = {'User-Agent': user_agent}
+  html = requests.get(url,headers=headers)
+  story = h2t.handle(str(html.text))
+  data = {}
+  data["sentence"] = []
+  data["sentence"].append(story)
+  neg_df = pd.DataFrame.from_dict(data)
+  test_df = pd.concat([neg_df]).sample(frac=1).reset_index(drop=True)
+  predict_test_input_fn = tf.estimator.inputs.pandas_input_fn( test_df, shuffle=False )
+  test_predict_generator = estimator.predict( input_fn=predict_test_input_fn )
+  output = 0
+  for res in test_predict_generator:
+    output = int(res['class_ids'][0])
+  add_one('cached',{'urlkey':urlkey,'link':url,'story':story,'result':output})
+  return output
+
 exec(server,globals(),{'app':app,'request':request,'abilities':abilities,'estimator':estimator})
 
 update_abilities()

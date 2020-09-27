@@ -65,6 +65,12 @@
       .is-hidden {
         display: none;
       }
+      .is-flagged {
+        color: red;
+      }
+      .is-linked {
+        text-decoration: underline;
+      }
       .file-upload .input-wrapper {
         background-color: gray;
       }
@@ -1200,6 +1206,10 @@
         },
         methods: {
           openImage(idx){
+            if (typeof this.items[idx].link !== 'undefined') {
+              window.location.href = this.items[idx].link
+              return
+            }
             if (this.items[idx].isOwner) {
               //router.push( '/showPosts/' + idx )
             }
@@ -1296,8 +1306,13 @@
                 <span v-text="item.to"></span>
                 <mt-button v-if="!item.isHtml" icon="more" v-on:click="openGall(item.toid)"></mt-button>
               </p>
-              <p v-if="item.isHtml" class="caption" v-on:click="openImage(idx)" v-html="item.title" v-bind:class="{'is-hidden':item.textHidden}"></p>
-              <p v-else class="caption" v-on:click="openImage(idx)" v-text="item.title" v-bind:class="{'is-hidden':item.textHidden}"></p>
+              <div v-if="item.isHtml" v-bind:class="{'is-hidden':item.textHidden}">
+                <p v-if="item.flagged" class="caption is-flagged" v-html="item.title"></p>
+                <p v-else class="caption is-linked" v-on:click="openImage(idx)" v-html="item.title"></p>
+              </div>
+              <div v-else>
+                <p class="caption" v-on:click="openImage(idx)" v-text="item.title"></p>
+              </div>
               <div class="outer" v-on:click="openImage(idx)" v-bind:class="{'is-hidden':item.imageHidden}">
                 <img class="oimg" :src="imageLink(item)" v-if="item.allowDownload" />
                 <img @contextmenu.prevent="doContextMenu" class="oimg cant-click" :src="imageLink(item)" v-else />
@@ -3624,27 +3639,6 @@
   </body>
   <script type="python" id="server">
 
-@app.route('/moderationCheck',methods=['GET','POST'])
-def moderationCheck():
-  url = request.form.get('url')
-  urlkey = re.findall('[a-zA-Z0-9_]',url)
-  h2t.ignore_links = True
-  user_agent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1985.143 Safari/537.36'
-  headers = {'User-Agent': user_agent}
-  html = requests.get(url,headers=headers)
-  story = h2t.handle(str(html.text))
-  data = {}
-  data["sentence"] = []
-  data["sentence"].append(story)
-  neg_df = pd.DataFrame.from_dict(data)
-  test_df = pd.concat([neg_df]).sample(frac=1).reset_index(drop=True)
-  predict_test_input_fn = tf.estimator.inputs.pandas_input_fn( test_df, shuffle=False )
-  test_predict_generator = estimator.predict( input_fn=predict_test_input_fn )
-  output = ''
-  for res in test_predict_generator:
-    output = output + str(res['class_ids'][0])
-  return output + "\n"
-
 @app.route('/migrateGall',methods=['GET','POST'])
 def migrateGall():
   gall = 0
@@ -4363,6 +4357,7 @@ def getPosts():
       item['comments'] = []
       item['published'] = item['created']
       item['isHtml'] = False
+      item['flagged'] = False
       comms = get_one_by('posts',item['id'],'inreplyto')
       for comm in list(reversed(comms)):
         comm['author'] = get_user(comm['user_id'])['name']
@@ -4493,6 +4488,11 @@ def getPosts():
         item['textHidden'] = False
         item['soundHidden'] = True
         item['isHtml'] = True
+        item['flagged'] = False
+        if 'link' in item:
+          result = moderationCheck(item['link'])
+          if int(result) > 0:
+            item['flagged'] = True
         if 'enclosures' in item:
           if len(item['enclosures']) > 0:
             if 'href' in item['enclosures'][0]:
