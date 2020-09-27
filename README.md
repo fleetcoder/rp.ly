@@ -8,11 +8,17 @@
 - [https://photo.gy](https://photo.gy "https://photo.gy")
 - [https://audio.gy](https://audio.gy "https://audio.gy")
 
+## Videos
+
+- [hhttps://rp.ly/file/demoprivate1.mp4](https://rp.ly/file/demoprivate1.mp4 "https://rp.ly/file/demoprivate1.mp4")
+- [https://rp.ly/file/demopublic1.mp4](https://rp.ly/file/demopublic1.mp4 "https://rp.ly/file/demopublic1.mp4")
+- [https://rp.ly/file/demonetwork1.mp4](https://rp.ly/file/demonetwork1.mp4 "https://rp.ly/file/demonetwork1.mp4")
+
 ## Screenshots
 
 |  |  |  |
 | ------------- | ------------- | ------------- |
-| <video src="https://rp.ly/file/demoprivate1.mp4"> | <video src="https://rp.ly/file/demopublic1.mp4"> | <video src="https://rp.ly/file/demonetwork1.mp4"> |
+| <img src=""> | <img src=""> | <img src=""> |
 
 
 ## Items needed to install rp.ly
