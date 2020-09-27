@@ -1935,7 +1935,8 @@
                 this.following = response.body[5]
                 for (var i = 0; i < this.items.length; i++) {
                   this.timers[i] = setTimeout(function (app, i) {
-                    if (app.items[i].link.substring(0,6) != '/post/') {
+                    if (typeof app.items[i].link !== 'undefined') {
+                      console.log('CHECKING A.I. ' + app.items[i].link)
                       app.items[i].spinnerHidden = false
                       Vue.http.post('moderationFlag', {
                         link:app.items[i].link
