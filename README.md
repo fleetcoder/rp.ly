@@ -10,10 +10,10 @@
 
 ## Videos
 
-- [https://rp.ly/file/demoprivate1.mp4](https://rp.ly/file/demoprivate1.mp4 "Share privately")
-- [https://rp.ly/file/demopublic1.mp4](https://rp.ly/file/demopublic1.mp4 "Share public+private")
-- [https://rp.ly/file/demofilter1.mp4](https://rp.ly/file/demonetwork1.mp4 "Safety feed")
-- [https://rp.ly/file/demonetwork1.mp4](https://rp.ly/file/demonetwork1.mp4 "Follow other sites")
+- [Share privately](https://rp.ly/file/demoprivate1.mp4 "Share privately")
+- [Share public+private](https://rp.ly/file/demopublic1.mp4 "Share public+private")
+- [Safety feed](https://rp.ly/file/demonetwork1.mp4 "Safety feed")
+- [Follow other sites](https://rp.ly/file/demonetwork1.mp4 "Follow other sites")
 
 ## Screenshots
 
