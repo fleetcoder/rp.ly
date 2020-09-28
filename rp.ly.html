@@ -4543,12 +4543,12 @@ def getPosts():
           if len(thisgroup) > 0:
             item['to'] = thisgroup[0]['name']
             item['toid'] = thisgroup[0]['id']
-          if thisgroup[0]['id'] in gall_counts:
-            gall_counts[thisgroup[0]['id']] = gall_counts[thisgroup[0]['id']] + 1
-            #if gall_counts[thisgroup[0]['id']] > 0:
-            #  gall_limit = True
-          else:
-            gall_counts[thisgroup[0]['id']] = 1
+            if thisgroup[0]['id'] in gall_counts:
+              gall_counts[thisgroup[0]['id']] = gall_counts[thisgroup[0]['id']] + 1
+              #if gall_counts[thisgroup[0]['id']] > 0:
+              #  gall_limit = True
+            else:
+              gall_counts[thisgroup[0]['id']] = 1
         if not pgrp in cangrps and not pgrp in ugrids and pgrp in groups:
           cangrps.append(pgrp)
       if not request.args.get('cursor') is None:
