@@ -1,7 +1,6 @@
 # rp.ly
 
-## private, decentralized micro-blog
-
+## micro-blog network with private and public groups
 
 - [https://rp.ly](https://rp.ly/#/auth "https://rp.ly")
 - [https://movie.gd](https://movie.gd "https://movie.gd")
@@ -14,13 +13,6 @@
 - [Share public+private](https://rp.ly/file/demopublic1.mp4 "Share public+private")
 - [Safety feed](https://rp.ly/file/demofilter1.mp4 "Safety feed")
 - [Follow other sites](https://rp.ly/file/demonetwork1.mp4 "Follow other sites")
-
-## Screenshots
-
-|  |  |  |
-| ------------- | ------------- | ------------- |
-| <img src=""> | <img src=""> | <img src=""> |
-
 
 ## Items needed to install rp.ly
 ####
