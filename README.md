@@ -43,7 +43,7 @@
 ------------------
 2. Download Python software
 
-```pip3 install flask flask_socketio python-dateutil lxml feedparser flask_cors pillow sendgrid twilio gunicorn pytz flask_talisman flask_seasurf pydub opencv-python html2text 'tensorflow==1.14.0' 'tensorflow-hub==0.9.0' 'pandas==1.1.2'```
+```pip3 install flask flask_socketio python-dateutil lxml feedparser flask_cors pillow sendgrid twilio gunicorn pytz flask_talisman flask_seasurf pydub opencv-python html2text gevent 'tensorflow==1.14.0' 'tensorflow-hub==0.9.0' 'pandas==1.1.2'```
 
 ------------------
 3. Download rp.ly
@@ -114,7 +114,7 @@
 ------------------
 15. Start app with Gunicorn web server
 
-```gunicorn --certfile=fullchain.pem --keyfile=privkey.pem --bind 165.227.57.132:443 --log-file=fleet.log fleet:app```
+```gunicorn -k gevent --certfile=fullchain.pem --keyfile=privkey.pem --bind 165.227.57.132:443 --log-file=fleet.log fleet:app```
 
 
 
