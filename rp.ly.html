@@ -1313,7 +1313,7 @@
                 <p v-if="item.flagged" class="caption is-flagged" v-html="item.title"></p>
                 <p v-else class="caption is-linked" v-on:click="openImage(idx)" v-html="item.title"></p>
               </div>
-              <div v-else>
+              <div v-else v-bind:class="{'is-hidden':item.textHidden}">
                 <p class="caption" v-on:click="openImage(idx)" v-text="item.title"></p>
               </div>
               <div class="outer" v-on:click="openImage(idx)" v-bind:class="{'is-hidden':item.imageHidden}">
