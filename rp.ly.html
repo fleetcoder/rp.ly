@@ -4911,10 +4911,12 @@ def addPosts():
   if request.form.get('inreplyto') is None:
     ugrps = get_one_by( 'groups', curr['id'], 'user_id' )
     rcps = json.loads(request.form.get('recips'))
+    gname = ''
     for g in rcps:
       grpdata = get_one('groups',g)
+      gname = str(grpdata[0]['name'])
       linkpath = '/grp/' + str(grpdata[0]['key'])
-      resp = ' 📷 https://' + mydomain + linkpath
+      resp = 'Updated gallery: ' + gname + ' 📷 https://' + mydomain + linkpath
     for ug in ugrps:
       if not ug['public'] is None:
         if int(ug['public']) > 0:
@@ -4924,7 +4926,7 @@ def addPosts():
                 linkpath = '/grp/' + str(ug['key'])
                 if not ug['publicPath'] == '':
                   linkpath = '/' + ug['publicPath']
-                resp = ' 📷 #shareinanewway #rplyphoto #rplyshare https://' + mydomain + linkpath
+                resp = ' 📷 1 of ' + str(len(saveImage)) + ' new in ' + gname + ' #shareinanewway #rplyphoto #rplyshare https://' + mydomain + linkpath
                 if str(request.form.get('doSetHeader')) == 'true' and firstimg is not '':
                   newobj = {'image':firstimg}
                   mod_one( 'groups', newobj, ug['id'] )
