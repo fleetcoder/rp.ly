@@ -1285,6 +1285,16 @@
           },
           newGall(){
             router.push('/groups/new')
+          },
+          shareGall(grps,title){
+            Vue.http.post( 'getShare', {
+              recips:grps,
+            }).then( ( response ) => {
+              if ( !!response.body ) {
+                this.$emit('update:groupLink', title + ' ' + response.body)
+                this.$emit('show-share-group')
+              }
+            })
           }
         },
         template: `
@@ -1306,7 +1316,8 @@
                 <span v-text="item.author"></span>
                 <img v-if="!item.isHtml" class="headericon" src="file/chevron-right.svg" />
                 <span v-text="item.to"></span>
-                <mt-button v-if="!item.isHtml" icon="more" v-on:click="openGall(item.toid)"></mt-button>
+                <mt-button v-if="!item.isHtml" v-on:click="openGall(item.toid)"><img src="file/list.svg" /></mt-button>
+                <mt-button v-if="item.isOwner" v-on:click="shareGall(item.groups,item.title)"><img src="file/share.svg" /></mt-button>
               </p>
               <div v-if="item.isHtml" v-bind:class="{'is-hidden':item.textHidden}" class="leftfloat">
                 <p v-if="item.flagged" class="caption is-flagged" v-html="item.title"></p>
@@ -2413,6 +2424,9 @@
             }).then( ( response ) => {
               this.feeds = response.body
             })
+          },
+          setShowShareGroup(){
+            this.showShareGroup = true
           }
         },
         mounted() {
@@ -2423,7 +2437,7 @@
             <mt-spinner v-bind:class="{'is-hidden':spinnerHidden}" type="snake"></mt-spinner>
             <mt-tab-container v-model="selected">
               <mt-tab-container-item id="tab1">
-                <router-view v-bind:items="items" v-bind:posts.sync="posts" v-bind:doSponsor.sync="doSponsor" v-bind:postto.sync="postto" v-bind:selected.sync="selected" v-bind:editHidden="editHidden" v-bind:cangrps="cangrps" v-bind:moreHidden="moreHidden" @on-update-list="getPosts" @on-update-groups="getContacts" @on-tabs-hidden="hideTabs" @on-show-menu="showLink" @on-show-help="showHelp" @load-more-items="moreItems" @show-sponsor="doShowSponsor" />
+                <router-view v-bind:items="items" v-bind:posts.sync="posts" v-bind:doSponsor.sync="doSponsor" v-bind:groupLink.sync="groupLink" v-bind:postto.sync="postto" v-bind:selected.sync="selected" v-bind:editHidden="editHidden" v-bind:cangrps="cangrps" v-bind:moreHidden="moreHidden" @on-update-list="getPosts" @on-update-groups="getContacts" @on-tabs-hidden="hideTabs" @on-show-menu="showLink" @on-show-help="showHelp" @load-more-items="moreItems" @show-share-group="setShowShareGroup" @show-sponsor="doShowSponsor" />
                 <h3 v-if="gettingStarted">Welcome!</h3>
               </mt-tab-container-item>
               <mt-tab-container-item id="tab2">
@@ -3712,6 +3726,31 @@
 
   </body>
   <script type="python" id="server">
+
+@app.route('/getShare',methods=['POST'])
+def getShare():
+  resp = 'OK'
+  curr = current_user()
+  ugrps = get_one_by( 'groups', curr['id'], 'user_id' )
+  rcps = json.loads(request.form.get('recips'))
+  gname = ''
+  for g in rcps:
+    grpdata = get_one('groups',g)
+    gname = str(grpdata[0]['name'])
+    linkpath = '/grp/' + str(grpdata[0]['key'])
+    resp = 'Updated gallery: ' + gname + ' 📷 https://' + mydomain + linkpath
+  for ug in ugrps:
+    if not ug['public'] is None:
+      if int(ug['public']) > 0:
+        if not ug['publicGroups'] is None:
+          for g in json.loads(ug['publicGroups']):
+            if g in rcps:
+              linkpath = '/grp/' + str(ug['key'])
+              if not ug['publicPath'] == '':
+                linkpath = '/' + ug['publicPath']
+              resp = ' 📷 new images in ' + gname + ' #shareinanewway #rplyphoto #rplyshare https://' + mydomain + linkpath
+              break
+  return resp
 
 @app.route('/findFeeds',methods=['GET','POST'])
 def findFeeds():
