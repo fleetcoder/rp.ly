@@ -1932,6 +1932,8 @@
                 if (this.groups.length < 2) {
                   this.groupsHidden = true
                   this.postto = [this.groups[0].value]
+                } else {
+                  this.groupsHidden = false
                 }
                 if (this.comet == '') {
                   this.comet = response.body[3]
