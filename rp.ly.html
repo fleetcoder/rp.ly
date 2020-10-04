@@ -5142,6 +5142,7 @@ def addGroups():
   mod_one('contacts',{'groups': json.dumps(grps)},current_user()['id'])
   if rid > 0:
     clearSession('image')
+    clearSession('publicImage')
     return( json.dumps( [ 'OK' ] ) )
   else:
     return( json.dumps( [ 'Error' ] ) )
