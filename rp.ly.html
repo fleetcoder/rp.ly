@@ -2639,6 +2639,7 @@
             <video src="https://rp.ly/file/demopublic1.mp4" controls data-plyr-config='{ "iconUrl": "file/plyr.svg" }' />
           </vue-plyr>
         </div>
+        <div v-if="subsHidden">
         <h4 class="help_header" v-on:click="showHelpSection('help3')">Safety feed</h4>
         <div class="firstHelp help_para" v-if="help3">
           <vue-plyr class="startVid">
@@ -2650,6 +2651,7 @@
           <vue-plyr class="startVid">
             <video src="https://rp.ly/file/demonetwork1.mp4" controls data-plyr-config='{ "iconUrl": "file/plyr.svg" }' />
           </vue-plyr>
+        </div>
         </div>
         <h4 class="help_header" v-on:click="showHelpSection('help5')">Contact Us</h4>
         <div class="firstHelp help_para mailto" v-if="help5">
@@ -4859,9 +4861,7 @@ def addPosts():
               prefid = nprefs['id']
           if 'last_notif' in grpdata[0]:
             dt = parser.parse(grpdata[0]['last_notif'], tzinfos=tzinfos) + timedelta(hours=12)
-            if not hasprefs:
-              if dt < timezone( 'US/Pacific' ).localize( datetime.now() ):
-                notify_photo( con['id'], grpdata[0]['key'], True, True )
+            notify_photo( con['id'], grpdata[0]['key'], True, True )
           else:
             if hasprefs:
               interv = 24
