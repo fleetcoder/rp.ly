@@ -4732,7 +4732,6 @@ def getPosts():
         if item['title'] == '':
           item['title'] = '(untitled)'
         upd = ''
-        print(fd)
         if 'published' in item:
           upd = item['published']
         if 'published_parsed' in item:
@@ -4745,7 +4744,7 @@ def getPosts():
             upd = datetime.fromtimestamp(round(time.mktime(item['updated_parsed'][:8] + (-1,))))
           except (ValueError):
             pass
-        if not upd == '':
+        if not upd == '' and len(items) < 26:
           item['published'] = str(upd)
           items.append(item)
     print( 'POSTS ' + str(len(posts)) + ' and ITEMS ' + str(len(items)))
