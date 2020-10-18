@@ -360,6 +360,9 @@
       }
       .leftfloat {
       }
+      .sub_upload {
+        margin-top:10px;
+      }
     </style>
 
     <script id="client">
@@ -1716,7 +1719,8 @@
             foundFeeds:[],
             findDisabled:false,
             findSpinnerHidden:true,
-            findMessageHidden:true
+            findMessageHidden:true,
+            uploadXmlTo : 'uploadFile'
           }
         },
         components:{
@@ -2403,6 +2407,13 @@
           },
           setShowShareGroup(){
             this.showShareGroup = true
+          },
+          onFileChange(file) {
+            this.spinnerHidden = false
+            Vue.http.post('addList', {
+            }).then((response) => {
+              this.loadLists()
+            })
           }
         },
         mounted() {
@@ -2541,8 +2552,8 @@
                   <mt-button>&plus;</mt-button>
                 </a>
               </mt-cell>
-              
-            </mt-popup>
+              <file-upload accept=".xml,.opml" btn-label="Upload Feeds File" :url="uploadXmlTo + '?field=feedfile'" @change="onFileChange" class="sub_upload"></file-upload>
+             </mt-popup>
 
             <mt-popup v-model="subsVisible" position="middle">
               <mt-header>
@@ -3705,6 +3716,46 @@
   </body>
   <script type="python" id="server">
 
+@app.route('/addList',methods=['POST'])
+def addList():
+  if not 'user' in session:
+    return json.dumps([])
+  items = get_one_by( 'settings', session['user'], 'user_id' )
+  if not len(items) > 1:
+    sett = add_one('settings',{
+      'name':'feedSubs',
+      'value':'[]',
+      'user_id':session['user']
+    })
+  items = get_one_by( 'settings', session['user'], 'user_id' )
+  feeds = []
+  sid = 0
+  for it in items:
+    if it['name'] == 'feedSubs':
+      feeds = json.loads(it['value'])
+      sid = it['id']
+  tree = False
+  with open(appdir + 'myfiles/' + saveFile('feedfile'), 'rt') as f:
+    tree = etree.parse(f)
+  if tree:
+    for node in tree.findall('.//outline'):
+      url = node.attrib.get('xmlUrl')
+      title = node.attrib.get('title')
+      feedtitle = ''
+      if title:
+        feedtitle = title
+      else:
+        title = node.attrib.get('text')
+        if title:
+          feedtitle = title[:15]
+      fp = urllib.parse.urlparse(url)
+      if fp.hostname:
+        feedtitle = feedtitle + ' - ' + fp.hostname
+      if url:
+        feeds.append(url)
+    mod_one('settings',{'value':json.dumps(feeds)},sid)
+  return 'OK'
+
 @app.route('/getShare',methods=['POST'])
 def getShare():
   resp = 'OK'
@@ -4681,12 +4732,19 @@ def getPosts():
         if item['title'] == '':
           item['title'] = '(untitled)'
         upd = ''
+        print(fd)
         if 'published' in item:
           upd = item['published']
         if 'published_parsed' in item:
-          upd = datetime.fromtimestamp(round(time.mktime(item['published_parsed'][:8] + (-1,))))
+          try:
+            upd = datetime.fromtimestamp(round(time.mktime(item['published_parsed'][:8] + (-1,))))
+          except (ValueError):
+            pass
         elif 'updated_parsed' in item:
-          upd = datetime.fromtimestamp(round(time.mktime(item['updated_parsed'][:8] + (-1,))))
+          try:
+            upd = datetime.fromtimestamp(round(time.mktime(item['updated_parsed'][:8] + (-1,))))
+          except (ValueError):
+            pass
         if not upd == '':
           item['published'] = str(upd)
           items.append(item)
@@ -5438,7 +5496,7 @@ def uploadFile():
     fname = time.strftime("%Y%m%d-%H%M%S") + filedata['name']
     filepath = appdir + 'myfiles/' + fname
     copyfile(filedata['tmp_name'], filepath)
-    if not (filepath[-3:] == 'mp3'):
+    if not filepath[-3:].lower() in ['opml','xml','mp3']:
       try:
         image=Image.open(filepath)
         for orientation in ExifTags.TAGS.keys():

@@ -86,7 +86,7 @@ myapp = appdir + os.getenv('FLEET_APP')
 mydomain = os.getenv('APP_HOSTNAME')
 
 UPLOAD_FOLDER = appdir + 'myfiles/'
-ALLOWED_EXTENSIONS = set(['opml','txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif', 'mov', 'mp4', 'mp3'])
+ALLOWED_EXTENSIONS = set(['xml','opml','txt', 'pdf', 'png', 'jpg', 'jpeg', 'gif', 'mov', 'mp4', 'mp3'])
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 
 @app.route('/file/<filename>')
