@@ -2412,7 +2412,11 @@
             this.spinnerHidden = false
             Vue.http.post('addList', {
             }).then((response) => {
-              this.loadLists()
+              Vue.http.get( 'getSettings').then( ( response ) => {
+                if ( !!response.body ) {
+                  this.feeds = JSON.parse(response.body.feedSubs)
+                }
+              })
             })
           }
         },
