@@ -4075,7 +4075,7 @@ def getGroupEmbed():
           html = html + '<a href="https://' + mydomain + '/#/showgroup/' + g[0]['key'] + '">'
           html = html + '  <h3 style="text-decoration:none;">' + g[0]['name'] + '</h3>'
           html = html + '  <img style="height:auto;padding:10px;display:block;margin-left:auto;margin-right:auto;width:200px;padding:10px;" src="https://' + mydomain + '/grpFile?field=image&name=' + g[0]['image'] + '" />'
-          html = html + '</div>'
+          html = html + '</a>'
     response = make_response(html)
     response.mimetype = "text/html"
     regex = re.compile('[^a-zA-Z]')
