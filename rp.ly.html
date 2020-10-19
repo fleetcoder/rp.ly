@@ -1452,12 +1452,23 @@
             }
             this.$emit('update:selected', 'tab3')
             router.push('/')
+          },
+          gallEmbed(){
+            for (var i = 0; i < this.groups.length; i++) {
+              if (parseInt(this.groups[i].id) == parseInt(this.$route.params.grpid)) {
+                window.location.href = 'https://rp.ly/getGroupEmbed?grp=' + this.groups[i].key
+                break
+              }
+            }
           }
         },
         template: `
           <div class="feedwrap">
             <mt-header title="">
               <mt-button slot="left" @click="$router.go(-1)" icon="back">back</mt-button>
+              <a v-if="!cogHidden" v-on:click="gallEmbed()" slot="right">
+                <img class="headericon codeinput" slot="icon" src="file/code.svg" />
+              </a>
               <a v-if="!cogHidden" v-on:click="gallSett()" slot="right">
                 <img class="headericon" slot="icon" src="file/settings.svg" />
               </a>
