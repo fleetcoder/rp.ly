@@ -4006,14 +4006,76 @@ def getGroupEmbed():
   items = get_one_by( 'groups', request.args.get('grp'), 'key' )
   if not len(items) > 0:
     items = get_one( 'groups', request.args.get('grp') )
+  ispublic = False
+  if len(items) > 0:
+    if 'public' in items[0]:
+      if not items[0]['public'] is None:
+        if int(items[0]['public']) > 0:
+          ispublic = True
   result = []
   if len(items) > 0:
     owner = get_user(items[0]['user_id'])
     imgsrc = ''
     if not items[0]['image'] is None:
       imgsrc = urllib.parse.quote(items[0]['image'])
-    html = '<div style="font-family:courier,monospace;width:90%"><img alt="gallery image for ' + items[0]['name'] + '" style="height:auto;padding:30px;display:block;margin-left:auto;margin-right:auto;width:50%;padding:10px;" src="https://' + mydomain + '/grpFile?field=image&name='
-    html = html + imgsrc + '" /><p style="text-align:center;display:block;padding:10px;">' + owner['name'] + invitetext + items[0]['name'] + '</p><a style="text-align:center;background-color:#32e0c4;display:block;color:black;text-decoration:none;padding:10px;" href="https://' + mydomain + '/grp/' +  items[0]['key'] + '">' + 'Join ' + owner['name'] + "'s Gallery" + '</a></div>'
+    if not ispublic:
+      html = '<div style="font-family:courier,monospace;width:90%"><img alt="gallery image for ' + items[0]['name'] + '" style="height:auto;padding:30px;display:block;margin-left:auto;margin-right:auto;width:50%;padding:10px;" src="https://' + mydomain + '/grpFile?field=image&name='
+      html = html + imgsrc + '" /><p style="text-align:center;display:block;padding:10px;">' + owner['name'] + invitetext + items[0]['name'] + '</p><a style="text-align:center;background-color:#32e0c4;display:block;color:black;text-decoration:none;padding:10px;" href="https://' + mydomain + '/grp/' +  items[0]['key'] + '">' + 'Join ' + owner['name'] + "'s Gallery" + '</a></div>'
+    else:
+      html = '<img style="height:auto;padding:30px;display:block;margin-left:auto;margin-right:auto;width:50%;padding:10px;" src="https://' + mydomain + '/' + 'grpFile?field=publicImage&name=' + urllib.parse.quote(items[0]['publicImage']) + '" />'
+      html = html + '<h3>' + items[0]['publicName'] + '</h3>'
+      html = html + '<p><a href="' + items[0]['publicLink'] + '">' + items[0]['publicLink'] + '</a></p>'
+      html = html + '<h5 class="public_bio">' + items[0]['publicBio'] + '</h5>'
+      html = html + '<h3>' + items[0]['name'] + '</h3>'
+      pubs = get_one_by('posts',owner['id'],'user_id')
+      for item in pubs:
+        pgrps = json.loads(item['groups'])
+        if items[0]['id'] in pgrps:
+          item['imageHidden'] = False
+          item['textHidden'] = True
+          if item['image'] == '':
+            item['imageHidden'] = True
+          item['soundHidden'] = False
+          if item['sound'] == '':
+            item['soundHidden'] = True
+          if item['image'] == '' and item['sound'] == '':
+            item['textHidden'] = False
+            if item['title'] == '':
+              item['title'] = '(untitled)'
+          item['isVideo'] = False
+          if not item['video'] == '':
+            item['imageHidden'] = True
+            item['isVideo'] = True
+            if item['title'] == '':
+              item['title'] = '(untitled)'
+          html = html + '<div class="imagecell public_img">'
+          if not item['textHidden']:
+            html = html + '  <p class="caption">' + item['title'] + '</p>'
+          html = html + '  <div class="outer">'
+          if int(items[0]['blockDownloads']) > 0:
+            html = html + '    <img style="height:auto;padding:30px;display:block;margin-left:auto;margin-right:auto;width:50%;padding:10px;" src="https://' + mydomain + '/' + 'myFile?field=image&name=' + item['image'] + '" />'
+          else:
+            html = html + '    <img style="height:auto;padding:30px;display:block;margin-left:auto;margin-right:auto;width:50%;padding:10px;" src="https://' + mydomain + '/' + 'myFile?field=image&name=' + item['image'] + '" />'
+          html = html + '    <figcaption class="caption underpic">' + item['title'] + '</figcaption>'
+          if not item['soundHidden']:
+            html = html + '    <audio-player src="https://' + mydomain + '/' + 'myFile?field=sound&name=' + item['sound'] + '" />'
+          html = html + '  </div>'
+          if item['isVideo']:
+            html = html + '  <vue-plyr>'
+            html = html + '    <video poster="https://' + mydomain + '/' + 'myFile?field=image&name=' + item['image'] + '" src="https://' + mydomain + '/' + 'myFile?field=video&name=' + item['video'] + '" controls />'
+            html = html + '    <figcaption class="caption">' + item['title'] + '</figcaption>'
+            html = html + '  </vue-plyr>'
+          if item['imageHidden']:
+            html = html + '  <audio-player src="https://' + mydomain + '/' + 'myFile?field=sound&name=' + item['sound'] + '" />'
+          html = html + '</div>'
+      pgrps = json.loads(items[0]['publicGroups'])
+      for pgrp in pgrps:
+        g = get_one('groups',pgrp)
+        if len(g) > 0:
+          html = html + '<a href="https://' + mydomain + '/#/showgroup/' + g[0]['key'] + '">'
+          html = html + '  <h3 style="text-decoration:none;">' + g[0]['name'] + '</h3>'
+          html = html + '  <img style="height:auto;padding:10px;display:block;margin-left:auto;margin-right:auto;width:200px;padding:10px;" src="https://' + mydomain + '/grpFile?field=image&name=' + g[0]['image'] + '" />'
+          html = html + '</div>'
     response = make_response(html)
     response.mimetype = "text/html"
     regex = re.compile('[^a-zA-Z]')
