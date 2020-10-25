@@ -5706,16 +5706,18 @@ def uploadMulti():
                   if ExifTags.TAGS[orientation]=='Orientation':
                     break
                 exif=dict(image._getexif().items())
+                rotated = False
                 if exif[orientation] == 3:
-                  print('EXIV1')
                   image=image.rotate(180, expand=True)
+                  rotated = True
                 elif exif[orientation] == 6:
-                  print('EXIV2')
                   image=image.rotate(270, expand=True)
+                  rotated = True
                 elif exif[orientation] == 8:
                   image=image.rotate(90, expand=True)
-                print('EXIV3')
-                image.save(filepath)
+                  rotated = True
+                if rotated:
+                  image.save(filepath)
                 image.close()
               except (AttributeError, KeyError, IndexError):
                 # cases: image don't have getexif
