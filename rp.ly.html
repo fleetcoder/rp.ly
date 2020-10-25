@@ -3408,7 +3408,7 @@
             <mt-cell title="Advanced Options"><mt-switch v-model="optsHidden"></mt-switch></mt-cell>
             <mt-cell v-bind:class="{'is-hidden':!optsHidden}"  title="Scale down uploaded files"><mt-field v-model="maxRes" label="maximum pixels"></mt-field><mt-switch v-model="doScale"></mt-switch></mt-cell>
             <mt-cell v-bind:class="{'is-hidden':!optsHidden}" title="Block members from saving photos"><mt-switch v-model="blockDownloads"></mt-switch></mt-cell>
-            <!--<mt-cell title="Allow members to add photos"><mt-switch v-model="allowPosts"></mt-switch></mt-cell>-->
+            <mt-cell title="Allow members to post"><mt-switch v-model="allowPosts"></mt-switch></mt-cell>
             <mt-button class="underpic" v-on:click="modGroups()" size="large">Save</mt-button>
             <mt-popup class="addcontact" v-model="showAddContact" position="middle">
               <mt-field :state="validName" placeholder="Name" @keyup.native="checkConName" v-model="newName"></mt-field>
@@ -4776,9 +4776,14 @@ def getPosts():
     group = get_one( 'groups', grp )
     groupname = ''
     ispublic = False
+    allowposts = False
     if len(group) > 0:
       groupname = group[0]['name']
-      if not int(group[0]['user_id']) == int(user['id']):
+      if 'allowPosts' in group[0]:
+        if not group[0]['allowPosts'] is None:
+          if int(group[0]['allowPosts']) > 0:
+            allowposts = True
+      if not int(group[0]['user_id']) == int(user['id']) and not allowposts:
         continue
       if 'public' in group[0]:
         if not group[0]['public'] is None:
@@ -4991,7 +4996,12 @@ def addPosts():
       for g in json.loads(request.form.get('recips')):
          grpdata = get_one('groups',g)
          if len(grpdata) > 0:
-           if not int(curr['id']) == int(grpdata[0]['user_id']):
+           allowposts = False
+           if 'allowPosts' in grpdata[0]:
+             if not grpdata[0]['allowPosts'] is None:
+               if int(grpdata[0]['allowPosts']) > 0:
+                 allowposts = True
+           if not int(curr['id']) == int(grpdata[0]['user_id']) and not allowposts:
              return( json.dumps( [ 'Error' ] ) )
     rid = add_one( 'posts', newrec )
     if rid > 0:
