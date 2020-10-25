@@ -3329,6 +3329,7 @@
               id : this.id,
               name : this.name,
               maxres : sca,
+              doScale : this.doScale,
               allowPosts : this.allowPosts,
               blockDownloads: this.blockDownloads,
               public: this.public,
@@ -5010,6 +5011,10 @@ def addPosts():
           grp = [value for value in json.loads(request.form.get('recips')) if value in json.loads(con['groups'])][0]
           grpdata = get_one('groups',grp)
           notifprefs = get_one_by( 'settings', 'group_' + str(grp), 'name' )
+          doScale = False
+          if 'doScale' in grpdata[0]:
+            if not grpdata[0]['doScale'] is '0':
+              doScale = True
           if 'maxres' in grpdata[0]:
             if not grpdata[0]['maxres'] is None:
               maxRes = int(grpdata[0]['maxres'])
@@ -5080,7 +5085,8 @@ def addPosts():
       title = ''
   clearSession('image')
   clearSession('imagemulti')
-  if maxRes > 0:
+  if maxRes > 0 and doScale:
+    print('mxax res '  + str(maxRes))
     for savedImage in saveImage:
       filepath = appdir + 'myfiles/' + savedImage
       if filepath[-3:].lower() == 'jpg' or filepath[-3:].lower() == 'jpeg':
@@ -5088,6 +5094,7 @@ def addPosts():
           image=Image.open(filepath)
           original_size = max(image.size[0], image.size[1])
           if original_size >= maxRes:
+            print('RESIZ 1')
             resized_file = open(filepath.split('.')[0] + '_resized.jpg', "w")
             if (image.size[0] > image.size[1]):
               resized_width = maxRes
@@ -5319,6 +5326,7 @@ def modGroups():
     'name' : request.form.get('name'),
     'image' : saveFile( 'image' ),
     'maxres' : scale,
+    'doScale' : '0',
     'allowPosts' : '0',
     'blockDownloads' : '0',
     'public':'0',
@@ -5331,6 +5339,8 @@ def modGroups():
   }
   if str(request.form.get('allowPosts')) == 'true':
     newobj['allowPosts'] = '1'
+  if str(request.form.get('doScale')) == 'true':
+    newobj['doScale'] = '1'
   if str(request.form.get('blockDownloads')) == 'true':
     newobj['blockDownloads'] = '1'
   if str(request.form.get('public')) == 'true':
@@ -5697,11 +5707,14 @@ def uploadMulti():
                     break
                 exif=dict(image._getexif().items())
                 if exif[orientation] == 3:
+                  print('EXIV1')
                   image=image.rotate(180, expand=True)
                 elif exif[orientation] == 6:
+                  print('EXIV2')
                   image=image.rotate(270, expand=True)
                 elif exif[orientation] == 8:
                   image=image.rotate(90, expand=True)
+                print('EXIV3')
                 image.save(filepath)
                 image.close()
               except (AttributeError, KeyError, IndexError):
