@@ -3861,6 +3861,45 @@ def findFeeds():
               ftitle = f['feed']['title']
           if {'title':ftitle,'link':url} not in result:
             result.append({'title':ftitle,'link':url})
+  if not "." in request.form.get('site'):
+    srch = 'https://www.googleapis.com/customsearch/v1?key=' + os.getenv('GOO_KEY') + '&cx=' + os.getenv('GOO_CTX') + '&q=filetype%3Aopml+' + urllib.parse.quote(request.form.get('site'))
+    data = urllib.request.urlopen(srch).read()
+    arr = json.loads(data)
+    mine = []
+    if 'items' in arr:
+      for searesult in arr['items']:
+        if 'github.com' in searesult['link'] and searesult['link'].rstrip()[-4:].lower() == 'opml':
+          searesult['link'] = searesult['link'].replace('github.com','raw.githubusercontent.com')
+          searesult['link'] = searesult['link'].replace('blob/master','master')
+        try:
+          data = urllib.request.urlopen(searesult['link']).read()
+        except urllib.error.HTTPError as err:
+          data = False
+        except urllib.error.URLError as err:
+          data = False
+        if data:
+          ParseError = etree.ParseError
+          try:
+            tree = etree.fromstring(data)
+          except ParseError:
+            tree = False
+          if tree:
+            for node in tree.findall('.//outline'):
+              url = node.attrib.get('xmlUrl')
+              title = node.attrib.get('title')
+              feedtitle = ''
+              if title:
+                feedtitle = title
+              else:
+                title = node.attrib.get('text')
+                if title:
+                  feedtitle = title[:15]
+              fp = urllib.parse.urlparse(url)
+              if fp.hostname:
+                feedtitle = feedtitle + ' - ' + fp.hostname
+              if url:
+                result.append({'title':feedtitle,'link':url})
+          time.sleep(0.1)
   return json.dumps(result)
 
 @app.route('/moderationFlag',methods=['GET','POST'])
@@ -4612,6 +4651,7 @@ def getPosts():
   if 'id' in user:
     ugrps = get_one_by('groups',user['id'],'user_id')
   ugrids = []
+  print('A')
   for gr in ugrps:
     ugrids.append(gr['id'])
   posts_limit = 10
@@ -4783,6 +4823,7 @@ def getPosts():
           result = moderationCheck(item['link'], False)
           if int(result) > 0:
             item['flagged'] = True
+        print('B')
         if 'enclosures' in item:
           if len(item['enclosures']) > 0:
             if 'href' in item['enclosures'][0]:
@@ -4798,6 +4839,7 @@ def getPosts():
                   print(item['media'])
                 else:
                   item['imageHidden'] = False
+        print('C')
         if not 'title' in item:
           if 'description' in item:
             item['title'] = item['description']
@@ -4809,19 +4851,24 @@ def getPosts():
         if item['title'] == '':
           item['title'] = '(untitled)'
         upd = ''
+        print('D')
         if 'published' in item:
           upd = item['published']
         if 'published_parsed' in item:
           try:
-            upd = datetime.fromtimestamp(round(time.mktime(item['published_parsed'][:8] + (-1,))))
+            if not item['published_parsed'] is None:
+              upd = datetime.fromtimestamp(round(time.mktime(item['published_parsed'][:8] + (-1,))))
           except (ValueError):
             pass
         elif 'updated_parsed' in item:
+          print('E')
           try:
-            upd = datetime.fromtimestamp(round(time.mktime(item['updated_parsed'][:8] + (-1,))))
+            if not item['updated_parsed'] is None:
+              upd = datetime.fromtimestamp(round(time.mktime(item['updated_parsed'][:8] + (-1,))))
           except (ValueError):
             pass
         if not upd == '' and len(items) < 26:
+          print('F')
           item['published'] = str(upd)
           items.append(item)
     print( 'POSTS ' + str(len(posts)) + ' and ITEMS ' + str(len(items)))
