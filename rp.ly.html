@@ -3408,7 +3408,7 @@
             <mt-cell title="Advanced Options"><mt-switch v-model="optsHidden"></mt-switch></mt-cell>
             <mt-cell v-bind:class="{'is-hidden':!optsHidden}"  title="Scale down uploaded files"><mt-field v-model="maxRes" label="maximum pixels"></mt-field><mt-switch v-model="doScale"></mt-switch></mt-cell>
             <mt-cell v-bind:class="{'is-hidden':!optsHidden}" title="Block members from saving photos"><mt-switch v-model="blockDownloads"></mt-switch></mt-cell>
-            <mt-cell title="Allow members to post"><mt-switch v-model="allowPosts"></mt-switch></mt-cell>
+            <mt-cell v-bind:class="{'is-hidden':!optsHidden}" title="Allow members to post"><mt-switch v-model="allowPosts"></mt-switch></mt-cell>
             <mt-button class="underpic" v-on:click="modGroups()" size="large">Save</mt-button>
             <mt-popup class="addcontact" v-model="showAddContact" position="middle">
               <mt-field :state="validName" placeholder="Name" @keyup.native="checkConName" v-model="newName"></mt-field>
