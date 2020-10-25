@@ -4651,7 +4651,6 @@ def getPosts():
   if 'id' in user:
     ugrps = get_one_by('groups',user['id'],'user_id')
   ugrids = []
-  print('A')
   for gr in ugrps:
     ugrids.append(gr['id'])
   posts_limit = 10
@@ -4823,7 +4822,6 @@ def getPosts():
           result = moderationCheck(item['link'], False)
           if int(result) > 0:
             item['flagged'] = True
-        print('B')
         if 'enclosures' in item:
           if len(item['enclosures']) > 0:
             if 'href' in item['enclosures'][0]:
@@ -4839,7 +4837,6 @@ def getPosts():
                   print(item['media'])
                 else:
                   item['imageHidden'] = False
-        print('C')
         if not 'title' in item:
           if 'description' in item:
             item['title'] = item['description']
@@ -4851,7 +4848,6 @@ def getPosts():
         if item['title'] == '':
           item['title'] = '(untitled)'
         upd = ''
-        print('D')
         if 'published' in item:
           upd = item['published']
         if 'published_parsed' in item:
@@ -4861,14 +4857,12 @@ def getPosts():
           except (ValueError):
             pass
         elif 'updated_parsed' in item:
-          print('E')
           try:
             if not item['updated_parsed'] is None:
               upd = datetime.fromtimestamp(round(time.mktime(item['updated_parsed'][:8] + (-1,))))
           except (ValueError):
             pass
         if not upd == '' and len(items) < 26:
-          print('F')
           item['published'] = str(upd)
           items.append(item)
     print( 'POSTS ' + str(len(posts)) + ' and ITEMS ' + str(len(items)))
