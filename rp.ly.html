@@ -1823,20 +1823,22 @@
                 this.feeds = JSON.parse(response.body.feedSubs)
                 if (typeof response.body.filterDisabled !== 'undefined') {
                   this.feedmeta = JSON.parse(response.body.filterDisabled)
-                  console.log(this.feedmeta)
                 }
-                this.feedslist = []
-                for (var i = 0; i < this.feeds.length; i++) {
-                  var aisett = true
-                  for (var j = 0; j < this.feedmeta.length; j++) {
-                    if (this.feedmeta[j] == this.feeds[i]) {
-                      aisett = false
-                    }
-                  }
-                  this.feedslist.push({src:this.feeds[i],ai:aisett})
-                }
+                this.setFeeds()
               }
             })
+          },
+          setFeeds(){
+            this.feedslist = []
+            for (var i = 0; i < this.feeds.length; i++) {
+              var aisett = true
+              for (var j = 0; j < this.feedmeta.length; j++) {
+                if (this.feedmeta[j] == this.feeds[i]) {
+                  aisett = false
+                }
+              }
+              this.feedslist.push({src:this.feeds[i],ai:aisett})
+            }
           },
           getContacts() {
             Vue.http.get( 'getContacts').then( ( response ) => {
@@ -2129,6 +2131,7 @@
               feed : idx
             }).then( ( response ) => {
               this.feeds = response.body
+              this.setFeeds()
             })
           },
           doLogout(){
@@ -2142,6 +2145,7 @@
               feed : this.addFeed
             }).then( ( response ) => {
               this.feeds = response.body
+              this.setFeeds()
               this.addFeed = ''
             })
           },
@@ -2443,6 +2447,7 @@
                 if ( !!response.body ) {
                   this.feeds = JSON.parse(response.body.feedSubs)
                   this.feedmeta = JSON.parse(response.body.feedMeta)
+                  this.setFeeds()
                 }
               })
             })
