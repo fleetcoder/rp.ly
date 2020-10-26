@@ -1731,7 +1731,9 @@
             findDisabled:false,
             findSpinnerHidden:true,
             findMessageHidden:true,
-            uploadXmlTo : 'uploadFile'
+            uploadXmlTo : 'uploadFile',
+            feedmeta : [],
+            feedslist: []
           }
         },
         components:{
@@ -1819,6 +1821,20 @@
               if ( !!response.body ) {
                 this.feedLink = response.body.feedLink
                 this.feeds = JSON.parse(response.body.feedSubs)
+                if (typeof response.body.filterDisabled !== 'undefined') {
+                  this.feedmeta = JSON.parse(response.body.filterDisabled)
+                  console.log(this.feedmeta)
+                }
+                this.feedslist = []
+                for (var i = 0; i < this.feeds.length; i++) {
+                  var aisett = true
+                  for (var j = 0; j < this.feedmeta.length; j++) {
+                    if (this.feedmeta[j] == this.feeds[i]) {
+                      aisett = false
+                    }
+                  }
+                  this.feedslist.push({src:this.feeds[i],ai:aisett})
+                }
               }
             })
           },
@@ -2426,8 +2442,17 @@
               Vue.http.get( 'getSettings').then( ( response ) => {
                 if ( !!response.body ) {
                   this.feeds = JSON.parse(response.body.feedSubs)
+                  this.feedmeta = JSON.parse(response.body.feedMeta)
                 }
               })
+            })
+          },
+          onFeedSettChange(url){
+            this.spinnerHidden = false
+            Vue.http.post( 'modFeedSett', {
+              feedlink: url
+            }).then( ( response ) => {
+              this.spinnerHidden = true
             })
           }
         },
@@ -2550,8 +2575,9 @@
                   <mt-button>X</mt-button>
                 </a>
               </mt-header>
-              <mt-cell v-for="(url, idx) in feeds">
-                <mt-field v-model="url"></mt-field>
+              <mt-cell v-for="(url, idx) in feedslist">
+                <mt-switch v-model="url.ai" @change="onFeedSettChange(url.src)"></mt-switch>
+                <mt-field v-model="url.src"></mt-field>
                 <a v-on:click="dropFeed(idx)">
                   <mt-button>X</mt-button>
                 </a>
@@ -3732,6 +3758,42 @@
   </body>
   <script type="python" id="server">
 
+@app.route('/modFeedSett',methods=['POST'])
+def modFeedSett():
+  if not 'user' in session:
+    return json.dumps([])
+  settkey = 'filterDisabled'
+  thefeed = request.form.get('feedlink').lower()
+  items = get_one_by( 'settings', settkey, 'name' )
+  mysett = [thefeed]
+  if len(items) > 0:
+    for sett in items:
+      if int(session['user']) == int(sett['user_id']):
+        mysett = json.loads(sett['value'])
+        if thefeed in mysett:
+          mysett.remove(thefeed)
+        else:
+          mysett.append(thefeed)
+  if not len(items) > 0:
+    sett = add_one('settings',{
+      'user_id':session['user'],
+      'name':settkey,
+      'value':json.dumps(mysett)
+    })
+  else:
+    found = False
+    for sett in items:
+      if int(session['user']) == int(sett['user_id']):
+        mod_one('settings',{'value':json.dumps(mysett)},sett['id'])
+        found = True
+    if not found:
+      sett = add_one('settings',{
+        'user_id':session['user'],
+        'name':settkey,
+        'value':json.dumps(mysett)
+      })
+  return 'OK'
+
 @app.route('/addList',methods=['POST'])
 def addList():
   if not 'user' in session:
@@ -4630,6 +4692,11 @@ def getSettings():
       'value':'[]',
       'user_id':session['user']
     })
+    sett = add_one('settings',{
+      'name':'filterDisabled',
+      'value':'[]',
+      'user_id':session['user']
+    })
   items = get_one_by( 'settings', session['user'], 'user_id' )
   sett = {}
   for it in items:
@@ -4811,10 +4878,13 @@ def getPosts():
   items = []
   if 'user' in session:
     settings = get_one_by( 'settings', session['user'], 'user_id' )
+    filterdisabled = []
     if len(settings) > 1:
       for it in settings:
         if it['name'] == 'feedSubs':
           feeds = json.loads(it['value'])
+        if it['name'] == 'filterDisabled':
+          filterdisabled = json.loads(it['value'])
   if request.args.get('grpid') is None:
     for fd in feeds:
       feed = feedparser.parse(fd)
@@ -4824,7 +4894,7 @@ def getPosts():
         item['soundHidden'] = True
         item['isHtml'] = True
         item['flagged'] = False
-        if 'link' in item:
+        if 'link' in item and not fd in filterdisabled:
           result = moderationCheck(item['link'], False)
           if int(result) > 0:
             item['flagged'] = True
