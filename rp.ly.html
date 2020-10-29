@@ -1555,6 +1555,7 @@
                 }).then( ( response ) => {
                   showposts.spinnerHidden = true
                   showposts.posts.splice( showposts.idx, 1 )
+                  this.$emit('on-update-list')
                   router.push('/')
                 })
               }
