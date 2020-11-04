@@ -3242,7 +3242,8 @@
             publicLink: '',
             publicGroups: [],
             pubHidden: false,
-            publicPath: ''
+            publicPath: '',
+            optGroups: []
           }
         },
         props: { items : Array, groups : Array },
@@ -3275,11 +3276,13 @@
           this.publicLink = this.items[ this.idx ].publicLink
           this.publicImage = this.items[ this.idx ].publicImage
           this.publicPath = this.items[ this.idx ].publicPath
-          this.publicGroups = JSON.parse(this.items[ this.idx ].publicGroups)
+          if (!(['null',''].indexOf(this.items[ this.idx ].publicGroups) > -1)) {
+            this.publicGroups = JSON.parse(this.items[ this.idx ].publicGroups)
+          }
           this.$emit('on-tabs-hidden')
           Vue.http.get( 'getPosts' ).then( ( response ) => {
             if ( !!response.body ) {
-              this.groups = response.body[1]
+              this.optGroups = response.body[1]
             }
           })
         },
@@ -3426,7 +3429,7 @@
             <h3 v-bind:class="{'is-hidden':!pubHidden}">Linked Galleries:</h3>
             <mt-checklist v-bind:class="{'is-hidden':!pubHidden}"
               v-model="publicGroups"
-              :options="groups"
+              :options="optGroups"
               align="left">
             </mt-checklist>
             <mt-cell v-bind:class="{'is-hidden':!pubHidden}" title=""><img class="img" :src="'myFile?staged=1&field=publicImage&name=' + publicImage" /></mt-cell>
