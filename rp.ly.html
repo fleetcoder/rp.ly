@@ -3252,6 +3252,8 @@
           this.image = this.items[ this.idx ].image
           if (this.items[ this.idx ].blockDownloads == '0') {
             this.blockDownloads = false
+          } else {
+            this.blockDownloads = true
           }
           if (this.items[ this.idx ].allowPosts == '1') {
             this.allowPosts = true
@@ -3263,6 +3265,7 @@
           var maxres = parseInt(this.items[ this.idx ].maxres)
           if (maxres > 0) {
             this.maxRes = this.items[ this.idx ].maxres
+            this.doScale = true
           }
           if (maxres === 0) {
             this.doScale = false
@@ -3340,15 +3343,6 @@
           },
           modGroups(){
             this.spinnerHidden = false
-            if (this.name == 'My Photos') {
-              this.spinnerHidden = true
-              MintUI.Toast({
-                message: 'Error, choose a different gallery name',
-                iconClass: 'icon icon-error',
-                duration: 2000
-              })
-              return
-            }
             var exp = this.expireHours
             if (this.doExpire === false) {
               exp = 0
@@ -3551,15 +3545,6 @@
           },
           addGroups(){
             this.spinnerHidden = false
-            if (this.name == 'My Photos') {
-              this.spinnerHidden = true
-              MintUI.Toast({
-                message: 'Error, choose a different gallery name',
-                iconClass: 'icon icon-error',
-                duration: 2000
-              })
-              return
-            }
             Vue.http.post( 'addGroups', {
               recips:JSON.stringify(this.postto),
               name : this.name,
@@ -5425,15 +5410,16 @@ def modGroups():
   if newobj['publicImage'] == '':
     del newobj['publicImage']
   reserved = []
-  for rule in app.url_map.iter_rules():
-    reserved.append(rule.endpoint)
-  if not item['publicPath'] == newobj['publicPath']:
-    if newobj['publicPath'] in reserved:
-      return 'Error'
-    grps = get_one_by( 'groups', newobj['publicPath'], 'publicPath' )
-    for chckgrp in grps:
-      if not chckgrp['id'] == item['id']:
+  if not newobj['publicPath'] == '':
+    if not item['publicPath'] == newobj['publicPath']:
+      for rule in app.url_map.iter_rules():
+        reserved.append(rule.endpoint)
+      if newobj['publicPath'] in reserved:
         return 'Error'
+      grps = get_one_by( 'groups', newobj['publicPath'], 'publicPath' )
+      for chckgrp in grps:
+        if not chckgrp['id'] == item['id']:
+          return 'Error'
   if not 'key' in item or item['key'] == None:
     newobj['key'] = randomword(8)
     item['key'] = newobj['key']
