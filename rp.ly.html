@@ -5464,10 +5464,24 @@ def delGroups():
   item = get_one( 'groups', request.form.get('id') )[0]
   if not can('del','groups',current_user(),item):
     return( json.dumps( [ 'Error' ] ) )
-  if del_one( 'groups', request.form.get('id') ):
-    return( json.dumps( [ 'OK' ] ) )
   else:
-    return( json.dumps( [ 'Error' ] ) )
+    delid = int(request.form.get('id'))
+    if del_one( 'groups', delid):
+      cons = get_all('contacts')
+      for con in cons:
+        groups = json.loads(con['groups'])
+        if delid in groups:
+          groups.remove(delid)
+          mod_one('contacts',{'groups': json.dumps(groups)},con['id'])
+      posts = get_all('posts')
+      for pos in posts:
+        groups = json.loads(pos['groups'])
+        if delid in groups:
+          groups.remove(delid)
+          mod_one('posts',{'groups': json.dumps(groups)},pos['id'])
+      return( json.dumps( [ 'OK' ] ) )
+    else:
+      return( json.dumps( [ 'Error' ] ) )
 
 @app.route('/getContacts',methods=['GET','POST'])
 def getContacts():
