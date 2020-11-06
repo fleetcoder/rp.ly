@@ -5812,14 +5812,22 @@ def stagedFile():
 @app.route('/grpFile',methods=['GET','POST'])
 def grpFile():
   thefile = False
-  item = get_one_by( 'groups', request.args.get('name'), request.args.get('field') )
+  item = get_one_by( 'posts', request.args.get('name'), request.args.get('field') )
   if len(item) > 0:
     thefile = appdir + 'myfiles/' + item[0][request.args.get('field')]
     ftype = 'image/jpeg'
     print(thefile,file=sys.stderr)
     return send_file( thefile, mimetype=ftype)
   else:
-    return 'Error'
+    thefile = appdir + 'myfiles/' + request.args.get('name')
+    if os.path.exists(thefile):
+      limit = datetime.strptime('Nov 6 2020','%b %d %Y')
+      mod = datetime.fromtimestamp(os.path.getmtime(thefile))
+      if mod < limit:
+        ftype = 'image/jpeg'
+        print(thefile,file=sys.stderr)
+        return send_file( thefile, mimetype=ftype)
+  return 'Error'
 
 @app.route('/myFile',methods=['GET','POST'])
 def myFile():
