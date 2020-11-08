@@ -389,6 +389,9 @@
           }
         },
         created() {
+          if (this.$route.path.substring(1) == 'login'){
+            this.selected = 'tab2'
+          }
         },
         methods: {
           doCode() {
@@ -3741,6 +3744,9 @@
         },{
             path: '/group/:grp',
             component: ShowGroupPage
+        },{
+            path: '/login',
+            component: freeTrial
         },{
             path: '/auth',
             component: freeTrial
