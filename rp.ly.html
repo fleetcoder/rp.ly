@@ -3440,7 +3440,7 @@
             <file-upload v-bind:class="{'is-hidden':!pubHidden}" btn-label="Change Author Photo" @change="stagedUpload('publicImage')" :url="uploadTo + '?field=publicImage'"></file-upload>
             <mt-field label="Custom Link rp.ly/..." placeholder="linda" v-model="publicPath"></mt-field>
             <mt-cell title="Advanced Options"><mt-switch v-model="optsHidden"></mt-switch></mt-cell>
-            <mt-cell v-bind:class="{'is-hidden':!optsHidden}"  title="Scale down uploaded files"><mt-field v-model="maxRes" label="maximum pixels"></mt-field><mt-switch v-model="doScale"></mt-switch></mt-cell>
+            <mt-cell v-bind:class="{'is-hidden':!optsHidden}"  title="Resize width of uploaded files"><mt-field v-model="maxRes" label="width in pixels"></mt-field><mt-switch v-model="doScale"></mt-switch></mt-cell>
             <mt-cell v-bind:class="{'is-hidden':!optsHidden}" title="Block members from saving photos"><mt-switch v-model="blockDownloads"></mt-switch></mt-cell>
             <mt-cell v-bind:class="{'is-hidden':!optsHidden}" title="Allow members to post"><mt-switch v-model="allowPosts"></mt-switch></mt-cell>
             <mt-button class="underpic" v-on:click="modGroups()" size="large">Save</mt-button>
@@ -5165,17 +5165,23 @@ def addPosts():
       if filepath[-3:].lower() == 'jpg' or filepath[-3:].lower() == 'jpeg':
         try:
           image=Image.open(filepath)
-          original_size = max(image.size[0], image.size[1])
-          if original_size >= maxRes:
-            resized_file = open(filepath.split('.')[0] + '_resized.jpg', "w")
-            if (image.size[0] > image.size[1]):
-              resized_width = maxRes
-              resized_height = int(round((maxRes/float(image.size[0]))*image.size[1])) 
-            else:
-              resized_height = maxRes
-              resized_width = int(round((maxRes/float(image.size[1]))*image.size[0]))
-            image = image.resize((resized_width, resized_height), Image.ANTIALIAS)
-            image.save(resized_file, 'JPEG')
+          icc = image.info.get("icc_profile")
+          resized_width = maxRes
+          resized_height = int(round((maxRes/float(image.size[0]))*image.size[1])) 
+          image = image.resize((resized_width, resized_height), Image.ANTIALIAS)
+          resized_file = open(filepath.split('.')[0] + '_resized.jpg', "w")
+          image.save(resized_file, 'JPEG', icc_profile=icc)
+          #original_size = max(image.size[0], image.size[1])
+          #if original_size >= maxRes:
+          #  resized_file = open(filepath.split('.')[0] + '_resized.jpg', "w")
+          #  if (image.size[0] > image.size[1]):
+          #    resized_width = maxRes
+          #    resized_height = int(round((maxRes/float(image.size[0]))*image.size[1])) 
+          #  else:
+          #    resized_height = maxRes
+          #    resized_width = int(round((maxRes/float(image.size[1]))*image.size[0]))
+          #  image = image.resize((resized_width, resized_height), Image.ANTIALIAS)
+          #  image.save(resized_file, 'JPEG')
           image.save(filepath)
           image.close()
         except (AttributeError, KeyError, IndexError):
