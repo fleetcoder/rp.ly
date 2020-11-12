@@ -3440,7 +3440,7 @@
             <file-upload v-bind:class="{'is-hidden':!pubHidden}" btn-label="Change Author Photo" @change="stagedUpload('publicImage')" :url="uploadTo + '?field=publicImage'"></file-upload>
             <mt-field label="Custom Link rp.ly/..." placeholder="linda" v-model="publicPath"></mt-field>
             <mt-cell title="Advanced Options"><mt-switch v-model="optsHidden"></mt-switch></mt-cell>
-            <mt-cell v-bind:class="{'is-hidden':!optsHidden}"  title="Resize width of uploaded files"><mt-field v-model="maxRes" label="width in pixels"></mt-field><mt-switch v-model="doScale"></mt-switch></mt-cell>
+            <mt-cell v-bind:class="{'is-hidden':!optsHidden}"  title="Resize photos"><mt-field v-model="maxRes" label="max. width in pixels"></mt-field><mt-switch v-model="doScale"></mt-switch></mt-cell>
             <mt-cell v-bind:class="{'is-hidden':!optsHidden}" title="Block members from saving photos"><mt-switch v-model="blockDownloads"></mt-switch></mt-cell>
             <mt-cell v-bind:class="{'is-hidden':!optsHidden}" title="Allow members to post"><mt-switch v-model="allowPosts"></mt-switch></mt-cell>
             <mt-button class="underpic" v-on:click="modGroups()" size="large">Save</mt-button>
@@ -5250,6 +5250,9 @@ def delPosts():
     mus = appdir + 'myfiles/' + item['sound']
     if os.path.exists(mus) and not item['sound'] == '':
       os.remove(mus)
+    item = get_one_by( 'groups', item['image'], 'image' )
+    if len(item) > 0:
+      mod_one( 'groups', {'image':''}, item[0]['id'] )
     return( json.dumps( [ 'OK' ] ) )
   else:
     return( json.dumps( [ 'Error' ] ) )
