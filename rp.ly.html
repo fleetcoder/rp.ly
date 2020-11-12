@@ -1728,7 +1728,7 @@
             showShareGroup: false,
             showFirst: false,
             groupLink: '',
-            startMode: 'private',
+            startMode: '',
             startstep: 'starttab1',
             timers:[],
             findFeeds:'',
@@ -1738,7 +1738,9 @@
             findMessageHidden:true,
             uploadXmlTo : 'uploadFile',
             feedmeta : [],
-            feedslist: []
+            feedslist: [],
+            showPublicVid: false,
+            showPrivateVid: false
           }
         },
         components:{
@@ -2465,6 +2467,20 @@
             }).then( ( response ) => {
               this.spinnerHidden = true
             })
+          },
+          goHelp(){
+            if (this.startMode == 'public') {
+              this.startMode == ''
+              this.showPrivateVid = false
+              this.showPublicVid = true
+              this.gettingStarted = false
+            }
+            if (this.startMode == 'private') {
+              this.startMode == ''
+              this.showPublicVid = false
+              this.showPrivateVid = true
+              this.gettingStarted = false
+            }
           }
         },
         mounted() {
@@ -2792,22 +2808,23 @@
                     <mt-button>X</mt-button>
                   </a>
                 </mt-header>
-                <h3 v-if="gettingStarted">Choose how you want to share photos:</h3>
+                <h3 v-if="gettingStarted">Do you want your first gallery to be...</h3>
                 <mt-radio v-if="gettingStarted"
                   title=""
                   v-model="startMode"
-                  :options="['with friends', 'on social media']"
+                  :options="['private', 'public']"
                   v-on:change="setStartMode()">
                 </mt-radio>
-                <div v-if="gettingStarted" v-if="startMode == 'with friends'" class="firstHelp">
-          <vue-plyr class="startVid">
-            <video src="https://rp.ly/file/demoprivate1.mp4" controls data-plyr-config='{ "iconUrl": "file/plyr.svg" }' />
-          </vue-plyr>
-                </div>
-                <div v-if="gettingStarted" v-if="startMode == 'on social media'" class="firstHelp">
-          <vue-plyr class="startVid">
-            <video src="https://rp.ly/file/demopublic1.mp4" controls data-plyr-config='{ "iconUrl": "file/plyr.svg" }' />
-          </vue-plyr>
+                <vue-plyr v-if="showPrivateVid" class="startVid">
+                  <video src="https://rp.ly/file/demoprivate1.mp4" controls data-plyr-config='{ "iconUrl": "file/plyr.svg" }' />
+                </vue-plyr>
+                <vue-plyr v-if="showPublicVid" class="startVid">
+                  <video src="https://rp.ly/file/demopublic1.mp4" controls data-plyr-config='{ "iconUrl": "file/plyr.svg" }' />
+                </vue-plyr>
+                <div v-if="gettingStarted">
+                  <h3 v-if="startMode == 'private'">Only you and members of your gallery can see the photos</h3>
+                  <h3 v-if="startMode == 'public'">Anyone with the link can see the photos</h3>
+                  <mt-button v-if="startMode !== ''" v-on:click="goHelp()">Continue</mt-button>
                 </div>
                 <p>&nbsp;</p>
                 <!--
