@@ -562,7 +562,7 @@
             </mt-tabbar>
             <mt-tab-container v-model="selected" class="introblock signupbox">
               <mt-tab-container-item id="tab1">
-                <mt-header title=""></mt-header>
+                <mt-header title="Rp.ly"></mt-header>
                 <h4>It's easy to start! You will receive an e-mail or text message with a login code:</h4>
                 <mt-field v-bind:class="{'is-hidden':inputnamehidden}" placeholder="Your name..." v-model="name"></mt-field>
                 <mt-field v-bind:class="{'is-hidden':registerHidden}" placeholder="Email or Phone Number..." type="email" :state="emailstatus" v-model="email"></mt-field>
@@ -574,7 +574,7 @@
                 <mt-spinner v-bind:class="{'is-hidden':spinnerHidden}" type="snake"></mt-spinner>
               </mt-tab-container-item>
               <mt-tab-container-item id="tab2">
-                <mt-header title=""></mt-header>
+                <mt-header title="Rp.ly"></mt-header>
                 <h4>Welcome! Type an e-mail address or phone number to receive a login code:</h4>
                 <mt-field v-bind:class="{'is-hidden':loginHidden}" placeholder="Email or Phone Number..." type="email" :state="emailstatus" v-model="email"></mt-field>
                 <mt-button v-bind:class="{'is-hidden':loginHidden}" v-on:click="myLogin()" size="large">Log In</mt-button>
@@ -630,7 +630,7 @@
         },
         template: `
           <div>
-            <mt-header title="">
+            <mt-header title="Rp.ly">
             </mt-header>
             <mt-cell>{{sentcode}}</mt-cell>
             <mt-field type="number" class="codeinput" label="Code:" placeholder="***" v-model="code"></mt-field>
@@ -717,7 +717,7 @@
         },
         template: `
           <div>
-            <mt-header title="">
+            <mt-header title="Rp.ly">
               <a href="/" slot="left">
                 <img class="headericon" slot="icon" src="file/home.svg" />
               </a>
@@ -813,7 +813,7 @@
         },
         template: `
           <div>
-            <mt-header title="">
+            <mt-header title="Rp.ly">
             </mt-header>
             <img class="groupimg" :src="'grpFile?field=image&name=' + groupPic" />
             <mt-cell class="imagecell" v-for="(item, idx) in items" :title="item.name">
@@ -1115,7 +1115,7 @@
         },
         template: `
           <div>
-            <mt-header title="">
+            <mt-header title="Rp.ly">
               <a v-if="linked" slot="left">
                 <mt-button slot="left" @click="$router.go(-1)" icon="back">back</mt-button>
               </a>
@@ -1279,13 +1279,13 @@
         },
         template: `
           <div class="feedwrap">
-            <mt-header title="">
+            <mt-header title="Rp.ly">
               <a v-on:click="showHelp()" slot="left">
                 <img class="headericon" slot="icon" src="file/help-circle.svg" />
               </a>
-              <a v-on:click="newGall()" slot="right">
+              <!--<a v-on:click="newGall()" slot="right">
                 <img class="headericon secondtool" slot="icon" src="file/list.svg" />
-              </a>
+              </a>-->
               <a v-on:click="showLink()" slot="right">
                 <img class="headericon" slot="icon" src="file/settings.svg" />
               </a>
@@ -1296,7 +1296,7 @@
                 <span v-text="item.author"></span>
                 <img v-if="!item.isHtml" class="headericon" src="file/chevron-right.svg" />
                 <span v-text="item.to"></span>
-                <mt-button v-if="!item.isHtml" v-on:click="openGall(item.toid)"><img src="file/list.svg" /></mt-button>
+                <!--<mt-button v-if="!item.isHtml" v-on:click="openGall(item.toid)"><img src="file/list.svg" /></mt-button>-->
                 <mt-button v-if="item.isOwner" v-on:click="shareGall(item.groups,item.title)"><img src="file/share.svg" /></mt-button>
               </p>
               <div v-if="item.isHtml" v-bind:class="{'is-hidden':item.textHidden}" class="leftfloat">
@@ -1454,7 +1454,7 @@
                 this.$emit('update:postto', [this.groups[i].id])
               }
             }
-            this.$emit('update:selected', 'tab3')
+            this.$emit('update:selected', 'tab2')
             router.push('/')
           },
           gallEmbed(){
@@ -1468,7 +1468,7 @@
         },
         template: `
           <div class="feedwrap">
-            <mt-header title="">
+            <mt-header title="Rp.ly">
               <mt-button slot="left" @click="$router.go(-1)" icon="back">back</mt-button>
               <!--<a v-if="!cogHidden" v-on:click="gallEmbed()" slot="right">
                 <img class="headericon codeinput" slot="icon" src="file/code.svg" />
@@ -1572,7 +1572,7 @@
         },
         template: `
           <div>
-            <mt-header title="">
+            <mt-header title="Rp.ly">
               <mt-button slot="left" @click="$router.go(-1)" icon="back">back</mt-button>
             </mt-header>
             <mt-spinner v-bind:class="{'is-hidden':spinnerHidden}" type="snake"></mt-spinner>
@@ -1632,7 +1632,7 @@
         },
         template: `
           <div>
-            <mt-header title="">
+            <mt-header title="Rp.ly">
               <router-link :to="'/showPosts/' + idx" slot="left">
                 <mt-button icon="back">back</mt-button>
               </router-link>
@@ -2494,22 +2494,15 @@
                 <router-view v-bind:items="items" v-bind:posts.sync="posts" v-bind:doSponsor.sync="doSponsor" v-bind:groupLink.sync="groupLink" v-bind:postto.sync="postto" v-bind:selected.sync="selected" v-bind:editHidden="editHidden" v-bind:cangrps="cangrps" v-bind:moreHidden="moreHidden" @on-update-list="getPosts" @on-update-groups="getContacts" @on-tabs-hidden="hideTabs" @on-show-menu="showLink" @on-show-help="showHelp" @load-more-items="moreItems" @show-share-group="setShowShareGroup" @show-sponsor="doShowSponsor" />
                 <h3 v-if="gettingStarted">Welcome!</h3>
               </mt-tab-container-item>
-              <mt-tab-container-item id="tab2">
-                <router-view name="middletab" v-bind:subsHidden="subsHidden" @on-update-photos="getPosts" v-bind:groups="groups" />
-                  <!--<mt-cell>
-                    <ul class="contacts">
-                      <li class="contact" v-for="friend in contacts">{{ friend.name }}</li>
-                    </ul>
-                    <mt-checklist class="choosegroups" v-for="(group,idx) in cgroups" :title="cgroups[idx].name"
-                      v-model="cgroups[idx].members"
-                      :options="cgroups[idx].perms"
-                      align="right"
-                      v-on:change="setGroups()">
-                    </mt-checklist>
-                  </mt-cell>-->
-              </mt-tab-container-item>
-              <mt-tab-container-item id="tab3" class="addphotostab">
-                <mt-header title=""></mt-header>
+              <mt-tab-container-item id="tab2" class="addphotostab">
+                <mt-header title="Rp.ly">
+                  <a v-on:click="showHelp()" slot="left">
+                    <img class="headericon" slot="icon" src="file/help-circle.svg" />
+                  </a>
+                  <a v-on:click="showLink()" slot="right">
+                    <img class="headericon" slot="icon" src="file/settings.svg" />
+                  </a>
+                </mt-header>
                 <mt-cell v-bind:class="{'is-hidden':imgHidden}" title=""><img class="img" :src="'myFile?staged=1&field=image&name=' + image" /></mt-cell>
                 <mt-cell>
                   <form enctype="multipart/form-data" novalidate v-if="isInitial">
@@ -2558,17 +2551,32 @@
                 <mt-cell v-bind:class="{'is-hidden':optionsHidden}"><mt-switch class="options" v-model="audioHidden">Podcast</mt-switch><mt-switch class="options" v-model="textHidden">Caption</mt-switch></mt-cell>
                 <mt-button v-bind:class="{'is-hidden':saveHidden}" v-on:click="addPosts()" size="large" id="savepostbutton">Save</mt-button>
               </mt-tab-container-item>
+              <mt-tab-container-item id="tab3">
+                  <router-view name="righttab" @on-update-photos="getPosts" v-bind:items="items" v-bind:posts.sync="posts" v-bind:doSponsor.sync="doSponsor" v-bind:groupLink.sync="groupLink" v-bind:postto.sync="postto" v-bind:selected.sync="selected" v-bind:editHidden="editHidden" v-bind:cangrps="cangrps" v-bind:moreHidden="moreHidden" @on-update-list="getPosts" @on-update-groups="getContacts" @on-tabs-hidden="hideTabs" @on-show-menu="showLink" @on-show-help="showHelp" @load-more-items="moreItems" @show-share-group="setShowShareGroup" @show-sponsor="doShowSponsor" />
+                  <!--
+                  <router-view name="middletab" v-bind:subsHidden="subsHidden" @on-update-photos="getPosts" v-bind:groups="groups" />
+                  <mt-cell>
+                    <ul class="contacts">
+                      <li class="contact" v-for="friend in contacts">{{ friend.name }}</li>
+                    </ul>
+                    <mt-checklist class="choosegroups" v-for="(group,idx) in cgroups" :title="cgroups[idx].name"
+                      v-model="cgroups[idx].members"
+                      :options="cgroups[idx].perms"
+                      align="right"
+                      v-on:change="setGroups()">
+                    </mt-checklist>
+                  </mt-cell>-->
+              </mt-tab-container-item>
             </mt-tab-container>
             <mt-tabbar fixed="true" v-model="selected" v-bind:class="{'is-hidden':tabsHidden}">
               <mt-tab-item id="tab1">
-                <img slot="icon" src="/file/list.svg" />
+                <img slot="icon" src="/file/home.svg" />
               </mt-tab-item>
-              <!--<mt-tab-item id="tab2">
-                <img slot="icon" src="/file/users.svg" />
-                Manage
-              </mt-tab-item>-->
-              <mt-tab-item id="tab3">
+              <mt-tab-item id="tab2">
                 <img slot="icon" src="/file/plus-circle.svg" />
+              </mt-tab-item>
+              <mt-tab-item id="tab3">
+                <img slot="icon" src="/file/list.svg" />
               </mt-tab-item>
             </mt-tabbar>
             <mt-popup class="help_popup" v-model="sponsorVisible" position="middle">
@@ -2860,7 +2868,7 @@
         },
         template: `
           <div class="feedwrap">
-            <mt-header title="">
+            <mt-header title="Rp.ly">
               <router-link to="/" slot="left">
                 <mt-button icon="back">back</mt-button>
               </router-link>
@@ -2914,7 +2922,7 @@
         },
         template: `
           <div>
-            <mt-header title="">
+            <mt-header title="Rp.ly">
               <router-link to="/contacts" slot="left">
                 <mt-button icon="back">back</mt-button>
               </router-link>
@@ -2970,7 +2978,7 @@
         },
         template: `
           <div>
-            <mt-header title="">
+            <mt-header title="Rp.ly">
               <router-link :to="'/showContacts/' + idx" slot="left">
                 <mt-button icon="back">back</mt-button>
               </router-link>
@@ -3099,7 +3107,7 @@
                 <router-view v-bind:items="items" v-bind:editHidden="editHidden" @on-update-list="getContacts" @on-tabs-hidden="hideTabs" @on-show-add-contact="showAddContactForm"  />
               </mt-tab-container-item>
               <mt-tab-container-item id="tab2">
-                <mt-header title=""></mt-header>
+                <mt-header title="Rp.ly"></mt-header>
                 <mt-field placeholder="Name.." v-model="name"></mt-field>
                 <mt-field :state="validEmail" @keyup.native="checkEmail" placeholder="Email..(optional)" v-model="email" type="email"></mt-field>
                 <mt-field :state="validPhone" @keyup.native="checkPhone" placeholder="Phone..(optional)" v-model="phone"></mt-field>
@@ -3138,21 +3146,16 @@
         },
         template: `
           <div>
-            <mt-header title="">
-              <router-link to="/" slot="left">
-                <mt-button icon="back">back</mt-button>
-              </router-link>
-                <mt-button slot="right"><img v-on:click="showAddGroup()" class="headericon" slot="icon" src="/file/plus-circle.svg" />
-                </mt-button>
+            <mt-header title="Rp.ly">
+              <!--<a v-on:click="showHelp()" slot="left">
+                <img class="headericon" slot="icon" src="file/help-circle.svg" />
+              </a>
+              <a v-on:click="showLink()" slot="right">
+                <img class="headericon" slot="icon" src="file/settings.svg" />
+              </a>-->
             </mt-header>
             <mt-spinner v-bind:class="{'is-hidden':spinnerHidden}" type="snake"></mt-spinner>
-            <mt-cell-swipe v-for="(item, idx) in items" :title="item.name" is-link :to="'/showGroupPosts/' + item.id" :right="[
-              {
-                content: 'Delete',
-                style: { background: 'red', color: '#fff' },
-                handler: () => delGroups( item.id, idx )
-              }
-            ]">
+            <mt-cell-swipe v-for="(item, idx) in items" :title="item.name" is-link :to="'showGroupPosts/' + item.id">
               <img class="grimg" :src="'grpFile?field=image&name=' + item.image" />
             </mt-cell-swipe>
           </div>`
@@ -3218,7 +3221,7 @@
         },
         template: `
           <div>
-            <mt-header title="">
+            <mt-header title="Rp.ly">
               <mt-button slot="left" @click="$router.go(-1)" icon="back">back</mt-button>
             </mt-header>
             <mt-spinner v-bind:class="{'is-hidden':spinnerHidden}" type="snake"></mt-spinner>
@@ -3432,7 +3435,7 @@
         },
         template: `
           <div class="feedwrap">
-            <mt-header title="">
+            <mt-header title="Rp.ly">
               <!--<router-link :to="'/showGroups/' + idx" slot="left">
                 <mt-button icon="back">back</mt-button>
               </router-link>-->
@@ -3620,7 +3623,7 @@
                 <router-view v-bind:items="items" v-bind:groups="groups" v-bind:editHidden="editHidden" @on-update-list="getGroups" @on-tabs-hidden="hideTabs" @on-show-add-group="showAddGroupForm" @on-update-photos="getPosts" />
               </mt-tab-container-item>
               <mt-tab-container-item id="tab2">
-                <mt-header title="">
+                <mt-header title="Rp.ly">
                   <a slot="left">
                     <mt-button slot="left" @click="$router.go(-1)" icon="back">back</mt-button>
                   </a>
@@ -3676,7 +3679,7 @@
         },
         template: `
           <div>
-            <mt-header title="">
+            <mt-header title="Rp.ly">
               <router-link to="/" slot="left">
                 <mt-button icon="back">back</mt-button>
               </router-link>
@@ -3698,7 +3701,7 @@
         },
         template: `
           <div>
-            <mt-header title="">
+            <mt-header title="Rp.ly">
             </mt-header>
             <mt-cell is-link to="/groups" title="Galleries"></mt-cell>
             <mt-cell is-link to="/contacts" title="Contacts"></mt-cell>
@@ -3710,18 +3713,22 @@
         { path: '', component: Posts,
           children: [{
             path: 'showPosts/:idx',
-            component: showPosts
+            components:{default: listPosts, middletab: MidMenu, righttab: showPosts}
         },{
             path: 'modPosts/:idx',
             component: modPosts
         },{
             path: 'showGroupPosts/:grpid',
-            components:{default: showGroupPosts, middletab: MidMenu}
+            components:{default: listPosts, middletab: MidMenu, righttab: showGroupPosts}
         },{
             path: '',
-            components:{ default: listPosts, middletab: MidMenu }
+            components:{ default: listPosts, middletab: MidMenu, righttab: Groups },
+            children:[{
+                      path: '',
+                      component: listGroups
+                  }]
         },{
-          path: '/groups/:grid', components:{default: Groups},
+          path: '/groups/:grid', components:{ default: listPosts, middletab: MidMenu, righttab: Groups },
                     children: [{
                       path: '/showGroups/:idx',
                       component: showGroups
