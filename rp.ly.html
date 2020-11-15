@@ -1746,7 +1746,9 @@
             feedmeta : [],
             feedslist: [],
             showPublicVid: false,
-            showPrivateVid: false
+            showPrivateVid: false,
+            sharingGroup:'',
+            sharingImg:''
           }
         },
         components:{
@@ -2045,6 +2047,14 @@
                 if (response.body[0].length > 3) {
                   this.groupLink = this.title + ' ' + response.body
                   this.showShareGroup = true
+                  if (this.postto.length === 1) {
+                    Vue.http.post( 'joinGroup', {
+                      grp:this.postto[0]
+                    }).then( ( response ) => {
+                      this.sharingGroup = response.body[1]
+                      this.sharingImg = response.body[2]
+                    })
+                  }
                 }
               }
               this.selected = 'tab1'
@@ -2807,13 +2817,14 @@
             </mt-popup>
         
             <mt-popup class="addcontact" v-model="showShareGroup" position="middle">
-              <mt-header>
+              <mt-header :title="sharingGroup">
                 <a v-on:click="closeShareGroup()" slot="left">
                   <mt-button>X</mt-button>
                 </a>
               </mt-header>
+              <img class="grimg" :src="sharingImg" alt="Gallery Header Photo" />
               <mt-field type="textarea" rows="4" v-model="groupLink"></mt-field>
-              <mt-button v-clipboard:copy="groupLink" v-clipboard:success="copyGroupLink" v-clipboard:error="copyError">Copy To Clipboard</mt-button><p></p>
+              <mt-button v-clipboard:copy="groupLink" v-clipboard:success="copyGroupLink" v-clipboard:error="copyError">Share</mt-button><p></p>
             </mt-popup>
 
             <mt-popup class="addcontact" v-model="showFirst" position="middle">
