@@ -3143,10 +3143,10 @@
             this.$emit('on-show-add-group')
           },
           showHelp(){
-            this.$emit('on-show-add-group')
+            this.$emit('on-show-help')
           },
           showLink(){
-            this.$emit('on-show-add-group')
+            this.$emit('on-show-settings')
           }
         },
         template: `
@@ -3620,13 +3620,19 @@
             } else {
               this.saveDisabled = false
             }
+          },
+          showSettings(){
+            this.$emit('on-show-menu')
+          },
+          showHelp(){
+            this.$emit('on-show-help')
           }
         },
         template: `
           <div>
             <mt-tab-container v-model="selected">
               <mt-tab-container-item id="tab1">
-                <router-view v-bind:items="items" v-bind:groups="groups" v-bind:editHidden="editHidden" @on-update-list="getGroups" @on-tabs-hidden="hideTabs" @on-show-add-group="showAddGroupForm" @on-update-photos="getPosts" />
+                <router-view v-bind:items="items" v-bind:groups="groups" v-bind:editHidden="editHidden" @on-update-list="getGroups" @on-tabs-hidden="hideTabs" @on-show-add-group="showAddGroupForm" @on-show-help="showHelp" @on-show-settings="showSettings" @on-update-photos="getPosts" />
               </mt-tab-container-item>
               <mt-tab-container-item id="tab2">
                 <mt-header title="Rp.ly">
