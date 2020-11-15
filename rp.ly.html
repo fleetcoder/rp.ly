@@ -363,6 +363,12 @@
       .sub_upload {
         margin-top:10px;
       }
+      .uplimg {
+        margin-top:20px;
+        margin-left:40px;
+        margin-right:40px;
+        margin-bottom:10px;
+      }
     </style>
 
     <script id="client">
@@ -2507,7 +2513,7 @@
                 <mt-cell>
                   <form enctype="multipart/form-data" novalidate v-if="isInitial">
                     <div class="dropbox">
-                      <label class="uploadlabel" for="image_uploads">&nbsp; &nbsp; &nbsp; &nbsp; Click here to choose photos &nbsp; &nbsp; &nbsp; &nbsp; </label>
+                      <label class="uploadlabel" for="image_uploads">&nbsp;&nbsp;&nbsp;&nbsp;<img src="/file/camera.svg" class="uplimg" alt="Upload Photos" /><img src="/file/video.svg" class="uplimg" alt="Upload Photos" /><img src="/file/film.svg" class="uplimg" alt="Upload Photos" />&nbsp;&nbsp;&nbsp;&nbsp;</label>
                       <input id="image_uploads" type="file" multiple :name="uploadFieldName" :disabled="isSaving" @change="filesChange($event.target.name, $event.target.files); fileCount = $event.target.files.length"
                         accept="image/*,video/mp4,video/x-m4v,video/*,audio/x-m4a,audio/*" class="input-file">
                     </div>
@@ -2540,7 +2546,7 @@
                 </mt-cell>
                 <audio-recorder v-bind:class="{'is-hidden':!audioHidden}" :upload-url="'uploadFile?field=sound'" :after-recording="aftRec" />
                 <mt-cell><mt-field v-bind:class="{'is-hidden':!audioHidden}" placeholder="Speedup..." v-model="speedup" label="Frame rate multiplier"></mt-field></mt-cell>
-                <mt-checklist v-bind:class="{'is-hidden':groupsHidden}"
+                <mt-checklist v-if="isSuccess" v-bind:class="{'is-hidden':groupsHidden}"
                   v-model="postto"
                   :options="groups"
                   align="right">
@@ -2549,7 +2555,7 @@
                 <!--<mt-cell title="Expire after"><mt-field v-model="expireHours" label="hours"></mt-field><mt-switch v-model="doExpire" @change="onExpireChange()"></mt-switch></mt-cell>-->
                 <!--<mt-button v-bind:class="{'is-hidden':optionsBtnHidden}" v-on:click="showOptions()" size="large">Options</mt-button>-->
                 <mt-cell v-bind:class="{'is-hidden':optionsHidden}"><mt-switch class="options" v-model="audioHidden">Podcast</mt-switch><mt-switch class="options" v-model="textHidden">Caption</mt-switch></mt-cell>
-                <mt-button v-bind:class="{'is-hidden':saveHidden}" v-on:click="addPosts()" size="large" id="savepostbutton">Save</mt-button>
+                <mt-button v-if="isSuccess" v-bind:class="{'is-hidden':saveHidden}" v-on:click="addPosts()" size="large" id="savepostbutton">Save</mt-button>
               </mt-tab-container-item>
               <mt-tab-container-item id="tab3">
                   <router-view name="righttab" @on-update-photos="getPosts" v-bind:items="items" v-bind:posts.sync="posts" v-bind:doSponsor.sync="doSponsor" v-bind:groupLink.sync="groupLink" v-bind:postto.sync="postto" v-bind:selected.sync="selected" v-bind:editHidden="editHidden" v-bind:cangrps="cangrps" v-bind:moreHidden="moreHidden" @on-update-list="getPosts" @on-update-groups="getContacts" @on-tabs-hidden="hideTabs" @on-show-menu="showLink" @on-show-help="showHelp" @load-more-items="moreItems" @show-share-group="setShowShareGroup" @show-sponsor="doShowSponsor" />
