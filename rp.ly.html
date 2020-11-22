@@ -915,6 +915,9 @@
             this.inviteText = response.body[0] + this.inviteText + response.body[1]
             this.memberText = this.memberText + response.body[1]
             this.submitText = 'Join ' + response.body[0] + "'s Gallery"
+            if (parseInt(response.body[7]) > 0) {
+              this.submitText = 'Join ' + response.body[0] + "'s Group"
+            } 
             this.groupPic = response.body[2]
             this.imgHidden = false
             this.spinnerHidden = true
@@ -5485,6 +5488,10 @@ def joinGroup():
     if not items[0]['image'] is None:
       imgsrc = 'https://' + mydomain + '/grpFile?field=image&name=' + items[0]['image']
     publicData = '{}'
+    shareLinks = '0'
+    if not items[0]['shareLinks'] is None:
+      if int(items[0]['shareLinks']) > 0:
+        shareLinks = '1'
     if not items[0]['public'] is None:
       if int(items[0]['public']) > 0:
         linkedgrps = []
@@ -5501,7 +5508,7 @@ def joinGroup():
           'publicLink':items[0]['publicLink'],
           'publicGroups':linkedgrps
         })
-    result = [owner['name'],items[0]['name'],imgsrc,authd,items[0]['id'],member,publicData]
+    result = [owner['name'],items[0]['name'],imgsrc,authd,items[0]['id'],member,publicData,shareLinks]
   return json.dumps(result)
 
 @app.route('/addGroups',methods=['GET','POST'])
