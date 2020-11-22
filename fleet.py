@@ -31,6 +31,7 @@ import tensorflow as tf
 import tensorflow_hub as hub
 import pandas as pd
 from socket import timeout
+from extruct.opengraph import OpenGraphExtractor
 
 appdir = os.getcwd() + '/'
 
@@ -211,6 +212,16 @@ def updater():
     }
     for i in get_all('groups'):
       mod_one( 'groups', grobj, i['id'])
+  item = get_all('posts')[0]
+  if not 'link' in item:
+    rid = add_one( 'posts', {'link':''} )
+    if rid > 0:
+      del_one('posts',rid)
+    grobj = {
+      'link':''
+    }
+    for i in get_all('posts'):
+      mod_one( 'posts', grobj, i['id'])
   return 'UPDATED DB'
 
 @app.route('/')
