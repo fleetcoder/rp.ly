@@ -3281,6 +3281,7 @@
             doScale: false,
             blockDownloads: false,
             allowPosts: false,
+            shareLinks: false,
             optsHidden: false,
             public: false,
             publicName: '',
@@ -3305,6 +3306,9 @@
           }
           if (this.items[ this.idx ].allowPosts == '1') {
             this.allowPosts = true
+          }
+          if (this.items[ this.idx ].shareLinks == '1') {
+            this.shareLinks = true
           }
           if (this.items[ this.idx ].public == '1') {
             this.public = true
@@ -3408,6 +3412,7 @@
               maxres : sca,
               doScale : this.doScale,
               allowPosts : this.allowPosts,
+              shareLinks : this.shareLinks,
               blockDownloads: this.blockDownloads,
               public: this.public,
               publicName: this.publicName,
@@ -3486,6 +3491,7 @@
             <mt-cell v-bind:class="{'is-hidden':!optsHidden}"  title="Resize photos"><mt-field v-model="maxRes" label="max. width in pixels"></mt-field><mt-switch v-model="doScale"></mt-switch></mt-cell>
             <mt-cell v-bind:class="{'is-hidden':!optsHidden}" title="Block members from saving photos"><mt-switch v-model="blockDownloads"></mt-switch></mt-cell>
             <mt-cell v-bind:class="{'is-hidden':!optsHidden}" title="Allow members to post"><mt-switch v-model="allowPosts"></mt-switch></mt-cell>
+            <mt-cell v-bind:class="{'is-hidden':!optsHidden}" title="Allow article/link posts"><mt-switch v-model="shareLinks"></mt-switch></mt-cell>
             <mt-button class="underpic" v-on:click="modGroups()" size="large">Save</mt-button>
             <mt-popup class="addcontact" v-model="showAddContact" position="middle">
               <mt-field :state="validName" placeholder="Name" @keyup.native="checkConName" v-model="newName"></mt-field>
@@ -5410,6 +5416,7 @@ def addGroups():
     'maxres' : '0',
     'key':randomword(8),
     'allowPosts' : '0',
+    'shareLinks' : '0',
     'blockDownloads' : '0',
     'public':'0',
     'publicImage': saveFile( 'publicImage' ),
@@ -5461,6 +5468,7 @@ def modGroups():
     'image' : saveFile( 'image' ),
     'maxres' : scale,
     'allowPosts' : '0',
+    'shareLinks' : '0',
     'blockDownloads' : '0',
     'public':'0',
     'publicImage': saveFile( 'publicImage' ),
@@ -5472,6 +5480,8 @@ def modGroups():
   }
   if str(request.form.get('allowPosts')) == 'true':
     newobj['allowPosts'] = '1'
+  if str(request.form.get('shareLinks')) == 'true':
+    newobj['shareLinks'] = '1'
   if str(request.form.get('blockDownloads')) == 'true':
     newobj['blockDownloads'] = '1'
   if str(request.form.get('public')) == 'true':

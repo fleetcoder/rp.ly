@@ -201,6 +201,16 @@ def updater():
     }
     for i in get_all('groups'):
       mod_one( 'groups', grobj, i['id'])
+  item = get_all('groups')[0]
+  if not 'shareLinks' in item:
+    rid = add_one( 'groups', {'shareLinks':'0'} )
+    if rid > 0:
+      del_one('groups',rid)
+    grobj = {
+      'shareLinks':'0'
+    }
+    for i in get_all('groups'):
+      mod_one( 'groups', grobj, i['id'])
   return 'UPDATED DB'
 
 @app.route('/')
