@@ -5207,7 +5207,7 @@ def addPosts():
         foundimg = False
         for ogdata in prop:
           if foundtit:
-            newrec['title'] = newrec['title'] + '<a href="' + newrec['link'] + '">' + ogdata + '</a>'
+            newrec['title'] = newrec['title'] + '<a href="' + newrec['link'] + '"><h1>' + ogdata + '</h1></a>'
             foundtit = False
           if ogdata == 'og:title':
             foundtit = True
