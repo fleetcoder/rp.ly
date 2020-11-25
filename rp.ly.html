@@ -5210,21 +5210,26 @@ def addPosts():
       headers = {'User-Agent': user_agent}
       html = requests.get(newrec['link'],headers=headers)
       opengraphe = OpenGraphExtractor()
+      titleset = False
+      imageset = False
       data = opengraphe.extract(str(html.text))
       for prop in data[0]['properties']:
         foundtit = False
         foundimg = False
         for ogdata in prop:
-          if foundtit:
-            newrec['title'] = newrec['title'] + '<h1 class="article_hed">' + ogdata + '</h1>'
-            foundtit = False
-          if ogdata == 'og:title':
-            foundtit = True
-          if foundimg:
-            newrec['title'] = newrec['title'] + '<img class="article_img" src="' + ogdata + '" alt="Image" />'
-            foundimg = False
-          if ogdata == 'og:image':
-            foundimg = True
+          if not titleset or not imageset:
+            if foundtit:
+              newrec['title'] = newrec['title'] + '<h1 class="article_hed">' + ogdata + '</h1>'
+              titleset = True
+              foundtit = False
+            if ogdata == 'og:title':
+              foundtit = True
+            if foundimg:
+              newrec['title'] = newrec['title'] + '<img class="article_img" src="' + ogdata + '" alt="Image" />'
+              imageset = True
+              foundimg = False
+            if ogdata == 'og:image':
+              foundimg = True
     if (newrec['sound'][-3:] == 'mp3'):
       #speedup = request.form.get('speedup')
       speedup = 0.9
