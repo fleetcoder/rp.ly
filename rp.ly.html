@@ -1920,14 +1920,6 @@
             for (var i = 0; i < this.cgroups.length; i++) {
               this.cgroups[i].members = []
               this.cgroups[i].perms = []
-              if (parseInt(this.cgroups[i].shareLinks) > 0) {
-                this.shareLinks = true
-                for (var j = 0; j < this.groups.length; j++) {
-                  if (parseInt(this.groups[j].value) === parseInt(this.cgroups[i].id)) {
-                    this.linkgroups.push(this.groups[j])
-                  }
-                }
-              }
               for (var j = 0; j < this.contacts.length; j++) {
                 this.lastgroups.push([])
                 if (this.contacts[j].groups.indexOf(this.cgroups[i].id) > -1) {
@@ -1974,6 +1966,14 @@
                   }
                 }
                 this.groups = response.body[1]
+                this.shareLinks = false
+                this.linkgroups = []
+                for (var j = 0; j < this.groups.length; j++) {
+                  if (parseInt(this.groups[j].links) > 0) {
+                    this.shareLinks = true
+                    this.linkgroups.push(this.groups[j])
+                  }
+                }
                 this.abilities = response.body[2]
                 if (this.groups.length < 2) {
                   this.groupsHidden = true
@@ -5019,7 +5019,7 @@ def getPosts():
       else:
         grpnam = groupname
       if not grpnam == '':
-        grps.append({'value':grp,'label':grpnam})
+        grps.append({'value':grp,'label':grpnam,'links':group[0]['shareLinks']})
     for abb in abilities:
       if abb['group_id'] == grp:
         for act in abb['actions']:
