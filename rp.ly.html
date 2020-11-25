@@ -272,6 +272,9 @@
           width: 700px;
           margin: 0px auto;
         }
+        .article_img {
+          width: 700px;
+        }
       }
       .joinnotif {
         margin-bottom:20px;
@@ -370,7 +373,10 @@
         margin-bottom:10px;
       }
       .article_img {
-        width: 300px;
+        width: 100%;
+      }
+      .article_hed {
+        cursor: pointer;
       }
     </style>
 
@@ -4895,6 +4901,9 @@ def getPosts():
       item['comments'] = []
       item['published'] = item['created']
       item['isHtml'] = False
+      if not item['link'] is None:
+        if len(item['link']) > 0:
+          item['isHtml'] = True
       item['flagged'] = False
       comms = get_one_by('posts',item['id'],'inreplyto')
       for comm in list(reversed(comms)):
@@ -5207,7 +5216,7 @@ def addPosts():
         foundimg = False
         for ogdata in prop:
           if foundtit:
-            newrec['title'] = newrec['title'] + '<a href="' + newrec['link'] + '"><h1>' + ogdata + '</h1></a>'
+            newrec['title'] = newrec['title'] + '<h1 class="article_hed">' + ogdata + '</h1>'
             foundtit = False
           if ogdata == 'og:title':
             foundtit = True
