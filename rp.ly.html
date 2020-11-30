@@ -1267,7 +1267,7 @@
             this.spinnerHidden = false
             Vue.http.post( 'addPosts', {
               recips: post.groups,
-              title: post.comment,
+              title: JSON.stringify([post.comment]),
               inreplyto: post.id,
               expirehours: 0,
               speedup: ''
@@ -1441,7 +1441,7 @@
             this.spinnerHidden = false
             Vue.http.post( 'addPosts', {
               recips: post.groups,
-              title: post.comment,
+              title: JSON.stringify([post.comment]),
               inreplyto: post.id,
               expirehours: 0,
               speedup: ''
@@ -2171,7 +2171,7 @@
           doSponsor(nonce){
             Vue.http.post( 'addPosts', {
               recips:JSON.stringify(this.postto),
-              title : this.title,
+              title : JSON.stringify([this.title]),
               expirehours: exp
             }).then( ( response ) => {
               this.selected = 'tab1'
@@ -2559,7 +2559,7 @@
             this.spinnerHidden = false
             Vue.http.post( 'addPosts', {
               recips:JSON.stringify(this.postto),
-              title : this.title,
+              title : '[]',
               expirehours: 0,
               speedup: this.speedup,
               doSetHeader: this.doSetHeader,
@@ -5207,8 +5207,9 @@ def addFeeds():
 @app.route('/addPosts',methods=['GET','POST'])
 def addPosts():
   setHdr = -1
-  if int(request.form.get('doSetHeader')) > -1:
-    setHdr = int(request.form.get('doSetHeader'))
+  if not request.form.get('doSetHeader') is None:
+    if int(request.form.get('doSetHeader')) > -1:
+      setHdr = int(request.form.get('doSetHeader'))
   maxRes = 0
   curr = current_user()
   saveImage = [saveFile( 'image' )]
