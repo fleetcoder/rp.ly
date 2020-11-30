@@ -3271,7 +3271,7 @@
             <mt-cell v-for="(item, idx) in items" :title="item.name" is-link :to="'showGroupPosts/' + item.id">
               <img class="grimg" :src="'grpFile?field=image&name=' + item.image" />
             </mt-cell>
-            <div class="groups_following"><h2>Following:</h2></div>
+            <div v-if="othergroups.length > 0" class="groups_following"><h2>Following:</h2></div>
             <mt-cell v-for="(item, idx) in othergroups" :title="item.name" is-link :to="'showGroupPosts/' + item.id">
               <img class="grimg" :src="'grpFile?field=image&name=' + item.image" />
             </mt-cell>
