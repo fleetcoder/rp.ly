@@ -1764,7 +1764,8 @@
             shareLinks:false,
             showShareLink:false,
             shareLinkUrl:'',
-            linkgroups:[]
+            linkgroups:[],
+            showStartControls:true
           }
         },
         components:{
@@ -2513,13 +2514,13 @@
               this.startMode == ''
               this.showPrivateVid = false
               this.showPublicVid = true
-              this.gettingStarted = false
+              this.showStartControls = false
             }
             if (this.startMode == 'private') {
               this.startMode == ''
               this.showPublicVid = false
               this.showPrivateVid = true
-              this.gettingStarted = false
+              this.showStartControls = false
             }
           },
           shareLink(){
@@ -2919,8 +2920,8 @@
                     <mt-button>Close</mt-button>
                   </a>
                 </mt-header>
-                <h3 v-if="gettingStarted">Do you want your first gallery to be...</h3>
-                <mt-radio v-if="gettingStarted"
+                <h3 v-if="showStartControls">Do you want your first gallery to be...</h3>
+                <mt-radio v-if="showStartControls"
                   title=""
                   v-model="startMode"
                   :options="['private', 'public']"
@@ -2932,7 +2933,7 @@
                 <vue-plyr v-if="showPublicVid" class="startVid">
                   <video src="https://rp.ly/file/demopublic1.mp4" controls data-plyr-config='{ "iconUrl": "file/plyr.svg" }' />
                 </vue-plyr>
-                <div v-if="gettingStarted">
+                <div v-if="showStartControls">
                   <h3 v-if="startMode == 'private'">Only you and members of your gallery can see the photos</h3>
                   <h3 v-if="startMode == 'public'">Anyone with the link can see the photos</h3>
                   <mt-button v-if="startMode !== ''" v-on:click="goHelp()">Continue</mt-button>
