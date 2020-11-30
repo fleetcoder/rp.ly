@@ -5219,6 +5219,7 @@ def addPosts():
   if not can('add','posts',curr):
     return( json.dumps( [ 'Error' ] ) )
   imgcount = -1
+  firstimg = ''
   titles = json.loads(request.form.get('title'))
   for savedImage in saveImage:
     imgcount = imgcount + 1
