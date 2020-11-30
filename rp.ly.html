@@ -378,6 +378,10 @@
       .article_hed {
         cursor: pointer;
       }
+      .groups_following {
+        text-align:left;
+        margin-left:30px;
+      }
     </style>
 
     <script id="client">
@@ -3232,7 +3236,7 @@
             spinnerHidden : true
           }
         },
-        props: { items : Array, editHidden: Boolean },
+        props: { items : Array, editHidden: Boolean, othergroups : Array },
         methods: {
           delGroups( id, idx ){
             this.spinnerHidden = false
@@ -3265,6 +3269,10 @@
             </mt-header>
             <mt-spinner v-bind:class="{'is-hidden':spinnerHidden}" type="snake"></mt-spinner>
             <mt-cell v-for="(item, idx) in items" :title="item.name" is-link :to="'showGroupPosts/' + item.id">
+              <img class="grimg" :src="'grpFile?field=image&name=' + item.image" />
+            </mt-cell>
+            <div class="groups_following"><h2>Following:</h2></div>
+            <mt-cell v-for="(item, idx) in othergroups" :title="item.name" is-link :to="'showGroupPosts/' + item.id">
               <img class="grimg" :src="'grpFile?field=image&name=' + item.image" />
             </mt-cell>
             <mt-button size="large" v-on:click="showAddGroup()"><img slot="icon" src="/file/plus-circle.svg" /></mt-button>
@@ -3619,7 +3627,8 @@
             pubHidden: false,
             optGroups:[],
             upLabel: 'Set Author Photo',
-            saveDisabled: true
+            saveDisabled: true,
+            othergroups:[]
           }
         },
         props: {groups: Array},
@@ -3658,6 +3667,7 @@
               if ( !!response.body ) {
                 this.items = response.body[0]
                 this.groups = response.body[1]
+                this.othergroups = response.body[4]
                 this.abilities = response.body[2]
                 if (this.abilities.indexOf("modSource Code") > -1) {
                   this.editHidden = false
@@ -3742,7 +3752,7 @@
           <div>
             <mt-tab-container v-model="selected">
               <mt-tab-container-item id="tab1">
-                <router-view v-bind:items="items" v-bind:groups="groups" v-bind:editHidden="editHidden" @on-update-list="getGroups" @on-tabs-hidden="hideTabs" @on-show-add-group="showAddGroupForm" @on-show-help="showHelp" @on-show-settings="showSettings" @on-update-photos="getPosts" />
+                <router-view v-bind:items="items" v-bind:othergroups="othergroups" v-bind:groups="groups" v-bind:editHidden="editHidden" @on-update-list="getGroups" @on-tabs-hidden="hideTabs" @on-show-add-group="showAddGroupForm" @on-show-help="showHelp" @on-show-settings="showSettings" @on-update-photos="getPosts" />
               </mt-tab-container-item>
               <mt-tab-container-item id="tab2">
                 <mt-header title="Rp.ly">
@@ -5476,7 +5486,7 @@ def getGroups():
       if abb['group_id'] == grp:
         for act in abb['actions']:
           abils.append(act + abb['resource'])
-  return( json.dumps( [items + othergrps,grps,abils,user['code']] ) )
+  return( json.dumps( [items,grps,abils,user['code'],othergrps] ) )
 
 @app.route('/joinGroup',methods=['GET','POST'])
 def joinGroup():
