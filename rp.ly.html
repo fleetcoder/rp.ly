@@ -5242,7 +5242,7 @@ def addPosts():
     in_reply_to = ''
     if not request.form.get('inreplyto') is None:
       in_reply_to = request.form.get('inreplyto')
-    if not imgcount in titles:
+    if len(titles) < (imgcount + 1):
       continue
     newrec = {
       'title' : titles[imgcount],
