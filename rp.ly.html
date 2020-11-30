@@ -1682,7 +1682,7 @@
             groupsHidden:false,
             postto:[],
             comet:'',
-            title : '',
+            title : [],
             image : '',
             cgroups:[{id:1,user_id:1,name:'Admins',perms:[],members:[]},{id:2,user_id:1,name:'Group 2',perms:[],members:[]},{id:3,user_id:1,name:'Group 3',perms:[],members:[]}],
             contacts:[{id:1,user_id:1,name:'Me',email:'',phone:'',groups:[1,2,3]}],
@@ -1745,7 +1745,7 @@
             template2: 'I\'m using RP.LY to share an expanded photo selection with those who join my gallery for (occasional) email or text message notifications. Click this link to join my new gallery.',
             following: [],
             mbshpsHidden: false,
-            doSetHeader: true,
+            doSetHeader: [],
             posts: [],
             showShareGroup: false,
             showFirst: false,
@@ -2048,6 +2048,14 @@
             }
           },
           addPosts(){
+            var sel = this.doSetHeader.reduce(
+              (out, bool, index) => bool ? out.concat(index) : out, 
+              []
+            )
+            var doSetHeader = -1
+            if (sel.length > 0) {
+              doSetHeader = parseInt(sel[0])
+            }
             if (this.postto.length == 0) {
               MintUI.Toast({
                 message: 'Select gallery(s) for your post',
@@ -2067,10 +2075,10 @@
             this.imgHidden = true
             Vue.http.post( 'addPosts', {
               recips:JSON.stringify(this.postto),
-              title : this.title,
+              title : JSON.stringify(this.title),
               expirehours: exp,
               speedup: this.speedup,
-              doSetHeader: this.doSetHeader
+              doSetHeader: doSetHeader
             }).then( ( response ) => {
               if ( !!response.body ) {
                 if (response.body[0].length > 3) {
@@ -2366,6 +2374,16 @@
             this.currentStatus = STATUS_SAVING
             this.$http.post ( this.uploadTo + '?field=image', formData ).then(function (x) {
               this.uploadedFiles = x.body[0]
+              this.doSetHeader = []
+              this.title = []
+              for (var i = 0; i < this.uploadedFiles.length; i++) {
+                this.title.push('')
+                if (i === 0) {
+                  this.doSetHeader.push(true)
+                } else {
+                  this.doSetHeader.push(false)
+                }
+              }
               this.currentStatus = STATUS_SUCCESS
             })
           },
@@ -2549,7 +2567,7 @@
             }).then( ( response ) => {
               if ( !!response.body ) {
                 if (response.body[0].length > 3) {
-                  this.groupLink = this.title + ' ' + response.body
+                  this.groupLink = this.title[0] + ' ' + response.body
                   this.showShareGroup = true
                   if (this.postto.length === 1) {
                     Vue.http.post( 'joinGroup', {
@@ -2564,7 +2582,7 @@
               this.selected = 'tab1'
               this.shareLinkUrl = ''
               this.getPosts()
-              this.title = ''
+              this.title = []
               this.image = ''
               this.postto = []
               this.spinnerHidden = true
@@ -2573,6 +2591,14 @@
               this.groupsHidden = false
               this.reset()
             })
+          },
+          onSetHeaderChange(idx){
+            for (var i = 0; i < this.uploadedFiles.length; i++) {
+              if (i === idx) {
+              } else {
+                this.doSetHeader[i] = false
+              }
+            }
           }
         },
         mounted() {
@@ -2617,8 +2643,8 @@
                     <ul class="list-unstyled">
                       <li v-for="(item, idx) in uploadedFiles">
                         <img :src="'myFile?staged=1&field=image&multiname=' + item.url" class="img-responsive img-thumbnail" :alt="item.originalName" />
-                        <mt-cell v-if="idx == 0" title="Use As Gallery Header Photo"><mt-switch v-model="doSetHeader"></mt-switch></mt-cell>
-                        <mt-field v-if="idx == 0" placeholder="Caption..." type="textarea" rows="4" v-model="title"></mt-field>
+                        <mt-cell title="Use As Gallery Header Photo"><mt-switch v-model="doSetHeader[idx]" @change="onSetHeaderChange(idx)"></mt-switch></mt-cell>
+                        <mt-field placeholder="Caption..." type="textarea" rows="4" v-model="title[idx]"></mt-field>
                       </li>
                     </ul>
                   </div>
@@ -5180,20 +5206,30 @@ def addFeeds():
 
 @app.route('/addPosts',methods=['GET','POST'])
 def addPosts():
+  setHdr = -1
+  if int(request.form.get('doSetHeader')) > -1:
+    setHdr = int(request.form.get('doSetHeader'))
   maxRes = 0
   curr = current_user()
   saveImage = [saveFile( 'image' )]
   senditems = []
   imageupl = saveFile('imagemulti')
-  title = request.form.get('title')
-  firstimg = ''
   if len(imageupl) > 0:
     saveImage = json.loads(imageupl)
   if not can('add','posts',curr):
     return( json.dumps( [ 'Error' ] ) )
+  imgcount = -1
+  titles = json.loads(request.form.get('title'))
   for savedImage in saveImage:
-    if firstimg == '':
+    imgcount = imgcount + 1
+    if imgcount == setHdr:
       firstimg = savedImage
+  imgcount = -1
+  for savedImage in saveImage:
+    imgcount = imgcount + 1
+    doSetHeader = False
+    if imgcount == setHdr:
+      doSetHeader = True
     soundFile = saveFile( 'sound' )
     videoFile = ''
     if (savedImage[-7:].lower() in ['mov.jpg','mp4.jpg']):
@@ -5205,7 +5241,7 @@ def addPosts():
     if not request.form.get('inreplyto') is None:
       in_reply_to = request.form.get('inreplyto')
     newrec = {
-      'title' : title,
+      'title' : titles[imgcount],
       'image' : savedImage,
       'sound' : soundFile,
       'video' : videoFile,
@@ -5263,7 +5299,7 @@ def addPosts():
              return( json.dumps( [ 'Error' ] ) )
     rid = add_one( 'posts', newrec )
     if rid > 0:
-      if str(request.form.get('doSetHeader')) == 'true' and firstimg is not '':
+      if doSetHeader and firstimg is not '':
         newobj = {'image':firstimg}
         for g in json.loads(request.form.get('recips')):
           grpdata = get_one('groups',g)
@@ -5342,7 +5378,6 @@ def addPosts():
         item['textHidden'] = False
       senditems.append(item)
       clearSession('sound')
-      title = ''
   clearSession('image')
   clearSession('imagemulti')
   if maxRes > 0:
@@ -5392,7 +5427,7 @@ def addPosts():
                 if not ug['publicPath'] == '':
                   linkpath = '/' + ug['publicPath']
                 resp = ' 📷 1 of ' + str(len(saveImage)) + ' new in ' + gname + ' #shareinanewway #rplyphoto #rplyshare https://' + mydomain + linkpath
-                if str(request.form.get('doSetHeader')) == 'true' and firstimg is not '':
+                if doSetHeader and firstimg is not '':
                   newobj = {'image':firstimg}
                   mod_one( 'groups', newobj, ug['id'] )
                 break
