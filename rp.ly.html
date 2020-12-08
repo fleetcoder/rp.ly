@@ -404,7 +404,12 @@
             loginHidden: false,
             registerHidden: false,
             sentcode: '',
-            selected: 'tab1'
+            selected: 'tab1',
+            pwdstatus: '',
+            password: '',
+            passwordcheck: '',
+            loginpassword: '',
+            loginemail: ''
           }
         },
         created() {
@@ -439,9 +444,10 @@
               if (re.test(String(this.email).toLowerCase())) {
                 this.emailstatus = 'success'
                 Vue.http.post( 'freeTrialLogin', {
-                  email : this.email,
-                  phone : this.phone,
-                  name: this.name
+                  email : this.loginemail,
+                  pass : this.loginpassword,
+                  name: this.name,
+                  phone: this.phone
                 }).then( ( response ) => {
                   if (response.body[0] == 'error') {
                     MintUI.Toast({
@@ -451,10 +457,22 @@
                     })
                     return
                   }
-                  this.sent = true
-                  this.inputhidden = false
-                  this.sentcode = 'A code was just sent to your email address'
-                  this.loginHidden = true
+                  if (response.body[0] == 'OK') {
+                    this.emailstatus = 'success'
+                    this.pwdstatus = 'success'
+                    this.loginpassword = ''
+                    this.loginemail = ''
+                    window.location.href = '/'
+                  } else {
+                    this.emailstatus = 'error'
+                    this.pwdstatus = 'error'
+                    MintUI.Toast({
+                      message: 'Sorry, there was a problem logging in with that e-mail address',
+                      iconClass: 'icon icon-error',
+                      duration: 2000
+                    })
+                  }
+                  this.spinnerHidden = true
                 })
               } else {
                 this.emailstatus = 'error'
@@ -500,15 +518,37 @@
             this.registerHidden = false
           },
           doTrial(){
+            if (this.password.length > 5) {
+              this.pwdstatus = 'success'
+            } else {
+              MintUI.Toast({
+                message: 'Please use a password that is at least 6 characters long',
+                iconClass: 'icon icon-error',
+                duration: 2000
+              })
+              this.pwdstatus = 'error'
+              return
+            }
+            if (this.password.normalize() === this.passwordcheck.normalize()) {
+              this.pwdstatus = 'success'
+            } else {
+              MintUI.Toast({
+                message: 'Passwords do not match',
+                iconClass: 'icon icon-error',
+                duration: 2000
+              })
+              this.pwdstatus = 'error'
+              return
+            }
             if (this.email.indexOf('@') !== -1) {
               var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
               if (re.test(String(this.email).toLowerCase())) {
                 this.emailstatus = 'success'
-                this.inputnamehidden = true
                 Vue.http.post( 'freeTrial', {
                   email : this.email,
                   phone : this.phone,
-                  name: this.name
+                  name: this.name,
+                  pass: this.password
                 }).then( ( response ) => {
                   if (response.body[0] == 'error') {
                     this.inputnamehidden = false
@@ -520,10 +560,21 @@
                     })
                     return
                   }
-                  this.sentcode = 'A code was just sent to your email address'
-                  this.registerHidden = true
-                  this.sent = true
-                  this.signuphidden = false
+                  if (response.body[0] == 'OK') {
+                    this.passwordcheck = ''
+                    this.email = ''
+                    this.name = ''
+                    this.password = ''
+                    window.location.href = '/'
+                  } else {
+                    this.emailstatus = 'error'
+                    MintUI.Toast({
+                      message: 'Sorry, there was a problem registering with that e-mail address',
+                      iconClass: 'icon icon-error',
+                      duration: 2000
+                    })
+                  }
+                  this.spinnerHidden = true
                 })
               } else {
                 this.emailstatus = 'error'
@@ -565,6 +616,9 @@
           },
           goLogin() {
             this.selected = "tab2"
+          },
+          goForgot() {
+            
           }
         },
         template: `
@@ -582,9 +636,11 @@
             <mt-tab-container v-model="selected" class="introblock signupbox">
               <mt-tab-container-item id="tab1">
                 <mt-header title="Rp.ly"></mt-header>
-                <h4>It's easy to start! You will receive an e-mail or text message with a login code:</h4>
+                <h4>Register for an account:</h4>
                 <mt-field v-bind:class="{'is-hidden':inputnamehidden}" placeholder="Your name..." v-model="name"></mt-field>
-                <mt-field v-bind:class="{'is-hidden':registerHidden}" placeholder="Email or Phone Number..." type="email" :state="emailstatus" v-model="email"></mt-field>
+                <mt-field v-bind:class="{'is-hidden':registerHidden}" placeholder="E-mail Address..." type="email" :state="emailstatus" v-model="email"></mt-field>
+                <mt-field v-bind:class="{'is-hidden':registerHidden}" placeholder="Password..." type="password" :state="pwdstatus" v-model="password"></mt-field>
+                <mt-field v-bind:class="{'is-hidden':registerHidden}" placeholder="Password (again)" type="password" :state="pwdstatus" v-model="passwordcheck"></mt-field>
                 <mt-button v-bind:class="{'is-hidden':registerHidden}" v-on:click="doTrial()" size="large">Sign Up</mt-button>
                 <mt-cell v-bind:class="{'is-hidden':signuphidden}" class="codeinput">{{sentcode}}</mt-cell>
                 <mt-field v-bind:class="{'is-hidden':signuphidden}" class="codeinput" type="number" label="Code:" placeholder="***" v-model="code"></mt-field>
@@ -594,12 +650,12 @@
               </mt-tab-container-item>
               <mt-tab-container-item id="tab2">
                 <mt-header title="Rp.ly"></mt-header>
-                <h4>Welcome! Type an e-mail address or phone number to receive a login code:</h4>
-                <mt-field v-bind:class="{'is-hidden':loginHidden}" placeholder="Email or Phone Number..." type="email" :state="emailstatus" v-model="email"></mt-field>
+                <h4>Log in to your account:</h4>
+                <mt-field v-bind:class="{'is-hidden':loginHidden}" placeholder="E-mail Address..." type="email" :state="emailstatus" v-model="loginemail"></mt-field>
+                <mt-field v-bind:class="{'is-hidden':registerHidden}" placeholder="Password..." type="password" :state="pwdstatus" v-model="loginpassword"></mt-field>
                 <mt-button v-bind:class="{'is-hidden':loginHidden}" v-on:click="myLogin()" size="large">Log In</mt-button>
-                <mt-cell v-bind:class="{'is-hidden':inputhidden}" class="codeinput">{{sentcode}}</mt-cell>
-                <mt-field v-bind:class="{'is-hidden':inputhidden}" class="codeinput" type="number" label="Code:" placeholder="***" v-model="code"></mt-field>
                 <mt-button v-bind:class="{'is-hidden':inputhidden}" v-on:click="doCode()" size="large">Submit Code</mt-button>
+                <div class="loginlink"><a href="javascript:void(0)" @click="goForgot()">Forgot Password?</a></div>
                 <mt-spinner v-bind:class="{'is-hidden':spinnerHidden}" type="snake"></mt-spinner>
               </mt-tab-container-item>
             </mt-tab-container>
@@ -4606,46 +4662,49 @@ def doConnect():
 
 @app.route('/freeTrial', methods=['GET','POST'])
 def freeTrial():
-    cont = {}
-    cont['phone'] = request.form.get("phone")
-    cont['email'] = request.form.get("email")
-    cont['name'] = request.form.get("name")
-    newuser = ''
-    if len(cont['phone']) > 0:
-      loginuser = cont['phone']
-      usr = get_one_by('contacts',loginuser,'phone')
-    if len(cont['email']) > 0:
-      loginuser = cont['email']
-      usr = get_one_by('contacts',loginuser,'email')
+  cont = {}
+  usr = []
+  cont['email'] = request.form.get("email").lower()
+  cont['name'] = request.form.get("name")
+  cont['pass'] = request.form.get("pass")
+  newuser = ''
+  if len(cont['email']) > 0:
+    newuser = cont['email']
+    usr = get_one_by('contacts',newuser,'email')
     if len(usr) > 0 and usr[0]['user_id'] is None:
-      return json.dumps(['error'])
-    num = randint(100, 999)
-    cont = {}
-    cont['phone'] = request.form.get("phone")
-    cont['email'] = request.form.get("email").lower()
-    add_one('connectcodes',{
-      'num':num,
-      'email':cont['email'],
-      'phone':cont['phone']
-    })
-    if len(cont['phone']) > 0:
-      client = Client(twilio_id, twilio_token)
-      rl = "Your " + mydomain + " code is " + str(num)
-      message = client.messages.create(
-        body=rl,
-        from_='+1' + os.getenv('TWILIO_FROM'),
-        to=cont['phone']
-      )
-    if len(cont['email']) > 0:
-      em = cont['email']
-      message = Mail(
-        from_email=os.getenv('SENDGRID_FROM'),
-        to_emails=em,
-        subject='Your ' + mydomain + ' connection code is ' + str(num),
-        html_content='<strong>Your code is ' + str(num) + '</strong>')
-      sg = SendGridAPIClient(sendgrid_token)
-      response = sg.send(message)
-    return 'OK'
+      return json.dumps( [ 'Error' ] )
+  else:
+    return json.dumps( [ 'Error' ] )
+  os.chdir(appdir)
+  email = ''
+  ra = randomword(6)
+  newgrp = [2]
+  u = add_one('contacts',{
+    'name':cont['name'],
+    'email':cont['email'].lower(),
+    'phone':'',
+    'password':getHashedPass(cont['pass']),
+    'groups':json.dumps(newgrp),
+    'code':ra,
+    'created':str(datetime.now())
+  })
+  newrec = {
+    'name' : 'My Photos',
+    'image':'',
+    'maxres':'2000',
+    'allowPosts':'0',
+    'blockDownloads':'0',
+    'user_id' : u,
+    'key' : randomword(8),
+    'created' : str( timezone( 'US/Pacific' ).localize( datetime.now() ) )
+  }
+  gr1 = add_one( 'groups', newrec )
+  con = mod_one('contacts',{'groups': json.dumps(newgrp + [gr1])},u)
+  update_abilities()
+  response = make_response(json.dumps( [ 'OK' ] ))
+  session.permanent = True
+  session['user'] = str(u)
+  return response
 
 @app.route('/freeTrialLogin', methods=['GET','POST'])
 def freeTrialLogin():
@@ -4670,28 +4729,38 @@ def freeTrialLogin():
     cont = {}
     cont['phone'] = request.form.get("phone")
     cont['email'] = request.form.get("email").lower()
-    add_one('connectcodes',{
-      'num':num,
-      'email':cont['email'],
-      'phone':cont['phone']
-    })
-    if len(cont['phone']) > 0:
-      client = Client(twilio_id, twilio_token)
-      rl = "Your " + mydomain + " code is " + str(num)
-      message = client.messages.create(
-        body=rl,
-        from_='+1' + os.getenv('TWILIO_FROM'),
-        to=cont['phone']
-      )
-    if len(cont['email']) > 0:
-      em = cont['email']
-      message = Mail(
-        from_email=os.getenv('SENDGRID_FROM'),
-        to_emails=em,
-        subject='Your ' + mydomain + ' connection code is ' + str(num),
-        html_content='<strong>Your code is ' + str(num) + '</strong>')
-      sg = SendGridAPIClient(sendgrid_token)
-      response = sg.send(message)
+    if not request.form.get("pass") is None:
+      if checkPass( request.form.get("pass"), exists['password'] ):
+        u = exists['id']
+        response = make_response(json.dumps( [ 'OK' ] ))
+        session.permanent = True
+        session['user'] = str(u)
+        return response
+      else:
+        return json.dumps( [ 'Error' ] )
+    else:
+      add_one('connectcodes',{
+        'num':num,
+        'email':cont['email'],
+        'phone':cont['phone']
+      })
+      if len(cont['phone']) > 0:
+        client = Client(twilio_id, twilio_token)
+        rl = "Your " + mydomain + " code is " + str(num)
+        message = client.messages.create(
+          body=rl,
+          from_='+1' + os.getenv('TWILIO_FROM'),
+          to=cont['phone']
+        )
+      if len(cont['email']) > 0:
+        em = cont['email']
+        message = Mail(
+          from_email=os.getenv('SENDGRID_FROM'),
+          to_emails=em,
+          subject='Your ' + mydomain + ' connection code is ' + str(num),
+          html_content='<strong>Your code is ' + str(num) + '</strong>')
+        sg = SendGridAPIClient(sendgrid_token)
+        response = sg.send(message)
     return 'OK'
 
 @app.route('/freeTrialStart', methods=['GET','POST'])

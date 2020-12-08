@@ -32,6 +32,7 @@ import tensorflow_hub as hub
 import pandas as pd
 from socket import timeout
 from extruct.opengraph import OpenGraphExtractor
+import bcrypt
 
 appdir = os.getcwd() + '/'
 
@@ -868,6 +869,12 @@ def moderationCheck(url,crawl):
     output = int(res['class_ids'][0])
   add_one('cached',{'urlkey':urlkey,'link':url,'story':story,'result':output})
   return output
+
+def getHashedPass( password ):
+  return bcrypt.hashpw( password, bcrypt.gensalt() )
+
+def checkPass( password, hashedPassword ):
+  return bcrypt.checkpw( password, hashedPassword )
 
 exec(server,globals(),{'app':app,'request':request,'abilities':abilities,'estimator':estimator})
 
