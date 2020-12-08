@@ -409,7 +409,8 @@
             password: '',
             passwordcheck: '',
             loginpassword: '',
-            loginemail: ''
+            loginemail: '',
+            forgotHidden: true
           }
         },
         created() {
@@ -618,7 +619,12 @@
             this.selected = "tab2"
           },
           goForgot() {
-            
+            this.forgotHidden = false
+            this.loginHidden = true
+          },
+          goLoginForgot() {
+            this.forgotHidden = true
+            this.loginHidden = false
           }
         },
         template: `
@@ -650,12 +656,16 @@
               </mt-tab-container-item>
               <mt-tab-container-item id="tab2">
                 <mt-header title="Rp.ly"></mt-header>
-                <h4>Log in to your account:</h4>
+                <h4 v-bind:class="{'is-hidden':loginHidden}">Log in to your account:</h4>
+                <h4 v-bind:class="{'is-hidden':forgotHidden}">Reset your password:</h4>
                 <mt-field v-bind:class="{'is-hidden':loginHidden}" placeholder="E-mail Address..." type="email" :state="emailstatus" v-model="loginemail"></mt-field>
-                <mt-field v-bind:class="{'is-hidden':registerHidden}" placeholder="Password..." type="password" :state="pwdstatus" v-model="loginpassword"></mt-field>
+                <mt-field v-bind:class="{'is-hidden':loginHidden}" placeholder="Password..." type="password" :state="pwdstatus" v-model="loginpassword"></mt-field>
                 <mt-button v-bind:class="{'is-hidden':loginHidden}" v-on:click="myLogin()" size="large">Log In</mt-button>
+                <mt-field v-bind:class="{'is-hidden':forgotHidden}" placeholder="E-mail Address..." type="email" :state="emailstatus" v-model="loginemail"></mt-field>
+                <mt-button v-bind:class="{'is-hidden':forgotHidden}" v-on:click="myForgot()" size="large">Reset Password</mt-button>
                 <mt-button v-bind:class="{'is-hidden':inputhidden}" v-on:click="doCode()" size="large">Submit Code</mt-button>
-                <div class="loginlink"><a href="javascript:void(0)" @click="goForgot()">Forgot Password?</a></div>
+                <div v-bind:class="{'is-hidden':forgotHidden}" class="loginlink"><a href="javascript:void(0)" @click="goLoginForgot()">Log In</a></div>
+                <div v-bind:class="{'is-hidden':loginHidden}" class="loginlink"><a href="javascript:void(0)" @click="goForgot()">Forgot Password?</a></div>
                 <mt-spinner v-bind:class="{'is-hidden':spinnerHidden}" type="snake"></mt-spinner>
               </mt-tab-container-item>
             </mt-tab-container>
