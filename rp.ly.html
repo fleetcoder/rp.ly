@@ -410,12 +410,20 @@
             passwordcheck: '',
             loginpassword: '',
             loginemail: '',
-            forgotHidden: true
+            forgotHidden: true,
+            resetHidden: true,
+            sentReset: false,
+            savedReset: false
           }
         },
         created() {
           if (this.$route.path.substring(1) == 'login'){
             this.selected = 'tab2'
+          }
+          if (this.$route.path.substring(1) == 'reset'){
+            this.selected = 'tab2'
+            this.loginHidden = true
+            this.resetHidden = false
           }
         },
         methods: {
@@ -619,12 +627,52 @@
             this.selected = "tab2"
           },
           goForgot() {
+            this.resetHidden = true
             this.forgotHidden = false
             this.loginHidden = true
           },
           goLoginForgot() {
+            this.resetHidden = true
             this.forgotHidden = true
             this.loginHidden = false
+          },
+          goLoginReset() {
+            this.goLoginForgot()
+            window.location.href = 'https://' + window.location.hostname + '/#/login'
+          },
+          myForgot() {
+            Vue.http.post( 'sendResetPwd', {
+              email : this.email,
+            }).then( ( response ) => {
+              if (response.body[0] == 'error') {
+                MintUI.Toast({
+                  message: 'Error',
+                  iconClass: 'icon icon-error',
+                  duration: 2000
+                })
+                this.emailstatus = 'error'
+              } else {
+                this.sentReset = true
+              }
+            })
+          },
+          doReset() {
+            Vue.http.post( 'saveResetPwd', {
+              pass : this.password,
+            }).then( ( response ) => {
+              if (response.body[0] == 'error') {
+                MintUI.Toast({
+                  message: 'Error',
+                  iconClass: 'icon icon-error',
+                  duration: 2000
+                })
+                this.emailstatus = 'error'
+              } else {
+                this.savedReset = true
+                this.sentReset = false
+                this.password = ''
+              }
+            })
           }
         },
         template: `
@@ -666,6 +714,12 @@
                 <mt-button v-bind:class="{'is-hidden':inputhidden}" v-on:click="doCode()" size="large">Submit Code</mt-button>
                 <div v-bind:class="{'is-hidden':forgotHidden}" class="loginlink"><a href="javascript:void(0)" @click="goLoginForgot()">Log In</a></div>
                 <div v-bind:class="{'is-hidden':loginHidden}" class="loginlink"><a href="javascript:void(0)" @click="goForgot()">Forgot Password?</a></div>
+                <mt-field v-bind:class="{'is-hidden':resetHidden}" placeholder="Password..." type="password" :state="pwdstatus" v-model="password"></mt-field>
+                <mt-field v-bind:class="{'is-hidden':resetHidden}" placeholder="Password (again)" type="password" :state="pwdstatus" v-model="passwordcheck"></mt-field>
+                <mt-button v-bind:class="{'is-hidden':resetHidden}" v-on:click="doReset()" size="large">Reset Password</mt-button>
+                <div v-bind:class="{'is-hidden':resetHidden}" class="loginlink"><a href="javascript:void(0)" @click="goLoginReset()">Log In</a></div>
+                <mt-cell v-bind:class="{'is-hidden':!sentReset}" class="codeinput">A link has been sent to your e-mail address, click the link to reset your password.</mt-cell>
+                <mt-cell v-bind:class="{'is-hidden':!savedReset}" class="codeinput">Your password has been reset.</mt-cell>
                 <mt-spinner v-bind:class="{'is-hidden':spinnerHidden}" type="snake"></mt-spinner>
               </mt-tab-container-item>
             </mt-tab-container>
@@ -3996,6 +4050,9 @@
             path: '/login',
             component: freeTrial
         },{
+            path: '/reset',
+            component: freeTrial
+        },{
             path: '/auth',
             component: freeTrial
         }
@@ -4007,6 +4064,53 @@
 
   </body>
   <script type="python" id="server">
+
+@app.route('/sendResetPwd',methods=['POST'])
+def sendResetPwd():
+  em = request.form.get('email').lower()
+  item = get_one_by( 'resetcodes', em, 'email' )
+  if len(item) > 0:
+    ccd = item[0]['code']
+  else:
+    ccd = randomword(18)
+    add_one('resetcodes',{
+      'email':em,
+      'code':ccd
+    })
+  message = Mail(
+    from_email=' Request at ' + mydomain + ' <' + os.getenv('SENDGRID_FROM') + '>',
+    to_emails=em,
+    subject='The ' + mydomain + ' link you requested',
+    html_content='<strong>Your link for ' + mydomain + 'password reset<a href="https://' + mydomain + '/doResetPwd?ccd=' + ccd + '"><h2>Reset Password</h2></a></strong>')
+  sg = SendGridAPIClient(sendgrid_token)
+  response = sg.send(message)
+  return ''
+
+@app.route('/doResetPwd',methods=['GET'])
+def doResetPwd():
+  code = request.args.get('ccd')
+  item = get_one_by( 'resetcodes', code, 'code' )
+  if len(item) > 0:
+    del_one( 'resetcodes', item[0]['id'] )
+    email = item[0]['email']
+    usrs = get_one_by('contacts',email,'email')
+    if len(usrs) > 0:
+      for usr in usrs:
+        if usr['user_id'] is None:
+          u = usr['id']
+          session.permanent = True
+          session['user'] = str(u)
+          return redirect("https://" + mydomain + "/#/reset", code=302)
+  return json.dumps( [ 'Error' ] )
+
+@app.route('/saveResetPwd',methods=['POST'])
+def saveResetPwd():
+  if not 'user' in session:
+    return json.dumps( [ 'Error' ] )
+  id = session['user']
+  ct = get_one( 'contacts', id )[0]
+  mod_one( 'contacts', {"password":getHashedPass(request.form.get("pass"))}, ct['id'] )
+  return json.dumps( [ 'OK' ] )
 
 @app.route('/modFeedSett',methods=['POST'])
 def modFeedSett():
