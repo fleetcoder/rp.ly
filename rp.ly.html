@@ -2229,6 +2229,8 @@
                     }).then( ( response ) => {
                       this.sharingGroup = response.body[1]
                       this.sharingImg = response.body[2]
+                      this.selected = 'tab3'
+                      router.push( 'showGroupPosts/' + this.postto[0] )
                     })
                   }
                 }
