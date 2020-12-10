@@ -1934,6 +1934,13 @@
           }
         },
         created() {
+          if (this.$route.path.substring(1) == 'tab2'){
+            this.selected = 'tab2'
+          }
+          if (this.$route.path.substring(1) == 'tab3'){
+            this.selected = 'tab3'
+          }
+          
           if (!(window.location.href.match(/\/grp\//g) === null)) {
             var grp = window.location.pathname.substr(window.location.pathname.lastIndexOf('/') + 1)
             window.location.href = 'https://' + window.location.hostname + '/#/group/' + grp
@@ -2751,6 +2758,9 @@
                 router.push( 'showGroupPosts/' + this.cgroups[i].id )
               }
             }
+          },
+          changeTabs(route) {
+            router.push( route )
           }
         },
         mounted() {
@@ -2825,7 +2835,7 @@
                 <mt-cell v-bind:class="{'is-hidden':optionsHidden}"><mt-switch class="options" v-model="audioHidden">Podcast</mt-switch><mt-switch class="options" v-model="textHidden">Caption</mt-switch></mt-cell>
                 <mt-button v-if="isSuccess" v-bind:class="{'is-hidden':saveHidden}" v-on:click="addPosts()" size="large" id="savepostbutton">Save</mt-button>
               </mt-tab-container-item>
-              <mt-tab-container-item id="tab3">
+              <mt-tab-container-item id="tab3"">
                   <router-view name="righttab" @on-update-photos="getPosts" v-bind:items="items" v-bind:posts.sync="posts" v-bind:doSponsor.sync="doSponsor" v-bind:groupLink.sync="groupLink" v-bind:postto.sync="postto" v-bind:selected.sync="selected" v-bind:editHidden="editHidden" v-bind:cangrps="cangrps" v-bind:moreHidden="moreHidden" @on-update-list="getPosts" @on-update-groups="getContacts" @on-tabs-hidden="hideTabs" @on-show-menu="showLink" @on-show-help="showHelp" @load-more-items="moreItems" @show-share-group="setShowShareGroup" @show-sponsor="doShowSponsor" @on-show-back="backToGallery" />
                   <!--
                   <router-view name="middletab" v-bind:subsHidden="subsHidden" @on-update-photos="getPosts" v-bind:groups="groups" />
@@ -2843,13 +2853,13 @@
               </mt-tab-container-item>
             </mt-tab-container>
             <mt-tabbar fixed="true" v-model="selected" v-bind:class="{'is-hidden':tabsHidden}">
-              <mt-tab-item id="tab1">
+              <mt-tab-item id="tab1" @mouseup.native="changeTabs('/')">
                 <img slot="icon" src="/file/home.svg" />
               </mt-tab-item>
-              <mt-tab-item id="tab2">
+              <mt-tab-item id="tab2" @mouseup.native="changeTabs('/tab2')">
                 <img slot="icon" src="/file/plus-circle.svg" />
               </mt-tab-item>
-              <mt-tab-item id="tab3">
+              <mt-tab-item id="tab3" @mouseup.native="changeTabs('/tab3')">
                 <img slot="icon" src="/file/list.svg" />
               </mt-tab-item>
             </mt-tabbar>
@@ -4036,6 +4046,20 @@
             components:{default: listPosts, middletab: MidMenu, righttab: showGroupPosts}
         },{
             path: '',
+            components:{ default: listPosts, middletab: MidMenu, righttab: Groups },
+            children:[{
+                      path: '',
+                      component: listGroups
+                  }]
+        },{
+            path: 'tab2',
+            components:{ default: listPosts, middletab: MidMenu, righttab: Groups },
+            children:[{
+                      path: '',
+                      component: listGroups
+                  }]
+        },{
+            path: 'tab3',
             components:{ default: listPosts, middletab: MidMenu, righttab: Groups },
             children:[{
                       path: '',
