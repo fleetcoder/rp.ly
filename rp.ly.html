@@ -393,6 +393,9 @@
       .addphotostab > a:nth-child(3) > div:nth-child(2) > div:nth-child(2) > div:nth-child(1) {
         width: 100%;
       }
+      #issaving {
+        margin-left: 40px;
+      }
     </style>
 
     <script id="client">
@@ -2761,7 +2764,7 @@
                         accept="image/*,video/mp4,video/x-m4v,video/*,audio/x-m4a,audio/*" class="input-file">
                     </div>
                   </form>
-                  <p class="dropboxp" v-if="isSaving">
+                  <p id="issaving" class="dropbox" v-if="isSaving">
                     Uploading {{ fileCount }} files...
                     <mt-button type="primary" size="small" v-on:click="cancelUpload()">Cancel Uploading</mt-button>
                     <mt-spinner type="snake"></mt-spinner>
