@@ -396,6 +396,9 @@
       #issaving {
         margin-left: 40px;
       }
+      .addphotostab > a:nth-child(3) > div:nth-child(2) > div:nth-child(2) > form:nth-child(1) {
+        width: 100%;
+      }
     </style>
 
     <script id="client">
@@ -2762,6 +2765,7 @@
                       <label class="uploadlabel" for="image_uploads">&nbsp;&nbsp;&nbsp;&nbsp;<img src="/file/camera.svg" class="uplimg" alt="Upload Photos" /><img src="/file/video.svg" class="uplimg" alt="Upload Photos" /><img src="/file/film.svg" class="uplimg" alt="Upload Photos" /></label><img v-on:click="shareLink()" v-if="shareLinks" src="/file/link.svg" class="uplimg" alt="Save Link" />&nbsp;&nbsp;&nbsp;&nbsp;
                       <input id="image_uploads" type="file" multiple :name="uploadFieldName" :disabled="isSaving" @change="filesChange($event.target.name, $event.target.files); fileCount = $event.target.files.length"
                         accept="image/*,video/mp4,video/x-m4v,video/*,audio/x-m4a,audio/*" class="input-file">
+                      <h3>Click on these buttons to add content</h3>
                     </div>
                   </form>
                   <p id="issaving" class="dropbox" v-if="isSaving">
