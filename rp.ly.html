@@ -1614,6 +1614,7 @@
               }
             }
             this.$emit('update:selected', 'tab2')
+            this.$emit('on-show-back')
             router.push('/')
           },
           gallEmbed(){
@@ -1906,7 +1907,8 @@
             showShareLink:false,
             shareLinkUrl:'',
             linkgroups:[],
-            showStartControls:true
+            showStartControls:true,
+            showBackToGallery: false
           }
         },
         components:{
@@ -2736,6 +2738,17 @@
                 this.doSetHeader[i] = false
               }
             }
+          },
+          backToGallery() {
+            this.showBackToGallery = true
+          },
+          backToGalleries() {
+            for (var i = 0; i < this.cgroups.length; i++) {
+              if (parseInt(this.cgroups[i].id) == parseInt(this.postto[0])) {
+                this.selected = 'tab3'
+                router.push( 'showGroupPosts/' + this.cgroups[i].id )
+              }
+            }
           }
         },
         mounted() {
@@ -2751,7 +2764,10 @@
               </mt-tab-container-item>
               <mt-tab-container-item id="tab2" class="addphotostab">
                 <mt-header title="Rp.ly">
-                  <a v-on:click="showHelp()" slot="left">
+                  <a v-if="showBackToGallery" v-on:click="backToGalleries()" slot="left">
+                    <mt-button icon="back">back</mt-button>
+                  </a>
+                  <a v-else v-on:click="showHelp()" slot="left">
                     <img class="headericon" slot="icon" src="file/help-circle.svg" />
                   </a>
                   <a v-on:click="showLink()" slot="right">
@@ -2808,7 +2824,7 @@
                 <mt-button v-if="isSuccess" v-bind:class="{'is-hidden':saveHidden}" v-on:click="addPosts()" size="large" id="savepostbutton">Save</mt-button>
               </mt-tab-container-item>
               <mt-tab-container-item id="tab3">
-                  <router-view name="righttab" @on-update-photos="getPosts" v-bind:items="items" v-bind:posts.sync="posts" v-bind:doSponsor.sync="doSponsor" v-bind:groupLink.sync="groupLink" v-bind:postto.sync="postto" v-bind:selected.sync="selected" v-bind:editHidden="editHidden" v-bind:cangrps="cangrps" v-bind:moreHidden="moreHidden" @on-update-list="getPosts" @on-update-groups="getContacts" @on-tabs-hidden="hideTabs" @on-show-menu="showLink" @on-show-help="showHelp" @load-more-items="moreItems" @show-share-group="setShowShareGroup" @show-sponsor="doShowSponsor" />
+                  <router-view name="righttab" @on-update-photos="getPosts" v-bind:items="items" v-bind:posts.sync="posts" v-bind:doSponsor.sync="doSponsor" v-bind:groupLink.sync="groupLink" v-bind:postto.sync="postto" v-bind:selected.sync="selected" v-bind:editHidden="editHidden" v-bind:cangrps="cangrps" v-bind:moreHidden="moreHidden" @on-update-list="getPosts" @on-update-groups="getContacts" @on-tabs-hidden="hideTabs" @on-show-menu="showLink" @on-show-help="showHelp" @load-more-items="moreItems" @show-share-group="setShowShareGroup" @show-sponsor="doShowSponsor" @on-show-back="backToGallery" />
                   <!--
                   <router-view name="middletab" v-bind:subsHidden="subsHidden" @on-update-photos="getPosts" v-bind:groups="groups" />
                   <mt-cell>
