@@ -2231,13 +2231,14 @@
                   this.groupLink = this.title + ' ' + response.body
                   this.showShareGroup = true
                   if (this.postto.length === 1) {
+                    var postto = this.postto[0]
                     Vue.http.post( 'joinGroup', {
                       grp:this.postto[0]
                     }).then( ( response ) => {
                       this.sharingGroup = response.body[1]
                       this.sharingImg = response.body[2]
                       this.selected = 'tab3'
-                      router.push( 'showGroupPosts/' + this.postto[0] )
+                      router.push( 'showGroupPosts/' + postto )
                     })
                   }
                 }
