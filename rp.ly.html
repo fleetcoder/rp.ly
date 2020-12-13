@@ -4228,6 +4228,7 @@ def syncGroups():
       items = []
       if len(feeds) > 0:
         for fd in feeds:
+          time.sleep(0.1)
           feed = feedparser.parse(fd)
           for item in feed.entries:
             if not 'title' in item:
