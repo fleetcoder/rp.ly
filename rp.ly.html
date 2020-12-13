@@ -4224,6 +4224,7 @@ def syncGroups():
     if gr['feeds'][:1] == '[':
       feeds = json.loads(gr['feeds'])
       grp = int(gr['id'])
+      grpowner = int(gr['user_id'])
       items = []
       if len(feeds) > 0:
         for fd in feeds:
@@ -4237,12 +4238,7 @@ def syncGroups():
                   item['title'] = item['content']
                 else:
                   continue
-            if item['title'] == '':
-              item['title'] = '(untitled)'
             if 'link' in item:
-              curr = current_user()
-              if not can('add','posts',curr):
-                return( json.dumps( [ 'Error' ] ) )
               posts = get_one_by('posts',item['link'],'link')
               if len(posts) > 0:
                 continue
@@ -4255,7 +4251,7 @@ def syncGroups():
                 'groups' : json.dumps([grp]),
                 'inreplyto' : '',
                 'link':item['link'],
-                'user_id' : session['user'],
+                'user_id' : grpowner,
                 'created' : str( timezone( 'US/Pacific' ).localize( datetime.now() ) )
               }
               user_agent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1985.143 Safari/537.36'
