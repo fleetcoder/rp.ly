@@ -4845,9 +4845,10 @@ def freeTrial():
   newuser = ''
   if len(cont['email']) > 0:
     newuser = cont['email']
-    usr = get_one_by('contacts',newuser,'email')
-    if len(usr) > 0 and usr[0]['user_id'] is None:
-      return json.dumps( [ 'Error' ] )
+    users = get_one_by('contacts',newuser,'email')
+    for usr in users:
+      if usr['user_id'] is None:
+        return json.dumps( [ 'Error' ] )
   else:
     return json.dumps( [ 'Error' ] )
   os.chdir(appdir)
