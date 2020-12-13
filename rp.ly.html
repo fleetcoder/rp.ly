@@ -4220,6 +4220,7 @@
 def syncGroups():
   groups = get_all('groups')
   grp = 0
+  added = 0
   for gr in groups:
     if gr['feeds'][:1] == '[':
       feeds = json.loads(gr['feeds'])
@@ -4282,7 +4283,10 @@ def syncGroups():
                     if newrec['title'] == '':
                       newrec['title'] = foundtitle
               rid = add_one( 'posts', newrec )
+              added = added + 1
               time.sleep(0.1)
+              if added == 20:
+                break
         return 'OK'
   return 'OK'
 
