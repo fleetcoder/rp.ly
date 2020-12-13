@@ -4280,8 +4280,8 @@ def syncGroups():
                       foundimg = False
                     if ogdata == 'og:image':
                       foundimg = True
-                    if newrec['title'] == '':
-                      newrec['title'] = foundtitle
+              if newrec['title'] == '':
+                newrec['title'] = foundtitle
               rid = add_one( 'posts', newrec )
               added = added + 1
               time.sleep(0.1)
