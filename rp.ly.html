@@ -399,6 +399,9 @@
       .addphotostab > a:nth-child(3) > div:nth-child(2) > div:nth-child(2) > form:nth-child(1) {
         width: 100%;
       }
+      .feedsinput {
+        text-decoration:underline;
+      }
     </style>
 
     <script id="client">
@@ -891,7 +894,7 @@
             </mt-cell>-->
             <mt-cell class="imagecell public_img" v-for="(item, idx) in items" :title="item.name">
               <p class="caption" v-html="item.title" v-bind:class="{'is-hidden':item.textHidden}"></p>
-              <div class="outer">
+              <div v-if="!item.imageHidden" class="outer">
                 <img class="oimg" :src="imageLink(item)" v-if="item.allowDownload" />
                 <img @contextmenu.prevent="doContextMenu" class="oimg cant-click" :src="imageLink(item)" v-else />
                 <figcaption class="caption underpic" v-html="item.title"></figcaption>
@@ -3867,7 +3870,7 @@
               <mt-button v-on:click="doFindFeeds()" :disabled="findDisabled" size="large">Find Feeds</mt-button>
               <mt-spinner v-bind:class="{'is-hidden':findSpinnerHidden}" type="snake"></mt-spinner>
               <mt-cell v-bind:class="{'is-hidden':findMessageHidden}" title="No Feeds Found"></mt-cell>-->
-              <label for="feedsfile" style="text-decoration:underline;">Click here to choose a feeds file from your computer (opml/xml):</label>
+              <label for="feedsfile" class="feedsinput">Click here to choose a feeds file from your computer (opml/xml):</label>
               <input type="file" name="file" id="feedsfile"
                 @change="onFileChange($event.target.name, $event.target.files); fileCount = $event.target.files.length"
                 accept="text/*" class="input-file" />
@@ -4212,6 +4215,79 @@
 
   </body>
   <script type="python" id="server">
+
+@app.route('/syncGroups',methods=['GET','POST'])
+def syncGroups():
+  groups = get_all('groups')
+  grp = 0
+  for gr in groups:
+    if gr['feeds'][:1] == '[':
+      feeds = json.loads(gr['feeds'])
+      grp = int(gr['id'])
+      items = []
+      if len(feeds) > 0:
+        for fd in feeds:
+          feed = feedparser.parse(fd)
+          for item in feed.entries:
+            if not 'title' in item:
+              if 'description' in item:
+                item['title'] = item['description']
+              else:
+                if 'content' in item:
+                  item['title'] = item['content']
+                else:
+                  continue
+            if item['title'] == '':
+              item['title'] = '(untitled)'
+            if 'link' in item:
+              curr = current_user()
+              if not can('add','posts',curr):
+                return( json.dumps( [ 'Error' ] ) )
+              posts = get_one_by('posts',item['link'],'link')
+              if len(posts) > 0:
+                continue
+              foundtitle = item['title']
+              newrec = {
+                'title' : '',
+                'image' : '',
+                'sound' : '',
+                'video' : '',
+                'groups' : json.dumps([grp]),
+                'inreplyto' : '',
+                'link':item['link'],
+                'user_id' : session['user'],
+                'created' : str( timezone( 'US/Pacific' ).localize( datetime.now() ) )
+              }
+              user_agent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1985.143 Safari/537.36'
+              headers = {'User-Agent': user_agent}
+              html = requests.get(newrec['link'],headers=headers)
+              opengraphe = OpenGraphExtractor()
+              titleset = False
+              imageset = False
+              data = opengraphe.extract(str(html.text))
+              for prop in data[0]['properties']:
+                foundtit = False
+                foundimg = False
+                for ogdata in prop:
+                  if not titleset or not imageset:
+                    if foundtit:
+                      newrec['title'] = newrec['title'] + '<h1 class="article_hed">' + ogdata + '</h1>'
+                      titleset = True
+                      foundtit = False
+                    if ogdata == 'og:title':
+                      foundtit = True
+                    if foundimg:
+                      newrec['title'] = newrec['title'] + '<img class="article_img" src="' + ogdata + '" alt="Image" />'
+                      imageset = True
+                      foundimg = False
+                    if ogdata == 'og:image':
+                      foundimg = True
+                    if newrec['title'] == '':
+                      newrec['title'] = foundtitle
+              rid = add_one( 'posts', newrec )
+              time.sleep(0.1)
+        return 'OK'
+  return 'OK'
 
 @app.route('/syncFile',methods=['GET','POST'])
 def syncFile():
