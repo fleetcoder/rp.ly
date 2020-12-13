@@ -894,6 +894,7 @@
             </mt-cell>-->
             <mt-cell class="imagecell public_img" v-for="(item, idx) in items" :title="item.name">
               <p class="caption" v-html="item.title" v-bind:class="{'is-hidden':item.textHidden}"></p>
+              <p v-if="item.isHtml" class="caption" v-on:click="addComment(idx)"><img class="comment" slot="icon" src="file/message-square.svg" /></p>
               <div v-if="!item.imageHidden" class="outer">
                 <img class="oimg" :src="imageLink(item)" v-if="item.allowDownload" />
                 <img @contextmenu.prevent="doContextMenu" class="oimg cant-click" :src="imageLink(item)" v-else />
