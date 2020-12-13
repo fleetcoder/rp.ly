@@ -6520,7 +6520,7 @@ def grpFile():
     if os.path.exists(thefile):
       limit = datetime.strptime('Nov 6 2020','%b %d %Y')
       mod = datetime.fromtimestamp(os.path.getmtime(thefile))
-      if mod < limit:
+      if mod < limit or request.args.get('field') == 'publicImage':
         ftype = 'image/jpeg'
         print(thefile,file=sys.stderr)
         return send_file( thefile, mimetype=ftype)
