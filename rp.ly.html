@@ -2793,7 +2793,7 @@
                     <div class="dropbox">
                       <label class="uploadlabel" for="image_uploads">&nbsp;&nbsp;&nbsp;&nbsp;<img src="/file/camera.svg" class="uplimg" alt="Upload Photos" /><img src="/file/video.svg" class="uplimg" alt="Upload Photos" /><img src="/file/film.svg" class="uplimg" alt="Upload Photos" /></label><img v-on:click="shareLink()" v-if="shareLinks" src="/file/link.svg" class="uplimg" alt="Save Link" />&nbsp;&nbsp;&nbsp;&nbsp;
                       <input id="image_uploads" type="file" multiple :name="uploadFieldName" :disabled="isSaving" @change="filesChange($event.target.name, $event.target.files); fileCount = $event.target.files.length"
-                        accept="image/*,video/mp4,video/x-m4v,video/*,audio/x-m4a,audio/*" class="input-file">
+                        accept="image/*,video/mp4,video/x-m4v,video/*,audio/x-m4a,audio/*" class="input-file" />
                       <h3>Click on these buttons to add content</h3>
                     </div>
                   </form>
@@ -3579,7 +3579,15 @@
             publicGroups: [],
             pubHidden: false,
             publicPath: '',
-            optGroups: []
+            optGroups: [],
+            feeds: [],
+            feedsVisible: false,
+            findFeeds: '',
+            findDisabled: false,
+            findSpinnerHidden: true,
+            findMessageHidden: true,
+            uploadXmlTo: 'syncFile',
+            addFeed: ''
           }
         },
         props: { items : Array, groups : Array },
@@ -3615,8 +3623,11 @@
           this.publicLink = this.items[ this.idx ].publicLink
           this.publicImage = this.items[ this.idx ].publicImage
           this.publicPath = this.items[ this.idx ].publicPath
-          if (!(['null',''].indexOf(this.items[ this.idx ].publicGroups) > -1)) {
+          if (!(['null',''].indexOf(this.items[ this.idx ].publicGroups) > -1) && !(!this.items[ this.idx ].publicGroups)) {
             this.publicGroups = JSON.parse(this.items[ this.idx ].publicGroups)
+          }
+          if (!(['null',''].indexOf(this.items[ this.idx ].feeds) > -1) && !(!this.items[ this.idx ].feeds)) {
+            this.feeds = JSON.parse(this.items[ this.idx ].feeds)
           }
           this.$emit('on-tabs-hidden')
           Vue.http.get( 'getPosts' ).then( ( response ) => {
@@ -3707,7 +3718,8 @@
               publicBio: this.publicBio,
               publicLink: this.publicLink,
               publicGroups: JSON.stringify(this.publicGroups),
-              publicPath: this.publicPath
+              publicPath: this.publicPath,
+              feeds: JSON.stringify(this.feeds)
             }).then( ( response ) => {
               this.$emit('on-update-list')
               this.$emit('on-update-photos')
@@ -3747,6 +3759,56 @@
           },
           changePublic(){
             this.pubHidden = !this.pubHidden
+          },
+          modSync(){
+            this.feedsVisible = true
+          },
+          closeFeeds(){
+            this.feedsVisible = false
+          },
+          doAddFeed(){
+            
+          },
+          doFindFeeds(){
+            this.findSpinnerHidden = false
+            this.findDisabled = true
+            Vue.http.post( 'findFeeds', {
+              site:this.findFeeds
+            }).then( ( response ) => {
+              if ( !!response.body ) {
+                this.foundFeeds = response.body
+                if (this.foundFeeds.length === 0){
+                  this.findMessageHidden = false
+                } else {
+                  this.findMessageHidden = true
+                }
+              }
+              this.findDisabled = false
+              this.findSpinnerHidden = true
+            })
+          },
+          subFeed(link,idx){
+            this.foundFeeds.splice( idx, 1 )
+            Vue.http.post( 'addFeeds', {
+              feed : link
+            }).then( ( response ) => {
+              this.feeds = response.body
+              this.setFeeds()
+            })
+          },
+          onFileChange(fieldName, fileList) {
+            this.spinnerHidden = false
+            const formData = new FormData()
+            if (!fileList.length) return
+            Array
+              .from(Array(fileList.length).keys())
+              .map(x => {
+                formData.append(fieldName, fileList[x], fileList[x].name)
+              })
+            this.$http.post ( this.uploadXmlTo + '?field=feedfile', formData ).then(function (response) {
+              this.feeds = response.body
+              this.spinnerHidden = true
+            })
           }
         },
         template: `
@@ -3780,12 +3842,37 @@
             <mt-cell v-bind:class="{'is-hidden':!optsHidden}" title="Block members from saving photos"><mt-switch v-model="blockDownloads"></mt-switch></mt-cell>
             <mt-cell v-bind:class="{'is-hidden':!optsHidden}" title="Allow members to post"><mt-switch v-model="allowPosts"></mt-switch></mt-cell>
             <mt-cell v-bind:class="{'is-hidden':!optsHidden}" title="Allow article/link posts"><mt-switch v-model="shareLinks"></mt-switch></mt-cell>
+            <mt-cell v-bind:class="{'is-hidden':!optsHidden}" title="Import content from feeds">
+              <mt-button class="underpic" v-on:click="modSync()" size="large">Sync...</mt-button>
+            </mt-cell>
             <mt-button class="underpic" v-on:click="modGroups()" size="large">Save</mt-button>
             <mt-popup class="addcontact" v-model="showAddContact" position="middle">
               <mt-field :state="validName" placeholder="Name" @keyup.native="checkConName" v-model="newName"></mt-field>
               <mt-field :state="validContact" @keyup.native="checkContact" placeholder="Email or Phone..." v-model="newContact" type="email"></mt-field>
               <mt-button v-on:click="cancelContact()">Cancel</mt-button>&nbsp;<mt-button v-on:click="saveContact()" type="primary">Add Contact</mt-button>
             </mt-popup>
+            <mt-popup class="help_popup" v-model="feedsVisible" position="middle">
+              <mt-header>
+                <a v-on:click="closeFeeds()" slot="right">
+                  <mt-button>Close</mt-button>
+                </a>
+              </mt-header>
+              <mt-cell v-for="(url, idx) in feeds">
+                <mt-field v-model="url"></mt-field>
+              </mt-cell>
+              <!--
+              <mt-field placeholder="Paste a feed link..." v-model="addFeed"></mt-field>
+              <mt-button v-on:click="doAddFeed()" size="large">Save Feed</mt-button>
+              <mt-field placeholder="Name of web site or keywords..." v-model="findFeeds"></mt-field>
+              <mt-button v-on:click="doFindFeeds()" :disabled="findDisabled" size="large">Find Feeds</mt-button>
+              <mt-spinner v-bind:class="{'is-hidden':findSpinnerHidden}" type="snake"></mt-spinner>
+              <mt-cell v-bind:class="{'is-hidden':findMessageHidden}" title="No Feeds Found"></mt-cell>-->
+              <label for="feedsfile" style="text-decoration:underline;">Click here to choose a feeds file from your computer (opml/xml):</label>
+              <input type="file" name="file" id="feedsfile"
+                @change="onFileChange($event.target.name, $event.target.files); fileCount = $event.target.files.length"
+                accept="text/*" class="input-file" />
+              <h1>&nbsp;</h1>
+             </mt-popup>
             <mt-popup class="addcontact" v-model="showShareGroup" position="middle">
               <mt-cell title="Copy and share this gallery link:"></mt-cell>
               <mt-field v-model="groupLink"></mt-field>
@@ -4125,6 +4212,41 @@
 
   </body>
   <script type="python" id="server">
+
+@app.route('/syncFile',methods=['GET','POST'])
+def syncFile():
+  filedata = {}
+  if request.method == 'POST':
+    if 'file' in request.files:
+      file = request.files['file']
+      if not file.filename == '':
+        if file and allowed_file(file.filename):
+          fi = tempfile.NamedTemporaryFile(delete=False)
+          file.save(fi.name)
+          filedata['tmp_name'] = fi.name
+          filedata['name'] = file.filename
+    feeds = []
+    with open( filedata['tmp_name'], 'rt') as f:
+      tree = etree.parse(f)
+    if tree:
+      for node in tree.findall('.//outline'):
+        url = node.attrib.get('xmlUrl')
+        title = node.attrib.get('title')
+        feedtitle = ''
+        if title:
+          feedtitle = title
+        else:
+          title = node.attrib.get('text')
+          if title:
+            feedtitle = title[:15]
+        fp = urllib.parse.urlparse(url)
+        if fp.hostname:
+          feedtitle = feedtitle + ' - ' + fp.hostname
+        if url:
+          feeds.append(url)
+    response = make_response(json.dumps( feeds ))
+    return response
+  return json.dumps( [ 'error' ] )
 
 @app.route('/sendResetPwd',methods=['POST'])
 def sendResetPwd():
@@ -5878,6 +6000,9 @@ def modGroups():
   scale = '0'
   if (int(request.form.get('maxres')) > 0):
     scale = request.form.get('maxres')
+  feeds = '[]'
+  if not request.form.get('feeds') is None:
+    feeds = request.form.get('feeds')
   newobj = {
     'name' : request.form.get('name'),
     'image' : saveFile( 'image' ),
@@ -5891,7 +6016,8 @@ def modGroups():
     'publicBio': request.form.get('publicBio'),
     'publicLink': request.form.get('publicLink'),
     'publicGroups': request.form.get('publicGroups'),
-    'publicPath': request.form.get('publicPath')
+    'publicPath': request.form.get('publicPath'),
+    'feeds': feeds
   }
   if str(request.form.get('allowPosts')) == 'true':
     newobj['allowPosts'] = '1'

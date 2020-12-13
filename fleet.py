@@ -223,6 +223,16 @@ def updater():
     }
     for i in get_all('posts'):
       mod_one( 'posts', grobj, i['id'])
+  item = get_all('groups')[0]
+  if not 'feeds' in item:
+    rid = add_one( 'groups', {'feeds':'[]'} )
+    if rid > 0:
+      del_one('groups',rid)
+    grobj = {
+      'feeds':'[]'
+    }
+    for i in get_all('groups'):
+      mod_one( 'groups', grobj, i['id'])
   return 'UPDATED DB'
 
 @app.route('/')
