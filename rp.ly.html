@@ -5373,7 +5373,10 @@ def getPosts():
         if grps[0] == public_group:
           is_public = True
     if can('get','posts',user,item) or is_public:
-      item['author'] = get_user(item['user_id'])['name']
+      if int(item['user_id']) > 0:
+        item['author'] = get_user(item['user_id'])['name']
+      else:
+        item['author'] = ''
       item['to'] = ''
       item['imageHidden'] = False
       item['allowDownload'] = False
@@ -5993,6 +5996,8 @@ def joinGroup():
         if int(items[0]['id']) in groups:
           member = 'MEMBER'
     owner = get_user(items[0]['user_id'])
+    if not 'name' in owner:
+      owner = {'name':''}
     imgsrc = ''
     if not items[0]['image'] is None:
       imgsrc = 'https://' + mydomain + '/grpFile?field=image&name=' + items[0]['image']
