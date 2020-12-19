@@ -662,7 +662,7 @@
           },
           myForgot() {
             Vue.http.post( 'sendResetPwd', {
-              email : this.email,
+              email : this.loginemail,
             }).then( ( response ) => {
               if (response.body[0] == 'error') {
                 MintUI.Toast({
