@@ -4223,72 +4223,74 @@ def syncGroups():
   grp = 0
   added = 0
   for gr in groups:
-    if gr['feeds'][:1] == '[':
-      feeds = json.loads(gr['feeds'])
-      grp = int(gr['id'])
-      grpowner = int(gr['user_id'])
-      items = []
-      if len(feeds) > 0:
-        for fd in feeds:
-          time.sleep(0.1)
-          feed = feedparser.parse(fd)
-          for item in feed.entries:
-            if not 'title' in item:
-              if 'description' in item:
-                item['title'] = item['description']
-              else:
-                if 'content' in item:
-                  item['title'] = item['content']
+    if not gr['feeds'] is None:
+      if gr['feeds'][:1] == '[':
+        feeds = json.loads(gr['feeds'])
+        grp = int(gr['id'])
+        grpowner = int(gr['user_id'])
+        items = []
+        if len(feeds) > 0:
+          for fd in feeds:
+            time.sleep(0.2)
+            feed = feedparser.parse(fd)
+            for item in feed.entries:
+              if not 'title' in item:
+                if 'description' in item:
+                  item['title'] = item['description']
                 else:
+                  if 'content' in item:
+                    item['title'] = item['content']
+                  else:
+                    continue
+              if 'link' in item:
+                posts = get_one_by('posts',item['link'],'link')
+                if len(posts) > 0:
                   continue
-            if 'link' in item:
-              posts = get_one_by('posts',item['link'],'link')
-              if len(posts) > 0:
-                continue
-              foundtitle = item['title']
-              newrec = {
-                'title' : '',
-                'image' : '',
-                'sound' : '',
-                'video' : '',
-                'groups' : json.dumps([grp]),
-                'inreplyto' : '',
-                'link':item['link'],
-                'user_id' : grpowner,
-                'created' : str( timezone( 'US/Pacific' ).localize( datetime.now() ) )
-              }
-              user_agent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1985.143 Safari/537.36'
-              headers = {'User-Agent': user_agent}
-              html = requests.get(newrec['link'],headers=headers)
-              opengraphe = OpenGraphExtractor()
-              titleset = False
-              imageset = False
-              data = opengraphe.extract(str(html.text))
-              for prop in data[0]['properties']:
-                foundtit = False
-                foundimg = False
-                for ogdata in prop:
-                  if not titleset or not imageset:
-                    if foundtit:
-                      newrec['title'] = newrec['title'] + '<h1 class="article_hed">' + ogdata + '</h1>'
-                      titleset = True
-                      foundtit = False
-                    if ogdata == 'og:title':
-                      foundtit = True
-                    if foundimg:
-                      newrec['title'] = newrec['title'] + '<img class="article_img" src="' + ogdata + '" alt="Image" />'
-                      imageset = True
-                      foundimg = False
-                    if ogdata == 'og:image':
-                      foundimg = True
-              if newrec['title'] == '':
-                newrec['title'] = foundtitle
-              rid = add_one( 'posts', newrec )
-              added = added + 1
-              time.sleep(0.1)
-              if added == 20:
-                break
-        return 'OK'
+                foundtitle = item['title']
+                newrec = {
+                  'title' : '',
+                  'image' : '',
+                  'sound' : '',
+                  'video' : '',
+                  'groups' : json.dumps([grp]),
+                  'inreplyto' : '',
+                  'link':item['link'],
+                  'user_id' : grpowner,
+                  'created' : str( timezone( 'US/Pacific' ).localize( datetime.now() ) )
+                }
+                user_agent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1985.143 Safari/537.36'
+                headers = {'User-Agent': user_agent}
+                html = requests.get(newrec['link'],headers=headers)
+                opengraphe = OpenGraphExtractor()
+                titleset = False
+                imageset = False
+                data = opengraphe.extract(str(html.text))
+                if len(data) > 0:
+                  for prop in data[0]['properties']:
+                    foundtit = False
+                    foundimg = False
+                    for ogdata in prop:
+                      if not titleset or not imageset:
+                        if foundtit:
+                          newrec['title'] = newrec['title'] + '<h1 class="article_hed">' + ogdata + '</h1>'
+                          titleset = True
+                          foundtit = False
+                        if ogdata == 'og:title':
+                          foundtit = True
+                        if foundimg:
+                          newrec['title'] = newrec['title'] + '<img class="article_img" src="' + ogdata + '" alt="Image" />'
+                          imageset = True
+                          foundimg = False
+                        if ogdata == 'og:image':
+                          foundimg = True
+                if newrec['title'] == '':
+                  newrec['title'] = foundtitle
+                rid = add_one( 'posts', newrec )
+                added = added + 1
+                time.sleep(0.3)
+                if added == 20:
+                  return 'OK'
+          return 'OK'
   return 'OK'
 
 @app.route('/syncFile',methods=['GET','POST'])
