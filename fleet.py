@@ -33,8 +33,12 @@ import pandas as pd
 from socket import timeout
 from extruct.opengraph import OpenGraphExtractor
 import bcrypt
+import csv
+import socket
 
 appdir = os.getcwd() + '/'
+
+cities = []
 
 tf.get_logger().setLevel('ERROR')
 
