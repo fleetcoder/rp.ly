@@ -6520,12 +6520,13 @@ def grpFile():
   item = get_one_by( 'posts', request.args.get('name'), request.args.get('field') )
   if len(item) > 0:
     thefile = appdir + 'myfiles/' + item[0][request.args.get('field')]
-    ftype = 'image/jpeg'
-    print(thefile,file=sys.stderr)
-    return send_file( thefile, mimetype=ftype)
+    if os.path.exists(thefile) and not os.path.isdir(thefile):
+      ftype = 'image/jpeg'
+      print(thefile,file=sys.stderr)
+      return send_file( thefile, mimetype=ftype)
   else:
     thefile = appdir + 'myfiles/' + request.args.get('name')
-    if os.path.exists(thefile):
+    if os.path.exists(thefile) and not os.path.isdir(thefile):
       limit = datetime.strptime('Nov 6 2020','%b %d %Y')
       mod = datetime.fromtimestamp(os.path.getmtime(thefile))
       if mod < limit or request.args.get('field') == 'publicImage':

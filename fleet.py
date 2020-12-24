@@ -102,6 +102,8 @@ def allowed_file(filename):
 @app.route('/grp/<grpid>')
 def group(grpid):
   grps = get_one_by( 'groups', grpid, 'key' )
+  if not len(grps) > 0:
+    return 'OK'
   urlsrc = 'https://' + mydomain + '/g/' + grpid
   #ht = '<!DOCTYPE html>' + "\n"
   #ht = ht + '<html>' + "\n"
@@ -131,12 +133,204 @@ def group(grpid):
 @app.route('/<path:path>')
 def catch_all(path):
   grps = get_one_by( 'groups', path, 'publicPath' )
-  urlsrc = 'https://' + mydomain + '/grp/' + grps[0]['key']
-  return redirect(urlsrc)
+  if (len(grps) > 0):
+    if path in cities:
+      #mod_one( 'groups', {'feeds':json.dumps(result)}, grps[0]['id'] )
+      #return 'OK!nice '
+      #return 'OK'
+      #if path == 'nyssao':
+      #  del_one('groups',grps[0]['id'])
+      #  print(' DEL CITY')
+      #  return 'OK'
+      print('CITY')
+    if 'key' in grps[0]:
+      urlsrc = 'https://' + mydomain + '/grp/' + grps[0]['key']
+      return redirect(urlsrc)
+    else:
+      return 'OK'
+  else:
+    if path in cities:
+      srch = 'https://www.googleapis.com/customsearch/v1?' + urllib.parse.urlencode({
+        'key':os.getenv('GOO_KEY'),
+        'cx':os.getenv('GOO_CTX'),
+        'q':cities[path],
+        'searchType':'image'
+      })
+      data = urllib.request.urlopen(srch).read()
+      arr = json.loads(data)
+      newfile = ''
+      if 'items' in arr:
+        for search in arr['items']:
+          if any(x in search['link'].lower() for x in ['.jpg','.jpeg']):
+            newfile = time.strftime("%d_%m_%Y_%H_%M_%S_" + '.jpg')
+            data = False
+            try:
+              data = urllib.request.urlopen(search['link'], timeout=5).read()
+            except urllib.error.HTTPError as err:
+              data = False
+            except urllib.error.URLError as err:
+              data = False
+            except socket.timeout as err:
+              data = False
+            if data:
+              f = open(appdir + 'myfiles/' + newfile,'wb')
+              f.write(data)
+              f.close()
+              break
+      regex = re.compile(
+        r'^(?:http|ftp)s?://' # http:// or https://
+        r'(?:(?:[A-Z0-9](?:[A-Z0-9-]{0,61}[A-Z0-9])?\.)+(?:[A-Z]{2,6}\.?|[A-Z0-9-]{2,}\.?)|' #domain...
+        r'localhost|' #localhost...
+        r'\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})' # ...or ip
+        r'(?::\d+)?' # optional port
+        r'(?:/?|[/?]\S+)$', re.IGNORECASE)
+      result = []
+      possible_feeds = []
+      sites = []
+      srch = 'https://www.googleapis.com/customsearch/v1?' + urllib.parse.urlencode({
+        'key':os.getenv('GOO_KEY'),
+        'cx':os.getenv('GOO_CTX'),
+        'q':cities[path] + ' news'
+      })
+      data = urllib.request.urlopen(srch).read()
+      arr = json.loads(data)
+      if 'items' in arr:
+        for search in arr['items']:
+          sites.append(search['link'])
+          uri = urllib.parse.urlparse(search['link'])
+          baseurl = uri.scheme + '://' + uri.netloc
+          if baseurl not in sites and not baseurl + '/' in sites:
+            sites.append( uri.scheme + '://' + uri.netloc )
+      srch = 'https://www.googleapis.com/customsearch/v1?' + urllib.parse.urlencode({
+        'key':os.getenv('GOO_KEY'),
+        'cx':os.getenv('GOO_CTX'),
+        'q':cities[path] + ' news',
+        'start': 11
+      })
+      data = urllib.request.urlopen(srch).read()
+      arr = json.loads(data)
+      if 'items' in arr:
+        for search in arr['items']:
+          sites.append(search['link'])
+          uri = urllib.parse.urlparse(search['link'])
+          baseurl = uri.scheme + '://' + uri.netloc
+          if baseurl not in sites and not baseurl + '/' in sites:
+            sites.append( uri.scheme + '://' + uri.netloc )
+      srch = 'https://www.googleapis.com/customsearch/v1?' + urllib.parse.urlencode({
+        'key':os.getenv('GOO_KEY'),
+        'cx':os.getenv('GOO_CTX'),
+        'q':cities[path] + ' news',
+        'start': 21
+      })
+      data = urllib.request.urlopen(srch).read()
+      arr = json.loads(data)
+      if 'items' in arr:
+        for search in arr['items']:
+          sites.append(search['link'])
+          uri = urllib.parse.urlparse(search['link'])
+          baseurl = uri.scheme + '://' + uri.netloc
+          if baseurl not in sites and not baseurl + '/' in sites:
+            sites.append( uri.scheme + '://' + uri.netloc )
+      for site in sites:
+        time.sleep(0.3)
+        try:
+          data = urllib.request.urlopen(site, timeout=5).read()
+        except urllib.error.HTTPError as err:
+          data = False
+        except urllib.error.URLError as err:
+          data = False
+        except socket.timeout as err:
+          data = False
+        if data:
+          tree = etree.HTML(data)
+          for node in tree.findall('.//link'):
+            t = node.attrib.get('type')
+            if t:
+              if "rss" in t or "xml" in t:
+                href = node.attrib.get('href')
+                if href:
+                  if '//' == href[:2]:
+                    possible_feeds.append('http:'+href)
+                  elif 'http' == href[:4]:
+                    possible_feeds.append(href)
+                  else:
+                    possible_feeds.append(base+href)
+          parsed_url = urllib.parse.urlparse(site)
+          base = parsed_url.scheme+"://"+parsed_url.hostname
+          for node in tree.findall('.//a'):
+            href = node.attrib.get('href')
+            if href:
+              if "xml" in href or "rss" in href or "feed" in href:
+                if 'http' == href[:4]:
+                  possible_feeds.append(href)
+                else:
+                  possible_feeds.append(base+href)
+      for url in possible_feeds:
+        if not re.match(regex, url):
+          print('NOT URL BRE ' + url)
+        else:
+          time.sleep(0.3)
+          try:
+            data = urllib.request.urlopen(url, timeout=5).read()
+          except urllib.error.HTTPError as err:
+            continue
+          except urllib.error.URLError as err:
+            continue
+          except socket.timeout as err:
+            continue
+          f = feedparser.parse(data)
+          if len(f.entries) > 0:
+            ftitle = 'News Feed'
+            if 'feed' in f:
+              if 'title' in f['feed']:
+                ftitle = f['feed']['title']
+            if url not in result:
+              result.append(url)
+      newrec = {
+        'name' : cities[path],
+        'image': newfile,
+        'maxres': '2000',
+        'allowPosts': '0',
+        'blockDownloads': '0',
+        'user_id' : 0,
+        'key' : randomword(8),
+        'public': '1',
+        'publicImage': newfile,
+        'publicName': cities[path],
+        'publicBio': '',
+        'publicName': cities[path],
+        'publicLink': 'https://rp.ly/' + path,
+        'publicPath': path,
+        'publicGroups': '[]',
+        'feeds': json.dumps(result),
+        'created' : str( timezone( 'US/Pacific' ).localize( datetime.now() ) )
+      }
+      print(json.dumps(result))
+      gr1 = add_one( 'groups', newrec )
+      if gr1 > 0:
+        newrec = {
+          'title' : '',
+          'image' : newfile,
+          'sound' : '',
+          'video' : '',
+          'groups' : json.dumps([int(gr1)]),
+          'inreplyto' : '',
+          'link':'',
+          'user_id' : 0,
+          'created' : str( timezone( 'US/Pacific' ).localize( datetime.now() ) )
+        }
+        rid = add_one( 'posts', newrec )
+      grps = get_one_by( 'groups', path, 'publicPath' )
+      if (len(grps) > 0):
+        urlsrc = 'https://' + mydomain + '/grp/' + grps[0]['key']
+        return redirect(urlsrc)
+  return 'OK'
 
 @app.route('/g/<grpid>')
 def groupuser(grpid):
   grps = get_one_by( 'groups', grpid, 'key' )
+  if not len(grps) > 0:
+    return 'OK'
   urlsrc = 'https://' + mydomain + '/g/' + grpid
   #ht = '<!DOCTYPE html>' + "\n"
   #ht = ht + '<html>' + "\n"
