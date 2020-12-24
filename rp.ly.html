@@ -4222,49 +4222,142 @@ def syncGroups():
   groups = get_all('groups')
   grp = 0
   added = 0
+  feeds = []
+  grps = {}
   for gr in groups:
     if not gr['feeds'] is None:
       if gr['feeds'][:1] == '[':
-        feeds = json.loads(gr['feeds'])
+        groupfeeds = json.loads(gr['feeds'])
+        code = request.args.get('code')
+        if not code is None:
+          if not gr['key'] == request.args.get('code'):
+            continue
         grp = int(gr['id'])
         grpowner = int(gr['user_id'])
         items = []
-        if len(feeds) > 0:
-          for fd in feeds:
-            time.sleep(0.2)
-            feed = feedparser.parse(fd)
-            for item in feed.entries:
-              if not 'title' in item:
-                if 'description' in item:
-                  item['title'] = item['description']
-                else:
-                  if 'content' in item:
-                    item['title'] = item['content']
-                  else:
-                    continue
-              if 'link' in item:
-                posts = get_one_by('posts',item['link'],'link')
-                if len(posts) > 0:
-                  continue
-                foundtitle = item['title']
-                newrec = {
-                  'title' : '',
-                  'image' : '',
-                  'sound' : '',
-                  'video' : '',
-                  'groups' : json.dumps([grp]),
-                  'inreplyto' : '',
-                  'link':item['link'],
-                  'user_id' : grpowner,
-                  'created' : str( timezone( 'US/Pacific' ).localize( datetime.now() ) )
-                }
-                user_agent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1985.143 Safari/537.36'
-                headers = {'User-Agent': user_agent}
-                html = requests.get(newrec['link'],headers=headers)
-                opengraphe = OpenGraphExtractor()
-                titleset = False
-                imageset = False
-                data = opengraphe.extract(str(html.text))
+        for fd in groupfeeds:
+          if not fd in feeds:
+            feeds.append(fd)
+          if not fd in grps:
+            grps[fd] = [int(gr['id'])]
+          else:
+            grps[fd].append(int(gr['id']))
+  for fd in feeds:
+    timingout = False
+    time.sleep(0.6)
+    feed = feedparser.parse(fd)
+    if not feed.bozo:
+      items = []
+      for item in feed.entries:
+        if 'link' in item:
+          upd = ''
+          if 'published' in item:
+            upd = item['published']
+          if 'published_parsed' in item:
+            try:
+              if not item['published_parsed'] is None:
+                upd = datetime.fromtimestamp(round(time.mktime(item['published_parsed'][:8] + (-1,))))
+            except (ValueError):
+              pass
+          elif 'updated_parsed' in item:
+            try:
+              if not item['updated_parsed'] is None:
+                upd = datetime.fromtimestamp(round(time.mktime(item['updated_parsed'][:8] + (-1,))))
+            except (ValueError):
+              pass
+          if not upd == '':
+            item['published'] = str(upd)
+            items.append(item)
+          #else:
+            #print('SKIP NO TIME ' + fd)
+            #posts = get_one_by('posts',item['link'],'link')
+            #if len(posts) > 0:
+            #  del_one('posts',posts[0]['id'])
+            #  print('DEL ' + item['link'] + "\n")
+      items.sort(key=lambda p: p['published'], reverse=True)
+      newest = []
+      for item in items[:5]:
+        if not 'title' in item:
+          item['title'] = ''
+          if 'description' in item:
+            item['title'] = item['description']
+          else:
+            if 'content' in item:
+              item['title'] = item['content']
+        newest.append(item['link'])
+        #print('NEW 5 ' + item['published'] + ' ' + item['title'])
+      for item in items:
+        if not item['link'] in newest:
+          posts = get_one_by('posts',item['link'],'link')
+          if len(posts) > 0:
+            del_one('posts',posts[0]['id'])
+            posts = get_one_by('posts',item['link'],'link')
+            if len(posts) > 0:
+              print('DID NOT DEL ' + item['link'])
+            if not 'title' in item:
+              item['title'] = ''
+              if 'description' in item:
+                item['title'] = item['description']
+              else:
+                if 'content' in item:
+                  item['title'] = item['content']
+            if 'title' in item:
+              print('DEL ' + item['published'] + ' ' + item['title'])
+      for item in items[:5]:
+        if timingout:
+          continue
+        if not 'title' in item:
+          item['title'] = ''
+          if 'description' in item:
+            item['title'] = item['description']
+          else:
+            if 'content' in item:
+              item['title'] = item['content']
+            #else:
+            #  continue
+        if 'link' in item:
+          if item['link'][-4:].lower()  in ['.mov','.mp4','.mp3','.m4v','.wav']:
+            continue
+          posts = get_one_by('posts',item['link'],'link')
+          if len(posts) > 0:
+            continue
+          else:
+            print('NEW ' + item['title'])
+          foundtitle = item['title']
+          newrec = {
+            'title' : '',
+            'image' : '',
+            'sound' : '',
+            'video' : '',
+            'groups' : json.dumps(grps[fd]),
+            'inreplyto' : '',
+            'link':item['link'],
+            'user_id' : grpowner,
+            'created' : str( timezone( 'US/Pacific' ).localize( datetime.now() ) )
+          }
+          user_agent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1985.143 Safari/537.36'
+          headers = {'User-Agent': user_agent}
+          try:
+            html = requests.get(item['link'],headers=headers,timeout=5)
+          except (requests.exceptions.ConnectionError, requests.exceptions.Timeout):
+            timingout = True
+            print('TIMING OUT ' + fd)
+            continue
+          except requests.exceptions.HTTPError:
+            timingout = True
+            print('HTTP ERROR ' + fd)
+            continue
+          if not 'content-type' in html.headers:
+            print('SKIP NO CT ' + item['link'])
+          if 'content-type' in html.headers:
+            if not 'text/html' in html.headers['content-type'].lower():
+              print('SKIP NOT OK CT ' + html.headers['content-type'].lower())
+            if 'text/html' in html.headers['content-type'].lower():
+              opengraphe = OpenGraphExtractor()
+              titleset = False
+              imageset = False
+              data = opengraphe.extract(str(html.text))
+              if data:
                 if len(data) > 0:
                   for prop in data[0]['properties']:
                     foundtit = False
@@ -4283,14 +4376,15 @@ def syncGroups():
                           foundimg = False
                         if ogdata == 'og:image':
                           foundimg = True
-                if newrec['title'] == '':
-                  newrec['title'] = foundtitle
-                rid = add_one( 'posts', newrec )
-                added = added + 1
-                time.sleep(0.3)
-                if added == 20:
-                  return 'OK'
-          return 'OK'
+          if newrec['title'] == '':
+            newrec['title'] = foundtitle
+          rid = add_one( 'posts', newrec )
+          added = added + 1
+          time.sleep(0.9)
+          #if added == 40:
+          #  print('ADDED 40')
+          #  return 'OK'
+  print('DONE')
   return 'OK'
 
 @app.route('/syncFile',methods=['GET','POST'])
