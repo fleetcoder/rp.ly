@@ -3771,7 +3771,11 @@
             this.feedsVisible = false
           },
           doAddFeed(){
-            
+            this.feeds.push(this.addFeed)
+            this.addFeed = ''
+          },
+          dropFeed(idx){
+            this.feeds.splice( idx, 1 )
           },
           doFindFeeds(){
             this.findSpinnerHidden = false
@@ -3863,10 +3867,13 @@
               </mt-header>
               <mt-cell v-for="(url, idx) in feeds">
                 <mt-field v-model="url"></mt-field>
+                <a v-on:click="dropFeed(idx)">
+                  <mt-button>X</mt-button>
+                </a>
               </mt-cell>
-              <!--
               <mt-field placeholder="Paste a feed link..." v-model="addFeed"></mt-field>
               <mt-button v-on:click="doAddFeed()" size="large">Save Feed</mt-button>
+              <!--
               <mt-field placeholder="Name of web site or keywords..." v-model="findFeeds"></mt-field>
               <mt-button v-on:click="doFindFeeds()" :disabled="findDisabled" size="large">Find Feeds</mt-button>
               <mt-spinner v-bind:class="{'is-hidden':findSpinnerHidden}" type="snake"></mt-spinner>
