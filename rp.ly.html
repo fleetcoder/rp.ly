@@ -378,6 +378,8 @@
       }
       .article_hed {
         cursor: pointer;
+        margin-left: 20px;
+        margin-right: 20px;
       }
       .groups_following {
         text-align:left;
@@ -872,6 +874,9 @@
             } else {
               return 'myFile?field=video&name=' + item.video
             }
+          },
+          linkGo(link){
+            window.location.href = link
           }
         },
         template: `
@@ -893,8 +898,9 @@
               <img class="grimg" :src="image" />
             </mt-cell>-->
             <mt-cell class="imagecell public_img" v-for="(item, idx) in items" :title="item.name">
-              <p class="caption" v-html="item.title" v-bind:class="{'is-hidden':item.textHidden}"></p>
-              <p v-if="item.isHtml" class="caption" v-on:click="addComment(idx)"><img class="comment" slot="icon" src="file/message-square.svg" /></p>
+              <p class="" v-html="item.title" v-bind:class="{'is-hidden':item.textHidden}"></p>
+              <mt-button class="caption" @click="linkGo(item.link)">Read Story</mt-button>
+              <span v-if="item.isHtml" class="caption" v-on:click="addComment(idx)"><img class="comment" slot="icon" src="file/message-square.svg" /></span>
               <div v-if="!item.imageHidden" class="outer">
                 <img class="oimg" :src="imageLink(item)" v-if="item.allowDownload" />
                 <img @contextmenu.prevent="doContextMenu" class="oimg cant-click" :src="imageLink(item)" v-else />
