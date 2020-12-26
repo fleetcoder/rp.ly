@@ -4239,6 +4239,10 @@ def syncGroups():
         if not code is None:
           if not gr['key'] == request.args.get('code'):
             continue
+        path = request.args.get('path')
+        if not path is None:
+          if not gr['publicPath'] == request.args.get('path'):
+            continue
         grp = int(gr['id'])
         grpowner = int(gr['user_id'])
         items = []
@@ -5473,7 +5477,7 @@ def getPosts():
     if public_group > 0:
       grps = json.loads(item['groups'])
       if len(grps) > 0:
-        if grps[0] == public_group:
+        if public_group in grps:
           is_public = True
     if can('get','posts',user,item) or is_public:
       if int(item['user_id']) > 0:
