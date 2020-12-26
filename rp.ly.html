@@ -4239,9 +4239,9 @@ def syncGroups():
         if not code is None:
           if not gr['key'] == request.args.get('code'):
             continue
-        path = request.args.get('path')
+        path = request.args.get('paths')
         if not path is None:
-          if not gr['publicPath'] == request.args.get('path'):
+          if not gr['publicPath'] in request.args.get('paths').split(','):
             continue
         grp = int(gr['id'])
         grpowner = int(gr['user_id'])
