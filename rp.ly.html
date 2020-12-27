@@ -813,7 +813,8 @@
             image:'',
             name:'',
             items:[],
-            moreHidden: true
+            moreHidden: true,
+            helpVisible: false
           }
         },
         created() {
@@ -877,6 +878,12 @@
           },
           linkGo(link){
             window.location.href = link
+          },
+          showHelp() {
+            this.helpVisible = true
+          },
+          closeHelp(){
+            this.helpVisible = false
           }
         },
         template: `
@@ -916,6 +923,15 @@
             <mt-cell v-for="(item, idx) in publicGroups" :title="item.name" is-link :to="'/showgroup/' + item.grp">
               <img class="grimg" :src="item.image" />
             </mt-cell>
+            <mt-popup class="help_popup" v-model="helpVisible" position="middle">
+              <mt-header>
+                <a v-on:click="closeHelp()" slot="right">
+                  <mt-button>Close</mt-button>
+                </a>
+              </mt-header>
+              <h4 class="help_header">What is this?</h4>
+              <p class="help_para">Rp.ly is a local news and information hub for your community. Contact us at <a href="mailto:info@rp.ly">info@rp.ly</a></p>
+            </mt-popup>
           </div>`
       }
       const PublicGroupPage = {
