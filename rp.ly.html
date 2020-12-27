@@ -5630,6 +5630,7 @@ def getPosts():
         if not group[0]['public'] is None:
           if int(group[0]['public']) > 0:
             ispublic = True
+            grps.append({'value':int(group[0]['id']),'label':group[0]['name'],'links':group[0]['shareLinks']})
       glabel = ''
       comma = ''
       for con in contacts:
