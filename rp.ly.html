@@ -5499,6 +5499,7 @@ def getPosts():
     if len(thisgroup) > 0:
       if int(thisgroup[0]['public']) > 0:
         public_group = thisgroup[0]['id']
+        public_group_entry = {'value':int(thisgroup[0]['id']),'label':thisgroup[0]['name'],'links':thisgroup[0]['shareLinks']}
   if not request.args.get('grpid') is None:
     thisgroup = get_one( 'groups', request.args.get('grpid') )
     group_id = thisgroup[0]['id']
@@ -5613,6 +5614,8 @@ def getPosts():
     #posts.append(newrec)
   abils = []
   grps = []
+  if public_group > 0:
+    grps.append(public_group_entry)
   for grp in groups:
     group = get_one( 'groups', grp )
     groupname = ''
@@ -5630,7 +5633,6 @@ def getPosts():
         if not group[0]['public'] is None:
           if int(group[0]['public']) > 0:
             ispublic = True
-            grps.append({'value':int(group[0]['id']),'label':group[0]['name'],'links':group[0]['shareLinks']})
       glabel = ''
       comma = ''
       for con in contacts:
