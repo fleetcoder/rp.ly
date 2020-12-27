@@ -404,6 +404,9 @@
       .feedsinput {
         text-decoration:underline;
       }
+      .readstory {
+        margin-bottom: 30px;
+      }
     </style>
 
     <script id="client">
@@ -596,7 +599,11 @@
                     this.email = ''
                     this.name = ''
                     this.password = ''
-                    window.location.href = '/'
+                    if (typeof this.$route.params.grp !== 'undefined') {
+                      router.push( '/group/' + this.$route.params.grp )
+                    } else {
+                      window.location.href = '/'
+                    }
                   } else {
                     this.emailstatus = 'error'
                     MintUI.Toast({
@@ -816,7 +823,9 @@
             moreHidden: true,
             helpVisible: false,
             shareLinks: false,
-            groups: []
+            groups: [],
+            authed: false,
+            notMember: true
           }
         },
         created() {
@@ -827,6 +836,16 @@
           Vue.http.post( 'joinGroup', {
             grp:this.$route.params.grp
           }).then( ( response ) => {
+            if (response.body[3] == 'AUTHED') {
+              this.authed = true
+              if (response.body[5] == 'MEMBER') {
+                this.notMember = false
+              } else {
+                this.notMember = true
+              }
+            } else {
+              this.authed = false
+            }
             var publicData = JSON.parse(response.body[6])
             if ("undefined" !== typeof publicData['publicName']) {
               this.publicName = publicData['publicName']
@@ -894,6 +913,32 @@
           },
           closeHelp(){
             this.helpVisible = false
+          },
+          addComment(idx) {
+            if (!this.authed) {
+              router.push('/auth/' + this.$route.params.grp)
+            } else {
+              this.items[idx].showCommentField = true
+            }
+          },
+          saveComment(post,idx) {
+            this.spinnerHidden = false
+            Vue.http.post( 'addPosts', {
+              recips: post.groups,
+              title: JSON.stringify([post.comment]),
+              inreplyto: post.id,
+              expirehours: 0,
+              speedup: ''
+            }).then( ( response ) => {
+              this.items[idx].comment = ''
+              this.spinnerHidden = true
+              this.items[idx].showCommentField = false
+              MintUI.Toast({
+                message: 'Comment Saved',
+                iconClass: 'icon icon-success',
+                duration: 1000
+              })
+            })
           }
         },
         template: `
@@ -916,8 +961,10 @@
             </mt-cell>-->
             <mt-cell class="imagecell public_img" v-for="(item, idx) in items" :title="item.name">
               <p class="" v-html="item.title" v-bind:class="{'is-hidden':item.textHidden}"></p>
-              <mt-button v-if="shareLinks" class="caption" @click="linkGo(item.link)">Read Story</mt-button>
-              <span v-if="item.isHtml" class="caption" v-on:click="addComment(idx)"><img class="comment" slot="icon" src="file/message-square.svg" /></span>
+              <mt-button v-if="shareLinks" class="caption readstory" @click="linkGo(item.link)">Read Story</mt-button>
+              <span v-if="item.isHtml" v-bind:class="{'is-hidden':item.showCommentField}" class="comment" v-on:click="addComment(idx)"><img class="comment" slot="icon" src="file/message-square.svg" /></span>
+              <mt-field v-bind:class="{'is-hidden':!item.showCommentField}" placeholder="Comment..." v-model="item.comment"></mt-field>
+              <mt-button v-bind:class="{'is-hidden':!item.showCommentField}" size="large" v-on:click="saveComment(item,idx)">Save Comment</mt-button>
               <div v-if="!item.imageHidden" class="outer">
                 <img class="oimg" :src="imageLink(item)" v-if="item.allowDownload" />
                 <img @contextmenu.prevent="doContextMenu" class="oimg cant-click" :src="imageLink(item)" v-else />
@@ -929,6 +976,7 @@
                 <figcaption class="caption" v-html="item.title"></figcaption>
               </vue-plyr>
               <audio-player v-if="item.imageHidden" :src="'myFile?field=sound&name=' + item.sound" v-bind:class="{'is-hidden':item.soundHidden}" />
+              <p class="caption" v-for="(comm, cidx) in item.comments" v-text="comm.author + ': ' + comm.title"></p>
             </mt-cell>
             <mt-cell v-for="(item, idx) in publicGroups" :title="item.name" is-link :to="'/showgroup/' + item.grp">
               <img class="grimg" :src="item.image" />
@@ -4245,6 +4293,9 @@
             component: freeTrial
         },{
             path: '/auth',
+            component: freeTrial
+        },{
+            path: '/auth/:grp',
             component: freeTrial
         }
       ]})
