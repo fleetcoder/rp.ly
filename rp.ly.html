@@ -814,7 +814,9 @@
             name:'',
             items:[],
             moreHidden: true,
-            helpVisible: false
+            helpVisible: false,
+            shareLinks: false,
+            groups: []
           }
         },
         created() {
@@ -853,6 +855,14 @@
                       this.moreHidden = false
                     }
                   }
+                  this.groups = response.body[1]
+                  this.shareLinks = false
+                  for (var j = 0; j < this.groups.length; j++) {
+                    if (parseInt(this.groups[j].links) > 0) {
+                      this.shareLinks = true
+                    }
+                  }
+                  
                 }
                 this.spinnerHidden = true
               })
@@ -906,7 +916,7 @@
             </mt-cell>-->
             <mt-cell class="imagecell public_img" v-for="(item, idx) in items" :title="item.name">
               <p class="" v-html="item.title" v-bind:class="{'is-hidden':item.textHidden}"></p>
-              <mt-button class="caption" @click="linkGo(item.link)">Read Story</mt-button>
+              <mt-button v-if="shareLinks" class="caption" @click="linkGo(item.link)">Read Story</mt-button>
               <span v-if="item.isHtml" class="caption" v-on:click="addComment(idx)"><img class="comment" slot="icon" src="file/message-square.svg" /></span>
               <div v-if="!item.imageHidden" class="outer">
                 <img class="oimg" :src="imageLink(item)" v-if="item.allowDownload" />
