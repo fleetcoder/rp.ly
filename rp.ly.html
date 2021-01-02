@@ -4435,8 +4435,9 @@ def syncGroups():
                   item['title'] = item['content']
             if 'title' in item:
               print('DEL ' + item['published'] + ' ' + item['title'])
-      for item in items[:5]:
-        if timingout:
+      feedadded = 0
+      for item in items:
+        if timingout or feedadded > 4:
           continue
         if not 'title' in item:
           item['title'] = ''
@@ -4515,6 +4516,7 @@ def syncGroups():
           if not flagged > 0:
             rid = add_one( 'posts', newrec )
             added = added + 1
+            feedadded = feedadded + 1
           else:
             print('FILTER - ' + str(len(str(html.text).split())) + ' words, ' + item['link'])
           time.sleep(0.9)
