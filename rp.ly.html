@@ -825,7 +825,11 @@
             shareLinks: false,
             groups: [],
             authed: false,
-            notMember: true
+            notMember: true,
+            showShareGroup: false,
+            sharingGroup: '',
+            sharingImg: '',
+            groupLink: ''
           }
         },
         created() {
@@ -856,6 +860,9 @@
               this.image = response.body[2]
               this.name = response.body[1]
                //this.publicGroups.unshift({grp:this.$route.params.grp,image:,name:})
+              this.sharingGroup = publicData['publicName']
+              this.sharingImg = 'grpFile?field=publicImage&name=' + publicData['publicImage']
+              this.groupLink = 'https://rp.ly/' + publicData['publicPath']
               for(grp in this.publicGroups) {
                 //alert(this.publicGroups[grp].image)
               }
@@ -939,6 +946,22 @@
                 duration: 1000
               })
             })
+          },
+          closeShareGroup(){
+            this.showShareGroup = false
+          },
+          copyGroupLink(){
+            this.showShareGroup = false
+            MintUI.Toast({
+              message: 'You just copied the caption and gallery link to your clipboard',
+              iconClass: 'icon icon-error',
+              duration: 2000
+            })
+          },
+          copyError(){
+          },
+          showShare(){
+            this.showShareGroup = true
           }
         },
         template: `
@@ -990,6 +1013,21 @@
               <h4 class="help_header">What is this?</h4>
               <p class="help_para">Rp.ly is a local news and information hub for your community. Contact us at <a href="mailto:info@rp.ly">info@rp.ly</a></p>
             </mt-popup>
+            <mt-popup class="addcontact" v-model="showShareGroup" position="middle">
+              <mt-header :title="sharingGroup">
+                <a v-on:click="closeShareGroup()" slot="right">
+                  <mt-button>Close</mt-button>
+                </a>
+              </mt-header>
+              <img class="grimg" :src="sharingImg" alt="Group Header Photo" />
+              <mt-field type="textarea" rows="4" v-model="groupLink"></mt-field>
+              <mt-button v-clipboard:copy="groupLink" v-clipboard:success="copyGroupLink" v-clipboard:error="copyError">Share</mt-button><p></p>
+            </mt-popup>
+            <mt-header>
+              <a v-on:click="showShare()" slot="right">
+                <img class="headericon" slot="icon" src="file/share.svg" />
+              </a>
+            </mt-header>
           </div>`
       }
       const PublicGroupPage = {
@@ -6218,6 +6256,7 @@ def joinGroup():
           'publicName':items[0]['publicName'],
           'publicBio':items[0]['publicBio'],
           'publicLink':items[0]['publicLink'],
+          'publicPath':items[0]['publicPath'],
           'publicGroups':linkedgrps
         })
     result = [owner['name'],items[0]['name'],imgsrc,authd,items[0]['id'],member,publicData,shareLinks]
