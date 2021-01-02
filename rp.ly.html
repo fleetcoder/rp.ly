@@ -862,7 +862,7 @@
                //this.publicGroups.unshift({grp:this.$route.params.grp,image:,name:})
               this.sharingGroup = publicData['publicName']
               this.sharingImg = 'grpFile?field=publicImage&name=' + publicData['publicImage']
-              this.groupLink = 'https://rp.ly/' + publicData['publicPath']
+              this.groupLink = publicData['publicName'] + ' https://rp.ly/' + publicData['publicPath']
               for(grp in this.publicGroups) {
                 //alert(this.publicGroups[grp].image)
               }
@@ -953,9 +953,9 @@
           copyGroupLink(){
             this.showShareGroup = false
             MintUI.Toast({
-              message: 'You just copied the caption and gallery link to your clipboard',
+              message: 'You copied the link to your clipboard, you can paste it to social media or text message',
               iconClass: 'icon icon-error',
-              duration: 2000
+              duration: 5000
             })
           },
           copyError(){
