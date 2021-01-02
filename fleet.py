@@ -1051,7 +1051,7 @@ estimator = tf.estimator.DNNClassifier(
   n_classes=2,
   optimizer=tf.train.AdagradOptimizer(learning_rate=0.003))
 
-def moderationCheck(url,crawl):
+def moderationCheck(url,crawl,data=''):
   urlkey = ''.join(re.findall('[a-zA-Z0-9_]',url))
   saved = get_one_by( 'cached', urlkey, 'urlkey' )
   if len(saved) > 0:
@@ -1063,8 +1063,11 @@ def moderationCheck(url,crawl):
   h2t.ignore_links = True
   user_agent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1985.143 Safari/537.36'
   headers = {'User-Agent': user_agent}
-  html = requests.get(url,headers=headers)
-  story = h2t.handle(str(html.text))
+  if data == '':
+    html = requests.get(url,headers=headers)
+    story = h2t.handle(str(html.text))
+  else:
+    story = h2t.handle(data)
   data = {}
   data["sentence"] = []
   data["sentence"].append(story)
@@ -1075,6 +1078,9 @@ def moderationCheck(url,crawl):
   output = 0
   for res in test_predict_generator:
     output = int(res['class_ids'][0])
+  if output == 1:
+    print('FLAG')
+    print(story)
   add_one('cached',{'urlkey':urlkey,'link':url,'story':story,'result':output})
   return output
 

@@ -4441,6 +4441,7 @@ def syncGroups():
             timingout = True
             print('HTTP ERROR ' + fd)
             continue
+          flagged = 1
           if not 'content-type' in html.headers:
             print('SKIP NO CT ' + item['link'])
           if 'content-type' in html.headers:
@@ -4450,6 +4451,7 @@ def syncGroups():
               opengraphe = OpenGraphExtractor()
               titleset = False
               imageset = False
+              flagged = moderationCheck(item['link'], True, str(html.text))
               data = opengraphe.extract(str(html.text))
               if data:
                 if len(data) > 0:
@@ -4472,8 +4474,9 @@ def syncGroups():
                           foundimg = True
           if newrec['title'] == '':
             newrec['title'] = foundtitle
-          rid = add_one( 'posts', newrec )
-          added = added + 1
+          if not flagged > 0:
+            rid = add_one( 'posts', newrec )
+            added = added + 1
           time.sleep(0.9)
           #if added == 40:
           #  print('ADDED 40')
