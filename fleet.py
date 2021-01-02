@@ -1078,9 +1078,6 @@ def moderationCheck(url,crawl,data=''):
   output = 0
   for res in test_predict_generator:
     output = int(res['class_ids'][0])
-  if output == 1:
-    print('FLAG')
-    print(story)
   add_one('cached',{'urlkey':urlkey,'link':url,'story':story,'result':output})
   return output
 

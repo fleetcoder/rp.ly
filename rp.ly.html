@@ -4477,6 +4477,8 @@ def syncGroups():
           if not flagged > 0:
             rid = add_one( 'posts', newrec )
             added = added + 1
+          else:
+            print('FILTER - ' + str(len(story.split())) + ' words, ' + item['link'])
           time.sleep(0.9)
           #if added == 40:
           #  print('ADDED 40')
