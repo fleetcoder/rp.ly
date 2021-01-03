@@ -4398,11 +4398,8 @@ def syncGroups():
             except (ValueError):
               pass
           if not upd == '':
-            urlkey = ''.join(re.findall('[a-zA-Z0-9_]',item['link']))
-            saved = get_one_by( 'cached', urlkey, 'urlkey' )
-            if not len(saved) > 0 and len(items) < 6:
-              item['published'] = str(upd)
-              items.append(item)
+            item['published'] = str(upd)
+            items.append(item)
           #else:
             #print('SKIP NO TIME ' + fd)
             #posts = get_one_by('posts',item['link'],'link')
@@ -4410,92 +4407,97 @@ def syncGroups():
             #  del_one('posts',posts[0]['id'])
             #  print('DEL ' + item['link'] + "\n")
       items.sort(key=lambda p: p['published'], reverse=True)
+      feedadded = 0
       for item in items:
-        if timingout:
-          continue
-        if not 'title' in item:
-          item['title'] = ''
-          if 'description' in item:
-            item['title'] = item['description']
-          else:
-            if 'content' in item:
-              item['title'] = item['content']
-            #else:
-            #  continue
-        if 'link' in item:
-          if item['link'][-4:].lower()  in ['.mov','.mp4','.mp3','.m4v','.wav']:
+        urlkey = ''.join(re.findall('[a-zA-Z0-9_]',item['link']))
+        saved = get_one_by( 'cached', urlkey, 'urlkey' )
+        if not len(saved) > 0 and feedadded < 6:
+          if timingout:
             continue
-          posts = get_one_by('posts',item['link'],'link')
-          if len(posts) > 0:
-            continue
-          else:
-            print('NEW ' + item['title'])
-          foundtitle = item['title']
-          newrec = {
-            'title' : '',
-            'image' : '',
-            'sound' : '',
-            'video' : '',
-            'groups' : json.dumps(grps[fd]),
-            'inreplyto' : '',
-            'link':item['link'],
-            'user_id' : grpowner,
-            'created' : str( timezone( 'US/Pacific' ).localize( datetime.now() ) )
-          }
-          user_agent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1985.143 Safari/537.36'
-          headers = {'User-Agent': user_agent}
-          try:
-            html = requests.get(item['link'],headers=headers,timeout=5)
-          except (requests.exceptions.ConnectionError, requests.exceptions.Timeout):
-            timingout = True
-            print('TIMING OUT ' + fd)
-            continue
-          except requests.exceptions.HTTPError:
-            timingout = True
-            print('HTTP ERROR ' + fd)
-            continue
-          flagged = 1
-          if not 'content-type' in html.headers:
-            print('SKIP NO CT ' + item['link'])
-          if 'content-type' in html.headers:
-            if not 'text/html' in html.headers['content-type'].lower():
-              print('SKIP NOT OK CT ' + html.headers['content-type'].lower())
-            if 'text/html' in html.headers['content-type'].lower():
-              opengraphe = OpenGraphExtractor()
-              titleset = False
-              imageset = False
-              flagged = moderationCheck(item['link'], True, str(html.text))
-              data = opengraphe.extract(str(html.text))
-              if data:
-                if len(data) > 0:
-                  for prop in data[0]['properties']:
-                    foundtit = False
-                    foundimg = False
-                    for ogdata in prop:
-                      if not titleset or not imageset:
-                        if foundtit:
-                          newrec['title'] = newrec['title'] + '<h1 class="article_hed">' + ogdata + '</h1>'
-                          titleset = True
-                          foundtit = False
-                        if ogdata == 'og:title':
-                          foundtit = True
-                        if foundimg:
-                          newrec['title'] = newrec['title'] + '<img class="article_img" src="' + ogdata + '" alt="Image" />'
-                          imageset = True
-                          foundimg = False
-                        if ogdata == 'og:image':
-                          foundimg = True
-          if newrec['title'] == '':
-            newrec['title'] = foundtitle
-          if not flagged > 0:
-            rid = add_one( 'posts', newrec )
-            added = added + 1
-          else:
-            print('FILTER - ' + str(len(str(html.text).split())) + ' words, ' + item['link'])
-          time.sleep(0.9)
-          #if added == 40:
-          #  print('ADDED 40')
-          #  return 'OK'
+          if not 'title' in item:
+            item['title'] = ''
+            if 'description' in item:
+              item['title'] = item['description']
+            else:
+              if 'content' in item:
+                item['title'] = item['content']
+              #else:
+              #  continue
+          if 'link' in item:
+            if item['link'][-4:].lower()  in ['.mov','.mp4','.mp3','.m4v','.wav']:
+              continue
+            posts = get_one_by('posts',item['link'],'link')
+            if len(posts) > 0:
+              continue
+            else:
+              print('NEW ' + item['title'])
+            foundtitle = item['title']
+            newrec = {
+              'title' : '',
+              'image' : '',
+              'sound' : '',
+              'video' : '',
+              'groups' : json.dumps(grps[fd]),
+              'inreplyto' : '',
+              'link':item['link'],
+              'user_id' : grpowner,
+              'created' : str( timezone( 'US/Pacific' ).localize( datetime.now() ) )
+            }
+            user_agent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1985.143 Safari/537.36'
+            headers = {'User-Agent': user_agent}
+            try:
+              html = requests.get(item['link'],headers=headers,timeout=5)
+            except (requests.exceptions.ConnectionError, requests.exceptions.Timeout):
+              timingout = True
+              print('TIMING OUT ' + fd)
+              continue
+            except requests.exceptions.HTTPError:
+              timingout = True
+              print('HTTP ERROR ' + fd)
+              continue
+            flagged = 1
+            if not 'content-type' in html.headers:
+              print('SKIP NO CT ' + item['link'])
+            if 'content-type' in html.headers:
+              if not 'text/html' in html.headers['content-type'].lower():
+                print('SKIP NOT OK CT ' + html.headers['content-type'].lower())
+              if 'text/html' in html.headers['content-type'].lower():
+                opengraphe = OpenGraphExtractor()
+                titleset = False
+                imageset = False
+                flagged = moderationCheck(item['link'], True, str(html.text))
+                data = opengraphe.extract(str(html.text))
+                if data:
+                  if len(data) > 0:
+                    for prop in data[0]['properties']:
+                      foundtit = False
+                      foundimg = False
+                      for ogdata in prop:
+                        if not titleset or not imageset:
+                          if foundtit:
+                            newrec['title'] = newrec['title'] + '<h1 class="article_hed">' + ogdata + '</h1>'
+                            titleset = True
+                            foundtit = False
+                          if ogdata == 'og:title':
+                            foundtit = True
+                          if foundimg:
+                            newrec['title'] = newrec['title'] + '<img class="article_img" src="' + ogdata + '" alt="Image" />'
+                            imageset = True
+                            foundimg = False
+                          if ogdata == 'og:image':
+                            foundimg = True
+            if newrec['title'] == '':
+              newrec['title'] = foundtitle
+            if not flagged > 0:
+              rid = add_one( 'posts', newrec )
+              added = added + 1
+              feedadded = feedadded + 1
+            else:
+              print('FILTER - ' + str(len(str(html.text).split())) + ' words, ' + item['link'])
+            time.sleep(0.9)
+            #if added == 40:
+            #  print('ADDED 40')
+            #  return 'OK'
   print('DONE')
   return 'OK'
 
