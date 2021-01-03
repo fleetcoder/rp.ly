@@ -1068,6 +1068,18 @@ def moderationCheck(url,crawl,data=''):
     story = h2t.handle(str(html.text))
   else:
     story = h2t.handle(data)
+  if "\n" in story:
+    story = story.replace("\r", "")
+  else:
+    story = story.replace("\r", "\n")
+  sections = story.split("\n\n")
+  story = ''
+  for se in sections:
+    newlines = se.count("\n")
+    if newlines > 0 and se.count(" ") > 10 and len(se.split()) > 10:
+      nlratio = newlines / (se.count(" ") + len(se.split()) / 2)
+      if nlratio < 0.1 and se.count(".") > 0:
+        story = story + se + "\n\n"
   data = {}
   data["sentence"] = []
   data["sentence"].append(story)
