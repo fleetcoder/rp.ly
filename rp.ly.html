@@ -4518,7 +4518,6 @@ def syncGroups():
             if not flagged > 0:
               rid = add_one( 'posts', newrec )
               added = added + 1
-              feedadded = feedadded + 1
             else:
               print('FILTER - ' + str(len(str(html.text).split())) + ' words, ' + item['link'])
             time.sleep(0.9)
