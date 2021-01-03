@@ -4407,11 +4407,38 @@ def syncGroups():
             #  del_one('posts',posts[0]['id'])
             #  print('DEL ' + item['link'] + "\n")
       items.sort(key=lambda p: p['published'], reverse=True)
-      feedadded = 0
+      for item in items[:5]:
+        if not 'title' in item:
+          item['title'] = ''
+          if 'description' in item:
+            item['title'] = item['description']
+          else:
+            if 'content' in item:
+              item['title'] = item['content']
+        newest.append(item['link'])
+        #print('NEW 5 ' + item['published'] + ' ' + item['title'])
       for item in items:
+        if not item['link'] in newest:
+          posts = get_one_by('posts',item['link'],'link')
+          if len(posts) > 0:
+            del_one('posts',posts[0]['id'])
+            posts = get_one_by('posts',item['link'],'link')
+            if len(posts) > 0:
+              print('DID NOT DEL ' + item['link'])
+            if not 'title' in item:
+              item['title'] = ''
+              if 'description' in item:
+                item['title'] = item['description']
+              else:
+                if 'content' in item:
+                  item['title'] = item['content']
+            if 'title' in item:
+              print('DEL ' + item['published'] + ' ' + item['title'])
+
         urlkey = ''.join(re.findall('[a-zA-Z0-9_]',item['link']))
         saved = get_one_by( 'cached', urlkey, 'urlkey' )
-        if not len(saved) > 0 and feedadded < 6:
+      for item in items[:5]:
+        if not len(saved) > 0:
           if timingout:
             continue
           if not 'title' in item:
