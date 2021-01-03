@@ -1091,6 +1091,8 @@ def moderationCheck(url,crawl,data=''):
   for res in test_predict_generator:
     output = int(res['class_ids'][0])
   add_one('cached',{'urlkey':urlkey,'link':url,'story':story,'result':output})
+  if not output > 0:
+    print(story)
   return output
 
 def getHashedPass( password ):
