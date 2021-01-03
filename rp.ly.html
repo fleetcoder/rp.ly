@@ -4407,6 +4407,7 @@ def syncGroups():
             #  del_one('posts',posts[0]['id'])
             #  print('DEL ' + item['link'] + "\n")
       items.sort(key=lambda p: p['published'], reverse=True)
+      newest = []
       for item in items[:5]:
         if not 'title' in item:
           item['title'] = ''
