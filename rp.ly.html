@@ -4418,7 +4418,13 @@ def syncGroups():
               item['title'] = item['content']
         newest.append(item['link'])
         #print('NEW 5 ' + item['published'] + ' ' + item['title'])
+      pubcount = 0
       for item in items:
+        urlkey = ''.join(re.findall('[a-zA-Z0-9_]',item['link']))
+        saved = get_one_by( 'cached', urlkey, 'urlkey' )
+        if len(saved) > 0:
+          if not int(saved[0]['result']) > 0:
+            pubcount = pubcount + 1
         if not item['link'] in newest:
           posts = get_one_by('posts',item['link'],'link')
           if len(posts) > 0:
@@ -4433,11 +4439,11 @@ def syncGroups():
               else:
                 if 'content' in item:
                   item['title'] = item['content']
-            if 'title' in item:
+            if 'title' in item and pubcount > 4:
               print('DEL ' + item['published'] + ' ' + item['title'])
+      for item in items[:5]:
         urlkey = ''.join(re.findall('[a-zA-Z0-9_]',item['link']))
         saved = get_one_by( 'cached', urlkey, 'urlkey' )
-      for item in items[:5]:
         if not len(saved) > 0:
           if timingout:
             continue
