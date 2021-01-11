@@ -4787,6 +4787,8 @@ def findFeeds():
           continue
         except urllib.error.URLError as err:
           continue
+        except socket.timeout as err:
+          continue
         f = feedparser.parse(data)
         if len(f.entries) > 0:
           ftitle = 'News Feed'
