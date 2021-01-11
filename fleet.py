@@ -35,6 +35,7 @@ from extruct.opengraph import OpenGraphExtractor
 import bcrypt
 import csv
 import socket
+import ssl
 
 appdir = os.getcwd() + '/'
 
@@ -136,6 +137,7 @@ def group(grpid):
 @app.route('/', defaults={'path': ''})
 @app.route('/<path:path>')
 def catch_all(path):
+  context = ssl._create_unverified_context()
   grps = get_one_by( 'groups', path, 'publicPath' )
   if (len(grps) > 0):
     if path in cities:
@@ -169,7 +171,7 @@ def catch_all(path):
             newfile = time.strftime("%d_%m_%Y_%H_%M_%S_" + '.jpg')
             data = False
             try:
-              data = urllib.request.urlopen(search['link'], timeout=5).read()
+              data = urllib.request.urlopen(search['link'], timeout=5, context=context).read()
             except urllib.error.HTTPError as err:
               data = False
             except urllib.error.URLError as err:
@@ -238,7 +240,7 @@ def catch_all(path):
       for site in sites:
         time.sleep(0.3)
         try:
-          data = urllib.request.urlopen(site, timeout=5).read()
+          data = urllib.request.urlopen(site, timeout=5, context=context).read()
         except urllib.error.HTTPError as err:
           data = False
         except urllib.error.URLError as err:
@@ -275,7 +277,7 @@ def catch_all(path):
         else:
           time.sleep(0.3)
           try:
-            data = urllib.request.urlopen(url, timeout=5).read()
+            data = urllib.request.urlopen(url, timeout=5, context=context).read()
           except urllib.error.HTTPError as err:
             continue
           except urllib.error.URLError as err:
