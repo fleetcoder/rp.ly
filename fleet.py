@@ -1022,11 +1022,6 @@ if not os.path.exists('sqlite.db'):
     'created' : str( timezone( 'US/Pacific' ).localize( datetime.now() ) )
   }
   gr2 = add_one( 'groups', newrec )
-  newrec = {
-    'name' : 'Group 1',
-    'user_id' : 0,
-    'created' : str( timezone( 'US/Pacific' ).localize( datetime.now() ) )
-  }
   u = add_one('contacts',{
     'name':'',
     'email':'',
@@ -1037,6 +1032,18 @@ if not os.path.exists('sqlite.db'):
     'created':str(datetime.now())
   })
   add_one('sessions',{'field':'','data':''})
+  newrec = {
+    'title' : '',
+    'image' : '',
+    'sound' : '',
+    'video' : '',
+    'groups' : json.dumps([]),
+    'inreplyto' : '',
+    'link':'',
+    'user_id' : 0,
+    'created' : str( timezone( 'US/Pacific' ).localize( datetime.now() ) )
+  }
+  rid = add_one( 'posts', newrec )
   print('CREATED DB')
 
 abilities = []

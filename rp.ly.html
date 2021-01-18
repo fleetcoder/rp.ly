@@ -5354,7 +5354,7 @@ def freeTrialLogin():
     cont['phone'] = request.form.get("phone")
     cont['email'] = request.form.get("email").lower()
     if not request.form.get("pass") is None:
-      if checkPass( request.form.get("pass"), exists['password'] ):
+      if checkPass( request.form.get("pass").encode('utf-8'), exists['password'] ):
         u = exists['id']
         response = make_response(json.dumps( [ 'OK' ] ))
         session.permanent = True
