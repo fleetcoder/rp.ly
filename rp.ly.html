@@ -4495,7 +4495,10 @@ def syncGroups():
               if not 'text/html' in html.headers['content-type'].lower():
                 print('SKIP NOT OK CT ' + html.headers['content-type'].lower())
               if 'text/html' in html.headers['content-type'].lower():
-                opengraphe = OpenGraphExtractor()
+                try:
+                  opengraphe = OpenGraphExtractor()
+                except:
+                  continue
                 titleset = False
                 imageset = False
                 flagged = moderationCheck(item['link'], True, str(html.text))
