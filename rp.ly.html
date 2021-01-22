@@ -4488,6 +4488,10 @@ def syncGroups():
               timingout = True
               print('HTTP ERROR ' + fd)
               continue
+            except requests.exceptions.TooManyRedirects:
+              timingout = True
+              print('REDIR ERROR ' + fd)
+              continue
             flagged = 1
             if not 'content-type' in html.headers:
               print('SKIP NO CT ' + item['link'])
