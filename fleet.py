@@ -249,6 +249,8 @@ def catch_all(path):
           data = False
         if data:
           tree = etree.HTML(data)
+          parsed_url = urllib.parse.urlparse(site)
+          base = parsed_url.scheme+"://"+parsed_url.hostname
           for node in tree.findall('.//link'):
             t = node.attrib.get('type')
             if t:
@@ -261,8 +263,6 @@ def catch_all(path):
                     possible_feeds.append(href)
                   else:
                     possible_feeds.append(base+href)
-          parsed_url = urllib.parse.urlparse(site)
-          base = parsed_url.scheme+"://"+parsed_url.hostname
           for node in tree.findall('.//a'):
             href = node.attrib.get('href')
             if href:
