@@ -5271,6 +5271,7 @@ def doConnect():
         return json.dumps( [ 'OK' ] )
   cont['phone'] = item[0]['phone']
   cont['email'] = item[0]['email']
+  sentto = ''
   if len(cont['phone']) > 0:
     client = Client(twilio_id, twilio_token)
     rl = "Your code is " + str(num)
@@ -5279,7 +5280,7 @@ def doConnect():
       from_='+1' + os.getenv('TWILIO_FROM'),
       to=cont['phone']
     )
-    return json.dumps( [ 'phone number' ] )
+    sentto = 'phone number'
   if len(cont['email']) > 0:
     em = cont['email']
     message = Mail(
@@ -5289,7 +5290,9 @@ def doConnect():
       html_content='<strong>Your code is ' + str(num) + '</strong>')
     sg = SendGridAPIClient(sendgrid_token)
     response = sg.send(message)
-    return json.dumps( [ 'email address' ] )
+    sentto = 'email address'
+  if not sentto == '':
+    return json.dumps( [ sentto ] )
   return json.dumps( [ 'Error' ] )
 
 @app.route('/freeTrial', methods=['GET','POST'])
@@ -6068,13 +6071,13 @@ def addPosts():
               hrs = interv / int(notiprefs['freq'])
               if 'last_notif' in notiprefs:
                 dt = parser.parse(notiprefs['last_notif'], tzinfos=tzinfos) + timedelta(hours=int(hrs))
-                if dt < timezone( 'US/Pacific' ).localize( datetime.now() ):
+                if dt.time() < timezone( 'US/Pacific' ).localize( datetime.now() ).time():
                   notify_photo( con['id'], grpdata[0]['key'], sendemail, sendphone )
                   notiprefs['last_notif'] = str( timezone( 'US/Pacific' ).localize( datetime.now() ) )
                   mod_one('settings',{'value':json.dumps(notiprefs)},prefid)
             else:
               dt = parser.parse(grpdata[0]['last_notif'], tzinfos=tzinfos) + timedelta(hours=12)
-              if dt < timezone( 'US/Pacific' ).localize( datetime.now() ):
+              if dt.time() < timezone( 'US/Pacific' ).localize( datetime.now() ).time():
                 notify_photo( con['id'], grpdata[0]['key'], True, True )
           else:
             notify_photo( con['id'], grpdata[0]['key'], True, True )
