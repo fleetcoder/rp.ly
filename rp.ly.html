@@ -2032,7 +2032,9 @@
             shareLinkUrl:'',
             linkgroups:[],
             showStartControls:true,
-            showBackToGallery: false
+            showBackToGallery: false,
+            newGallery: false,
+            newGalleryName: ''
           }
         },
         components:{
@@ -2318,6 +2320,26 @@
             }
           },
           addPosts(){
+            if (this.newGallery) {
+              if (this.newGalleryName == '') {
+                MintUI.Toast({
+                  message: 'Please create a name for your new gallery',
+                  iconClass: 'icon icon-success',
+                  duration: 4000
+                })
+                return
+              }
+            } else {
+              this.newGalleryName = ''
+              if (this.postto.length == 0) {
+                MintUI.Toast({
+                  message: 'Select gallery(s) for your post',
+                  iconClass: 'icon icon-success',
+                  duration: 4000
+                })
+                return
+              }
+            }
             var sel = this.doSetHeader.reduce(
               (out, bool, index) => bool ? out.concat(index) : out, 
               []
@@ -2325,14 +2347,6 @@
             var doSetHeader = -1
             if (sel.length > 0) {
               doSetHeader = parseInt(sel[0])
-            }
-            if (this.postto.length == 0) {
-              MintUI.Toast({
-                message: 'Select gallery(s) for your post',
-                iconClass: 'icon icon-success',
-                duration: 4000
-              })
-              return
             }
             var exp = this.expireHours
             if (this.doExpire === false) {
@@ -2348,7 +2362,8 @@
               title : JSON.stringify(this.title),
               expirehours: exp,
               speedup: this.speedup,
-              doSetHeader: doSetHeader
+              doSetHeader: doSetHeader,
+              newGallery: this.newGalleryName
             }).then( ( response ) => {
               if ( !!response.body ) {
                 if (response.body[0].length > 3) {
@@ -2954,6 +2969,8 @@
                   :options="groups"
                   align="right">
                 </mt-checklist>
+                <mt-field v-model="newGalleryName" v-if="newGallery" label="New Gallery Name:"></mt-field>
+                <mt-cell v-if="isSuccess" title="Make A New Gallery For These Photos"><mt-switch v-model="newGallery"></mt-switch></mt-cell>
                 <!--<mt-button v-bind:class="{'is-hidden':saveHidden}" v-on:click="quickContact()" size="large">Add Contact</mt-button>-->
                 <!--<mt-cell title="Expire after"><mt-field v-model="expireHours" label="hours"></mt-field><mt-switch v-model="doExpire" @change="onExpireChange()"></mt-switch></mt-cell>-->
                 <!--<mt-button v-bind:class="{'is-hidden':optionsBtnHidden}" v-on:click="showOptions()" size="large">Options</mt-button>-->
@@ -5938,6 +5955,35 @@ def addPosts():
     if imgcount == setHdr:
       firstimg = savedImage
   imgcount = -1
+  postto = request.form.get('recips')
+  if not request.form.get('newGallery') is None:
+    if len(request.form.get('newGallery')) > 0:
+      newrec = {
+        'name' : request.form.get('newGallery'),
+        'image' : '',
+        'key':randomword(8),
+        'maxres' : '0',
+        'allowPosts' : '0',
+        'shareLinks' : '0',
+        'blockDownloads' : '0',
+        'public':'0',
+        'publicImage': '',
+        'publicName': '',
+        'publicBio': '',
+        'publicLink': '',
+        'publicPath': '',
+        'publicGroups': '[]',
+        'user_id' : session['user'],
+        'created' : str( timezone( 'US/Pacific' ).localize( datetime.now() ) )
+      }
+      rid = add_one( 'groups', newrec )
+      if rid > 0:
+        grps = json.loads(get_user(current_user()['id'])['groups'])
+        grps.append(rid)
+        mod_one('contacts',{'groups': json.dumps(grps)},current_user()['id'])
+        recips = json.loads(postto)
+        recips.append(rid)
+        postto = json.dumps(recips)
   for savedImage in saveImage:
     imgcount = imgcount + 1
     doSetHeader = False
@@ -5960,7 +6006,7 @@ def addPosts():
       'image' : savedImage,
       'sound' : soundFile,
       'video' : videoFile,
-      'groups' : request.form.get('recips'),
+      'groups' : postto,
       'inreplyto' : in_reply_to,
       'link':'',
       'user_id' : session['user'],
@@ -6005,7 +6051,7 @@ def addPosts():
       now_plus_hours = datetime.now() + timedelta(hours=int(request.form.get('expirehours')))
       newrec['expires'] = str( timezone( 'US/Pacific' ).localize( now_plus_hours ) )
     if not len(in_reply_to) > 0:
-      for g in json.loads(request.form.get('recips')):
+      for g in json.loads(postto):
          grpdata = get_one('groups',g)
          if len(grpdata) > 0:
            allowposts = False
@@ -6019,7 +6065,7 @@ def addPosts():
     if rid > 0:
       if doSetHeader and firstimg is not '':
         newobj = {'image':firstimg}
-        for g in json.loads(request.form.get('recips')):
+        for g in json.loads(postto):
           grpdata = get_one('groups',g)
           growner = get_user(grpdata[0]['user_id'])
           if int(curr['id']) == int(growner['id']):
@@ -6030,7 +6076,7 @@ def addPosts():
       recips = []
       for con in contacts:
         if can('get','posts',con,newrec):
-          grp = [value for value in json.loads(request.form.get('recips')) if value in json.loads(con['groups'])][0]
+          grp = [value for value in json.loads(postto) if value in json.loads(con['groups'])][0]
           grpdata = get_one('groups',grp)
           notifprefs = get_one_by( 'settings', 'group_' + str(grp), 'name' )
           if 'maxres' in grpdata[0]:
@@ -6128,7 +6174,7 @@ def addPosts():
   resp = 'OK'
   if request.form.get('inreplyto') is None:
     ugrps = get_one_by( 'groups', curr['id'], 'user_id' )
-    rcps = json.loads(request.form.get('recips'))
+    rcps = json.loads(postto)
     gname = ''
     for g in rcps:
       grpdata = get_one('groups',g)
@@ -6154,7 +6200,7 @@ def addPosts():
     item['author'] = get_user(item['user_id'])['name']
     sendcomet(recips,item)
   if not request.form.get('inreplyto') is None:
-    for grp in json.loads(request.form.get('recips')):
+    for grp in json.loads(postto):
       notify_comment( grp, curr['name'] )
   return response
 
