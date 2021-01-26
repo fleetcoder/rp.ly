@@ -6074,6 +6074,7 @@ def addPosts():
       newrec['id'] = rid
       contacts = get_all('contacts')
       recips = []
+      sentgrps = []
       for con in contacts:
         if can('get','posts',con,newrec):
           grp = [value for value in json.loads(postto) if value in json.loads(con['groups'])][0]
@@ -6125,11 +6126,16 @@ def addPosts():
               dt = parser.parse(grpdata[0]['last_notif'], tzinfos=tzinfos) + timedelta(hours=12)
               if dt.time() < timezone( 'US/Pacific' ).localize( datetime.now() ).time():
                 notify_photo( con['id'], grpdata[0]['key'], True, True )
+                if not grpdata[0]['id'] in sentgrps:
+                  sentgrps.append(grpdata[0]['id'])
           else:
             notify_photo( con['id'], grpdata[0]['key'], True, True )
+            if not grpdata[0]['id'] in sentgrps:
+              sentgrps.append(grpdata[0]['id'])
           recips.append( con['id'] )
       newobj = { 'last_notif' : str( timezone( 'US/Pacific' ).localize( datetime.now() ) ) }
-      mod_one( 'groups', newobj, grpdata[0]['id'] )
+      for sentgrp in sentgrps:
+        mod_one( 'groups', newobj, sentgrp )
       item = newrec
       item['imageHidden'] = False
       item['textHidden'] = True
