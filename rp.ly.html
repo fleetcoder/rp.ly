@@ -6118,13 +6118,13 @@ def addPosts():
               hrs = interv / int(notiprefs['freq'])
               if 'last_notif' in notiprefs:
                 dt = parser.parse(notiprefs['last_notif'], tzinfos=tzinfos) + timedelta(hours=int(hrs))
-                if dt.time() < timezone( 'US/Pacific' ).localize( datetime.now() ).time():
+                if dt < timezone( 'US/Pacific' ).localize( datetime.now() ):
                   notify_photo( con['id'], grpdata[0]['key'], sendemail, sendphone )
                   notiprefs['last_notif'] = str( timezone( 'US/Pacific' ).localize( datetime.now() ) )
                   mod_one('settings',{'value':json.dumps(notiprefs)},prefid)
             else:
               dt = parser.parse(grpdata[0]['last_notif'], tzinfos=tzinfos) + timedelta(hours=12)
-              if dt.time() < timezone( 'US/Pacific' ).localize( datetime.now() ).time():
+              if dt < timezone( 'US/Pacific' ).localize( datetime.now() ):
                 notify_photo( con['id'], grpdata[0]['key'], True, True )
                 if not grpdata[0]['id'] in sentgrps:
                   sentgrps.append(grpdata[0]['id'])
