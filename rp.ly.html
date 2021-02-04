@@ -377,12 +377,16 @@
         margin-bottom:10px;
       }
       .article_img {
-        width: 100%;
+        margin:10px;
+        width: 25%;
+        float: left;
       }
       .article_hed {
+        float: right;
+        font-size: 18px;
+        width: 60%;
         cursor: pointer;
-        margin-left: 20px;
-        margin-right: 20px;
+        margin:10px;
       }
       .groups_following {
         text-align:left;
@@ -1020,8 +1024,8 @@
             </mt-tab-container>
             <mt-cell class="imagecell public_img" v-for="(item, idx) in items" :title="item.name">
               <p class="" v-html="item.title" v-bind:class="{'is-hidden':item.textHidden}"></p>
-              <mt-button v-if="shareLinks" class="caption readstory" @click="linkGo(item.link)">Read Story</mt-button>
-              <span v-if="item.isHtml" v-bind:class="{'is-hidden':item.showCommentField}" class="comment" v-on:click="addComment(idx)"><img class="comment" slot="icon" src="file/message-square.svg" /></span>
+              <!--<mt-button v-if="shareLinks" class="caption readstory" @click="linkGo(item.link)">Read Story</mt-button>
+              <span v-if="item.isHtml" v-bind:class="{'is-hidden':item.showCommentField}" class="comment" v-on:click="addComment(idx)"><img class="comment" slot="icon" src="file/message-square.svg" /></span>-->
               <mt-field v-bind:class="{'is-hidden':!item.showCommentField}" placeholder="Comment..." v-model="item.comment"></mt-field>
               <mt-button v-bind:class="{'is-hidden':!item.showCommentField}" size="large" v-on:click="saveComment(item,idx)">Save Comment</mt-button>
               <div v-if="!item.imageHidden" class="outer">
