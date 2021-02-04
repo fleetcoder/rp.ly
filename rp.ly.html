@@ -831,7 +831,9 @@
             showShareGroup: false,
             sharingGroup: '',
             sharingImg: '',
-            groupLink: ''
+            groupLink: '',
+            menuVisible: false,
+            actions:[]
           }
         },
         created() {
@@ -865,7 +867,12 @@
               this.sharingGroup = publicData['publicName']
               this.sharingImg = 'grpFile?field=publicImage&name=' + publicData['publicImage']
               this.groupLink = publicData['publicName'] + ' https://rp.ly/' + publicData['publicPath']
+              this.actions = []
               for(grp in this.publicGroups) {
+                this.actions.push({
+                  name:this.publicGroups[grp].name,
+                  method:this.showPage
+                })
                 //alert(this.publicGroups[grp].image)
               }
               Vue.http.get( 'getPosts' + '?grp=' + this.$route.params.grp).then( ( response ) => {
@@ -964,6 +971,16 @@
           },
           showShare(){
             this.showShareGroup = true
+          },
+          showMenu(){
+            this.menuVisible = !this.menuVisible
+          },
+          showPage(e){
+            for(grp in this.publicGroups) {
+              if (e.name == this.publicGroups[grp].name) {
+                router.push('/showgroup/' + this.publicGroups[grp].grp)
+              }
+            }
           }
         },
         template: `
@@ -972,8 +989,8 @@
               <a href="/" slot="left">
                 <img class="headericon" slot="icon" src="file/home.svg" />
               </a>
-              <a v-on:click="showHelp()" slot="right">
-                <img class="headericon" slot="icon" src="file/help-circle.svg" />
+              <a v-on:click="showMenu()" slot="right">
+                <img class="headericon" slot="icon" src="file/menu.svg" />
               </a>
             </mt-header>
             <img class="groupimg" :src="'grpFile?field=publicImage&name=' + publicImage" />
@@ -1030,6 +1047,11 @@
                 <img class="headericon" slot="icon" src="file/share.svg" />
               </a>
             </mt-header>
+            <mt-actionsheet
+              cancelText="Close"
+              :actions="actions"
+              v-model="menuVisible">
+            </mt-actionsheet>
           </div>`
       }
       const PublicGroupPage = {

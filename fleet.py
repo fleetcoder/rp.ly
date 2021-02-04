@@ -445,8 +445,8 @@ def index():
   pall = False
   if mydomain == 'photo.gy':
     pall = 'ef6c57 7ed3b2 b9e6d3 f2f2f2'.split()
-  if mydomain == 'audio.gy':
-    pall = '445c3c fda77f c9d99e fae8c8'.split()
+  #if mydomain == 'audio.gy':
+  pall = '445c3c fda77f c9d99e fae8c8'.split()
   if mydomain == 'movie.gd':
     pall = '557571 d49a89 d49a89 f4f4f4'.split()
   if pall:
