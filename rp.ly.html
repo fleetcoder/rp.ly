@@ -836,7 +836,8 @@
             groupLink: '',
             menuVisible: false,
             actions:[],
-            headerTitle: "Rp.ly"
+            headerTitle: "Rp.ly",
+            selected: ""
           }
         },
         created() {
@@ -1005,6 +1006,14 @@
             <!--<mt-cell :title="name" is-link :to="'/pubgroup/' + grp">
               <img class="grimg" :src="image" />
             </mt-cell>-->
+            <mt-navbar v-model="selected">
+              <mt-tab-item v-for="(item, idx) in publicGroups" :id="item.grp" :name="item.name"></mt-tab-item>
+            </mt-navbar>
+            <mt-tab-container v-model="selected">
+              <mt-tab-container-item v-for="(item, idx) in publicGroups" :id="item.id">
+                <p>&nbsp;</p>
+              </mt-tab-container-item>
+            </mt-tab-container>
             <mt-cell class="imagecell public_img" v-for="(item, idx) in items" :title="item.name">
               <p class="" v-html="item.title" v-bind:class="{'is-hidden':item.textHidden}"></p>
               <mt-button v-if="shareLinks" class="caption readstory" @click="linkGo(item.link)">Read Story</mt-button>
