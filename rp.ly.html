@@ -411,6 +411,9 @@
         margin-right: 15px;
         margin-bottom: 30px;
       }
+      .grouptabs {
+        margin-top:10px;
+      }
     </style>
 
     <script id="client">
@@ -1007,9 +1010,9 @@
               <img class="grimg" :src="image" />
             </mt-cell>-->
             <mt-navbar v-model="selected">
-              <mt-tab-item v-for="(item, idx) in publicGroups" :id="item.grp" :name="item.name"></mt-tab-item>
+              <mt-tab-item v-for="(item, idx) in publicGroups" :id="item.grp">{{item.name}}</mt-tab-item>
             </mt-navbar>
-            <mt-tab-container v-model="selected">
+            <mt-tab-container v-model="selected" class="grouptabs">
               <mt-tab-container-item v-for="(item, idx) in publicGroups" :id="item.id">
                 <p>&nbsp;</p>
               </mt-tab-container-item>
