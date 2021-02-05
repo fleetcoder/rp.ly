@@ -1014,12 +1014,12 @@
             <!--<mt-cell :title="name" is-link :to="'/pubgroup/' + grp">
               <img class="grimg" :src="image" />
             </mt-cell>-->
-            <mt-navbar v-model="selected" class="grouptabs">
+            <mt-navbar v-if="shareLinks" v-model="selected" class="grouptabs">
               <mt-tab-item id="1">Latest</mt-tab-item>
               <mt-tab-item id="2">Calendar</mt-tab-item>
               <mt-tab-item id="3">Weather</mt-tab-item>
             </mt-navbar>
-            <mt-tab-container v-model="selected">
+            <mt-tab-container v-if="shareLinks" v-model="selected">
               <mt-tab-container-item id="1">
                 <p>&nbsp;</p>
               </mt-tab-container-item>
