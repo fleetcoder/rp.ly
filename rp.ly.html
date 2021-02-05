@@ -1059,9 +1059,9 @@
               <audio-player v-if="item.imageHidden" :src="'myFile?field=sound&name=' + item.sound" v-bind:class="{'is-hidden':item.soundHidden}" />
               <p class="caption" v-for="(comm, cidx) in item.comments" v-text="comm.author + ': ' + comm.title"></p>
             </mt-cell>
-            <!--<mt-cell v-for="(item, idx) in publicGroups" :title="item.name" is-link :to="'/showgroup/' + item.grp">
+            <mt-cell v-if="!shareLinks" v-for="(item, idx) in publicGroups" :title="item.name" is-link :to="'/showgroup/' + item.grp">
               <img class="grimg" :src="item.image" />
-            </mt-cell>-->
+            </mt-cell>
             <mt-popup class="help_popup" v-model="helpVisible" position="middle">
               <mt-header>
                 <a v-on:click="closeHelp()" slot="right">
