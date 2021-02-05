@@ -272,6 +272,10 @@
           width: 700px;
           margin: 0px auto;
         }
+        .fixedheader {
+          width: 700px;
+          margin: 0px auto;
+        }
         .mint-tabbar {
           width: 700px;
           margin: 0px auto;
@@ -418,6 +422,9 @@
       }
       .grouptabs {
         margin-top:20px;
+      }
+      .fixedheader {
+        
       }
     </style>
 
@@ -998,7 +1005,7 @@
         },
         template: `
           <div>
-            <mt-header fixed :title="headerTitle">
+            <mt-header class="fixedheader" fixed :title="headerTitle">
               <a href="/" slot="left">
                 <img class="headericon" slot="icon" src="file/home.svg" />
               </a>
