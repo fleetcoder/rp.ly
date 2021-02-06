@@ -998,7 +998,7 @@
           showPage(e){
             for(grp in this.publicGroups) {
               if (e.name == this.publicGroups[grp].name) {
-                router.push('/showgroup/' + this.publicGroups[grp].grp)
+                router.push('/group/' + this.publicGroups[grp].grp)
               }
             }
           }
@@ -1066,7 +1066,7 @@
               <audio-player v-if="item.imageHidden" :src="'myFile?field=sound&name=' + item.sound" v-bind:class="{'is-hidden':item.soundHidden}" />
               <p class="caption" v-for="(comm, cidx) in item.comments" v-text="comm.author + ': ' + comm.title"></p>
             </mt-cell>
-            <mt-cell v-for="(item, idx) in publicGroups" :title="item.name" is-link :to="'/showgroup/' + item.grp">
+            <mt-cell v-for="(item, idx) in publicGroups" :title="item.name" is-link :to="'/group/' + item.grp">
               <img class="grimg" :src="item.image" />
             </mt-cell>
             <mt-popup class="help_popup" v-model="helpVisible" position="middle">
