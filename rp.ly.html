@@ -855,13 +855,6 @@
             selected: "1"
           }
         },
-        watch: {
-          '$route' (to, from) {
-            if ("undefined" !== typeof this.pageSetup) {
-              this.pageSetup()
-            }
-          }
-        },
         created() {
           this.pageSetup()
         },
@@ -1076,7 +1069,7 @@
               <audio-player v-if="item.imageHidden" :src="'myFile?field=sound&name=' + item.sound" v-bind:class="{'is-hidden':item.soundHidden}" />
               <p class="caption" v-for="(comm, cidx) in item.comments" v-text="comm.author + ': ' + comm.title"></p>
             </mt-cell>
-            <mt-cell v-for="(item, idx) in publicGroups" :title="item.name" is-link :to="'/group/' + item.grp">
+            <mt-cell v-for="(item, idx) in publicGroups" :title="item.name" is-link :to="item.grpLink">
               <img class="grimg" :src="item.image" />
             </mt-cell>
             <mt-popup class="help_popup" v-model="helpVisible" position="middle">
@@ -1171,9 +1164,9 @@
         },
         template: `
           <div>
-            <mt-header title="Rp.ly">
+            <mt-header title="Our Town">
             </mt-header>
-            <img class="groupimg" :src="'grpFile?field=image&name=' + groupPic" />
+            <!--<img class="groupimg" :src="'grpFile?field=image&name=' + groupPic" />-->
             <mt-cell class="imagecell" v-for="(item, idx) in items" :title="item.name">
               <p class="caption">
                 <span v-text="item.author"></span>
@@ -6410,7 +6403,16 @@ def joinGroup():
           grpdata = get_one('groups',grp)
           if len(grpdata) > 0:
             if not grpdata[0]['image'] is None:
-              linkedgrps.append({'grp':grpdata[0]['key'],'name':grpdata[0]['name'],'image':'https://' + mydomain + '/grpFile?field=image&name=' + grpdata[0]['image']})
+              if int(grpdata[0]['public']) > 0:
+                grpLink = '/pubgroup/' + grpdata[0]['key']
+              else:
+                grpLink = '/showgroup/' + grpdata[0]['key']
+              linkedgrps.append({
+                'grp':grpdata[0]['key'],
+                'name':grpdata[0]['name'],
+                'image':'https://' + mydomain + '/grpFile?field=image&name=' + grpdata[0]['image'],
+                'grpLink':grpLink
+              })
         publicData = json.dumps({
           'publicImage':items[0]['publicImage'],
           'publicName':items[0]['publicName'],
