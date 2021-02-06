@@ -2105,7 +2105,8 @@
             showStartControls:true,
             showBackToGallery: false,
             newGallery: false,
-            newGalleryName: ''
+            newGalleryName: '',
+            textpost: ''
           }
         },
         components:{
@@ -2910,6 +2911,45 @@
           closeShareLink(){
             this.showShareLink = false
           },
+          doShareText(){
+            this.showShareLink = false
+            this.spinnerHidden = false
+            Vue.http.post( 'addPosts', {
+              recips:JSON.stringify(this.postto),
+              title : '[]',
+              expirehours: 0,
+              speedup: this.speedup,
+              doSetHeader: this.doSetHeader,
+              shareText: this.textpost
+            }).then( ( response ) => {
+              if ( !!response.body ) {
+                if (response.body[0].length > 3) {
+                  this.groupLink = this.title[0] + ' ' + response.body
+                  this.showShareGroup = true
+                  if (this.postto.length === 1) {
+                    Vue.http.post( 'joinGroup', {
+                      grp:this.postto[0]
+                    }).then( ( response ) => {
+                      this.sharingGroup = response.body[1]
+                      this.sharingImg = response.body[2]
+                    })
+                  }
+                }
+              }
+              this.textpost = ''
+              this.selected = 'tab1'
+              this.shareLinkUrl = ''
+              this.getPosts()
+              this.title = []
+              this.image = ''
+              this.postto = []
+              this.spinnerHidden = true
+              this.saveHidden = false
+              this.uploadHidden = false
+              this.groupsHidden = false
+              this.reset()
+            })
+          },
           doShareLink(){
             if (this.shareLinkUrl == '') {
               return false
@@ -2972,6 +3012,9 @@
           },
           changeTabs(route) {
             router.push( route )
+          },
+          shareText(){
+            this.textHidden = false
           }
         },
         mounted() {
@@ -3001,7 +3044,7 @@
                 <mt-cell>
                   <form enctype="multipart/form-data" novalidate v-if="isInitial">
                     <div class="dropbox">
-                      <label class="uploadlabel" for="image_uploads">&nbsp;&nbsp;&nbsp;&nbsp;<img src="/file/camera.svg" class="uplimg" alt="Upload Photos" /><img src="/file/video.svg" class="uplimg" alt="Upload Photos" /><img src="/file/film.svg" class="uplimg" alt="Upload Photos" /></label><img v-on:click="shareLink()" v-if="shareLinks" src="/file/link.svg" class="uplimg" alt="Save Link" />&nbsp;&nbsp;&nbsp;&nbsp;
+                      <label class="uploadlabel" for="image_uploads">&nbsp;&nbsp;&nbsp;&nbsp;<img src="/file/camera.svg" class="uplimg" alt="Upload Photos" /><img src="/file/video.svg" class="uplimg" alt="Upload Photos" /><img src="/file/film.svg" class="uplimg" alt="Upload Photos" /></label><img v-on:click="shareLink()" v-if="shareLinks" src="/file/link.svg" class="uplimg" alt="Save Link" /><img v-on:click="shareText()" v-if="shareLinks" src="/file/edit.svg" class="uplimg" alt="Write Text" />&nbsp;&nbsp;&nbsp;&nbsp;
                       <input id="image_uploads" type="file" multiple :name="uploadFieldName" :disabled="isSaving" @change="filesChange($event.target.name, $event.target.files); fileCount = $event.target.files.length"
                         accept="image/*,video/mp4,video/x-m4v,video/*,audio/x-m4a,audio/*" class="input-file" />
                       <h3>Click on these buttons to add content</h3>
@@ -3033,6 +3076,14 @@
                     <pre>{{ uploadError }}</pre>
                   </div>
                 </mt-cell>
+                <mt-field placeholder="Story..." v-if="!textHidden" type="textarea" rows="20" v-model="textpost"></mt-field>
+                <mt-checklist
+                  v-if="!textHidden" 
+                  v-model="postto"
+                  :options="linkgroups"
+                  align="right">
+                </mt-checklist>
+                <mt-button v-if="!textHidden" v-on:click="doShareText()">Save</mt-button><p></p>
                 <audio-recorder v-bind:class="{'is-hidden':!audioHidden}" :upload-url="'uploadFile?field=sound'" :after-recording="aftRec" />
                 <mt-cell><mt-field v-bind:class="{'is-hidden':!audioHidden}" placeholder="Speedup..." v-model="speedup" label="Frame rate multiplier"></mt-field></mt-cell>
                 <mt-checklist v-if="isSuccess" v-bind:class="{'is-hidden':groupsHidden}"
@@ -6070,8 +6121,11 @@ def addPosts():
     in_reply_to = ''
     if not request.form.get('inreplyto') is None:
       in_reply_to = request.form.get('inreplyto')
-    if len(titles) < (imgcount + 1):
-      continue
+    if request.form.get('shareLink') is None and request.form.get('shareText') is None:
+      if len(titles) < (imgcount + 1):
+        continue
+    else:
+      titles = [""]
     newrec = {
       'title' : titles[imgcount],
       'image' : savedImage,
@@ -6083,6 +6137,8 @@ def addPosts():
       'user_id' : session['user'],
       'created' : str( timezone( 'US/Pacific' ).localize( datetime.now() ) )
     }
+    if not request.form.get('shareText') is None:
+      newrec['title'] = request.form.get('shareText')
     if not request.form.get('shareLink') is None:
       newrec['link'] = request.form.get('shareLink')
       user_agent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1985.143 Safari/537.36'
