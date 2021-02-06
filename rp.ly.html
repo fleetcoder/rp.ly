@@ -855,78 +855,90 @@
             selected: "1"
           }
         },
+        watch: {
+          '$route' (to, from) {
+            if ("undefined" !== typeof this.pageSetup) {
+              this.pageSetup()
+            }
+          }
+        },
         created() {
-          this.grp = this.$route.params.grp
-          var ua = navigator.userAgent || navigator.vendor || window.opera
-          this.isInstagram = (ua.indexOf('Instagram') > -1) ? true : false
-          this.spinnerHidden = false
-          Vue.http.post( 'joinGroup', {
-            grp:this.$route.params.grp
-          }).then( ( response ) => {
-            if (response.body[3] == 'AUTHED') {
-              this.authed = true
-              if (response.body[5] == 'MEMBER') {
-                this.notMember = false
-              } else {
-                this.notMember = true
-              }
-            } else {
-              this.authed = false
-            }
-            var publicData = JSON.parse(response.body[6])
-            if ("undefined" !== typeof publicData['publicName']) {
-              this.publicName = publicData['publicName']
-              this.publicBio = publicData['publicBio'].replace("\n","<br>")
-              this.publicLink = publicData['publicLink']
-              this.publicImage = publicData['publicImage']
-              this.publicGroups = publicData['publicGroups']
-              this.image = response.body[2]
-              this.name = response.body[1]
-               //this.publicGroups.unshift({grp:this.$route.params.grp,image:,name:})
-              this.sharingGroup = publicData['publicName']
-              this.sharingImg = 'grpFile?field=publicImage&name=' + publicData['publicImage']
-              this.groupLink = publicData['publicName'] + ' https://rp.ly/' + publicData['publicPath']
-              this.actions = []
-              for(grp in this.publicGroups) {
-                this.actions.push({
-                  name:this.publicGroups[grp].name,
-                  method:this.showPage
-                })
-                //alert(this.publicGroups[grp].image)
-              }
-              Vue.http.get( 'getPosts' + '?grp=' + this.$route.params.grp).then( ( response ) => {
-                if ( !!response.body ) {
-                  if (this.cursor > 0) {
-                    if (response.body[0].length < 10) {
-                      this.moreHidden = true
-                    }
-                    for (var j = 0; j < response.body[0].length; j++) {
-                      this.items.push(response.body[0][j])
-                    }
-                  } else {
-                    this.items = response.body[0]
-                    if (this.items.length > 9) {
-                      this.moreHidden = false
-                    }
-                  }
-                  this.groups = response.body[1]
-                  this.shareLinks = false
-                  for (var j = 0; j < this.groups.length; j++) {
-                    if (parseInt(this.groups[j].links) > 0) {
-                      this.shareLinks = true
-                      this.headerTitle = "Our Town"
-                    }
-                  }
-                  
-                }
-                this.spinnerHidden = true
-              })
-            } else {
-              router.push( '/showgroup/' + this.$route.params.grp )
-            }
-          })
+          this.pageSetup()
         },
         methods: {
+          pageSetup(){
+            this.grp = this.$route.params.grp
+            var ua = navigator.userAgent || navigator.vendor || window.opera
+            this.isInstagram = (ua.indexOf('Instagram') > -1) ? true : false
+            this.spinnerHidden = false
+            Vue.http.post( 'joinGroup', {
+              grp:this.$route.params.grp
+            }).then( ( response ) => {
+              console.log('ROS')
+              if (response.body[3] == 'AUTHED') {
+                this.authed = true
+                if (response.body[5] == 'MEMBER') {
+                  this.notMember = false
+                } else {
+                  this.notMember = true
+                }
+              } else {
+                this.authed = false
+              }
+              var publicData = JSON.parse(response.body[6])
+              if ("undefined" !== typeof publicData['publicName']) {
+                console.log('PUB SETUP ' + publicData['publicName'])
+                this.publicName = publicData['publicName']
+                this.publicBio = publicData['publicBio'].replace("\n","<br>")
+                this.publicLink = publicData['publicLink']
+                this.publicImage = publicData['publicImage']
+                this.publicGroups = publicData['publicGroups']
+                this.image = response.body[2]
+                this.name = response.body[1]
+                 //this.publicGroups.unshift({grp:this.$route.params.grp,image:,name:})
+                this.sharingGroup = publicData['publicName']
+                this.sharingImg = 'grpFile?field=publicImage&name=' + publicData['publicImage']
+                this.groupLink = publicData['publicName'] + ' https://rp.ly/' + publicData['publicPath']
+                this.actions = []
+                for(grp in this.publicGroups) {
+                  this.actions.push({
+                    name:this.publicGroups[grp].name,
+                    method:this.showPage
+                  })
+                  //alert(this.publicGroups[grp].image)
+                }
+                Vue.http.get( 'getPosts' + '?grp=' + this.$route.params.grp).then( ( response ) => {
+                  if ( !!response.body ) {
+                    if (this.cursor > 0) {
+                      if (response.body[0].length < 10) {
+                        this.moreHidden = true
+                      }
+                      for (var j = 0; j < response.body[0].length; j++) {
+                        this.items.push(response.body[0][j])
+                      }
+                    } else {
+                      this.items = response.body[0]
+                      if (this.items.length > 9) {
+                        this.moreHidden = false
+                      }
+                    }
+                    this.groups = response.body[1]
+                    this.shareLinks = false
+                    for (var j = 0; j < this.groups.length; j++) {
+                      if (parseInt(this.groups[j].links) > 0) {
+                        this.shareLinks = true
+                        this.headerTitle = "Our Town"
+                      }
+                    }
+                  
+                  }
+                  this.spinnerHidden = true
+                })
+              } else {
+                router.push( '/showgroup/' + this.$route.params.grp )
+              }
+            })
+          },
           imageLink(item){
             if ("undefined" !== typeof item.media) {
               return item.media
@@ -1066,7 +1078,7 @@
               <audio-player v-if="item.imageHidden" :src="'myFile?field=sound&name=' + item.sound" v-bind:class="{'is-hidden':item.soundHidden}" />
               <p class="caption" v-for="(comm, cidx) in item.comments" v-text="comm.author + ': ' + comm.title"></p>
             </mt-cell>
-            <mt-cell v-for="(item, idx) in publicGroups" :title="item.name" is-link :to="'/showgroup/' + item.grp">
+            <mt-cell v-for="(item, idx) in publicGroups" :title="item.name" is-link :to="'/group/' + item.grp">
               <img class="grimg" :src="item.image" />
             </mt-cell>
             <mt-popup class="help_popup" v-model="helpVisible" position="middle">
@@ -1231,11 +1243,6 @@
           }
         },
         props: {},
-        watch: {
-          '$route' (to, from) {
-            this.created()
-          }
-        },
         created() {
           var ua = navigator.userAgent || navigator.vendor || window.opera
           this.isInstagram = (ua.indexOf('Instagram') > -1) ? true : false
