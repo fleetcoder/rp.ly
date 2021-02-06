@@ -874,7 +874,6 @@
             Vue.http.post( 'joinGroup', {
               grp:this.$route.params.grp
             }).then( ( response ) => {
-              console.log('ROS')
               if (response.body[3] == 'AUTHED') {
                 this.authed = true
                 if (response.body[5] == 'MEMBER') {
@@ -887,7 +886,6 @@
               }
               var publicData = JSON.parse(response.body[6])
               if ("undefined" !== typeof publicData['publicName']) {
-                console.log('PUB SETUP ' + publicData['publicName'])
                 this.publicName = publicData['publicName']
                 this.publicBio = publicData['publicBio'].replace("\n","<br>")
                 this.publicLink = publicData['publicLink']
