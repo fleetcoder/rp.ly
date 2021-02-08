@@ -104,6 +104,61 @@ def allowed_file(filename):
   return '.' in filename and \
     filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
+@app.route('/post/<postid>')
+def post(postid):
+  p = get_one_by( 'posts', postid, 'key' )
+  if not len(p) > 0:
+    return 'OK'
+  urlsrc = 'https://' + mydomain + '/p/' + postid
+  #ht = '<!DOCTYPE html>' + "\n"
+  #ht = ht + '<html>' + "\n"
+  #ht = ht + '  <head>' + "\n"
+  #ht = ht + '    <title>' + grps[0]['name'] + '</title>'
+  ht = ''
+  title = re.sub('<[^<]+?>', '', p[0]['title'])
+  ht = ht + '    <meta property="og:title" content="' + title + '" />' + "\n"
+  ht = ht + '    <meta property="og:type" content="website" />'
+  if not p[0]['image'] is None:
+    ht = ht + '    <meta property="og:image:type" content="image/jpeg" />'
+    imgsrc = 'https://' + mydomain + '/myFile?field=image&name=' + p[0]['image']
+    ht = ht + '    <meta property="og:image" content="' + imgsrc + '" />' + "\n"
+  ht = ht + '    <meta property="og:url" content="' + urlsrc + '" />'
+  ht = ht + '    <meta property="og:description" content="' + title + '" />'
+  ht = ht + '  </head>' + "\n"
+  #ht = ht + '  <body>Group Page</body>' + "\n"
+  #ht = ht + '</html>' + "\n"
+  fleet = open(myapp).read()
+  fleet = fleet.replace('rp.ly',mydomain)
+  fleet = fleet.replace('</head>',ht)
+  response = make_response(fleet,200)
+  return response
+
+@app.route('/p/<postid>')
+def postuser(postid):
+  p = get_one_by( 'posts', postid, 'key' )
+  if not len(p) > 0:
+    return 'OK'
+  urlsrc = 'https://' + mydomain + '/p/' + postid
+  ht = ''
+  title = re.sub('<[^<]+?>', '', p[0]['title'])
+  ht = ht + '    <meta property="og:title" content="' + title + '" />' + "\n"
+  ht = ht + '    <meta property="og:type" content="website" />'
+  if not p[0]['image'] is None:
+    ht = ht + '    <meta property="og:image:type" content="image/jpeg" />'
+    imgsrc = 'https://' + mydomain + '/myFile?field=image&name=' + p[0]['image']
+    ht = ht + '    <meta property="og:image" content="' + imgsrc + '" />' + "\n"
+  ht = ht + '    <meta property="og:url" content="' + urlsrc + '" />'
+  ht = ht + '    <meta property="og:description" content="' + title + '" />'
+  ht = ht + '  </head>' + "\n"
+  #ht = ht + '  <body>Group Page</body>' + "\n"
+  #ht = ht + '</html>' + "\n"
+  fleet = open(myapp).read()
+  fleet = fleet.replace('rp.ly',mydomain)
+  fleet = fleet.replace('</head>',ht)
+  response = make_response(fleet,200)
+  return response
+
+
 @app.route('/grp/<grpid>')
 def group(grpid):
   grps = get_one_by( 'groups', grpid, 'key' )

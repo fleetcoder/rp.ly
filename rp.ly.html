@@ -1860,6 +1860,80 @@
             <mt-button v-if="!cogHidden" size="large" v-on:click="addToGallery()"><img slot="icon" src="/file/plus-circle.svg" /></mt-button>
           </div>`
       }
+      const showPost = {
+        data() {
+          return {
+            spinnerHidden : true,
+            idx: 0,
+            id : this.$route.params.postid,
+            title : '',
+            image : '',
+            sound : '',
+            soundHidden : false,
+            imageHidden : false,
+            post: {}
+          }
+        },
+        props: {},
+        created() {
+          this.setData()
+        },
+        methods: {
+          setData(){
+            Vue.http.post( 'getPost', {
+              postid:this.id
+            }).then( ( response ) => {
+              if (response.body.length > 0) {
+
+                this.post = response.body[0]
+                
+                this.title = this.post.title
+                this.image = this.post.image
+                this.sound = this.post.sound
+                console.log(this.title)
+                console.log(this.image)
+              }
+              
+              /*
+              if (this.sound == '') {
+                this.soundHidden = true
+              }
+              if (this.image == '') {
+                this.imageHidden = true
+              }
+              this.$emit('on-tabs-hidden')
+*/
+
+            })
+            
+            
+          },
+          delPosts(){
+          },
+          doContextMenu(e){
+            e.preventDefault()
+          }
+        },
+        template: `
+          <div>
+            <mt-header title="Rp.ly">
+              <mt-button slot="left" @click="$router.go(-1)" icon="back">back</mt-button>
+            </mt-header>
+            <mt-spinner v-bind:class="{'is-hidden':spinnerHidden}" type="snake"></mt-spinner>
+            <mt-cell>
+              <div class="outer">
+                <img @contextmenu.prevent="doContextMenu" class="oimg cant-click" :src="'myFile?field=image&name=' + image" />
+                <div class="overlay">
+                  <p class="text">&nbsp;</p>
+                </div>
+              </div>
+            </mt-cell>
+            <mt-cell > <p v-html="title"></p></mt-cell>
+            <!--<mt-cell v-bind:class="{'is-hidden':soundHidden}"><audio-player :src="'myFile?field=sound&name=' + sound" /></mt-cell>
+            <mt-button size="large" v-on:click="delPosts()">Delete Photo</mt-button>-->
+
+          </div>`
+      }
       const showPosts = {
         data() {
           return {
@@ -2138,11 +2212,22 @@
           if (this.$route.path.substring(1) == 'tab3'){
             this.selected = 'tab3'
           }
+          if (!(window.location.href.match(/\/post\//g) === null)) {
+            var post = window.location.pathname.substr(window.location.pathname.lastIndexOf('/') + 1)
+            window.location.href = 'https://' + window.location.hostname + '/#/showPost/' + post
+            return
+          }
           
           if (!(window.location.href.match(/\/grp\//g) === null)) {
             var grp = window.location.pathname.substr(window.location.pathname.lastIndexOf('/') + 1)
             window.location.href = 'https://' + window.location.hostname + '/#/group/' + grp
             return
+          }
+          if ('postid' in this.$route.params) {
+            this.tabsHidden = true
+            return
+          } else {
+            this.tabsHidden = false
           }
           Vue.http.get('isAuthed').then((response) => {
             if(parseInt(response.body) != 1) {
@@ -4397,6 +4482,9 @@
             path: 'showPosts/:idx',
             components:{default: listPosts, middletab: MidMenu, righttab: showPosts}
         },{
+            path: 'showPost/:postid',
+            components:{default: showPost, middletab: MidMenu, righttab: showPost}
+        },{
             path: 'modPosts/:idx',
             component: modPosts
         },{
@@ -5731,6 +5819,19 @@ def getSettings():
     sett[it['name']] = it['value']
   return json.dumps(sett)
 
+@app.route('/getPost',methods=['POST'])
+def getPost():
+  p = get_one_by( 'posts', request.form.get('postid'), 'key' )
+  post = []
+  if len(p) > 0:
+    grps = json.loads(p[0]['groups'])
+    if len(grps) == 1:
+      thisgroup = get_one( 'groups', grps[0] )
+      if len(thisgroup) == 1:
+        if int(thisgroup[0]['public']) > 0:
+          post.append(p[0])
+  return json.dumps(post)
+    
 @app.route('/getPosts',methods=['GET','POST'])
 def getPosts():
   allowgroups = get_one_by('groups','0','blockDownloads')
@@ -6138,7 +6239,10 @@ def addPosts():
       'created' : str( timezone( 'US/Pacific' ).localize( datetime.now() ) )
     }
     if not request.form.get('shareText') is None:
+      postkey = randomword(8)
       newrec['title'] = request.form.get('shareText')
+      newrec['key'] = postkey
+      newrec['link'] = 'https://' + mydomain + '/post/' + postkey
     if not request.form.get('shareLink') is None:
       newrec['link'] = request.form.get('shareLink')
       user_agent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1985.143 Safari/537.36'
