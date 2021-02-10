@@ -852,7 +852,9 @@
             menuVisible: false,
             actions:[],
             headerTitle: "Rp.ly",
-            selected: "1"
+            selected: "1",
+            groupposts:{},
+            grouppost: []
           }
         },
         created() {
@@ -896,6 +898,7 @@
                     name:this.publicGroups[grp].name,
                     method:this.showPage
                   })
+                  this.publicGroups[grp].posts = []
                   //alert(this.publicGroups[grp].image)
                 }
                 Vue.http.get( 'getPosts' + '?grp=' + this.$route.params.grp).then( ( response ) => {
@@ -921,9 +924,26 @@
                         this.headerTitle = "Our Town"
                       }
                     }
-                  
+                    if (this.shareLinks) {
+                      this.grouppost = []
+                      for(grp in this.publicGroups) {
+                        
+                        (function(groups, grpp, obj) {
+                          Vue.http.get( 'getPosts' + '?grp=' + groups[grpp].grp).then( ( response ) => {
+                            if ( !!response.body ) {
+                              groups[grpp].posts = response.body[0]
+                              console.log(groups[grpp].grp)
+                              obj.grouppost.push(response.body[0])
+                              obj.groupposts['ljhmdvqk'] = response.body[0]
+                            }
+                          })
+                        })(this.publicGroups, grp, this)
+                        
+                      }
+                    }
                   }
                   this.spinnerHidden = true
+                  console.log(this.publicGroups)
                 })
               } else {
                 router.push( '/showgroup/' + this.$route.params.grp )
@@ -1029,7 +1049,7 @@
               <mt-tab-item id="2">Calendar</mt-tab-item>
               <mt-tab-item id="3">Weather</mt-tab-item>
             </mt-navbar>
-            <mt-tab-container v-if="shareLinks" v-model="selected">
+            <!--<mt-tab-container v-if="shareLinks" v-model="selected">
               <mt-tab-container-item id="1">
                 <p>&nbsp;</p>
               </mt-tab-container-item>
@@ -1040,6 +1060,29 @@
                 <p>&nbsp;</p>
               </mt-tab-container-item>
             </mt-tab-container>
+            -->
+            <div v-if="shareLinks" v-for="(group, idx) in publicGroups">
+              <div><img class="grimg" :src="group.image" /><h3>{{group.name}}</h3></div>
+              <mt-cell class="imagecell public_img" v-for="(item, iidx) in grouppost[idx]" :title="item.name">
+                <p class="" v-html="item.title" v-bind:class="{'is-hidden':item.textHidden}"></p>
+                <!--<mt-button v-if="shareLinks" class="caption readstory" @click="linkGo(item.link)">Read Story</mt-button>
+                <span v-if="item.isHtml" v-bind:class="{'is-hidden':item.showCommentField}" class="comment" v-on:click="addComment(idx)"><img class="comment" slot="icon" src="file/message-square.svg" /></span>-->
+                <mt-field v-bind:class="{'is-hidden':!item.showCommentField}" placeholder="Comment..." v-model="item.comment"></mt-field>
+                <mt-button v-bind:class="{'is-hidden':!item.showCommentField}" size="large" v-on:click="saveComment(item,idx)">Save Comment</mt-button>
+                <div v-if="!item.imageHidden" class="outer">
+                  <img class="oimg" :src="imageLink(item)" v-if="item.allowDownload" />
+                  <img @contextmenu.prevent="doContextMenu" class="oimg cant-click" :src="imageLink(item)" v-else />
+                  <figcaption class="caption underpic" v-html="item.title"></figcaption>
+                  <audio-player :src="'myFile?field=sound&name=' + item.sound" v-bind:class="{'is-hidden':item.soundHidden}" />
+                </div>
+                <vue-plyr v-if="item.isVideo">
+                  <video :poster="item.image" :src="videoLink(item)" controls data-plyr-config='{ "iconUrl": "file/plyr.svg" }' />
+                  <figcaption class="caption" v-html="item.title"></figcaption>
+                </vue-plyr>
+                <audio-player v-if="item.imageHidden" :src="'myFile?field=sound&name=' + item.sound" v-bind:class="{'is-hidden':item.soundHidden}" />
+                <p class="caption" v-for="(comm, cidx) in item.comments" v-text="comm.author + ': ' + comm.title"></p>
+              </mt-cell>
+            </div>
             <!--
             <mt-navbar v-model="selected" class="grouptabs">
               <mt-tab-item v-for="(item, idx) in publicGroups" :id="item.grp">{{item.name}}</mt-tab-item>
@@ -1050,7 +1093,7 @@
               </mt-tab-container-item>
             </mt-tab-container>
             -->
-            <mt-cell class="imagecell public_img" v-for="(item, idx) in items" :title="item.name">
+            <mt-cell v-if="!shareLinks" class="imagecell public_img" v-for="(item, idx) in items" :title="item.name">
               <p class="" v-html="item.title" v-bind:class="{'is-hidden':item.textHidden}"></p>
               <!--<mt-button v-if="shareLinks" class="caption readstory" @click="linkGo(item.link)">Read Story</mt-button>
               <span v-if="item.isHtml" v-bind:class="{'is-hidden':item.showCommentField}" class="comment" v-on:click="addComment(idx)"><img class="comment" slot="icon" src="file/message-square.svg" /></span>-->
@@ -1069,7 +1112,7 @@
               <audio-player v-if="item.imageHidden" :src="'myFile?field=sound&name=' + item.sound" v-bind:class="{'is-hidden':item.soundHidden}" />
               <p class="caption" v-for="(comm, cidx) in item.comments" v-text="comm.author + ': ' + comm.title"></p>
             </mt-cell>
-            <mt-cell v-for="(item, idx) in publicGroups" :title="item.name" is-link :to="item.grpLink">
+            <mt-cell v-if="!shareLinks" v-for="(item, idx) in publicGroups" :title="item.name" is-link :to="item.grpLink">
               <img class="grimg" :src="item.image" />
             </mt-cell>
             <mt-popup class="help_popup" v-model="helpVisible" position="middle">
