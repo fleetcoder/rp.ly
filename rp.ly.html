@@ -925,6 +925,7 @@
                       }
                     }
                     if (this.shareLinks) {
+
                       this.grouppost = []
                       for(grp in this.publicGroups) {
                         
@@ -932,18 +933,18 @@
                           Vue.http.get( 'getPosts' + '?grp=' + groups[grpp].grp).then( ( response ) => {
                             if ( !!response.body ) {
                               groups[grpp].posts = response.body[0]
-                              console.log(groups[grpp].grp)
                               obj.grouppost.push(response.body[0])
                               obj.groupposts['ljhmdvqk'] = response.body[0]
+                              console.log(groups[grpp].open)
                             }
                           })
                         })(this.publicGroups, grp, this)
                         
                       }
+
                     }
                   }
                   this.spinnerHidden = true
-                  console.log(this.publicGroups)
                 })
               } else {
                 router.push( '/showgroup/' + this.$route.params.grp )
@@ -1044,11 +1045,11 @@
             <!--<mt-cell :title="name" is-link :to="'/pubgroup/' + grp">
               <img class="grimg" :src="image" />
             </mt-cell>-->
-            <mt-navbar v-if="shareLinks" v-model="selected" class="grouptabs">
+            <!--<mt-navbar v-if="shareLinks" v-model="selected" class="grouptabs">
               <mt-tab-item id="1">Latest</mt-tab-item>
               <mt-tab-item id="2">Calendar</mt-tab-item>
               <mt-tab-item id="3">Weather</mt-tab-item>
-            </mt-navbar>
+            </mt-navbar>-->
             <!--<mt-tab-container v-if="shareLinks" v-model="selected">
               <mt-tab-container-item id="1">
                 <p>&nbsp;</p>
@@ -1061,9 +1062,11 @@
               </mt-tab-container-item>
             </mt-tab-container>
             -->
-            <div v-if="shareLinks" v-for="(group, idx) in publicGroups">
+              <mt-cell v-if="shareLinks" class="imagecell public_img" v-for="(item, idx) in items" :title="item.name">
+              <!--
+              <div v-if="shareLinks" v-for="(group, idx) in publicGroups">
               <div><img class="grimg" :src="group.image" /><h3>{{group.name}}</h3></div>
-              <mt-cell class="imagecell public_img" v-for="(item, iidx) in grouppost[idx]" :title="item.name">
+              <mt-cell class="imagecell public_img" v-for="(item, iidx) in grouppost[idx]" :title="item.name">-->
                 <p class="" v-html="item.title" v-bind:class="{'is-hidden':item.textHidden}"></p>
                 <!--<mt-button v-if="shareLinks" class="caption readstory" @click="linkGo(item.link)">Read Story</mt-button>
                 <span v-if="item.isHtml" v-bind:class="{'is-hidden':item.showCommentField}" class="comment" v-on:click="addComment(idx)"><img class="comment" slot="icon" src="file/message-square.svg" /></span>-->
@@ -1732,7 +1735,8 @@
             cursor: 0,
             prevcursor: 0,
             cogHidden: true,
-            groups: []
+            groups: [],
+            shareLinks: false
           }
         },
         props: { posts : Array, selected: String, postto: Array },
@@ -1741,10 +1745,13 @@
           this.loadPosts()
         },
         methods: {
+          editPost(post,idx) {
+            router.push( '/modLinkPost/' + post.id )
+          },
           loadPosts(){
             if (this.cursor > 0 && (this.prevcursor === this.cursor)) {
               
-            } else {
+            } else if (typeof this.$route.params.grpid !== "undefined") {
               this.spinnerHidden = false
               this.prevcursor = this.cursor
               Vue.http.get( 'getPosts' + '?grpid=' + this.$route.params.grpid + '&cursor=' + this.cursor.toString()).then( ( response ) => {
@@ -1763,6 +1770,8 @@
                     if (this.posts.length > 9) {
                       this.moreHidden = false
                     }
+                    this.shareLinks = false
+                    this.linkgroups = []
 
                     Vue.http.get( 'getGroups').then( ( response ) => {
                       if ( !!response.body ) {
@@ -1770,6 +1779,9 @@
                         for (var i = 0; i < this.groups.length; i++) {
                           if (parseInt(this.groups[i].id) == parseInt(this.$route.params.grpid)) {
                             this.cogHidden = !this.groups[i].isOwner
+                            if (parseInt(this.groups[i].shareLinks) > 0) {
+                              this.shareLinks = true
+                            }
                           }
                         }
                       }
@@ -1899,6 +1911,7 @@
               <p v-bind:class="{'is-hidden':item.showCommentField}" class="caption" v-on:click="addComment(idx)"><img class="comment" slot="icon" src="file/message-square.svg" /></p>
               <mt-field v-bind:class="{'is-hidden':!item.showCommentField}" placeholder="Comment..." v-model="item.comment"></mt-field>
               <mt-button v-bind:class="{'is-hidden':!item.showCommentField}" size="large" v-on:click="saveComment(item,idx)">Save Comment</mt-button>
+              <mt-button v-if="shareLinks" size="large" v-on:click="editPost(item,idx)">Edit Post</mt-button>
             </mt-cell>
             <mt-button v-if="!cogHidden" size="large" v-on:click="addToGallery()"><img slot="icon" src="/file/plus-circle.svg" /></mt-button>
           </div>`
@@ -2060,6 +2073,59 @@
             <mt-cell v-bind:class="{'is-hidden':soundHidden}"><audio-player :src="'myFile?field=sound&name=' + sound" /></mt-cell>
             <mt-button size="large" v-on:click="delPosts()">Delete Photo</mt-button>
 
+          </div>`
+      }
+      const modLinkPost = {
+        data() {
+          return {
+            spinnerHidden : true,
+            uploadTo : 'uploadFile',
+            id : 0,
+            title : '',
+            image : '',
+            sound : ''
+          }
+        },
+        props: { posts : Array, selected: String, postto: Array },
+        created() {
+          this.id = this.$route.params.id
+          for (var j = 0; j < this.posts.length; j++) {
+            if (parseInt(this.posts[j].id) === parseInt(this.id)) {
+              this.title = this.posts[j].title
+              this.image = this.posts[j].image
+            }
+          }
+        },
+        methods: {
+          modPosts(){
+            this.spinnerHidden = false
+            Vue.http.post( 'modPosts', {
+              id : this.id,
+              title : this.title
+            }).then( ( response ) => {
+              router.back()
+            })
+          },
+          stagedUpload(field){
+            Vue.http.get( 'stagedFile?field=' + field ).then( ( response ) => {
+              if ( !!response.body ) {
+                this[field] = response.body
+              }
+            })
+          }
+        },
+        template: `
+          <div class="feedwrap">
+            <mt-header title="Rp.ly">
+              <mt-button slot="left" @click="$router.go(-1)" icon="back">back</mt-button>
+            </mt-header>
+            <mt-spinner v-bind:class="{'is-hidden':spinnerHidden}" type="snake"></mt-spinner>
+            <mt-field placeholder="Story..." type="textarea" rows="20" v-model="title"></mt-field>
+            <mt-cell title=""><img class="img" :src="'myFile?staged=1&field=image&name=' + image" /></mt-cell>
+            <file-upload btn-label="Image" @change="stagedUpload('image')" :url="uploadTo + '&field=image'"></file-upload>
+            <!--<mt-cell title="Sound:"><audio-player :src="'myFile?staged=1&field=sound&name=' + sound" /></mt-cell>
+            <audio-recorder :upload-url="uploadTo + '&field=sound'"/>-->
+            <mt-button v-on:click="modPosts()" size="large">Save</mt-button>
           </div>`
       }
       const modPosts = {
@@ -4531,6 +4597,9 @@
             path: 'modPosts/:idx',
             component: modPosts
         },{
+            path: 'modLinkPost/:id',
+            components:{default: listPosts, middletab: MidMenu, righttab: modLinkPost}
+        },{
             path: 'showGroupPosts/:grpid',
             components:{default: listPosts, middletab: MidMenu, righttab: showGroupPosts}
         },{
@@ -5959,7 +6028,10 @@ def getPosts():
           continue
       if group_id > 0:
         if not group_id in pgrps:
+          print('CON')
           continue
+        else:
+          print('PO')
       for p in pgrps:
         if p in allowdownload:
           item['allowDownload'] = True
@@ -6614,7 +6686,8 @@ def joinGroup():
                 'grp':grpdata[0]['key'],
                 'name':grpdata[0]['name'],
                 'image':'https://' + mydomain + '/grpFile?field=image&name=' + grpdata[0]['image'],
-                'grpLink':grpLink
+                'grpLink':grpLink,
+                'open':grpdata[0]['allowPosts']
               })
         publicData = json.dumps({
           'publicImage':items[0]['publicImage'],
