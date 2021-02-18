@@ -1193,7 +1193,8 @@
             groupPic: '',
             items: [],
             authed: false,
-            name: ''
+            name: '',
+            showPostButton: false
           }
         },
         created() {
@@ -1213,6 +1214,9 @@
             } else {
               this.authed = false
             }
+            if (parseInt(response.body[8]) > 0) {
+              this.showPostButton = true
+            }
             if ("undefined" !== typeof publicData['publicName']) {
               Vue.http.get( 'getPosts' + '?grp=' + this.$route.params.grp).then( ( response ) => {
                 if ( !!response.body ) {
@@ -1229,7 +1233,6 @@
                       this.moreHidden = false
                     }
                   }
-                  console.log(this.items)
                 }
                 this.spinnerHidden = true
               })
@@ -1268,7 +1271,7 @@
                 <mt-button slot="left" @click="$router.go(-1)" icon="back">back</mt-button>
               </a>
             </mt-header>
-            <mt-button v-on:click="doPost()" size="large">Post in {{name}}</mt-button>
+            <mt-button v-if="showPostButton" v-on:click="doPost()" size="large">Post in {{name}}</mt-button>
             <!--<img class="groupimg" :src="'grpFile?field=image&name=' + groupPic" />-->
             <mt-cell class="imagecell" v-for="(item, idx) in items" :title="item.name">
               <p class="caption">
@@ -1331,7 +1334,6 @@
             if ("undefined" !== typeof publicData['publicName']) {
               Vue.http.get( 'getPosts' + '?grp=' + this.$route.params.grp).then( ( response ) => {
                 if ( !!response.body ) {
-
                   if (this.cursor > 0) {
                     if (response.body[0].length < 10) {
                       this.moreHidden = true
@@ -1345,7 +1347,6 @@
                       this.moreHidden = false
                     }
                   }
-                  console.log(this.items)
                 }
                 this.spinnerHidden = true
               })
@@ -2116,8 +2117,6 @@
                 this.title = this.post.title
                 this.image = this.post.image
                 this.sound = this.post.sound
-                console.log(this.title)
-                console.log(this.image)
               }
               
               /*
@@ -4123,7 +4122,6 @@
         },
         methods: {
           setData(){
-            console.log(this.items[ this.idx ])
             this.id = this.items[ this.idx ].id
             this.name = this.items[ this.idx ].name
             this.image = this.items[ this.idx ].image
@@ -6840,9 +6838,13 @@ def joinGroup():
       imgsrc = 'https://' + mydomain + '/grpFile?field=image&name=' + items[0]['image']
     publicData = '{}'
     shareLinks = '0'
+    allowPosts = '0'
     if not items[0]['shareLinks'] is None:
       if int(items[0]['shareLinks']) > 0:
         shareLinks = '1'
+    if not items[0]['allowPosts'] is None:
+      if int(items[0]['allowPosts']) > 0:
+        allowPosts = '1'
     if not items[0]['public'] is None:
       if int(items[0]['public']) > 0:
         linkedgrps = []
@@ -6870,7 +6872,7 @@ def joinGroup():
           'publicPath':items[0]['publicPath'],
           'publicGroups':linkedgrps
         })
-    result = [owner['name'],items[0]['name'],imgsrc,authd,items[0]['id'],member,publicData,shareLinks]
+    result = [owner['name'],items[0]['name'],imgsrc,authd,items[0]['id'],member,publicData,shareLinks,allowPosts]
   return json.dumps(result)
 
 @app.route('/addGroups',methods=['GET','POST'])
