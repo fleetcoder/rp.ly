@@ -1191,7 +1191,9 @@
             spinnerHidden: true,
             isInstagram: false,
             groupPic: '',
-            items: []
+            items: [],
+            authed: false,
+            name: ''
           }
         },
         created() {
@@ -1203,6 +1205,14 @@
           }).then( ( response ) => {
             this.groupPic = response.body[2]
             var publicData = JSON.parse(response.body[6])
+            this.name = response.body[1]
+            if (response.body[3] == 'AUTHED') {
+              if (response.body[5] == 'MEMBER') {
+              }
+              this.authed = true
+            } else {
+              this.authed = false
+            }
             if ("undefined" !== typeof publicData['publicName']) {
               Vue.http.get( 'getPosts' + '?grp=' + this.$route.params.grp).then( ( response ) => {
                 if ( !!response.body ) {
@@ -1242,12 +1252,23 @@
             } else {
               return 'myFile?field=video&name=' + item.video
             }
+          },
+          doPost(){
+            if (!this.authed) {
+              router.push('/auth/' + this.$route.params.grp)
+            } else {
+              router.push('/postgroup/' + this.$route.params.grp)
+            }
           }
         },
         template: `
           <div>
             <mt-header title="Our Town">
+              <a slot="left">
+                <mt-button slot="left" @click="$router.go(-1)" icon="back">back</mt-button>
+              </a>
             </mt-header>
+            <mt-button v-on:click="doPost()" size="large">Post in {{name}}</mt-button>
             <!--<img class="groupimg" :src="'grpFile?field=image&name=' + groupPic" />-->
             <mt-cell class="imagecell" v-for="(item, idx) in items" :title="item.name">
               <p class="caption">
@@ -1268,6 +1289,119 @@
               </vue-plyr>
               <audio-player v-if="item.imageHidden" :src="'myFile?field=sound&name=' + item.sound" v-bind:class="{'is-hidden':item.soundHidden}" />
             </mt-cell>
+          </div>`
+      }
+      const PublicPostPage = {
+        data() {
+          return {
+            spinnerHidden: true,
+            isInstagram: false,
+            groupPic: '',
+            items: [],
+            authed: false,
+            name: '',
+            title: '',
+            image: '',
+            uploadTo: '',
+            publicInfo: '',
+            groupid: 0
+          }
+        },
+        created() {
+          var ua = navigator.userAgent || navigator.vendor || window.opera
+          this.isInstagram = (ua.indexOf('Instagram') > -1) ? true : false
+          this.spinnerHidden = false
+          Vue.http.post( 'joinGroup', {
+            grp:this.$route.params.grp
+          }).then( ( response ) => {
+            this.groupPic = response.body[2]
+            var publicData = JSON.parse(response.body[6])
+            if ("undefined" !== typeof publicData['publicName']) {
+              this.publicInfo = publicData['publicBio'].replace("\n","<br>")
+            }
+            this.name = response.body[1]
+            if (response.body[3] == 'AUTHED') {
+              if (response.body[5] == 'MEMBER') {
+              }
+              this.authed = true
+            } else {
+              this.authed = false
+            }
+            this.groupid = response.body[4]
+            if ("undefined" !== typeof publicData['publicName']) {
+              Vue.http.get( 'getPosts' + '?grp=' + this.$route.params.grp).then( ( response ) => {
+                if ( !!response.body ) {
+
+                  if (this.cursor > 0) {
+                    if (response.body[0].length < 10) {
+                      this.moreHidden = true
+                    }
+                    for (var j = 0; j < response.body[0].length; j++) {
+                      this.items.push(response.body[0][j])
+                    }
+                  } else {
+                    this.items = response.body[0]
+                    if (this.items.length > 9) {
+                      this.moreHidden = false
+                    }
+                  }
+                  console.log(this.items)
+                }
+                this.spinnerHidden = true
+              })
+              this.spinnerHidden = true
+            } else {
+            }
+          })
+        },
+        methods: {
+          imageLink(item){
+            if ("undefined" !== typeof item.media) {
+              return item.media
+            } else {
+              return 'myFile?field=image&name=' + item.image
+            }
+          },
+          videoLink(item){
+            if ("undefined" !== typeof item.media) {
+              return item.media
+            } else {
+              return 'myFile?field=video&name=' + item.video
+            }
+          },
+          addPosts(){
+            this.spinnerHidden = false
+            Vue.http.post( 'addPosts', {
+              recips: JSON.stringify([this.groupid]),
+              title: JSON.stringify([this.title]),
+              expirehours: 0,
+              speedup: ''
+            }).then( ( response ) => {
+              this.spinnerHidden = true
+              this.title = ''
+              MintUI.Toast({
+                message: 'Your post was saved',
+                iconClass: 'icon icon-success',
+                duration: 1000
+              })
+              router.push('/pubgroup/' + this.$route.params.grp)
+            })
+          }
+        },
+        template: `
+          <div>
+            <mt-header title="Our Town">
+              <a slot="left">
+                <mt-button slot="left" @click="$router.go(-1)" icon="back">back</mt-button>
+              </a>
+            </mt-header>
+            <!--<img class="groupimg" :src="'grpFile?field=image&name=' + groupPic" />-->
+            <div v-html="publicInfo"></div>
+            <mt-spinner v-bind:class="{'is-hidden':spinnerHidden}" type="snake"></mt-spinner>
+            <mt-field placeholder="Write your post here..." type="textarea" rows="14" v-model="title"></mt-field>
+            <mt-cell title="" v-if="image !== ''"><img class="img" :src="'myFile?staged=1&field=image&name=' + image" /></mt-cell>
+            <file-upload btn-label="Click here to upload a photo..." @change="stagedUpload('image')" :url="uploadTo + '&field=image'"></file-upload>
+            <mt-button v-on:click="addPosts()" size="large">Save Post in {{name}}</mt-button>
           </div>`
       }
       const GroupPage = {
@@ -4697,6 +4831,9 @@
         },{
             path: '/pubgroup/:grp',
             component: PublicGroupPage
+        },{
+            path: '/postgroup/:grp',
+            component: PublicPostPage
         },{
             path: '/group/:grp',
             component: ShowGroupPage
