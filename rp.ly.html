@@ -950,7 +950,7 @@
                                 var pickstory = obj.randomNum(0,(groups[grpp].posts.length - 1))
                                 var storyposition = obj.randomNum(0,(obj.items.length - 1))
                                 //obj.items.push(groups[grpp].posts[p])
-                                if (typeof groups[grpp].posts[p] !== "undefined"){
+                                if (typeof groups[grpp].posts[pickstory] !== "undefined"){
                                   obj.items.splice(storyposition, 0, groups[grpp].posts[pickstory])
                                 }
                               } else {
