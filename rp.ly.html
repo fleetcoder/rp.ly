@@ -426,6 +426,17 @@
       .fixedheader {
         
       }
+      .readertop {
+        padding-top:60px;
+      }
+      .readerimg {
+        width:100px;
+      }
+      .readerhed {
+        margin-left:25px;
+        font-size: 14px;
+        float:left;
+      }
     </style>
 
     <script id="client">
@@ -934,8 +945,24 @@
                             if ( !!response.body ) {
                               groups[grpp].posts = response.body[0]
                               obj.grouppost.push(response.body[0])
-                              obj.groupposts['ljhmdvqk'] = response.body[0]
-                              console.log(groups[grpp].open)
+                              //obj.groupposts['ljhmdvqk'] = response.body[0]
+                              if (parseInt(groups[grpp].open) > 0) {
+                                var pickstory = obj.randomNum(0,(groups[grpp].posts.length - 1))
+                                var storyposition = obj.randomNum(0,(obj.items.length - 1))
+                                //obj.items.push(groups[grpp].posts[p])
+                                if (typeof groups[grpp].posts[p] !== "undefined"){
+                                  obj.items.splice(storyposition, 0, groups[grpp].posts[pickstory])
+                                }
+                              } else {
+                                for (p in groups[grpp].posts) {
+                                  var storyposition = obj.randomNum(0,(obj.items.length - 1))
+                                  //obj.items.push(groups[grpp].posts[p])
+                                  if (typeof groups[grpp].posts[p] !== "undefined"){
+                                    obj.items.splice(storyposition, 0, groups[grpp].posts[p])
+                                    break
+                                  }
+                                }
+                              }
                             }
                           })
                         })(this.publicGroups, grp, this)
@@ -1037,8 +1064,14 @@
                 <img class="headericon" slot="icon" src="file/menu.svg" />
               </a>
             </mt-header>
-            <img class="groupimg" :src="'grpFile?field=publicImage&name=' + publicImage" />
+            <div v-if="shareLinks" class="readertop">
+            <img class="readerimg" :src="'grpFile?field=publicImage&name=' + publicImage" />
+            <h3 v-text="publicName" class="readerhed"></h3>
+            <div>
+            <div v-else>
+            <img v-if="!shareLinks" class="groupimg" :src="'grpFile?field=publicImage&name=' + publicImage" />
             <h3 v-text="publicName"></h3>
+            </div>
             <p><a :href="publicLink" v-text="publicLink"></a></p>
             <h5 class="public_bio" v-html="publicBio"></h5>
             <mt-spinner v-bind:class="{'is-hidden':spinnerHidden}" type="snake"></mt-spinner>
@@ -1062,7 +1095,7 @@
               </mt-tab-container-item>
             </mt-tab-container>
             -->
-            <mt-cell v-if="shareLinks" class="imagecell public_img" v-for="(item, idx) in items" :title="item.name">
+            <mt-cell v-if="shareLinks" class="imagecell public_img" v-for="(item, idx) in items" :title="item.name" is-link :to="item.link">
               <!--
               <div v-if="shareLinks" v-for="(group, idx) in publicGroups">
               <div><img class="grimg" :src="group.image" /><h3>{{group.name}}</h3></div>
