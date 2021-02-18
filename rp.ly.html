@@ -985,6 +985,9 @@
               return 'myFile?field=image&name=' + item.image
             }
           },
+          randomNum(minimum,maximum){
+            return Math.floor(Math.random() * (maximum - minimum + 1)) + minimum
+          },
           videoLink(item){
             if ("undefined" !== typeof item.media) {
               return item.media
