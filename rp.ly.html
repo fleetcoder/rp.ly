@@ -437,6 +437,12 @@
         font-size: 14px;
         float:left;
       }
+      .topmenu {
+        top:72px;
+        width:100%;
+        margin-top:0;
+        padding-top:0;
+      }
     </style>
 
     <script id="client">
@@ -630,7 +636,7 @@
                     this.name = ''
                     this.password = ''
                     if (typeof this.$route.params.grp !== 'undefined') {
-                      router.push( '/group/' + this.$route.params.grp )
+                      router.push( '/postgroup/' + this.$route.params.grp )
                     } else {
                       window.location.href = '/'
                     }
@@ -1060,7 +1066,7 @@
         template: `
           <div>
             <mt-header class="fixedheader" fixed :title="headerTitle">
-              <a href="/" slot="left">
+              <a :href="publicLink" slot="left">
                 <img class="headericon" slot="icon" src="file/home.svg" />
               </a>
               <a v-on:click="showMenu()" slot="right">
@@ -1075,7 +1081,7 @@
             <img v-if="!shareLinks" class="groupimg" :src="'grpFile?field=publicImage&name=' + publicImage" />
             <h3 v-text="publicName"></h3>
             </div>
-            <p><a :href="publicLink" v-text="publicLink"></a></p>
+            <p v-if="!shareLinks"><a :href="publicLink" v-text="publicLink"></a></p>
             <h5 class="public_bio" v-html="publicBio"></h5>
             <mt-spinner v-bind:class="{'is-hidden':spinnerHidden}" type="snake"></mt-spinner>
             <!--<mt-cell :title="name" is-link :to="'/pubgroup/' + grp">
@@ -1152,7 +1158,7 @@
               <p class="caption" v-for="(comm, cidx) in item.comments" v-text="comm.author + ': ' + comm.title"></p>
             </mt-cell>
             <mt-cell v-for="(item, idx) in publicGroups" :title="item.name" is-link :to="item.grpLink">
-              <img class="grimg" :src="item.image" />
+              <img class="grimg" :src="'grpFile?field=publicImage&name=' + publicImage" />
             </mt-cell>
             <mt-popup class="help_popup" v-model="helpVisible" position="middle">
               <mt-header>
@@ -1178,11 +1184,15 @@
                 <img class="headericon" slot="icon" src="file/share.svg" />
               </a>
             </mt-header>
-            <mt-actionsheet
+            <mt-popup v-model="menuVisible" position="middle" class="topmenu">
+              <mt-cell is-link @click.native="showMenu()" title="Close Menu"></mt-cell>
+              <mt-cell v-for="(item,idx) in publicGroups" is-link :to="item.grpLink" :title="item.name"></mt-cell>
+            </mt-popup>
+            <!--<mt-actionsheet
               cancelText="Close"
               :actions="actions"
               v-model="menuVisible">
-            </mt-actionsheet>
+            </mt-actionsheet>-->
           </div>`
       }
       const PublicGroupPage = {
@@ -1194,7 +1204,8 @@
             items: [],
             authed: false,
             name: '',
-            showPostButton: false
+            showPostButton: false,
+            publicLink:''
           }
         },
         created() {
@@ -1217,6 +1228,7 @@
             if (parseInt(response.body[8]) > 0) {
               this.showPostButton = true
             }
+            this.publicLink = publicData['publicLink']
             if ("undefined" !== typeof publicData['publicName']) {
               Vue.http.get( 'getPosts' + '?grp=' + this.$route.params.grp).then( ( response ) => {
                 if ( !!response.body ) {
@@ -1267,20 +1279,20 @@
         template: `
           <div>
             <mt-header title="Our Town">
-              <a slot="left">
-                <mt-button slot="left" @click="$router.go(-1)" icon="back">back</mt-button>
+              <a slot="left" :href="publicLink">
+                <mt-button slot="left" icon="back">back</mt-button>
               </a>
             </mt-header>
             <mt-button v-if="showPostButton" v-on:click="doPost()" size="large">Post in {{name}}</mt-button>
             <!--<img class="groupimg" :src="'grpFile?field=image&name=' + groupPic" />-->
             <mt-cell class="imagecell" v-for="(item, idx) in items" :title="item.name">
-              <p class="caption">
+              <!--<p class="caption">
                 <span v-text="item.author"></span>
                 <img class="headericon" src="file/chevron-right.svg" />
                 <span v-text="item.to"></span>
-              </p>
-              <p class="caption" v-html="item.title" v-bind:class="{'is-hidden':item.textHidden}"></p>
-              <div class="outer">
+              </p>-->
+              <p class="caption" v-html="item.title"></p>
+              <!--<div class="outer">
                 <img class="oimg" :src="imageLink(item)" v-if="item.allowDownload" />
                 <img @contextmenu.prevent="doContextMenu" class="oimg cant-click" :src="imageLink(item)" v-else />
                 <figcaption class="caption underpic" v-html="item.title"></figcaption>
@@ -1289,7 +1301,7 @@
               <vue-plyr v-if="item.isVideo">
                 <video :poster="item.image" :src="videoLink(item)" controls data-plyr-config='{ "iconUrl": "file/plyr.svg" }' />
                 <figcaption class="caption" v-html="item.title"></figcaption>
-              </vue-plyr>
+              </vue-plyr>-->
               <audio-player v-if="item.imageHidden" :src="'myFile?field=sound&name=' + item.sound" v-bind:class="{'is-hidden':item.soundHidden}" />
             </mt-cell>
           </div>`
@@ -1305,7 +1317,7 @@
             name: '',
             title: '',
             image: '',
-            uploadTo: '',
+            uploadTo: 'uploadFile',
             publicInfo: '',
             groupid: 0
           }
@@ -1374,7 +1386,7 @@
             this.spinnerHidden = false
             Vue.http.post( 'addPosts', {
               recips: JSON.stringify([this.groupid]),
-              title: JSON.stringify([this.title]),
+              title: JSON.stringify(['<img class="article_img" src="' + 'myFile?field=image&name=' + this.image + '" alt="Image" /><h1 class="article_hed">' + this.title + '</h1>']),
               expirehours: 0,
               speedup: ''
             }).then( ( response ) => {
@@ -1386,6 +1398,13 @@
                 duration: 1000
               })
               router.push('/pubgroup/' + this.$route.params.grp)
+            })
+          },
+          stagedUpload(field){
+            Vue.http.get( 'stagedFile?field=' + field ).then( ( response ) => {
+              if ( !!response.body ) {
+                this[field] = response.body
+              }
             })
           }
         },
@@ -1401,7 +1420,7 @@
             <mt-spinner v-bind:class="{'is-hidden':spinnerHidden}" type="snake"></mt-spinner>
             <mt-field placeholder="Write your post here..." type="textarea" rows="14" v-model="title"></mt-field>
             <mt-cell title="" v-if="image !== ''"><img class="img" :src="'myFile?staged=1&field=image&name=' + image" /></mt-cell>
-            <file-upload btn-label="Click here to upload a photo..." @change="stagedUpload('image')" :url="uploadTo + '&field=image'"></file-upload>
+            <file-upload btn-label="Click here to upload a photo..." @change="stagedUpload('image')" :url="uploadTo + '?field=image'"></file-upload>
             <mt-button v-on:click="addPosts()" size="large">Save Post in {{name}}</mt-button>
           </div>`
       }
@@ -2098,7 +2117,8 @@
             sound : '',
             soundHidden : false,
             imageHidden : false,
-            post: {}
+            post: {},
+            body: ''
           }
         },
         props: {},
@@ -2117,6 +2137,7 @@
                 this.title = this.post.title
                 this.image = this.post.image
                 this.sound = this.post.sound
+                this.body = this.post.body
               }
               
               /*
@@ -2154,6 +2175,7 @@
               </div>
             </mt-cell>
             <mt-cell > <p v-html="title"></p></mt-cell>
+            <mt-cell > <p v-html="body"></p></mt-cell>
             <!--<mt-cell v-bind:class="{'is-hidden':soundHidden}"><audio-player :src="'myFile?field=sound&name=' + sound" /></mt-cell>
             <mt-button size="large" v-on:click="delPosts()">Delete Photo</mt-button>-->
 
@@ -2458,7 +2480,8 @@
             showBackToGallery: false,
             newGallery: false,
             newGalleryName: '',
-            textpost: ''
+            textpost: '',
+            headline: ''
           }
         },
         components:{
@@ -3283,6 +3306,7 @@
               expirehours: 0,
               speedup: this.speedup,
               doSetHeader: this.doSetHeader,
+              headline: '<h1 class="article_hed">' + this.headline + '</h1>',
               shareText: this.textpost
             }).then( ( response ) => {
               if ( !!response.body ) {
@@ -3439,6 +3463,7 @@
                     <pre>{{ uploadError }}</pre>
                   </div>
                 </mt-cell>
+                <mt-field placeholder="Headline..." v-if="!textHidden" type="textarea" rows="4" v-model="headline"></mt-field>
                 <mt-field placeholder="Story..." v-if="!textHidden" type="textarea" rows="20" v-model="textpost"></mt-field>
                 <mt-checklist
                   v-if="!textHidden" 
@@ -6526,9 +6551,10 @@ def addPosts():
     }
     if not request.form.get('shareText') is None:
       postkey = randomword(8)
-      newrec['title'] = request.form.get('shareText')
+      newrec['title'] = request.form.get('headline')
       newrec['key'] = postkey
       newrec['link'] = 'https://' + mydomain + '/post/' + postkey
+      newrec['body'] = request.form.get('shareText')
     if not request.form.get('shareLink') is None:
       newrec['link'] = request.form.get('shareLink')
       user_agent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1985.143 Safari/537.36'
