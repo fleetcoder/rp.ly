@@ -963,6 +963,7 @@
                                 var storyposition = obj.randomNum(0,(obj.items.length - 1))
                                 //obj.items.push(groups[grpp].posts[p])
                                 if (typeof groups[grpp].posts[pickstory] !== "undefined"){
+                                  groups[grpp].posts[pickstory].imageHidden = true
                                   obj.items.splice(storyposition, 0, groups[grpp].posts[pickstory])
                                 }
                               } else {
@@ -1394,8 +1395,7 @@
               recips: JSON.stringify([this.groupid]),
               title: JSON.stringify(['<img class="article_img" src="' + 'myFile?field=image&name=' + this.image + '" alt="Image" /><h1 class="article_hed">' + this.title + '</h1>']),
               expirehours: 0,
-              speedup: '',
-              publicPost:1
+              speedup: ''
             }).then( ( response ) => {
               this.spinnerHidden = true
               this.title = ''
@@ -6562,8 +6562,6 @@ def addPosts():
       newrec['key'] = postkey
       newrec['link'] = 'https://' + mydomain + '/post/' + postkey
       newrec['body'] = request.form.get('shareText')
-    if not request.form.get('publicPost') is None:
-      newrec['image'] = ''
     if not request.form.get('shareLink') is None:
       newrec['link'] = request.form.get('shareLink')
       user_agent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1985.143 Safari/537.36'
