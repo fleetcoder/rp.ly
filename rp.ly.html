@@ -1396,7 +1396,8 @@
               recips: JSON.stringify([this.groupid]),
               title: JSON.stringify(['<img class="article_img" src="' + 'myFile?field=image&name=' + this.image + '" alt="Image" /><h1 class="article_hed">' + this.title + '</h1>']),
               expirehours: 0,
-              speedup: ''
+              speedup: '',
+              publicPost: 1
             }).then( ( response ) => {
               this.spinnerHidden = true
               this.title = ''
@@ -6563,6 +6564,10 @@ def addPosts():
       newrec['key'] = postkey
       newrec['link'] = 'https://' + mydomain + '/post/' + postkey
       newrec['body'] = request.form.get('shareText')
+    if not request.form.get('publicPost') is None:
+      postkey = randomword(8)
+      newrec['key'] = postkey
+      newrec['link'] = 'https://' + mydomain + '/post/' + postkey
     if not request.form.get('shareLink') is None:
       newrec['link'] = request.form.get('shareLink')
       user_agent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1985.143 Safari/537.36'
