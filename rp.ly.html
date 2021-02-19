@@ -392,6 +392,12 @@
         cursor: pointer;
         margin:10px;
       }
+      .article_mainhed {
+        font-size: 24px;
+        width: 90%;
+        cursor: pointer;
+        margin:10px;
+      }
       .groups_following {
         text-align:left;
         margin-left:30px;
@@ -3306,7 +3312,7 @@
               expirehours: 0,
               speedup: this.speedup,
               doSetHeader: this.doSetHeader,
-              headline: '<h1 class="article_hed">' + this.headline + '</h1>',
+              headline: '<h1 class="article_mainhed">' + this.headline + '</h1>',
               shareText: this.textpost
             }).then( ( response ) => {
               if ( !!response.body ) {
