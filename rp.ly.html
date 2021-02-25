@@ -4292,6 +4292,11 @@
           Vue.http.get( 'getPosts' ).then( ( response ) => {
             if ( !!response.body ) {
               this.optGroups = response.body[1]
+              for (var i = 0; i < this.publicGroups.length; i++) {
+                if (!this.optGroups.includes(this.publicGroups[i])) {
+                  this.publicGroups.splice( i, 1 )
+                }
+              }
             }
           })
         },
