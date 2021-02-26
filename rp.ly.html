@@ -449,6 +449,10 @@
         margin-top:0;
         padding-top:0;
       }
+      .datepicker {
+        margin-top: 20px;
+        margin-bottom: 10px;
+      }
     </style>
 
     <script id="client">
@@ -538,7 +542,11 @@
                     this.pwdstatus = 'success'
                     this.loginpassword = ''
                     this.loginemail = ''
-                    window.location.href = '/'
+                    if (typeof this.$route.params.grp !== 'undefined') {
+                      router.push( '/postgroup/' + this.$route.params.grp )
+                    } else {
+                      window.location.href = '/'
+                    }
                   } else {
                     this.emailstatus = 'error'
                     this.pwdstatus = 'error'
@@ -892,6 +900,23 @@
             Vue.http.post( 'joinGroup', {
               grp:this.$route.params.grp
             }).then( ( response ) => {
+              if (response.body[0] == 'Protected') {
+                this.spinnerHidden = true
+                this.submitPass = true
+                MintUI.MessageBox.prompt('Password Required',{
+                  showInput:true,
+                  cancelButtonText:'Cancel',
+                  confirmButtonText:'Submit Password'
+                }).then(({ value, action }) => {
+                  Vue.http.post('joinGroup', {
+                    grp:this.$route.params.grp,
+                    pass:value
+                  }).then((response) => {
+                    window.location.href = '/grp/' + this.$route.params.grp
+                  })
+                })
+                return
+              }
               if (response.body[3] == 'AUTHED') {
                 this.authed = true
                 if (response.body[5] == 'MEMBER') {
@@ -1327,7 +1352,15 @@
             image: '',
             uploadTo: 'uploadFile',
             publicInfo: '',
-            groupid: 0
+            groupid: 0,
+            shareCal: false,
+            selector: {
+              store: false,
+              date: new Date()
+            },
+            startDate: new Date('2021-01-01'),
+            dateVal:'',
+            timeVal:''
           }
         },
         created() {
@@ -1341,6 +1374,12 @@
             var publicData = JSON.parse(response.body[6])
             if ("undefined" !== typeof publicData['publicName']) {
               this.publicInfo = publicData['publicBio'].replace("\n","<br>")
+            }
+            console.log(publicData)
+            if ("undefined" !== typeof publicData['shareCal']) {
+              if (parseInt(publicData['shareCal']) > 0) {
+                this.shareCal = true
+              }
             }
             this.name = response.body[1]
             if (response.body[3] == 'AUTHED') {
@@ -1415,6 +1454,21 @@
                 this[field] = response.body
               }
             })
+          },
+          handleConfirm(){
+            
+          },
+          getFullYear(){
+            
+          },
+          datefilter(){
+            
+          },
+          setDate(){
+            this.$refs.picker1.open()
+          },
+          setTime(){
+            this.$refs.picker2.open()
           }
         },
         template: `
@@ -1427,7 +1481,29 @@
             <!--<img class="groupimg" :src="'grpFile?field=image&name=' + groupPic" />-->
             <div v-html="publicInfo"></div>
             <mt-spinner v-bind:class="{'is-hidden':spinnerHidden}" type="snake"></mt-spinner>
-            <mt-field placeholder="Write your post here..." type="textarea" rows="14" v-model="title"></mt-field>
+            <div v-if="shareCal">
+              <mt-datetime-picker
+              cancelText="Cancel"
+              confirmText="Confirm"
+              type="date"
+              ref="picker1"
+                 date-format = "{value}"
+                 month-format = "{value}"
+                 year-format = "{value}"
+              :startDate="startDate"
+              v-model="dateVal">
+              </mt-datetime-picker>
+              <mt-button class="datepicker" v-on:click="setDate()" size="large">Choose Event Date...</mt-button>
+              <mt-datetime-picker class="datepicker"
+              cancelText="Cancel"
+              confirmText="Confirm"
+              type="time"
+              ref="picker2"
+              v-model="timeVal">
+              </mt-datetime-picker>
+            </div>
+            <mt-button class="datepicker" v-on:click="setTime()" size="large">Choose Event Time...</mt-button>
+            <mt-field placeholder="Write your description here..." type="textarea" rows="14" v-model="title"></mt-field>
             <mt-cell title="" v-if="image !== ''"><img class="img" :src="'myFile?staged=1&field=image&name=' + image" /></mt-cell>
             <file-upload btn-label="Click here to upload a photo..." @change="stagedUpload('image')" :url="uploadTo + '?field=image'"></file-upload>
             <mt-button v-on:click="addPosts()" size="large">Save Post in {{name}}</mt-button>
@@ -1935,7 +2011,8 @@
             prevcursor: 0,
             cogHidden: true,
             groups: [],
-            shareLinks: false
+            shareLinks: false,
+            shareCal: false
           }
         },
         props: { posts : Array, selected: String, postto: Array },
@@ -1980,6 +2057,9 @@
                             this.cogHidden = !this.groups[i].isOwner
                             if (parseInt(this.groups[i].shareLinks) > 0) {
                               this.shareLinks = true
+                            }
+                            if (parseInt(this.groups[i].shareCal) > 0) {
+                              this.shareCal = true
                             }
                           }
                         }
@@ -2111,6 +2191,8 @@
               <mt-field v-bind:class="{'is-hidden':!item.showCommentField}" placeholder="Comment..." v-model="item.comment"></mt-field>
               <mt-button v-bind:class="{'is-hidden':!item.showCommentField}" size="large" v-on:click="saveComment(item,idx)">Save Comment</mt-button>
               <mt-button v-if="shareLinks" size="large" v-on:click="editPost(item,idx)">Edit Post</mt-button>
+              
+              <mt-button v-if="shareCal" size="large" v-on:click="editPost(item,idx)">Edit Post</mt-button>
             </mt-cell>
             <mt-button v-if="!cogHidden" size="large" v-on:click="addToGallery()"><img slot="icon" src="/file/plus-circle.svg" /></mt-button>
           </div>`
@@ -2283,7 +2365,8 @@
             id : 0,
             title : '',
             image : '',
-            sound : ''
+            sound : '',
+            body: ''
           }
         },
         props: { posts : Array, selected: String, postto: Array },
@@ -2293,6 +2376,7 @@
             if (parseInt(this.posts[j].id) === parseInt(this.id)) {
               this.title = this.posts[j].title
               this.image = this.posts[j].image
+              this.body = this.posts[j].body
             }
           }
         },
@@ -2301,7 +2385,8 @@
             this.spinnerHidden = false
             Vue.http.post( 'modPosts', {
               id : this.id,
-              title : this.title
+              title : this.title,
+              body : this.body
             }).then( ( response ) => {
               router.back()
             })
@@ -2320,7 +2405,8 @@
               <mt-button slot="left" @click="$router.go(-1)" icon="back">back</mt-button>
             </mt-header>
             <mt-spinner v-bind:class="{'is-hidden':spinnerHidden}" type="snake"></mt-spinner>
-            <mt-field placeholder="Story..." type="textarea" rows="20" v-model="title"></mt-field>
+            <mt-field placeholder="Story..." type="textarea" rows="10" v-model="title"></mt-field>
+            <mt-field placeholder="Story..." type="textarea" rows="20" v-model="body"></mt-field>
             <mt-cell title=""><img class="img" :src="'myFile?staged=1&field=image&name=' + image" /></mt-cell>
             <file-upload btn-label="Image" @change="stagedUpload('image')" :url="uploadTo + '&field=image'"></file-upload>
             <!--<mt-cell title="Sound:"><audio-player :src="'myFile?staged=1&field=sound&name=' + sound" /></mt-cell>
@@ -4246,7 +4332,8 @@
             findSpinnerHidden: true,
             findMessageHidden: true,
             uploadXmlTo: 'syncFile',
-            addFeed: ''
+            addFeed: '',
+            shareCal: false
           }
         },
         props: { items : Array, groups : Array },
@@ -4264,6 +4351,9 @@
           }
           if (this.items[ this.idx ].shareLinks == '1') {
             this.shareLinks = true
+          }
+          if (this.items[ this.idx ].shareCal == '1') {
+            this.shareCal = true
           }
           if (this.items[ this.idx ].public == '1') {
             this.public = true
@@ -4383,7 +4473,8 @@
               publicLink: this.publicLink,
               publicGroups: JSON.stringify(this.publicGroups),
               publicPath: this.publicPath,
-              feeds: JSON.stringify(this.feeds)
+              feeds: JSON.stringify(this.feeds),
+              shareCal : this.shareCal
             }).then( ( response ) => {
               this.$emit('on-update-list')
               this.$emit('on-update-photos')
@@ -4477,6 +4568,12 @@
               this.feeds = response.body
               this.spinnerHidden = true
             })
+          },
+          changeCal(){
+            this.shareLinks = false
+          },
+          changeLinks(){
+            this.shareCal = false
           }
         },
         template: `
@@ -4509,7 +4606,8 @@
             <mt-cell v-bind:class="{'is-hidden':!optsHidden}"  title="Resize photos"><mt-field v-model="maxRes" label="max. width in pixels"></mt-field><mt-switch v-model="doScale"></mt-switch></mt-cell>
             <mt-cell v-bind:class="{'is-hidden':!optsHidden}" title="Block members from saving photos"><mt-switch v-model="blockDownloads"></mt-switch></mt-cell>
             <mt-cell v-bind:class="{'is-hidden':!optsHidden}" title="Allow members to post"><mt-switch v-model="allowPosts"></mt-switch></mt-cell>
-            <mt-cell v-bind:class="{'is-hidden':!optsHidden}" title="Allow article/link posts"><mt-switch v-model="shareLinks"></mt-switch></mt-cell>
+            <mt-cell v-bind:class="{'is-hidden':!optsHidden}" title="Allow article/link posts"><mt-switch v-model="shareLinks" @change="changeLinks()"></mt-switch></mt-cell>
+            <mt-cell v-bind:class="{'is-hidden':!optsHidden}" title="Allow calendar posts"><mt-switch v-model="shareCal" @change="changeCal()"></mt-switch></mt-cell>
             <mt-cell v-bind:class="{'is-hidden':!optsHidden}" title="Import content from feeds">
               <mt-button class="underpic" v-on:click="modSync()" size="large">Sync...</mt-button>
             </mt-cell>
@@ -6238,10 +6336,7 @@ def getPosts():
           continue
       if group_id > 0:
         if not group_id in pgrps:
-          print('CON')
           continue
-        else:
-          print('PO')
       for p in pgrps:
         if p in allowdownload:
           item['allowDownload'] = True
@@ -6774,10 +6869,19 @@ def addPosts():
 @app.route('/modPosts',methods=['GET','POST'])
 def modPosts():
   item = get_one( 'posts', request.form.get('id') )[0]
+  user = current_user()
   if not can('mod','posts',current_user(),item):
-    return( json.dumps( [ 'Error' ] ) )
+    grps = json.loads(item['groups'])
+    ownerid = 0
+    if len(grps) == 1:
+      grpdata = get_one('groups',grps[0])
+      if len(grpdata) > 0:
+        ownerid = grpdata[0]['user_id']
+    if not int(user['id']) == int(ownerid):
+      return( json.dumps( [ 'Error' ] ) )
   newobj = {
     'title' : request.form.get('title'),
+    'body' : request.form.get('body'),
     'image' : saveFile( 'image' ),
     'sound' : saveFile( 'sound' )
   }
@@ -6908,13 +7012,17 @@ def joinGroup():
                 'grpLink':grpLink,
                 'open':grpdata[0]['allowPosts']
               })
+        shareCal = '0'
+        if 'shareCal' in items[0]:
+          shareCal = items[0]['shareCal']
         publicData = json.dumps({
           'publicImage':items[0]['publicImage'],
           'publicName':items[0]['publicName'],
           'publicBio':items[0]['publicBio'],
           'publicLink':items[0]['publicLink'],
           'publicPath':items[0]['publicPath'],
-          'publicGroups':linkedgrps
+          'publicGroups':linkedgrps,
+          'shareCal':shareCal
         })
     result = [owner['name'],items[0]['name'],imgsrc,authd,items[0]['id'],member,publicData,shareLinks,allowPosts]
   return json.dumps(result)
@@ -6931,6 +7039,7 @@ def addGroups():
     'key':randomword(8),
     'allowPosts' : '0',
     'shareLinks' : '0',
+    'shareCal' : '0',
     'blockDownloads' : '0',
     'public':'0',
     'publicImage': saveFile( 'publicImage' ),
@@ -6986,6 +7095,7 @@ def modGroups():
     'maxres' : scale,
     'allowPosts' : '0',
     'shareLinks' : '0',
+    'shareCal' : '0',
     'blockDownloads' : '0',
     'public':'0',
     'publicImage': saveFile( 'publicImage' ),
@@ -7000,6 +7110,8 @@ def modGroups():
     newobj['allowPosts'] = '1'
   if str(request.form.get('shareLinks')) == 'true':
     newobj['shareLinks'] = '1'
+  if str(request.form.get('shareCal')) == 'true':
+    newobj['shareCal'] = '1'
   if str(request.form.get('blockDownloads')) == 'true':
     newobj['blockDownloads'] = '1'
   if str(request.form.get('public')) == 'true':
