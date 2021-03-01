@@ -2180,7 +2180,7 @@
               expirehours: 0,
               speedup: '',
               publicPost: 1,
-              eventDate: this.dateVal.toUTCString(),
+              eventDate: moment(moment.utc(this.dateVal).toDate()).local().format("YYYY-MM-DD"),
               eventTime: this.timeVal,
               timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone
             }).then( ( response ) => {
@@ -7523,7 +7523,7 @@ def addPosts():
       newrec['key'] = postkey
       newrec['link'] = 'https://' + mydomain + '/post/' + postkey
     if not request.form.get('eventDate') is None:
-      eventdate = datetime.strptime(request.form.get('eventDate'), "%a, %d %b %Y %H:%M:%S %Z")
+      eventdate = datetime.strptime(request.form.get('eventDate'), "%Y-%m-%d")
       eventtime = request.form.get('eventTime').split(':')
       newrec['event'] = str( timezone( request.form.get('timeZone') ).localize( 
         eventdate.replace(hour=int(eventtime[0]), minute=int(eventtime[1]))
