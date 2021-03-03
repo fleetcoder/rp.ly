@@ -7779,7 +7779,15 @@ def modPosts():
 def delPosts():
   item = get_one( 'posts', request.form.get('id') )[0]
   if not can('del','posts',current_user(),item):
-    return( json.dumps( [ 'Error' ] ) )
+    user = current_user()
+    grps = json.loads(item['groups'])
+    ownerid = 0
+    if len(grps) == 1:
+      grpdata = get_one('groups',grps[0])
+      if len(grpdata) > 0:
+        ownerid = grpdata[0]['user_id']
+    if not int(user['id']) == int(ownerid):
+      return( json.dumps( [ 'Error' ] ) )
   if del_one( 'posts', request.form.get('id') ):
     img = appdir + 'myfiles/' + item['image']
     if os.path.exists(img) and not item['image'] == '':
