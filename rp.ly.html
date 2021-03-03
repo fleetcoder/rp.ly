@@ -445,7 +445,7 @@
         float:left;
       }
       .topmenu {
-        top:72px;
+        top:172px;
         width:100%;
         margin-top:0;
         padding-top:0;
@@ -834,6 +834,9 @@
       }
       @keyframes fadeOutShink  {
         to { opacity: 0; padding: 0px; height: 0px; }
+      }
+      .del_linkpost {
+        margin-top:20px;
       }
     </style>
 
@@ -3187,6 +3190,23 @@
                 this[field] = response.body
               }
             })
+          },
+          delPosts(){
+            MintUI.MessageBox({
+              title: 'Delete',
+              message: 'Are you sure you want to delete this post?',
+              showCancelButton: true,
+              confirmButtonText: 'Confirm Delete',
+              cancelButtonText: 'Cancel'
+            }).then(action => {
+              if (action === 'confirm') {
+                Vue.http.post( 'delPosts', {
+                  id:this.id
+                }).then( ( response ) => {
+                  router.back()
+                })
+              }
+            })
           }
         },
         template: `
@@ -3202,6 +3222,7 @@
             <!--<mt-cell title="Sound:"><audio-player :src="'myFile?staged=1&field=sound&name=' + sound" /></mt-cell>
             <audio-recorder :upload-url="uploadTo + '&field=sound'"/>-->
             <mt-button v-on:click="modPosts()" size="large">Save</mt-button>
+            <mt-button class="del_linkpost" size="large" type="danger" v-on:click="delPosts()">Delete</mt-button>
           </div>`
       }
       const modPosts = {
@@ -5174,7 +5195,7 @@
               this.optGroups = response.body[1]
               for (var i = 0; i < this.publicGroups.length; i++) {
                 if (!this.optGroups.includes(this.publicGroups[i])) {
-                  this.publicGroups.splice( i, 1 )
+                  //this.publicGroups.splice( i, 1 )
                 }
               }
             }
