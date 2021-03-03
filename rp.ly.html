@@ -2176,7 +2176,7 @@
             }
             Vue.http.post( 'addPosts', {
               recips: JSON.stringify([this.groupid]),
-              title: JSON.stringify(['<img class="article_img" src="' + postimg + '" alt="Image" /><h1 class="article_hed">' + this.title + '</h1>']),
+              title: JSON.stringify(['<img class="article_img" src="' + postimg + '" alt="Image" /><h1 class="article_hed">' + this.title + ' ' + this.dateText + ' ' + this.timeText + '</h1>']),
               expirehours: 0,
               speedup: '',
               publicPost: 1,
