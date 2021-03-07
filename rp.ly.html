@@ -1360,6 +1360,11 @@
                     }
                     if (this.shareLinks) {
                       this.spinnerHidden = false
+                      var delayTotal = 500 * this.publicGroups.length
+                      MintUI.Indicator.open({
+                        text: 'Loading...',
+                        spinnerType: 'fading-circle'
+                      })
                       this.grouppost = []
                       for(grp in this.publicGroups) {
                         
@@ -1398,7 +1403,9 @@
                         })(this.publicGroups, grp, this)
                         
                       }
-
+                      window.setTimeout(function() {
+                        MintUI.Indicator.close()
+                      }, delayTotal)
                     }
                   }
                   this.spinnerHidden = true
