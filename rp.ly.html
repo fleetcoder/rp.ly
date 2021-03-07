@@ -1270,7 +1270,8 @@
             headerTitle: "Rp.ly",
             selected: "1",
             groupposts:{},
-            grouppost: []
+            grouppost: [],
+            postlist: []
           }
         },
         created() {
@@ -1344,8 +1345,8 @@
                         this.items.push(response.body[0][j])
                       }
                     } else {
-                      this.items = response.body[0]
-                      if (this.items.length > 9) {
+                      this.postlist = response.body[0]
+                      if (this.postlist.length > 9) {
                         this.moreHidden = false
                       }
                     }
@@ -1358,13 +1359,16 @@
                       }
                     }
                     if (this.shareLinks) {
-
+                      this.spinnerHidden = false
                       this.grouppost = []
                       for(grp in this.publicGroups) {
                         
                         (function(groups, grpp, obj) {
                           Vue.http.get( 'getPosts' + '?grp=' + groups[grpp].grp).then( ( response ) => {
                             if ( !!response.body ) {
+                              for (var j = 0; j < obj.postlist.length; j++) {
+                                obj.items.push(obj.postlist[j])
+                              }
                               groups[grpp].posts = response.body[0]
                               obj.grouppost.push(response.body[0])
                               //obj.groupposts['ljhmdvqk'] = response.body[0]
@@ -2052,7 +2056,7 @@
             </div>
             <div v-else>
               <!--<img class="groupimg" :src="'grpFile?field=image&name=' + groupPic" />-->
-              <mt-cell class="imagecell" v-for="(item, idx) in items" :title="item.name">
+              <mt-cell class="imagecell" v-for="(item, idx) in items" :title="item.name" is-link :to="item.link">
                 <!--<p class="caption">
                   <span v-text="item.author"></span>
                   <img class="headericon" src="file/chevron-right.svg" />
@@ -5309,7 +5313,8 @@
             findMessageHidden: true,
             uploadXmlTo: 'syncFile',
             addFeed: '',
-            shareCal: false
+            shareCal: false,
+            foundFeeds: []
           }
         },
         props: { items : Array, groups : Array },
@@ -5522,14 +5527,9 @@
               this.findSpinnerHidden = true
             })
           },
-          subFeed(link,idx){
+          subFeed(link,title,idx){
             this.foundFeeds.splice( idx, 1 )
-            Vue.http.post( 'addFeeds', {
-              feed : link
-            }).then( ( response ) => {
-              this.feeds = response.body
-              this.setFeeds()
-            })
+            this.feeds.push(link)
           },
           onFileChange(fieldName, fileList) {
             this.spinnerHidden = false
@@ -5607,11 +5607,15 @@
               </mt-cell>
               <mt-field placeholder="Paste a feed link..." v-model="addFeed"></mt-field>
               <mt-button v-on:click="doAddFeed()" size="large">Save Feed</mt-button>
-              <!--
               <mt-field placeholder="Name of web site or keywords..." v-model="findFeeds"></mt-field>
               <mt-button v-on:click="doFindFeeds()" :disabled="findDisabled" size="large">Find Feeds</mt-button>
               <mt-spinner v-bind:class="{'is-hidden':findSpinnerHidden}" type="snake"></mt-spinner>
-              <mt-cell v-bind:class="{'is-hidden':findMessageHidden}" title="No Feeds Found"></mt-cell>-->
+              <mt-cell v-bind:class="{'is-hidden':findMessageHidden}" title="No Feeds Found"></mt-cell>
+              <mt-cell v-for="(feed, idx) in foundFeeds" :title="feed.title">
+                <a v-on:click="subFeed(feed.link,feed.title,idx)">
+                  <mt-button>&plus;</mt-button>
+                </a>
+              </mt-cell>
               <label for="feedsfile" class="feedsinput">Click here to choose a feeds file from your computer (opml/xml):</label>
               <input type="file" name="file" id="feedsfile"
                 @change="onFileChange($event.target.name, $event.target.files); fileCount = $event.target.files.length"
@@ -7502,7 +7506,7 @@ def getPosts():
           feeds = json.loads(it['value'])
         if it['name'] == 'filterDisabled':
           filterdisabled = json.loads(it['value'])
-  if request.args.get('grpid') is None:
+  if request.args.get('grpid') is None and request.args.get('grp') is None:
     for fd in feeds:
       feed = feedparser.parse(fd)
       for item in feed.entries:
