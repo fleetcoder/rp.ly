@@ -445,7 +445,7 @@
         float:left;
       }
       .topmenu {
-        top:172px;
+        top:192px;
         width:100%;
         margin-top:0;
         padding-top:0;
@@ -1485,9 +1485,6 @@
             }).then( ( response ) => {
               window.location.href = '/'
             })
-          },
-          myPosts(){
-            alert('MP')
           }
         },
         template: `
@@ -1614,7 +1611,7 @@
             <mt-popup v-model="menuVisible" position="middle" class="topmenu">
               <mt-cell is-link @click.native="showMenu()" title="Close Menu"></mt-cell>
               <mt-cell v-for="(item,idx) in publicGroups" is-link :to="item.grpLink" :title="item.name"></mt-cell>
-              <mt-cell v-if="authed" is-link @click.native="myPosts()" title="My Posts"></mt-cell>
+              <mt-cell v-if="authed" is-link :to="'/myposts/' + grp" title="My Posts"></mt-cell>
               <mt-cell v-if="authed" is-link @click.native="logOut()" title="Sign Out"></mt-cell>
             </mt-popup>
             <!--<mt-actionsheet
@@ -2077,6 +2074,155 @@
             </mt-cell>
           </div>`
       }
+      const PublicMyPostsPage = {
+        data() {
+          return {
+            spinnerHidden: true,
+            isInstagram: false,
+            groupPic: '',
+            items: [],
+            authed: false,
+            name: '',
+            showPostButton: false,
+            publicLink:'',
+            shareCal: false,
+            calendar: {},
+            calHidden: true
+          }
+        },
+        mounted: function() {
+        },
+        created() {
+          var ua = navigator.userAgent || navigator.vendor || window.opera
+          this.isInstagram = (ua.indexOf('Instagram') > -1) ? true : false
+          this.spinnerHidden = false
+          Vue.http.post( 'joinGroup', {
+            grp:this.$route.params.grp
+          }).then( ( response ) => {
+            this.groupPic = response.body[2]
+            var publicData = JSON.parse(response.body[6])
+            this.name = response.body[1]
+            if (response.body[3] == 'AUTHED') {
+              if (response.body[5] == 'MEMBER') {
+              }
+              this.authed = true
+            } else {
+              this.authed = false
+            }
+            if (parseInt(response.body[8]) > 0) {
+              this.showPostButton = true
+            }
+            this.publicLink = publicData['publicLink']
+            if ("undefined" !== typeof publicData['shareCal']) {
+              if (parseInt(publicData['shareCal']) > 0) {
+                this.shareCal = true
+                this.calHidden = false
+              }
+            }
+            if ("undefined" !== typeof publicData['publicName']) {
+              Vue.http.get( 'getPosts' + '?mine=1&grp=' + this.$route.params.grp).then( ( response ) => {
+                if ( !!response.body ) {
+                  if (this.cursor > 0) {
+                    if (response.body[0].length < 10) {
+                      this.moreHidden = true
+                    }
+                    for (var j = 0; j < response.body[0].length; j++) {
+                      this.items.push(response.body[0][j])
+                    }
+                  } else {
+                    this.items = response.body[0]
+                    if (this.items.length > 9) {
+                      this.moreHidden = false
+                    }
+                  }
+                }
+                this.spinnerHidden = true
+              })
+              this.spinnerHidden = true
+            } else {
+            }
+          })
+        },
+        methods: {
+          imageLink(item){
+            if ("undefined" !== typeof item.media) {
+              return item.media
+            } else {
+              return 'myFile?field=image&name=' + item.image
+            }
+          },
+          videoLink(item){
+            if ("undefined" !== typeof item.media) {
+              return item.media
+            } else {
+              return 'myFile?field=video&name=' + item.video
+            }
+          },
+          doPost(){
+            if (!this.authed) {
+              router.push('/auth/' + this.$route.params.grp)
+            } else {
+              router.push('/postgroup/' + this.$route.params.grp)
+            }
+          },
+          delPosts(id,idx){
+            console.log('id ' + id.toString() + ' and ' + idx.toString())
+            this.spinnerHidden = false
+            MintUI.MessageBox({
+              title: 'Delete',
+              message: 'Are you sure you want to delete this post?',
+              showCancelButton: true,
+              confirmButtonText: 'Confirm Delete',
+              cancelButtonText: 'Cancel'
+            }).then(action => {
+              if (action === 'confirm') {
+                Vue.http.post( 'delPosts', {
+                  id:id
+                }).then( ( response ) => {
+                  this.items.splice( idx, 1 )
+                  this.spinnerHidden = true
+                })
+              }
+            })
+          }
+        },
+        template: `
+          <div>
+            <mt-header title="Our Town">
+              <a slot="left" :href="publicLink">
+                <mt-button slot="left" icon="back">back</mt-button>
+              </a>
+            </mt-header>
+            <mt-button v-if="showPostButton" v-on:click="doPost()" size="large">Post in {{name}}</mt-button>
+            <div id="calendar" ref="calendar" v-bind:class="{'is-hidden':calHidden}"></div>
+            <div v-if="shareCal">
+              
+            </div>
+            <div v-else>
+              <!--<img class="groupimg" :src="'grpFile?field=image&name=' + groupPic" />-->
+              <mt-cell class="imagecell" v-for="(item, idx) in items" :title="item.name">
+                <!--<p class="caption">
+                  <span v-text="item.author"></span>
+                  <img class="headericon" src="file/chevron-right.svg" />
+                  <span v-text="item.to"></span>
+                </p>-->
+                <p class="caption" v-html="item.title"></p>
+                <mt-button class="del_linkpost" size="large" type="danger" v-on:click="delPosts(item.id,idx)">Delete</mt-button>
+                <!--<div class="outer">
+                  <img class="oimg" :src="imageLink(item)" v-if="item.allowDownload" />
+                  <img @contextmenu.prevent="doContextMenu" class="oimg cant-click" :src="imageLink(item)" v-else />
+                  <figcaption class="caption underpic" v-html="item.title"></figcaption>
+                  <audio-player :src="'myFile?field=sound&name=' + item.sound" v-bind:class="{'is-hidden':item.soundHidden}" />
+                </div>
+                <vue-plyr v-if="item.isVideo">
+                  <video :poster="item.image" :src="videoLink(item)" controls data-plyr-config='{ "iconUrl": "file/plyr.svg" }' />
+                  <figcaption class="caption" v-html="item.title"></figcaption>
+                </vue-plyr>-->
+                <audio-player v-if="item.imageHidden" :src="'myFile?field=sound&name=' + item.sound" v-bind:class="{'is-hidden':item.soundHidden}" />
+              </div>
+            </mt-cell>
+          </div>`
+      }
       const PublicPostPage = {
         data() {
           return {
@@ -2187,8 +2333,12 @@
               return
             }
             var postimg = 'myFile?field=image&name=' + this.image
+            var evtdate = ''
+            var evttime = ''
             if (this.shareCal === true) {
               postimg = 'file/cal.png'
+              evtdate = moment(moment.utc(this.dateVal).toDate()).local().format("YYYY-MM-DD")
+              evttime = this.timeVal
             }
             Vue.http.post( 'addPosts', {
               recips: JSON.stringify([this.groupid]),
@@ -2196,8 +2346,8 @@
               expirehours: 0,
               speedup: '',
               publicPost: 1,
-              eventDate: moment(moment.utc(this.dateVal).toDate()).local().format("YYYY-MM-DD"),
-              eventTime: this.timeVal,
+              eventDate: evtdate,
+              eventTime: evttime,
               timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone
             }).then( ( response ) => {
               this.spinnerHidden = true
@@ -5796,6 +5946,9 @@
             path: '/postgroup/:grp',
             component: PublicPostPage
         },{
+            path: '/myposts/:grp',
+            component: PublicMyPostsPage
+        },{
             path: '/group/:grp',
             component: ShowGroupPage
         },{
@@ -7171,6 +7324,16 @@ def getPosts():
       if int(thisgroup[0]['public']) > 0:
         public_group = thisgroup[0]['id']
         public_group_entry = {'value':int(thisgroup[0]['id']),'label':thisgroup[0]['name'],'links':thisgroup[0]['shareLinks']}
+      if not request.args.get('mine') is None:
+        linkedgrps = []
+        newrecs = []
+        linked = json.loads(thisgroup[0]['publicGroups'])
+        for item in recs:
+          grps = json.loads(item['groups'])
+          if len(grps) > 0:
+            if set(grps).intersection(set(linked)):
+              newrecs.append(item)
+        recs = newrecs
   if not request.args.get('grpid') is None:
     thisgroup = get_one( 'groups', request.args.get('grpid') )
     group_id = thisgroup[0]['id']
@@ -7183,6 +7346,8 @@ def getPosts():
       if len(grps) > 0:
         if public_group in grps:
           is_public = True
+    if not request.args.get('mine') is None:
+      is_public = True
     if can('get','posts',user,item) or is_public:
       if int(item['user_id']) > 0:
         item['author'] = get_user(item['user_id'])['name']
@@ -7221,18 +7386,22 @@ def getPosts():
         if item['title'] == '':
           item['title'] = '(untitled)'
       pgrps = json.loads(item['groups'])
-      if public_group > 0:
-        if not public_group in pgrps:
-          continue
-      if group_id > 0:
-        if not group_id in pgrps:
-          continue
+      if request.args.get('mine') is None:
+        if public_group > 0:
+          if not public_group in pgrps:
+            continue
+        if group_id > 0:
+          if not group_id in pgrps:
+            continue
       for p in pgrps:
         if p in allowdownload:
           item['allowDownload'] = True
       if 'id' in user:
         if int(user['id']) == int(item['user_id']):
           item['isOwner'] = True
+      if not request.args.get('mine') is None:
+        if not item['isOwner']:
+          continue
       gall_limit = False
       for pgrp in pgrps:
         if pgrp in groups:
@@ -7559,11 +7728,12 @@ def addPosts():
       newrec['key'] = postkey
       newrec['link'] = 'https://' + mydomain + '/post/' + postkey
     if not request.form.get('eventDate') is None:
-      eventdate = datetime.strptime(request.form.get('eventDate'), "%Y-%m-%d")
-      eventtime = request.form.get('eventTime').split(':')
-      newrec['event'] = str( timezone( request.form.get('timeZone') ).localize( 
-        eventdate.replace(hour=int(eventtime[0]), minute=int(eventtime[1]))
-      ))
+      if len(request.form.get('eventDate')) > 0:
+        eventdate = datetime.strptime(request.form.get('eventDate'), "%Y-%m-%d")
+        eventtime = request.form.get('eventTime').split(':')
+        newrec['event'] = str( timezone( request.form.get('timeZone') ).localize( 
+          eventdate.replace(hour=int(eventtime[0]), minute=int(eventtime[1]))
+        ))
     if not request.form.get('shareLink') is None:
       newrec['link'] = request.form.get('shareLink')
       user_agent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1985.143 Safari/537.36'
