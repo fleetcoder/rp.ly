@@ -1485,6 +1485,9 @@
             }).then( ( response ) => {
               window.location.href = '/'
             })
+          },
+          myPosts(){
+            alert('MP')
           }
         },
         template: `
@@ -1611,7 +1614,8 @@
             <mt-popup v-model="menuVisible" position="middle" class="topmenu">
               <mt-cell is-link @click.native="showMenu()" title="Close Menu"></mt-cell>
               <mt-cell v-for="(item,idx) in publicGroups" is-link :to="item.grpLink" :title="item.name"></mt-cell>
-              <mt-cell is-link @click.native="logOut()" title="Sign Out"></mt-cell>
+              <mt-cell v-if="authed" is-link @click.native="myPosts()" title="My Posts"></mt-cell>
+              <mt-cell v-if="authed" is-link @click.native="logOut()" title="Sign Out"></mt-cell>
             </mt-popup>
             <!--<mt-actionsheet
               cancelText="Close"
