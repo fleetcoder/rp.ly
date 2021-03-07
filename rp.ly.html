@@ -1366,8 +1366,10 @@
                         (function(groups, grpp, obj) {
                           Vue.http.get( 'getPosts' + '?grp=' + groups[grpp].grp).then( ( response ) => {
                             if ( !!response.body ) {
-                              for (var j = 0; j < obj.postlist.length; j++) {
-                                obj.items.push(obj.postlist[j])
+                              if (obj.items.length === 0) {
+                                for (var j = 0; j < obj.postlist.length; j++) {
+                                  obj.items.push(obj.postlist[j])
+                                }
                               }
                               groups[grpp].posts = response.body[0]
                               obj.grouppost.push(response.body[0])
