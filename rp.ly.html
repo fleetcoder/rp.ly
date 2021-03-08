@@ -1367,7 +1367,6 @@
                       })
                       this.grouppost = []
                       for(grp in this.publicGroups) {
-                        
                         (function(groups, grpp, obj) {
                           Vue.http.get( 'getPosts' + '?grp=' + groups[grpp].grp).then( ( response ) => {
                             if ( !!response.body ) {
@@ -3180,7 +3179,10 @@
             soundHidden : false,
             imageHidden : false,
             post: {},
-            body: ''
+            body: '',
+            authed: false,
+            flagged: false,
+            flagtxt: 'Flag Post'
           }
         },
         props: {},
@@ -3195,11 +3197,15 @@
               if (response.body.length > 0) {
 
                 this.post = response.body[0]
-                
                 this.title = this.post.title
                 this.image = this.post.image
                 this.sound = this.post.sound
                 this.body = this.post.body
+                
+                if (response.body[1] == 'AUTHED') {
+                  this.authed = true
+                }
+  
               }
               
               /*
@@ -3220,6 +3226,28 @@
           },
           doContextMenu(e){
             e.preventDefault()
+          },
+          flagPosts(){
+            if (!this.authed) {
+              router.push('/authpost/' + this.$route.params.postid)
+            } else {
+              MintUI.Indicator.open({
+                text: 'Saving...',
+                spinnerType: 'fading-circle'
+              })
+              Vue.http.post( 'addPosts', {
+                recips: this.post.groups,
+                title: JSON.stringify(['Flag']),
+                inreplyto: '',
+                flagpost: this.id,
+                expirehours: 0,
+                speedup: ''
+              }).then( ( response ) => {
+                this.flagged = true
+                this.flagtxt = 'Flagged'
+                MintUI.Indicator.close()
+              })
+            }
           }
         },
         template: `
@@ -3238,8 +3266,10 @@
             </mt-cell>
             <mt-cell > <p v-html="title"></p></mt-cell>
             <mt-cell > <p v-html="body"></p></mt-cell>
+        
             <!--<mt-cell v-bind:class="{'is-hidden':soundHidden}"><audio-player :src="'myFile?field=sound&name=' + sound" /></mt-cell>
             <mt-button size="large" v-on:click="delPosts()">Delete Photo</mt-button>-->
+            <mt-button size="large" v-on:click="flagPosts()" :disabled="flagged">{{flagtxt}}</mt-button>
 
           </div>`
       }
@@ -5976,6 +6006,9 @@
         },{
             path: '/auth/:grp',
             component: freeTrial
+        },{
+            path: '/authpost/:postid',
+            component: freeTrial
         }
       ]})
       const vueApp = new Vue({
@@ -7242,7 +7275,11 @@ def getPost():
       if len(thisgroup) == 1:
         if int(thisgroup[0]['public']) > 0:
           post.append(p[0])
-  return json.dumps(post)
+  authd = ''
+  if 'user' in session:
+    if int(session['user']) > 0:
+      authd = 'AUTHED'
+  return json.dumps([post[0],authd])
 
 @app.route('/getCal',methods=['GET'])
 def getCal():
@@ -7378,7 +7415,6 @@ def getPosts():
       if not item['link'] is None:
         if len(item['link']) > 0:
           item['isHtml'] = True
-      item['flagged'] = False
       comms = get_one_by('posts',item['id'],'inreplyto')
       for comm in list(reversed(comms)):
         comm['author'] = get_user(comm['user_id'])['name']
@@ -7415,6 +7451,12 @@ def getPosts():
       if not request.args.get('mine') is None:
         if not item['isOwner']:
           continue
+      if 'flagged' in item:
+        if not item['flagged'] is None:
+          if len(item['flagged']) > 0:
+            if (int(item['flagged']) > 0):
+              continue
+      item['flagged'] = False
       gall_limit = False
       for pgrp in pgrps:
         if pgrp in groups:
@@ -7713,7 +7755,20 @@ def addPosts():
       savedImage = ''
     in_reply_to = ''
     if not request.form.get('inreplyto') is None:
-      in_reply_to = request.form.get('inreplyto')
+      if not request.form.get('flagpost') is None:
+        p = get_one_by( 'posts', request.form.get('flagpost'), 'key' )
+        post = []
+        if len(p) > 0:
+          in_reply_to = str(p[0]['id'])
+        unique = []
+        comms = get_one_by('posts',p[0]['id'],'inreplyto')
+        for comm in list(reversed(comms)):
+          if not comm['user_id'] in unique:
+            unique.append(comm['user_id'])
+        if len(unique) > 4:
+          mod_one('posts',{"flagged":"1"},p[0]['id'])
+      else:
+        in_reply_to = request.form.get('inreplyto')
     if request.form.get('shareLink') is None and request.form.get('shareText') is None:
       if len(titles) < (imgcount + 1):
         continue
@@ -7728,6 +7783,7 @@ def addPosts():
       'inreplyto' : in_reply_to,
       'link':'',
       'user_id' : session['user'],
+      'flagged' : '0',
       'created' : str( timezone( 'US/Pacific' ).localize( datetime.now() ) )
     }
     if not request.form.get('shareText') is None:
