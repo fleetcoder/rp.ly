@@ -930,7 +930,11 @@
                     if (typeof this.$route.params.grp !== 'undefined') {
                       router.push( '/postgroup/' + this.$route.params.grp )
                     } else {
-                      window.location.href = '/'
+                      if (typeof this.$route.params.postid !== 'undefined') {
+                        router.push( '/post/' + this.$route.params.postid )
+                      } else {
+                        window.location.href = '/'
+                      }
                     }
                   } else {
                     this.emailstatus = 'error'
