@@ -8003,7 +8003,10 @@ def addPosts():
     sendcomet(recips,item)
   if not request.form.get('inreplyto') is None:
     for grp in json.loads(postto):
-      notify_comment( grp, curr['name'] )
+      try:
+        notify_comment( grp, curr['name'] )
+      except:
+        print('comment error')
   return response
 
 @app.route('/modPosts',methods=['GET','POST'])
