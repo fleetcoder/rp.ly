@@ -7451,11 +7451,12 @@ def getPosts():
       if not request.args.get('mine') is None:
         if not item['isOwner']:
           continue
-      if 'flagged' in item:
-        if not item['flagged'] is None:
-          if len(item['flagged']) > 0:
-            if (int(item['flagged']) > 0):
-              continue
+      if request.args.get('mine') is None:
+        if 'flagged' in item:
+          if not item['flagged'] is None:
+            if len(item['flagged']) > 0:
+              if (int(item['flagged']) > 0):
+                continue
       item['flagged'] = False
       gall_limit = False
       for pgrp in pgrps:
