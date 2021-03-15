@@ -211,6 +211,10 @@
         position: absolute;
         cursor: pointer;
       }
+      .input-headerphoto {
+        background-color:blue;
+        cursor: pointer;
+      }
       .dropbox:hover {
         background: #AEA;
       }
@@ -1598,7 +1602,7 @@
               <p class="caption" v-for="(comm, cidx) in item.comments" v-text="comm.author + ': ' + comm.title"></p>
             </mt-cell>
             <mt-cell v-for="(item, idx) in publicGroups" :title="item.name" is-link :to="item.grpLink">
-              <img class="grimg" :src="'grpFile?field=publicImage&name=' + publicImage" />
+              <img class="grimg" :src="'' + item.image" />
             </mt-cell>
             <mt-popup class="help_popup" v-model="helpVisible" position="middle">
               <mt-header>
@@ -5588,6 +5592,19 @@
               this.spinnerHidden = true
             })
           },
+          onHeaderPhotoChange(fieldName, fileList) {
+            this.spinnerHidden = false
+            const formData = new FormData()
+            if (!fileList.length) return
+            Array
+              .from(Array(fileList.length).keys())
+              .map(x => {
+                formData.append(fieldName, fileList[x], fileList[x].name)
+              })
+            this.$http.post ( 'headerPhotoFile' + '?id=' + this.id +'&field=image', formData ).then(function (response) {
+              this.spinnerHidden = true
+            })
+          },
           changeCal(){
             this.shareLinks = false
           },
@@ -5620,7 +5637,7 @@
             </mt-checklist>
             <mt-cell v-bind:class="{'is-hidden':!pubHidden}" title=""><img class="img" :src="'myFile?staged=1&field=publicImage&name=' + publicImage" /></mt-cell>
             <file-upload v-bind:class="{'is-hidden':!pubHidden}" btn-label="Change Author Photo" @change="stagedUpload('publicImage')" :url="uploadTo + '?field=publicImage'"></file-upload>
-            <mt-field label="Custom Link rp.ly/..." placeholder="linda" v-model="publicPath"></mt-field>
+            <mt-field label="Custom Link rp.ly/..." placeholder="" v-model="publicPath"></mt-field>
             <mt-cell title="Advanced Options"><mt-switch v-model="optsHidden"></mt-switch></mt-cell>
             <mt-cell v-bind:class="{'is-hidden':!optsHidden}"  title="Resize photos"><mt-field v-model="maxRes" label="max. width in pixels"></mt-field><mt-switch v-model="doScale"></mt-switch></mt-cell>
             <mt-cell v-bind:class="{'is-hidden':!optsHidden}" title="Block members from saving photos"><mt-switch v-model="blockDownloads"></mt-switch></mt-cell>
@@ -5629,6 +5646,11 @@
             <mt-cell v-bind:class="{'is-hidden':!optsHidden}" title="Allow calendar posts"><mt-switch v-model="shareCal" @change="changeCal()"></mt-switch></mt-cell>
             <mt-cell v-bind:class="{'is-hidden':!optsHidden}" title="Import content from feeds">
               <mt-button class="underpic" v-on:click="modSync()" size="large">Sync...</mt-button>
+            </mt-cell>
+            <mt-cell v-bind:class="{'is-hidden':!optsHidden}" title="Change Header Photo">
+              <input type="file" name="headerphotofile" id="headerphotofile"
+                @change="onHeaderPhotoChange($event.target.name, $event.target.files); fileCount = $event.target.files.length"
+                accept="image/*" class="input-headerphoto" />
             </mt-cell>
             <mt-button class="underpic" v-on:click="modGroups()" size="large">Save</mt-button>
             <mt-popup class="addcontact" v-model="showAddContact" position="middle">
@@ -5837,7 +5859,7 @@
                 <mt-field v-bind:class="{'is-hidden':!pubHidden}" label="Author Name:" placeholder="Name.." v-model="publicName"></mt-field>
                 <mt-field v-bind:class="{'is-hidden':!pubHidden}" label="Author Bio:" placeholder="Bio.." type="textarea" rows="4" v-model="publicBio"></mt-field>
                 <mt-field v-bind:class="{'is-hidden':!pubHidden}" label="Author Home Page:" placeholder="Link.." v-model="publicLink"></mt-field>
-                <mt-field v-bind:class="{'is-hidden':!pubHidden}" label="Custom Link rp.ly/..." placeholder="linda" v-model="publicPath"></mt-field>
+                <mt-field v-bind:class="{'is-hidden':!pubHidden}" label="Custom Link rp.ly/..." placeholder="" v-model="publicPath"></mt-field>
                 <h3 v-bind:class="{'is-hidden':!pubHidden}">Linked Galleries:</h3>
                 <mt-checklist v-bind:class="{'is-hidden':!pubHidden}"
                   v-model="publicGroups"
@@ -6217,6 +6239,59 @@ def syncGroups():
             #  return 'OK'
   print('DONE')
   return 'OK'
+
+@app.route('/headerPhotoFile',methods=['GET','POST'])
+def headerPhotoFile():
+  filedata = {}
+  if request.method == 'POST':
+    gid = request.args.get('id')
+    grpdata = get_one('groups',gid)
+    if 'user_id' in grpdata[0]:
+      curr = current_user()
+      if int(curr['id']) == int(grpdata[0]['user_id']):
+        if 'headerphotofile' in request.files:
+          file = request.files['headerphotofile']
+          if not file.filename == '':
+            fi = tempfile.NamedTemporaryFile(delete=False)
+            file.save(fi.name)
+            filedata['tmp_name'] = fi.name
+            filedata['name'] = file.filename
+            fname = time.strftime("%Y%m%d-%H%M%S") + filedata['name']
+            filepath = appdir + 'myfiles/' + fname
+            copyfile(filedata['tmp_name'], filepath)
+            try:
+              image=Image.open(filepath)
+              for orientation in ExifTags.TAGS.keys():
+                if ExifTags.TAGS[orientation]=='Orientation':
+                  break
+              exif=dict(image._getexif().items())
+              if exif[orientation] == 3:
+                image=image.rotate(180, expand=True)
+              elif exif[orientation] == 6:
+                image=image.rotate(270, expand=True)
+              elif exif[orientation] == 8:
+                image=image.rotate(90, expand=True)
+              image.save(filepath)
+              image.close()
+            except (AttributeError, KeyError, IndexError):
+              pass
+            newrec = {
+              'title' : '',
+              'image' : fname,
+              'sound' : '',
+              'video' : '',
+              'groups' : json.dumps([]),
+              'inreplyto' : '',
+              'link':'',
+              'user_id' : session['user'],
+              'flagged' : '0',
+              'created' : str( timezone( 'US/Pacific' ).localize( datetime.now() ) )
+            }
+            rid = add_one( 'posts', newrec )
+            newobj = {'image':fname}
+            mod_one( 'groups', newobj, gid )
+  response = make_response(json.dumps( [ 'OK' ] ))
+  return response
 
 @app.route('/syncFile',methods=['GET','POST'])
 def syncFile():
