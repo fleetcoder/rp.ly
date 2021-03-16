@@ -1284,7 +1284,9 @@
           }
         },
         created() {
-          this.pageSetup()
+          if (this.items.length == 0) {
+            this.pageSetup()
+          }
         },
         methods: {
           pageSetup(){
@@ -1368,6 +1370,7 @@
                       }
                     }
                     if (this.shareLinks) {
+                      var responses = []
                       this.spinnerHidden = false
                       var delayTotal = 500 * this.publicGroups.length
                       MintUI.Indicator.open({
@@ -1376,7 +1379,7 @@
                       })
                       this.grouppost = []
                       for(grp in this.publicGroups) {
-                        (function(groups, grpp, obj) {
+                        (function(groups, grpp, obj, resps) {
                           Vue.http.get( 'getPosts' + '?grp=' + groups[grpp].grp).then( ( response ) => {
                             if ( !!response.body ) {
                               if (obj.items.length === 0) {
@@ -1407,13 +1410,16 @@
                                 }
                               }
                             }
+                            resps.push(response)
+                            if (resps.length == groups.length) {
+                              window.setTimeout(function() {
+                                MintUI.Indicator.close()
+                              }, 500)
+                            }
                           })
-                        })(this.publicGroups, grp, this)
+                        })(this.publicGroups, grp, this, responses)
                         
                       }
-                      window.setTimeout(function() {
-                        MintUI.Indicator.close()
-                      }, delayTotal)
                     }
                   }
                   this.spinnerHidden = true
