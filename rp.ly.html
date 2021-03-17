@@ -312,6 +312,7 @@
         height:auto;
         overflow:hidden;
         margin:20px;
+        filter: invert(86%) sepia(40%) saturate(362%) hue-rotate(75deg) brightness(90%) contrast(89%);
       }
       .feedwrap {
         padding-bottom:100px;
@@ -6280,7 +6281,7 @@ def headerPhotoFile():
                 image=image.rotate(90, expand=True)
               image.save(filepath)
               image.close()
-            except (AttributeError, KeyError, IndexError):
+            except:
               pass
             newrec = {
               'title' : '',
@@ -8760,6 +8761,8 @@ def grpFile():
     if os.path.exists(thefile) and not os.path.isdir(thefile):
       ftype = 'image/jpeg'
       print(thefile,file=sys.stderr)
+      if 'svg' == thefile[-3:].lower():
+        ftype = 'image/svg+xml'
       return send_file( thefile, mimetype=ftype)
   else:
     thefile = appdir + 'myfiles/' + request.args.get('name')
