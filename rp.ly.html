@@ -7,10 +7,10 @@
 
     <title>Rp.ly</title>
 
-    <link href=/file/app.0dcb9922d69daabe8848.css rel=stylesheet>
+    <link href=/file/app.5c06658fe9ebd0487f37.css rel=stylesheet>
     <script type=text/javascript src=/file/manifest.2ae2e69a05c33dfc65f8.js></script>
     <script type=text/javascript src=/file/vendor.0eb5480a7e9a156e90f2.js></script>
-    <script type=text/javascript src=/file/app.5bebe20bf1bba69db56d.js></script>
+    <script type=text/javascript src=/file/app.2f6ec15c9d909529fbee.js></script>
     <!-- <script type=text/javascript src=/file/socket.io.js></script> -->
     <script type=text/javascript src=/file/moment.js></script>
     <link rel="apple-touch-icon-precomposed" sizes="57x57" href="/file/rply57.png" />
@@ -1662,7 +1662,8 @@
             publicLink:'',
             shareCal: false,
             calendar: {},
-            calHidden: true
+            calHidden: true,
+            publicBio: ''
           }
         },
         mounted: function() {
@@ -2013,6 +2014,7 @@
               this.showPostButton = true
             }
             this.publicLink = publicData['publicLink']
+            this.publicBio = publicData['publicBio']
             if ("undefined" !== typeof publicData['shareCal']) {
               if (parseInt(publicData['shareCal']) > 0) {
                 this.shareCal = true
@@ -2074,6 +2076,7 @@
               </a>
             </mt-header>
             <mt-button v-if="showPostButton" v-on:click="doPost()" size="large">Post in {{name}}</mt-button>
+            <h5 v-else class="public_bio" v-html="publicBio"></h5>
             <div id="calendar" ref="calendar" v-bind:class="{'is-hidden':calHidden}"></div>
             <div v-if="shareCal">
               
@@ -3375,6 +3378,9 @@
           </div>`
       }
       const modLinkPost = {
+        components: {
+          VueEditor
+        },
         data() {
           return {
             spinnerHidden : true,
@@ -3439,8 +3445,10 @@
               <mt-button slot="left" @click="$router.go(-1)" icon="back">back</mt-button>
             </mt-header>
             <mt-spinner v-bind:class="{'is-hidden':spinnerHidden}" type="snake"></mt-spinner>
-            <mt-field placeholder="Story..." type="textarea" rows="10" v-model="title"></mt-field>
-            <mt-field placeholder="Story..." type="textarea" rows="20" v-model="body"></mt-field>
+            <mt-cell><vue-editor v-model="title"></vue-editor></mt-cell>
+            <!--<mt-field placeholder="Story..." type="textarea" rows="10" v-model="title"></mt-field>-->
+            <mt-cell><vue-editor v-model="body"></vue-editor></mt-cell>
+            <!--<mt-field placeholder="Story..." type="textarea" rows="20" v-model="body"></mt-field>-->
             <mt-cell title=""><img class="img" :src="'myFile?staged=1&field=image&name=' + image" /></mt-cell>
             <file-upload btn-label="Image" @change="stagedUpload('image')" :url="uploadTo + '&field=image'"></file-upload>
             <!--<mt-cell title="Sound:"><audio-player :src="'myFile?staged=1&field=sound&name=' + sound" /></mt-cell>
@@ -3615,7 +3623,8 @@
           }
         },
         components:{
-          'show-posts' : showPosts
+          'show-posts' : showPosts,
+          'vue-editor' : VueEditor
         },
         computed: {
           isInitial() {
@@ -4594,7 +4603,8 @@
                   </div>
                 </mt-cell>
                 <mt-field placeholder="Headline..." v-if="!textHidden" type="textarea" rows="4" v-model="headline"></mt-field>
-                <mt-field placeholder="Story..." v-if="!textHidden" type="textarea" rows="20" v-model="textpost"></mt-field>
+                <!--<mt-field placeholder="Story..." v-if="!textHidden" type="textarea" rows="20" v-model="textpost"></mt-field>-->
+                <mt-cell><vue-editor v-if="!textHidden" v-model="textpost"></vue-editor></mt-cell>
                 <mt-checklist
                   v-if="!textHidden" 
                   v-model="postto"
@@ -5328,6 +5338,9 @@
           </div>`
       }
       const modGroups = {
+        components: {
+          VueEditor
+        },
         data() {
           return {
             spinnerHidden : true,
@@ -5635,6 +5648,7 @@
             <!--<mt-button v-on:click="quickContact()" size="large">Add Contact</mt-button>-->
             <mt-cell title="Public"><mt-switch v-model="public" @change="changePublic()"></mt-switch></mt-cell>
             <mt-field v-bind:class="{'is-hidden':!pubHidden}" label="Author Name:" placeholder="Name.." v-model="publicName"></mt-field>
+            <mt-cell><vue-editor v-model="publicBio"></vue-editor></mt-cell>
             <mt-field v-bind:class="{'is-hidden':!pubHidden}" label="Author Bio:" placeholder="Bio.." type="textarea" rows="4" v-model="publicBio"></mt-field>
             <mt-field v-bind:class="{'is-hidden':!pubHidden}" label="Author Home Page:" placeholder="Link.." v-model="publicLink"></mt-field>
             <h3 v-bind:class="{'is-hidden':!pubHidden}">Linked Galleries:</h3>
