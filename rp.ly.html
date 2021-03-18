@@ -457,7 +457,10 @@
         padding-top:60px;
       }
       .readerimg {
-        width:100px;
+        max-height:180px;
+        max-width:180px;
+        height:auto;
+        width:auto;
       }
       .readerhed {
         margin-left:25px;
@@ -1694,7 +1697,8 @@
             shareCal: false,
             calendar: {},
             calHidden: true,
-            publicBio: ''
+            publicBio: '',
+            publicImg: ''
           }
         },
         mounted: function() {
@@ -2046,6 +2050,7 @@
             }
             this.publicLink = publicData['publicLink']
             this.publicBio = publicData['publicBio']
+            this.publicImage = publicData['publicImage']
             if ("undefined" !== typeof publicData['shareCal']) {
               if (parseInt(publicData['shareCal']) > 0) {
                 this.shareCal = true
@@ -2107,7 +2112,10 @@
               </a>
             </mt-header>
             <mt-button v-if="showPostButton" v-on:click="doPost()" size="large">Post in {{name}}</mt-button>
-            <h5 v-else class="public_bio" v-html="publicBio"></h5>
+            <div v-else class="readertop">
+              <img v-if="publicImage !== ''" class="readerimg" :src="'myFile?staged=1&field=publicImage&name=' + publicImage" />
+              <h5  class="public_bio" v-html="publicBio"></h5>
+            </div>
             <div id="calendar" ref="calendar" v-bind:class="{'is-hidden':calHidden}"></div>
             <div v-if="shareCal">
               
