@@ -861,6 +861,13 @@
       .feedwrap > div:nth-child(2) {
         text-align:left;
       }
+      .smallmenu {
+        max-height:40px;
+        max-width:40px;
+        height:auto;
+        width:auto;
+        margin-right:10px;
+      }
     </style>
 
     <script id="client">
@@ -1530,6 +1537,13 @@
             }).then( ( response ) => {
               window.location.href = '/'
             })
+          },
+          checkImage(item){
+            if (typeof item.image !== "undefined") {
+              return true
+            } else {
+              return false
+            }
           }
         },
         template: `
@@ -1655,7 +1669,7 @@
             </mt-header>
             <mt-popup v-model="menuVisible" position="middle" class="topmenu">
               <mt-cell is-link @click.native="showMenu()" title="Close Menu"></mt-cell>
-              <mt-cell v-for="(item,idx) in publicGroups" is-link :to="item.grpLink" :title="item.name"></mt-cell>
+              <mt-cell v-for="(item,idx) in publicGroups" is-link :to="item.grpLink" :title="item.name"><img class="smallmenu" v-if="checkImage(item)" :src="item.image" /></mt-cell>
               <mt-cell v-if="authed" is-link :to="'/myposts/' + grp" title="My Posts"></mt-cell>
               <mt-cell v-if="authed" is-link @click.native="logOut()" title="Sign Out"></mt-cell>
             </mt-popup>
