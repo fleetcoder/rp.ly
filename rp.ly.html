@@ -1698,7 +1698,20 @@
             calendar: {},
             calHidden: true,
             publicBio: '',
-            publicImage: ''
+            publicImage: '',
+            showSponsorButton: false,
+            btAuth: '',
+            plan: 'firstyear5',
+            plans:[{label: '$5 monthly',value: 'firstyear5'}],
+            sponsorGroup: '',
+            sponsorGroupName: '',
+            btLoaded:false,
+            formHidden: true,
+            btSpinnerHidden:false,
+            doSponsor: {},
+            doingSponsor: false,
+            glink: '',
+            showDidSponsor: false
           }
         },
         mounted: function() {
@@ -2038,6 +2051,9 @@
             this.groupPic = response.body[2]
             var publicData = JSON.parse(response.body[6])
             this.name = response.body[1]
+            if (this.name == 'Business Directory') {
+              this.showSponsorButton = true
+            }
             if (response.body[3] == 'AUTHED') {
               if (response.body[5] == 'MEMBER') {
               }
@@ -2045,6 +2061,7 @@
             } else {
               this.authed = false
             }
+            this.glink = response.body[4]
             if (parseInt(response.body[8]) > 0) {
               this.showPostButton = true
             }
@@ -2102,6 +2119,91 @@
             } else {
               router.push('/postgroup/' + this.$route.params.grp)
             }
+          },
+          doRegister(){
+            this.doingSponsor = true
+            this.sponsorGroup = this.glink
+            this.sponsorGroupName = 'Subscribe to list your business in the Business Directory, with a $5 per month automatic credit card subscription'
+            this.sponsorVisible = true
+            if (false === this.btLoaded) {
+              Vue.http.post( 'btSetup', {
+              }).then( ( response ) => {
+                this.btAuth = response.body[0]
+                this.subs = response.body[1]
+                this.createHostedFields()
+                this.btLoaded = true
+                this.formHidden = false
+                this.btSpinnerHidden = true
+              })
+            }
+          },
+          createHostedFields() {
+            var postsobj = this
+            if (typeof braintree !== "undefined" && this.btAuth != '') {
+              braintree.setup(this.btAuth, "custom", {
+                id: "cardForm",
+                hostedFields: {
+                  number: {
+                    selector: "#card-number",
+                    placeholder: "4111 1111 1111 1111"
+                  },
+                  cvv: {
+                    selector: "#cvv",
+                    placeholder: "111"
+                  },
+                  expirationDate: {
+                    selector: "#expiration-date",
+                    placeholder: "MM/YY"
+                  },
+                  postalCode: {
+                    selector: "#postal-code",
+                    placeholder: "32323"
+                  },
+                  styles: {
+                    'input': {
+                      'font-size': '16px',
+                      'font-family': 'courier, monospace',
+                      'font-weight': 'lighter',
+                      'color': '#ccc'
+                    },
+                    ':focus': {
+                      'color': 'black'
+                    },
+                    '.valid': {
+                      'color': '#8bdda8'
+                    }
+                  }
+                },
+                onReady: function (integration) {
+                  checkout = integration
+                },
+                onPaymentMethodReceived: function (nonce) {
+                  Vue.http.post( 'doRegistry', {
+                    method:JSON.stringify(nonce),
+                    plan_id:postsobj.plan,
+                    group_id:postsobj.sponsorGroup
+                  }).then( ( response ) => {
+                    MintUI.Toast({
+                      message: 'Thank you! You will see OURTOWN on your Credit Card Statement.',
+                      iconClass: 'icon icon-error',
+                      duration: 5000
+                    })
+                  })
+                  checkout.teardown(function () {
+                    checkout = null
+                    postsobj.createHostedFields()
+                    postsobj.doingSponsor = false
+                    postsobj.sponsorVisible = false
+                    postsobj.showSponsorButton = false
+                    postsobj.showDidSponsor = true
+                  })
+                }
+              })
+            }
+          },
+          cancelSponsor(){
+            this.showSponsorButton = false
+            this.doingSponsor = false
           }
         },
         template: `
@@ -2111,6 +2213,27 @@
                 <mt-button slot="left" icon="back">back</mt-button>
               </a>
             </mt-header>
+            <h3 v-if="showDidSponsor">You are registered! We will contact you to obtain your business logo or photo.</h3>
+            <mt-button v-if="showSponsorButton" v-on:click="doRegister()" size="large">Register a Business</mt-button>
+            <div v-if="doingSponsor">
+              <mt-cell :title="sponsorGroupName"></mt-cell>
+              <mt-spinner v-bind:class="{'is-hidden':btSpinnerHidden}" type="snake"></mt-spinner>
+              <form action="/" method="post" id="cardForm" v-bind:class="{'is-hidden':formHidden}">
+                <label class="hosted-fields--label" for="card-number">Card Number</label>
+                <div id="card-number" class="hosted-field"></div>
+                <label class="hosted-fields--label" for="expiration-date">Expiration Date</label>
+                <div id="expiration-date" class="hosted-field"></div>
+                <label class="hosted-fields--label" for="cvv">CVV</label>
+                <div id="cvv" class="hosted-field"></div>
+                <label class="hosted-fields--label" for="cvv">Postal Code</label>
+                <div id="postal-code" class="hosted-field"></div>
+                <mt-radio v-model="plan" :options="plans"></mt-radio>
+                <div class="button-container">
+                  <input type="submit" class="button button--small button--green" value="Submit" id="submit"/>
+                </div>
+                <label class="hosted-fields--label">Cancel any time from the Settings menu</label>
+              </form>
+            </div>
             <mt-button v-if="showPostButton" v-on:click="doPost()" size="large">Post in {{name}}</mt-button>
             <div v-else class="readertop">
               <img v-if="publicImage !== ''" class="readerimg" :src="'myFile?staged=1&field=publicImage&name=' + publicImage" />
@@ -7003,6 +7126,61 @@ def doSponsor():
         "payment_method_token": customer.payment_methods[0].token,
         "plan_id": request.form.get('plan_id'),
         "merchant_account_id":'Fleetcoder_instant',
+        "id":randomword(6) + request.form.get('group_id')
+      })
+      if result.is_success:
+        if not customer is None:
+          notify_sponsor( request.form.get('plan_id'), request.form.get('group_id'), curr['name'] )
+        print("success")
+      else:
+        print(result.errors)
+  return 'OK'
+
+@app.route('/doRegistry', methods=['GET','POST'])
+def doRegistry():
+  response = json.loads(request.form.get('method'))
+  curr = current_user()
+  collection = 0
+  if not curr['phone'] == '':
+    collection = gateway.customer.search(
+      braintree.CustomerSearch.phone == curr['phone']
+    )
+  if not curr['email'] == '':
+    collection = gateway.customer.search(
+      braintree.CustomerSearch.email == curr['email']
+    )
+  if not collection == 0:
+    if len(list(collection.items)) > 0:
+      customer = list(collection.items)[0]
+    else:
+      result = gateway.customer.create({
+        "first_name": curr['name'],
+        "payment_method_nonce": response['nonce'],
+        "email": curr['email'],
+        "phone": curr['phone']
+      })
+      if result.is_success:
+        customer = result.customer
+    if not customer is None:
+      if not len(customer.payment_methods) > 0:
+        result = gateway.payment_method.create({
+          "customer_id": customer.id,
+          "payment_method_nonce": response['nonce']
+        })
+        if not curr['phone'] == '':
+          collection = gateway.customer.search(
+            braintree.CustomerSearch.phone == curr['phone']
+          )
+        if not curr['email'] == '':
+          collection = gateway.customer.search(
+            braintree.CustomerSearch.email == curr['email']
+          )
+        if len(list(collection.items)) > 0:
+          customer = list(collection.items)[0]
+      result = gateway.subscription.create({
+        "payment_method_token": customer.payment_methods[0].token,
+        "plan_id": request.form.get('plan_id'),
+        "merchant_account_id":'ourtownllc_instant',
         "id":randomword(6) + request.form.get('group_id')
       })
       if result.is_success:

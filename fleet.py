@@ -807,7 +807,7 @@ def notify_comment(addgrp,name):
 
 def notify_sponsor(plan,addgrp,name):
   grpdata = get_one('groups',addgrp)
-  plans = {'fans300':'$3/mo','fans50':'$6/yr'}
+  plans = {'fans300':'$3/mo','fans50':'$6/yr','firstyear5':'$5/mo'}
   if 'user_id' in grpdata[0]:
     cont = get_user(grpdata[0]['user_id'])
     if len(cont['phone']) > 0:
