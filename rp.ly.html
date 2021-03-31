@@ -6381,7 +6381,9 @@ def syncGroups():
               print('SKIP NO CT ' + item['link'])
             if 'content-type' in html.headers:
               if not 'text/html' in html.headers['content-type'].lower():
-                print('SKIP NOT OK CT ' + html.headers['content-type'].lower())
+                print('SKIP NOT OK CT ' + item['link'])
+                print(str(html.headers))
+                continue
               if 'text/html' in html.headers['content-type'].lower():
                 try:
                   opengraphe = OpenGraphExtractor()
