@@ -6379,6 +6379,8 @@ def syncGroups():
             flagged = 1
             if not 'content-type' in html.headers:
               print('SKIP NO CT ' + item['link'])
+              print(str(html.headers))
+              continue
             if 'content-type' in html.headers:
               if not 'text/html' in html.headers['content-type'].lower():
                 print('SKIP NOT OK CT ' + item['link'])
