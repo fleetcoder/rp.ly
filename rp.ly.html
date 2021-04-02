@@ -6284,7 +6284,15 @@ def syncGroups():
   for fd in feeds:
     timingout = False
     time.sleep(0.6)
-    feed = feedparser.parse(fd)
+    try:
+      resp = requests.get(fd, timeout=10.0)
+    except:
+      continue
+    content = BytesIO(resp.content)
+    try:
+      feed = feedparser.parse(content)
+    except:
+      continue
     if not feed.bozo:
       items = []
       for item in feed.entries:
