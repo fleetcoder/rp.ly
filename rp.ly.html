@@ -1086,7 +1086,11 @@
                     if (typeof this.$route.params.grp !== 'undefined') {
                       router.push( '/postgroup/' + this.$route.params.grp )
                     } else {
-                      window.location.href = '/'
+                      if (typeof this.$route.params.postid !== 'undefined') {
+                        router.push( '/showPost/' + this.$route.params.postid )
+                      } else {
+                        window.location.href = '/'
+                      }
                     }
                   } else {
                     this.emailstatus = 'error'
@@ -2478,6 +2482,9 @@
               }
             }
             this.name = response.body[1]
+            if (this.name == 'Business Directory') {
+              router.push( '/pubgroup/' + this.$route.params.grp )
+            }
             if (response.body[3] == 'AUTHED') {
               if (response.body[5] == 'MEMBER') {
               }
