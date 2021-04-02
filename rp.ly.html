@@ -2133,20 +2133,24 @@
             }
           },
           doRegister(){
-            this.doingSponsor = true
-            this.sponsorGroup = this.glink
-            this.sponsorGroupName = 'Subscribe to list your business in the Business Directory, with a $5 per month automatic credit card subscription'
-            this.sponsorVisible = true
-            if (false === this.btLoaded) {
-              Vue.http.post( 'btSetup', {
-              }).then( ( response ) => {
-                this.btAuth = response.body[0]
-                this.subs = response.body[1]
-                this.createHostedFields()
-                this.btLoaded = true
-                this.formHidden = false
-                this.btSpinnerHidden = true
-              })
+            if (!this.authed) {
+              router.push('/auth/' + this.$route.params.grp)
+            } else {
+              this.doingSponsor = true
+              this.sponsorGroup = this.glink
+              this.sponsorGroupName = 'Subscribe to list your business in the Business Directory, with a $5 per month automatic credit card subscription'
+              this.sponsorVisible = true
+              if (false === this.btLoaded) {
+                Vue.http.post( 'btSetup', {
+                }).then( ( response ) => {
+                  this.btAuth = response.body[0]
+                  this.subs = response.body[1]
+                  this.createHostedFields()
+                  this.btLoaded = true
+                  this.formHidden = false
+                  this.btSpinnerHidden = true
+                })
+              }
             }
           },
           createHostedFields() {
