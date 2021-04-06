@@ -2460,7 +2460,9 @@
             timeVal:'',
             dateText: '',
             timeText: '',
-            isDesktop: false
+            isDesktop: false,
+            contactInfo: '',
+            contactText: 'Enter your phone number here...'
           }
         },
         created() {
@@ -2479,6 +2481,7 @@
             if ("undefined" !== typeof publicData['shareCal']) {
               if (parseInt(publicData['shareCal']) > 0) {
                 this.shareCal = true
+                this.contactText = 'Enter your phone number or Web site link here...'
               }
             }
             this.name = response.body[1]
@@ -2539,6 +2542,32 @@
           },
           addPosts(){
             this.spinnerHidden = false
+            if (this.contactInfo.substring(0, 2) == '+1') {
+              this.contactInfo = this.contactInfo.substring(2)
+            }
+            if (this.contactInfo.length < 5) {
+              MintUI.Toast({
+                message: 'Please add contact info. Thank you!',
+                iconClass: 'icon icon-error',
+                duration: 4000
+              })
+              this.spinnerHidden = true
+              return
+            }
+            if (!(this.shareCal === true)) {
+              if (!(this.contactInfo.match(/\d/g) === null)) {
+                if (this.contactInfo.match(/\d/g).length===10) {
+                } else {
+                  MintUI.Toast({
+                    message: 'Please add a 10-digit phone number. Thank you!',
+                    iconClass: 'icon icon-error',
+                    duration: 4000
+                  })
+                  this.spinnerHidden = true
+                  return
+                }
+              }
+            }
             if (this.title.length > 300) {
               MintUI.Toast({
                 message: 'Please revise your post so it has fewer than 300 characters. Thank you!',
@@ -2564,6 +2593,7 @@
               publicPost: 1,
               eventDate: evtdate,
               eventTime: evttime,
+              contactInfo: this.contactInfo,
               timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone
             }).then( ( response ) => {
               this.spinnerHidden = true
@@ -2668,6 +2698,7 @@
                 <h1 v-if="title.length > 300">Please shorten your post to fewer than 300 characters, thank you!</h1>
                 <mt-cell title="" v-if="image !== ''"><img class="img" :src="'myFile?staged=1&field=image&name=' + image" /></mt-cell>
                 <!--<file-upload btn-label="Click here to upload a photo..." @change="stagedUpload('image')" :url="uploadTo + '?field=image'"></file-upload>-->
+                <mt-field v-if="title !== ''" :placeholder="contactText" v-model="contactInfo"></mt-field>
                 <mt-button v-on:click="addPosts()" size="large">Save Post in {{name}}</mt-button>
               </div>
               <div v-else>
@@ -2679,6 +2710,7 @@
               <h1 v-if="title.length > 300">Please shorten your post to fewer than 300 characters, thank you!</h1>
               <mt-cell title="" v-if="image !== ''"><img class="img" :src="'myFile?staged=1&field=image&name=' + image" /></mt-cell>
               <file-upload btn-label="Click here to upload a photo..." @change="stagedUpload('image')" :url="uploadTo + '?field=image'"></file-upload>
+              <mt-field v-if="title !== ''" :placeholder="contactText" v-model="contactInfo"></mt-field>
               <mt-button v-on:click="addPosts()" size="large">Save Post in {{name}}</mt-button>
             </div>
           </div>`
@@ -3386,7 +3418,8 @@
             body: '',
             authed: false,
             flagged: false,
-            flagtxt: 'Flag Post'
+            flagtxt: 'Flag Post',
+            contact: ''
           }
         },
         props: {},
@@ -3405,6 +3438,7 @@
                 this.image = this.post.image
                 this.sound = this.post.sound
                 this.body = this.post.body
+                this.contact = this.post.contact
                 
                 if (response.body[1] == 'AUTHED') {
                   this.authed = true
@@ -3468,8 +3502,9 @@
                 </div>
               </div>
             </mt-cell>
-            <mt-cell > <p v-html="title"></p></mt-cell>
-            <mt-cell > <p v-html="body"></p></mt-cell>
+            <mt-cell> <p v-html="title"></p></mt-cell>
+            <mt-cell> <p v-html="body"></p></mt-cell>
+            <mt-cell v-if="contact !== ''"> Contact: <p v-html="contact"></p></mt-cell>
         
             <!--<mt-cell v-bind:class="{'is-hidden':soundHidden}"><audio-player :src="'myFile?field=sound&name=' + sound" /></mt-cell>
             <mt-button size="large" v-on:click="delPosts()">Delete Photo</mt-button>-->
@@ -7628,6 +7663,7 @@ def getPost():
       if len(thisgroup) == 1:
         if int(thisgroup[0]['public']) > 0:
           post.append(p[0])
+          print(str(post))
   authd = ''
   if 'user' in session:
     if int(session['user']) > 0:
@@ -8128,6 +8164,9 @@ def addPosts():
         continue
     else:
       titles = [""]
+    contactInfo = ''
+    if not request.form.get('contactInfo') is None:
+      contactInfo = request.form.get('contactInfo')
     newrec = {
       'title' : titles[imgcount],
       'image' : savedImage,
@@ -8138,6 +8177,7 @@ def addPosts():
       'link':'',
       'user_id' : session['user'],
       'flagged' : '0',
+      'contact': contactInfo,
       'created' : str( timezone( 'US/Pacific' ).localize( datetime.now() ) )
     }
     if not request.form.get('shareText') is None:
