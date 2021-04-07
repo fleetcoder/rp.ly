@@ -883,6 +883,20 @@
         width:auto;
         margin-right:10px;
       }
+      div.mint-tab-container-item:nth-child(1) img {
+        margin-top:0px;
+        margin-left:0px;
+        max-height:140px;
+        max-width:140px;
+        height:auto;
+        width:auto;
+      }
+      @media only screen and (min-width: 1025px) {
+        div.mint-tab-container-item:nth-child(1) img {
+          max-height:280px;
+          max-width:280px;
+        }
+      }
     </style>
 
     <script id="client">
@@ -3494,7 +3508,7 @@
               <mt-button slot="left" @click="$router.go(-1)" icon="back">back</mt-button>
             </mt-header>
             <mt-spinner v-bind:class="{'is-hidden':spinnerHidden}" type="snake"></mt-spinner>
-            <mt-cell>
+            <mt-cell v-if="image !== ''">
               <div class="outer">
                 <img @contextmenu.prevent="doContextMenu" class="oimg cant-click" :src="'myFile?field=image&name=' + image" />
                 <div class="overlay">
