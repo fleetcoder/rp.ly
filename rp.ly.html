@@ -1414,8 +1414,13 @@
                         this.items.push(response.body[0][j])
                       }
                     } else {
+                      /*
                       this.postlist = response.body[0]
                       if (this.postlist.length > 9) {
+                        this.moreHidden = false
+                      }*/
+                      this.items = response.body[0]
+                      if (this.items.length > 9) {
                         this.moreHidden = false
                       }
                     }
@@ -1428,6 +1433,7 @@
                       }
                     }
                     if (this.shareLinks) {
+                      /*
                       var responses = []
                       this.spinnerHidden = false
                       var delayTotal = 500 * this.publicGroups.length
@@ -1478,6 +1484,7 @@
                         })(this.publicGroups, grp, this, responses)
                         
                       }
+                      */
                     }
                   }
                   this.spinnerHidden = true
@@ -5616,7 +5623,8 @@
             uploadXmlTo: 'syncFile',
             addFeed: '',
             shareCal: false,
-            foundFeeds: []
+            foundFeeds: [],
+            mergeGroups: []
           }
         },
         props: { items : Array, groups : Array },
@@ -5757,7 +5765,8 @@
               publicGroups: JSON.stringify(this.publicGroups),
               publicPath: this.publicPath,
               feeds: JSON.stringify(this.feeds),
-              shareCal : this.shareCal
+              shareCal : this.shareCal,
+              mergeGroups: JSON.stringify(this.mergeGroups)
             }).then( ( response ) => {
               this.$emit('on-update-list')
               this.$emit('on-update-photos')
@@ -5942,6 +5951,11 @@
                 @change="onFileChange($event.target.name, $event.target.files); fileCount = $event.target.files.length"
                 accept="text/*" class="input-file" />
               <h1>&nbsp;</h1>
+              <mt-checklist v-bind:class="{'is-hidden':!pubHidden}"
+                v-model="mergeGroups"
+                :options="optGroups"
+                align="left">
+              </mt-checklist>
              </mt-popup>
             <mt-popup class="addcontact" v-model="showShareGroup" position="middle">
               <mt-cell title="Copy and share this gallery link:"></mt-cell>
@@ -7771,12 +7785,17 @@ def getPosts():
   public_group = 0
   group_id = 0
   gall_counts = {}
+  merged_groups = []
   if not request.args.get('grp') is None:
     thisgroup = get_one_by( 'groups', request.args.get('grp'), 'key' )
     if len(thisgroup) > 0:
       if int(thisgroup[0]['public']) > 0:
         public_group = thisgroup[0]['id']
         public_group_entry = {'value':int(thisgroup[0]['id']),'label':thisgroup[0]['name'],'links':thisgroup[0]['shareLinks']}
+        try:
+          merged_groups = json.loads(thisgroup[0]['mergeGroups'])
+        except:
+          merged_groups = []
       if not request.args.get('mine') is None:
         linkedgrps = []
         newrecs = []
@@ -7839,12 +7858,16 @@ def getPosts():
           item['title'] = '(untitled)'
       pgrps = json.loads(item['groups'])
       if request.args.get('mine') is None:
-        if public_group > 0:
-          if not public_group in pgrps:
-            continue
-        if group_id > 0:
-          if not group_id in pgrps:
-            continue
+        if not set(pgrps).intersection(set(merged_groups)):
+          if public_group > 0:
+            if not public_group in pgrps:
+              continue
+          if group_id > 0:
+            if not group_id in pgrps:
+              continue
+        else:
+          print('YES INTERSET')
+      print(json.dumps(merged_groups))
       for p in pgrps:
         if p in allowdownload:
           item['allowDownload'] = True
@@ -8637,6 +8660,10 @@ def modGroups():
     rid = add_one( 'groups', {'image':'','key':'','maxres':'2000','allowPosts':'0','blockDownloads':'1'} )
     if rid > 0:
       del_one('groups',rid)
+  if not 'mergeGroups' in item:
+    rid = add_one( 'groups', {'mergeGroups':''} )
+    if rid > 0:
+      del_one('groups',rid)
   scale = '0'
   if (int(request.form.get('maxres')) > 0):
     scale = request.form.get('maxres')
@@ -8658,8 +8685,10 @@ def modGroups():
     'publicLink': request.form.get('publicLink'),
     'publicGroups': request.form.get('publicGroups'),
     'publicPath': request.form.get('publicPath'),
-    'feeds': feeds
+    'feeds': feeds,
+    'mergeGroups': request.form.get('mergeGroups')
   }
+  print('update ' + newobj["mergeGroups"])
   if str(request.form.get('allowPosts')) == 'true':
     newobj['allowPosts'] = '1'
   if str(request.form.get('shareLinks')) == 'true':
