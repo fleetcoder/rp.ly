@@ -7691,7 +7691,6 @@ def getPost():
       if len(thisgroup) == 1:
         if int(thisgroup[0]['public']) > 0:
           post.append(p[0])
-          print(str(post))
   authd = ''
   if 'user' in session:
     if int(session['user']) > 0:
@@ -7818,6 +7817,8 @@ def getPosts():
       if len(grps) > 0:
         if public_group in grps:
           is_public = True
+      if set(grps).intersection(set(merged_groups)):
+        is_public = True
     if not request.args.get('mine') is None:
       is_public = True
     if can('get','posts',user,item) or is_public:
@@ -7865,9 +7866,6 @@ def getPosts():
           if group_id > 0:
             if not group_id in pgrps:
               continue
-        else:
-          print('YES INTERSET')
-      print(json.dumps(merged_groups))
       for p in pgrps:
         if p in allowdownload:
           item['allowDownload'] = True
@@ -8688,7 +8686,6 @@ def modGroups():
     'feeds': feeds,
     'mergeGroups': request.form.get('mergeGroups')
   }
-  print('update ' + newobj["mergeGroups"])
   if str(request.form.get('allowPosts')) == 'true':
     newobj['allowPosts'] = '1'
   if str(request.form.get('shareLinks')) == 'true':
