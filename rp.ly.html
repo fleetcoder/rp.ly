@@ -8238,31 +8238,32 @@ def addPosts():
       newrec['link'] = request.form.get('shareLink')
       user_agent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1985.143 Safari/537.36'
       headers = {'User-Agent': user_agent}
-      html = requests.get(newrec['link'],headers=headers)
       try:
+        html = requests.get(newrec['link'],headers=headers,timeout=5)
         opengraphe = OpenGraphExtractor()
+        titleset = False
+        imageset = False
+        data = opengraphe.extract(str(html.text))
+        for prop in data[0]['properties']:
+          foundtit = False
+          foundimg = False
+          for ogdata in prop:
+            print(str(ogdata))
+            if not titleset or not imageset:
+              if foundtit:
+                newrec['title'] = newrec['title'] + '<h1 class="article_hed">' + ogdata + '</h1>'
+                titleset = True
+                foundtit = False
+              if ogdata == 'og:title':
+                foundtit = True
+              if foundimg:
+                newrec['title'] = newrec['title'] + '<img class="article_img" src="' + ogdata + '" alt="Image" />'
+                imageset = True
+                foundimg = False
+              if ogdata == 'og:image':
+                foundimg = True
       except:
-        continue
-      titleset = False
-      imageset = False
-      data = opengraphe.extract(str(html.text))
-      for prop in data[0]['properties']:
-        foundtit = False
-        foundimg = False
-        for ogdata in prop:
-          if not titleset or not imageset:
-            if foundtit:
-              newrec['title'] = newrec['title'] + '<h1 class="article_hed">' + ogdata + '</h1>'
-              titleset = True
-              foundtit = False
-            if ogdata == 'og:title':
-              foundtit = True
-            if foundimg:
-              newrec['title'] = newrec['title'] + '<img class="article_img" src="' + ogdata + '" alt="Image" />'
-              imageset = True
-              foundimg = False
-            if ogdata == 'og:image':
-              foundimg = True
+        print('EXC')
     if (newrec['sound'][-3:] == 'mp3'):
       #speedup = request.form.get('speedup')
       speedup = 0.9
