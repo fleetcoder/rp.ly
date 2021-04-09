@@ -1638,8 +1638,6 @@
               <mt-field v-bind:class="{'is-hidden':!item.showCommentField}" placeholder="Comment..." v-model="item.comment"></mt-field>
               <mt-button v-bind:class="{'is-hidden':!item.showCommentField}" size="large" v-on:click="saveComment(item,idx)">Save Comment</mt-button>
               <div v-if="!item.imageHidden" class="outer">
-                <img class="oimg" :src="imageLink(item)" v-if="item.allowDownload" />
-                <img @contextmenu.prevent="doContextMenu" class="oimg cant-click" :src="imageLink(item)" v-else />
                 <figcaption class="caption underpic" v-html="item.title"></figcaption>
                 <audio-player :src="'myFile?field=sound&name=' + item.sound" v-bind:class="{'is-hidden':item.soundHidden}" />
               </div>
@@ -1648,7 +1646,6 @@
                 <figcaption class="caption" v-html="item.title"></figcaption>
               </vue-plyr>
               <audio-player v-if="item.imageHidden" :src="'myFile?field=sound&name=' + item.sound" v-bind:class="{'is-hidden':item.soundHidden}" />
-              <p class="caption" v-for="(comm, cidx) in item.comments" v-text="comm.author + ': ' + comm.title"></p>
             </mt-cell>
             <!--
             </div>
