@@ -911,6 +911,94 @@
       .desktopfooter {
         width:1025px;
       }
+      .postest a {
+        margin: 10px;
+        font-size:12px;
+        color: black;
+        text-decoration-color: black;
+      }
+      @media only screen and (min-width: 1025px) {
+        .postest a {
+          margin: 10px;
+          font-size:18px;
+        }
+      }
+      .centerbox {
+        margin: 0 auto;
+      }
+      .postest {
+        margin: 0 auto;
+        margin-top:60px;
+        margin-bottom:20px;
+      }
+      .welcomebox {
+        padding-top:100px;
+        padding-bottom:100px;
+        width:90%;
+        background-color:#ddd;
+        border-radius:25px;
+        font-size:48px;
+      }
+      .welcometext {
+        margin: 20px;
+      }
+      @media only screen and (min-width: 1025px) {
+        .welcomebox {
+          font-size:72px;
+        }
+        .welcometext {
+          margin-left:100px;
+          margin-right:100px;
+        }
+      }
+      .withborders {
+        border: 1px solid black;
+        border-width: 1px 0px 1px 0px;
+        padding:10px;
+      }
+      .grades {
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+      }
+      .desktopGrades {
+        box-sizing: border-box;
+        padding: 2px;
+        float: left;
+        width: 50%;
+        height: 50%;
+      }
+      .desktopGrades h1 {
+        font-size: 22px;
+        margin:5px;
+      }
+      .desktopGrades p {
+        margin:5px;
+        font-size:14px;
+      }
+      .tourfooter {
+        margin-top:25px;
+        margin-bottom:2000px;
+        display: inline-block;
+      }
+      @media only screen and (min-width: 1025px) {
+        .desktopGrades h1 {
+          font-size:32px;
+        }
+        .desktopGrades p {
+          font-size:18px;
+        }
+      }
+      .linkbox {
+        background-color:#ddd;
+        border-radius: 15px;
+        margin:5px;
+        padding:4px;
+      }
+      .linkbox a {
+        color: black;
+        text-decoration-color: black;
+      }
     </style>
 
     <script id="client">
@@ -1322,6 +1410,88 @@
             <mt-spinner v-bind:class="{'is-hidden':spinnerHidden}" type="snake"></mt-spinner>
           </div>`
       }
+      const tourStart = {
+        data() {
+          return {
+          }
+        },
+        props: {},
+        created() {
+        },
+        methods: {
+          tourNext(){
+            router.push( '/group/' + this.$route.params.grp )
+          }
+        },
+        template: `
+          <div>
+            <div style="margin-top:40px;"></div>
+
+            <div style="width:100%;">
+            <div class="postest">
+            <a href="/">Login</a></li>
+            |<a href="/">Sign Up</a></li>
+            |<a href="/">Business Inquiries</a></li>
+            |<a href="/">About</a></li>
+            |<a href="/">FAQ</a></li>
+            </div>
+            <div class="centerbox">
+              <div class="welcomebox centerbox">
+                <div class="centerbox">Welcome to OurTown!</div>
+              </div>
+            </div>
+            <div class="centerbox">
+              <div class="centerbox welcometext">
+              OurTown is a place that gathers all of your local news and events in one convenient location, keeping you up to date with what’s actually happening in your town.
+              </div>
+            </div>
+            </div>
+
+            <mt-button class="centerbox" v-on:click="tourNext()" size="medium">Get Started</mt-button>
+            <div class="centerbox">
+              <div class="centerbox welcometext withborders">
+                Looking for something specific? Click on one of the groups below.
+              </div>
+            </div>
+            <div class="centerbox">
+              <div class="grades">
+              <div class="desktopGrades desktopGrades1">
+              <div class="linkbox">
+              <a href="/#/pubgroup/bppuhyny">
+              <h1>Local News</h1>
+              </a>
+              <p>News by people in Council, for people in Council. All your local news in one place!</p>
+              </div>
+              </div>
+              <div class="desktopGrades desktopGrades2">
+              <div class="linkbox">
+              <a href="/#/pubgroup/nibliqms">
+              <h1>Calendar</h1>
+              </a>
+        <p>A place to see what’s happening in Council! Sign up to add your own Events.</p>
+              </div>
+              </div>
+              <div class="desktopGrades desktopGrades3">
+              <div class="linkbox">
+              <a href="/#/pubgroup/vbkuqsko">
+              <h1>Bulletin Board</h1>
+              </a>
+        <p>The Bulletin Board collects information about what’s happening in Council(?)</p>
+              </div>
+              </div>
+              <div class="desktopGrades desktopGrades4">
+              <div class="linkbox">
+              <a href="/#/pubgroup/ekevbzyq">
+              <h1>Classifieds</h1>
+              </a>
+        <p>What people in Council are posting! Wanted ads, yard sale info; you name it, it’s here!</p>
+              </div>
+              </div>
+              </div>
+            </div>
+            <div class="centerbox tourfooter">OurTown - Council, Idaho</div>
+          </div>`
+      }
       const ShowGroupPage = {
         data() {
           return {
@@ -1449,10 +1619,11 @@
                     for (var j = 0; j < this.groups.length; j++) {
                       if (parseInt(this.groups[j].links) > 0) {
                         this.shareLinks = true
-                        this.headerTitle = "OurTown"
+                        this.headerTitle = this.sharingGroup
                       }
                     }
                     if (this.shareLinks) {
+                      router.push( '/tourStart/' + this.$route.params.grp )
                       /*
                       var responses = []
                       this.spinnerHidden = false
@@ -1608,6 +1779,7 @@
         },
         template: `
           <div>
+           <router-view />
            <div v-bind:class="{'desktopandmobile':isDesktop}">
             <mt-header class="fixedheader" fixed :title="headerTitle">
               <a :href="publicLink" slot="left">
@@ -6314,7 +6486,11 @@
             component: PublicMyPostsPage
         },{
             path: '/group/:grp',
-            component: ShowGroupPage
+            component: ShowGroupPage,
+            children: [{
+              path: '/tourStart/:grp',
+              component: tourStart
+            }]
         },{
             path: '/login',
             component: freeTrial
