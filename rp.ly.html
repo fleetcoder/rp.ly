@@ -309,7 +309,6 @@
         height:auto;
         overflow:hidden;
         margin:20px;
-        filter: invert(86%) sepia(40%) saturate(362%) hue-rotate(75deg) brightness(90%) contrast(89%);
       }
       .feedwrap {
         padding-bottom:100px;
@@ -981,14 +980,6 @@
         margin-bottom:2000px;
         display: inline-block;
       }
-      @media only screen and (min-width: 1025px) {
-        .desktopGrades h1 {
-          font-size:32px;
-        }
-        .desktopGrades p {
-          font-size:18px;
-        }
-      }
       .linkbox {
         background-color:#ddd;
         border-radius: 15px;
@@ -998,6 +989,18 @@
       .linkbox a {
         color: black;
         text-decoration-color: black;
+      }
+      @media only screen and (min-width: 1025px) {
+        .desktopGrades h1 {
+          font-size:32px;
+        }
+        .desktopGrades p {
+          font-size:18px;
+        }
+        .linkbox {
+          margin-left:50px;
+          margin-right:50px;
+        }
       }
     </style>
 
@@ -1429,11 +1432,10 @@
 
             <div style="width:100%;">
             <div class="postest">
-            <a href="/">Login</a></li>
-            |<a href="/">Sign Up</a></li>
-            |<a href="/">Business Inquiries</a></li>
-            |<a href="/">About</a></li>
-            |<a href="/">FAQ</a></li>
+            <a href="/#/login">Login</a></li>
+            |<a href="/#/auth">Sign Up</a></li>
+            |<a href="/#/contactForm">Business Inquiries</a></li>
+            |<a href="/#/pubgroup/jyyktmzx">About</a></li>
             </div>
             <div class="centerbox">
               <div class="welcomebox centerbox">
@@ -1489,6 +1491,28 @@
               </div>
               </div>
             </div>
+            <div class="centerbox tourfooter">OurTown - Council, Idaho</div>
+          </div>`
+      }
+      const contactForm = {
+        data() {
+          return {
+          }
+        },
+        props: {},
+        created() {
+        },
+        methods: {
+          tourNext(){
+            router.push( '/group/' + this.$route.params.grp )
+          }
+        },
+        template: `
+          <div>
+            <div style="margin-top:40px;"></div>
+
+            <div style="width:100%;">CONTACT</div>
+
             <div class="centerbox tourfooter">OurTown - Council, Idaho</div>
           </div>`
       }
@@ -6490,6 +6514,9 @@
             children: [{
               path: '/tourStart/:grp',
               component: tourStart
+            },{
+              path: '/contactForm',
+              component: contactForm
             }]
         },{
             path: '/login',
