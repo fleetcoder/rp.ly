@@ -1434,7 +1434,7 @@
             <div class="postest">
             <a href="/#/login">Login</a></li>
             |<a href="/#/auth">Sign Up</a></li>
-            |<a href="/#/contactForm">Business Inquiries</a></li>
+            |<a href="/#/contactForm/tlicintr">Business Inquiries</a></li>
             |<a href="/#/pubgroup/jyyktmzx">About</a></li>
             </div>
             <div class="centerbox">
@@ -1459,7 +1459,7 @@
               <div class="grades">
               <div class="desktopGrades desktopGrades1">
               <div class="linkbox">
-              <a href="/#/pubgroup/bppuhyny">
+              <a href="/#/group/bppuhyny">
               <h1>Local News</h1>
               </a>
               <p>News by people in Council, for people in Council. All your local news in one place!</p>
@@ -1497,22 +1497,38 @@
       const contactForm = {
         data() {
           return {
+            email:'',
+            body:''
           }
         },
         props: {},
         created() {
         },
         methods: {
-          tourNext(){
-            router.push( '/group/' + this.$route.params.grp )
+          doPost(){
+            Vue.http.post( 'addInquiry', {
+              body:this.body,
+              email:this.email
+            }).then( ( response ) => {
+              MintUI.Toast({
+                message: 'Inquiry Sent!',
+                iconClass: 'icon icon-success',
+                duration: 2000
+              })
+              this.body = ''
+              this.email = ''
+            })
           }
         },
         template: `
           <div>
             <div style="margin-top:40px;"></div>
 
-            <div style="width:100%;">CONTACT</div>
+            <div style="width:100%;padding:20px;">Business Inquiry</div>
 
+            <mt-field placeholder="Email or Phone..." v-model="email" type="email"></mt-field>
+            <mt-field type="text" placeholder="Message..." v-model="body"></mt-field>
+            <mt-button v-on:click="doPost()" size="large">Submit Inquiry</mt-button>
             <div class="centerbox tourfooter">OurTown - Council, Idaho</div>
           </div>`
       }
@@ -6515,7 +6531,7 @@
               path: '/tourStart/:grp',
               component: tourStart
             },{
-              path: '/contactForm',
+              path: '/contactForm/:grp',
               component: contactForm
             }]
         },{
@@ -6542,6 +6558,17 @@
 
   </body>
   <script type="python" id="server">
+
+@app.route('/addInquiry',methods=['GET','POST'])
+def addInquiry():
+  message = Mail(
+    from_email=' Request at ' + mydomain + ' <' + os.getenv('SENDGRID_FROM') + '>',
+    to_emails=os.getenv('SENDGRID_FROM'),
+    subject='' + mydomain + ' business inquiry',
+    html_content='<p>FROM ' + request.form.get('email') + ' - ' + request.form.get('body') + '</p>')
+  sg = SendGridAPIClient(sendgrid_token)
+  response = sg.send(message)
+  return 'OK'
 
 @app.route('/syncGroups',methods=['GET','POST'])
 def syncGroups():
