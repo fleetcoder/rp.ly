@@ -1114,7 +1114,11 @@
                     this.loginpassword = ''
                     this.loginemail = ''
                     if (typeof this.$route.params.grp !== 'undefined') {
-                      router.push( '/postgroup/' + this.$route.params.grp )
+                      if ('bppuhyny' == this.$route.params.grp) {
+                        router.push( '/group/' + this.$route.params.grp )
+                      } else {
+                        router.push( '/postgroup/' + this.$route.params.grp )
+                      }
                     } else {
                       if (typeof this.$route.params.postid !== 'undefined') {
                         router.push( '/showPost/' + this.$route.params.postid )
@@ -1454,8 +1458,8 @@
 
             <div style="width:100%;">
             <div class="postest">
-            <a href="/#/login">Login</a></li>
-            |<a href="/#/auth">Sign Up</a></li>
+            <a href="/#/login/bppuhyny">Login</a></li>
+            |<a href="/#/auth/bppuhyny">Sign Up</a></li>
             |<a href="/#/contactForm/tlicintr">Business Inquiries</a></li>
             |<a href="/#/pubgroup/jyyktmzx">About</a></li>
             </div>
@@ -1836,7 +1840,7 @@
           logOut(){
             Vue.http.post( 'logout', {
             }).then( ( response ) => {
-              window.location.href = '/'
+              window.location.href = this.publicLink
             })
           },
           checkImage(item){
@@ -6566,6 +6570,9 @@
             }]
         },{
             path: '/login',
+            component: freeTrial
+        },{
+            path: '/login/:grp',
             component: freeTrial
         },{
             path: '/reset',
