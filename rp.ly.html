@@ -1059,7 +1059,7 @@
           }
         },
         created() {
-          if (this.$route.path.substring(1) == 'login'){
+          if (this.$route.path.includes('login')){
             this.selected = 'tab2'
           }
           if (this.$route.path.substring(1) == 'reset'){
