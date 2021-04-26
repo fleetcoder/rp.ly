@@ -1229,7 +1229,11 @@
                     this.name = ''
                     this.password = ''
                     if (typeof this.$route.params.grp !== 'undefined') {
-                      router.push( '/postgroup/' + this.$route.params.grp )
+                      if ('bppuhyny' == this.$route.params.grp) {
+                        router.push( '/group/' + this.$route.params.grp )
+                      } else {
+                        router.push( '/postgroup/' + this.$route.params.grp )
+                      }
                     } else {
                       if (typeof this.$route.params.postid !== 'undefined') {
                         router.push( '/showPost/' + this.$route.params.postid )
