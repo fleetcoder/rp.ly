@@ -6811,6 +6811,7 @@ def syncGroups():
             if 'weather' in item['link']:
               if newrec['title'] == '':
                 newrec['title'] = '<img class="article_img" src="' + 'file/weather.jpg' + '" alt="Image" />'
+                newrec['title'] = newrec['title'] + '<h1 class="article_hed">' + foundtitle + '</h1>'
               flagged = 0
             if newrec['title'] == '':
               newrec['title'] = newrec['title'] + '<h1 class="article_hed">' + foundtitle + '</h1>'
