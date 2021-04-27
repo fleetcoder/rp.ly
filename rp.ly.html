@@ -6773,6 +6773,8 @@ def syncGroups():
               print('SKIP NO CT ' + item['link'])
               print(str(html.headers))
               continue
+            if item['link'] == fd:
+              continue
             if 'content-type' in html.headers:
               if not 'text/html' in html.headers['content-type'].lower():
                 print('SKIP NOT OK CT ' + item['link'])
