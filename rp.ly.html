@@ -6759,7 +6759,7 @@ def syncGroups():
             except (requests.exceptions.ConnectionError, requests.exceptions.Timeout):
               timingout = True
               print('TIMING OUT ' + fd)
-              continue
+              #continue
             except requests.exceptions.HTTPError:
               timingout = True
               print('HTTP ERROR ' + fd)
@@ -6777,7 +6777,7 @@ def syncGroups():
               if not 'text/html' in html.headers['content-type'].lower():
                 print('SKIP NOT OK CT ' + item['link'])
                 print(str(html.headers))
-                continue
+                #continue
               if 'text/html' in html.headers['content-type'].lower():
                 try:
                   opengraphe = OpenGraphExtractor()
@@ -6808,6 +6808,8 @@ def syncGroups():
                             foundimg = True
             if newrec['title'] == '':
               newrec['title'] = foundtitle
+            if 'weather' in item['link']:
+              flagged = 0
             if not flagged > 0:
               rid = add_one( 'posts', newrec )
               added = added + 1
