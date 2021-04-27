@@ -6808,10 +6808,12 @@ def syncGroups():
                             foundimg = False
                           if ogdata == 'og:image':
                             foundimg = True
+            if 'weather' in item['link']:
+              if newrec['title'] == '':
+                newrec['title'] = '<img class="article_img" src="' + 'file/weather.jpg' + '" alt="Image" />'
+              flagged = 0
             if newrec['title'] == '':
               newrec['title'] = newrec['title'] + '<h1 class="article_hed">' + foundtitle + '</h1>'
-            if 'weather' in item['link']:
-              flagged = 0
             if not flagged > 0:
               rid = add_one( 'posts', newrec )
               added = added + 1
