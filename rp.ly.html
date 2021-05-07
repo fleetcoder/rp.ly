@@ -494,32 +494,21 @@
       }
 
       #calendar {
-       overflow: hidden;
-       font-family: 'HelveticaNeue-UltraLight', 'Helvetica Neue UltraLight', 'Helvetica Neue', Arial, Helvetica, sans-serif;
-       font-weight: 100;
-       color: rgba(255, 255, 255, 1);
-       margin: 0;
-       padding: 0;
-       background: #4A4A4A;
-       -webkit-touch-callout: none;
-       -webkit-user-select: none;
-       -khtml-user-select: none;
-       -moz-user-select: none;
-       -ms-user-select: none;
-       user-select: none;
         -webkit-transform: translate3d(0, 0, 0);
         -moz-transform: translate3d(0, 0, 0);
         transform: translate3d(0, 0, 0);
-        width: 100%
-        margin: 0 auto;
-        height: 570px;
+        width: 420px;
+        margin: 10px auto;
+      /*   min-height: 570px; */
+        height: auto;
         overflow: hidden;
+        box-shadow: 0 12px 28px 0 rgba(0, 0, 0, 0.2),0 2px 4px 0 rgba(0, 0, 0, 0.1),inset 0 0 0 1px rgba(255, 255, 255, 0.5);
       }
 
       .header {
         height: 50px;
-        width: 100%;
-        background: rgba(66, 66, 66, 1);
+        width: 420px;
+        background: rgba(255, 255, 255, 1);
         text-align: center;
         position:relative;
         z-index: 100;
@@ -532,6 +521,7 @@
         line-height: 50px;
         font-weight: 100;
         letter-spacing: 1px;
+        cursor: pointer;
       }
 
       .left, .right {
@@ -556,13 +546,21 @@
         right: 20px;
       }
 
+      .left:hover {
+         border-color: transparent rgba(0, 0, 0, 1) transparent transparent;
+      }
+
+      .right:hover {
+        border-color: transparent transparent transparent rgba(0, 0, 0, 1);
+      }
+
       .month {
         /*overflow: hidden;*/
         opacity: 0;
       }
 
       .month.new {
-        -webkit-animation: fadeIn 1s ease-out;
+        animation: fadeIn 1s ease-out;
         opacity: 1;
       }
 
@@ -595,23 +593,23 @@
       }
 
       .week {
-       background: #4A4A4A;
+       background: rgba(255, 255, 255, 1);
       }
 
       .day {
         display: inline-block;
-        width: 50px;
+        width: 60px;
         padding: 10px;
         text-align: center;
         vertical-align: top;
         cursor: pointer;
-        background: #4A4A4A;
+        background: rgba(255, 255, 255, 1);
         position: relative;
         z-index: 100;
       }
 
       .day.other {
-       color: rgba(255, 255, 255, .3);
+       color: rgba(0, 0, 0, .3);
       }
 
       .day.today {
@@ -622,7 +620,7 @@
         font-size: 9px;
         text-transform: uppercase;
         margin-bottom: 5px;
-        color: rgba(255, 255, 255, .5);
+        color: rgba(0, 0, 0, 1);
         letter-spacing: .7px;
       }
 
@@ -659,9 +657,10 @@
 
       .details {
         position: relative;
-        width: 100%;
+        width: 420px;
         height: 75px;
         background: rgba(164, 164, 164, 1);
+        background: #fbfbfb;
         margin-top: 5px;
         border-radius: 4px;
       }
@@ -752,8 +751,9 @@
         bottom: 0;
         width: 100%;
         height: 30px;
-        background: rgba(60, 60, 60, 1);
+        background: rgba(255, 255, 255, 1);
         line-height: 30px;
+        color:#000;
 
       }
 
