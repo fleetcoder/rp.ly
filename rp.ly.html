@@ -2009,6 +2009,7 @@
             </mt-actionsheet>-->
             </div>
             <div class="desktoponly" v-if="isDesktop">
+              <mt-cell v-for="(item,idx) in publicGroups" is-link :to="item.grpLink" :title="item.name"><img class="smallmenu" v-if="checkImage(item)" :src="item.image" /></mt-cell>
               <mt-cell v-if="authed" is-link :to="'/myposts/' + grp" title="My Posts"></mt-cell>
               <mt-cell v-if="authed" is-link @click.native="logOut()" title="Sign Out"></mt-cell>
             </div>
@@ -2621,7 +2622,7 @@
             </mt-cell>
             </div>
             <div class="desktoponly" v-if="isDesktop">
-              <mt-cell v-for="(item,idx) in publicGroups" is-link :to="item.grpLink" :title="item.name"><img class="smallmenu" v-if="checkImage(item)" :src="item.image" /></mt-cell>
+              <!--<mt-cell v-for="(item,idx) in publicGroups" is-link :to="item.grpLink" :title="item.name"><img class="smallmenu" v-if="checkImage(item)" :src="item.image" /></mt-cell>-->
               <mt-cell v-if="authed" is-link :to="'/myposts/' + grp" title="My Posts"></mt-cell>
               <mt-cell v-if="authed" is-link @click.native="logOut()" title="Sign Out"></mt-cell>
               <mt-button v-if="showPostButton" v-on:click="doPost()" size="large">Click here to create a new post in {{name}}</mt-button>
