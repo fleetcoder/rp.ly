@@ -5,7 +5,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta http-equiv="imagetoolbar" content="no" />
 
-    <title>Rp.ly</title>
+    <title>OurTown</title>
 
     <link href=/file/app.5c06658fe9ebd0487f37.css rel=stylesheet>
     <script type=text/javascript src=/file/manifest.2ae2e69a05c33dfc65f8.js></script>
@@ -1446,10 +1446,34 @@
       const tourStart = {
         data() {
           return {
+            showIntro: false
           }
         },
         props: {},
         created() {
+          var value="set"
+          var name="starttour4"
+          var nameEQ = name + "="
+          var ca = document.cookie.split(';')
+          var found = false
+          for(var i=0;i < ca.length;i++) {
+            var c = ca[i]
+            while (c.charAt(0)==' ') c = c.substring(1,c.length)
+            if (c.indexOf(nameEQ) == 0) {
+              //c.substring(nameEQ.length,c.length)
+              found = true
+            }
+          }
+          
+          if (!found) {
+            var days = 1
+            var date = new Date();
+            date.setTime(date.getTime()+(60*60*1000));
+            var expires = "; expires="+date.toUTCString();
+            document.cookie = name+"="+value+expires+"; path=/; SameSite=None; Secure";
+            this.showIntro = true
+          }
+          
         },
         methods: {
           tourNext(){
@@ -1467,25 +1491,24 @@
             |<a href="/#/contactForm/tlicintr">Business Inquiries</a></li>
             |<a href="/#/pubgroup/jyyktmzx">About</a></li>
             </div>
-            <div class="centerbox">
+            <div v-if="showIntro" class="centerbox">
               <div class="welcomebox centerbox">
                 <div class="centerbox">Welcome to OurTown!</div>
               </div>
             </div>
-            <div class="centerbox">
+            <div v-if="showIntro" class="centerbox">
               <div class="centerbox welcometext introtext">
-<p>Welcome to OurTown, where you’ll find all things local: events, announcements, businesses, news, and opportunities to get involved with your community!</p>
-<p>Here at OurTown, we believe geographical communities are where it’s at, the best place to participate, influence, and ultimately empower our own neighborhoods.  </p>
+ 
 
-<p>OurTown is based on the concept of humane technology, the idea that information sharing platforms should work as tools—to be picked up and utilized for the betterment of society—and not as places for generating corporate profit.</p>
 
-<p>So look around, find what’s happening in your community, and most importantly, welcome home!</p>
+<p>Welcome to OurTown, where you'll find information that’s important to you and your small town: news, events, announcements, businesses, and more.</p>
+<p>Look around, post your own event, discover a local business, get involved, and let's make our small town stronger, together!</p>
               </div>
             </div>
             </div>
 
-            <mt-button class="centerbox" v-on:click="tourNext()" size="medium">Get Started</mt-button>
-            <div class="centerbox">
+            <mt-button v-if="showIntro" class="centerbox" v-on:click="tourNext()" size="medium">Get Started</mt-button>
+            <div v-if="showIntro" class="centerbox">
               <div class="centerbox welcometext withborders">
                 Looking for something specific? Click on one of the groups below.
               </div>
