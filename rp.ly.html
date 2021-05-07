@@ -1890,8 +1890,11 @@
                 <img class="headericon" slot="icon" src="file/menu.svg" />
               </a>
             </mt-header>
-            <div v-if="!shareLinks">
-            <img class="groupimg" :src="'grpFile?field=publicImage&name=' + publicImage" />
+            <div v-if="shareLinks" class="readertop">
+        &nbsp;
+            </div>
+            <div v-else>
+            <img v-if="!shareLinks" class="groupimg" :src="'grpFile?field=publicImage&name=' + publicImage" />
             <h3 v-text="publicName"></h3>
             </div>
             <p v-if="!shareLinks"><a :href="publicLink" v-text="publicLink"></a></p>
