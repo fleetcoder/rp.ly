@@ -6844,7 +6844,7 @@ def syncGroups():
             flagged = 1
             if item['link'] == fd:
               continue
-              if not timingout:
+            if not timingout:
               if not 'content-type' in html.headers:
                 print('SKIP NO CT ' + item['link'])
                 print(str(html.headers))
