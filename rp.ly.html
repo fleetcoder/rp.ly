@@ -6791,7 +6791,7 @@ def syncGroups():
             if 'title' in item and pubcount > 4:
               print('DEL ' + item['published'] + ' ' + item['title'])
       for item in items[:5]:
-        urlkey = ''.join(re.findall('[a-zA-Z0-9_]',item['link']))
+        urlkey = ''.join(re.findall('[a-zA-Z0-9_]',item['link'] + item['published']))
         saved = get_one_by( 'cached', urlkey, 'urlkey' )
         if not len(saved) > 0:
           if timingout:
@@ -6809,7 +6809,7 @@ def syncGroups():
             if item['link'][-4:].lower()  in ['.mov','.mp4','.mp3','.m4v','.wav']:
               continue
             posts = get_one_by('posts',item['link'],'link')
-            if len(posts) > 0:
+            if len(posts) > 0 and not 'weather' in item['link'].lower():
               continue
             else:
               print('NEW ' + item['title'])
@@ -6842,49 +6842,49 @@ def syncGroups():
               print('REDIR ERROR ' + fd)
               continue
             flagged = 1
-            if not 'content-type' in html.headers:
-              print('SKIP NO CT ' + item['link'])
-              print(str(html.headers))
-              continue
             if item['link'] == fd:
               continue
-            if 'content-type' in html.headers:
-              if not 'text/html' in html.headers['content-type'].lower():
-                print('SKIP NOT OK CT ' + item['link'])
+              if not timingout:
+              if not 'content-type' in html.headers:
+                print('SKIP NO CT ' + item['link'])
                 print(str(html.headers))
-                #continue
-              if 'text/html' in html.headers['content-type'].lower():
-                try:
-                  opengraphe = OpenGraphExtractor()
-                except:
-                  continue
-                titleset = False
-                imageset = False
-                flagged = moderationCheck(item['link'], True, str(html.text))
-                data = opengraphe.extract(str(html.text))
-                if data:
-                  if len(data) > 0:
-                    for prop in data[0]['properties']:
-                      foundtit = False
-                      foundimg = False
-                      for ogdata in prop:
-                        if not titleset or not imageset:
-                          if foundtit:
-                            newrec['title'] = newrec['title'] + '<h1 class="article_hed">' + ogdata + '</h1>'
-                            titleset = True
-                            foundtit = False
-                          if ogdata == 'og:title':
-                            foundtit = True
-                          if foundimg:
-                            newrec['title'] = newrec['title'] + '<img class="article_img" src="' + ogdata + '" alt="Image" />'
-                            imageset = True
-                            foundimg = False
-                          if ogdata == 'og:image':
-                            foundimg = True
-            if 'weather' in item['link']:
-              if newrec['title'] == '':
-                newrec['title'] = '<img class="article_img" src="' + 'file/weather.jpg' + '" alt="Image" />'
-                newrec['title'] = newrec['title'] + '<h1 class="article_hed">' + foundtitle + '</h1>'
+                continue
+              if 'content-type' in html.headers:
+                if not 'text/html' in html.headers['content-type'].lower():
+                  print('SKIP NOT OK CT ' + item['link'])
+                  print(str(html.headers))
+                  #continue
+                if 'text/html' in html.headers['content-type'].lower():
+                  try:
+                    opengraphe = OpenGraphExtractor()
+                  except:
+                    continue
+                  titleset = False
+                  imageset = False
+                  flagged = moderationCheck(item['link'], True, str(html.text))
+                  data = opengraphe.extract(str(html.text))
+                  if data:
+                    if len(data) > 0:
+                      for prop in data[0]['properties']:
+                        foundtit = False
+                        foundimg = False
+                        for ogdata in prop:
+                          if not titleset or not imageset:
+                            if foundtit:
+                              newrec['title'] = newrec['title'] + '<h1 class="article_hed">' + ogdata + '</h1>'
+                              titleset = True
+                              foundtit = False
+                            if ogdata == 'og:title':
+                              foundtit = True
+                            if foundimg:
+                              newrec['title'] = newrec['title'] + '<img class="article_img" src="' + ogdata + '" alt="Image" />'
+                              imageset = True
+                              foundimg = False
+                            if ogdata == 'og:image':
+                              foundimg = True
+            if 'weather' in item['link'].lower():
+              newrec['title'] = '<img class="article_img" src="' + 'file/weather.jpg' + '" alt="Image" />'
+              newrec['title'] = newrec['title'] + '<h1 class="article_hed">' + foundtitle + '</h1>'
               flagged = 0
             if newrec['title'] == '':
               newrec['title'] = newrec['title'] + '<h1 class="article_hed">' + foundtitle + '</h1>'
