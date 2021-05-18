@@ -937,14 +937,14 @@
         width:90%;
         background-color:#ddd;
         border-radius:25px;
-        font-size:48px;
+        font-size:24px;
       }
       .welcometext {
         margin: 20px;
       }
       @media only screen and (min-width: 1025px) {
         .welcomebox {
-          font-size:72px;
+          font-size:48px;
         }
         .welcometext {
           margin-left:100px;
@@ -1023,6 +1023,27 @@
       .twobytwo {
         margin-left:15px;
         margin-bottom:-10px;
+      }
+      .centerpic {
+        background-image: url("file/councilidaho.jpg");
+        background-size: cover;
+        background-repeat: no-repeat;
+        background-position: center center;
+        position: relative;
+      }
+      .desc {
+        position: absolute;
+        padding:0px;
+        text-align:center;
+        bottom:0;
+        margin-left:30px;
+        margin-right:30px;
+      }
+      .centercopy {
+        width:100%;
+        background-color:rgba(0, 0, 0, 0.5);
+        filter:alpha(opacity=50);
+        color: #ccc;
       }
     </style>
 
@@ -1492,9 +1513,11 @@
             |<a href="/#/pubgroup/jyyktmzx">About</a></li>
             </div>
             <div v-if="showIntro" class="centerbox">
-              <div class="welcomebox centerbox">
-                <div class="centerbox">Welcome to OurTown!</div>
-              </div>
+                <div class="welcomebox centerbox centerpic">
+                  <div class="desc">
+                    <div class="centerbox centercopy">Welcome to Council, Idaho</div>
+                  </div>
+                </div>
             </div>
             <div v-if="showIntro" class="centerbox">
               <div class="centerbox welcometext introtext">
