@@ -932,23 +932,22 @@
         margin-bottom:20px;
       }
       .welcomebox {
+        text-align: center;
         padding-top:100px;
         padding-bottom:100px;
         width:90%;
         background-color:#ddd;
         border-radius:25px;
-        font-size:24px;
+        font-size:18px;
       }
       .welcometext {
         margin: 20px;
       }
       @media only screen and (min-width: 1025px) {
         .welcomebox {
-          font-size:48px;
+          font-size:32px;
         }
         .welcometext {
-          margin-left:100px;
-          margin-right:100px;
         }
       }
       .withborders {
@@ -957,6 +956,7 @@
         padding:10px;
       }
       .grades {
+        margin: 0px;
         width: 100%;
         height: 100%;
         overflow: hidden;
@@ -964,7 +964,6 @@
       .desktopGrades {
         box-sizing: border-box;
         padding: 2px;
-        float: left;
         width: 50%;
         height: 50%;
       }
@@ -984,7 +983,7 @@
       .linkbox {
         background-color:#ddd;
         border-radius: 15px;
-        margin:5px;
+        margin:0px;
         padding:4px;
       }
       .linkbox a {
@@ -999,8 +998,6 @@
           font-size:18px;
         }
         .linkbox {
-          margin-left:50px;
-          margin-right:50px;
         }
       }
       .public_bio img {
@@ -1034,16 +1031,43 @@
       .desc {
         position: absolute;
         padding:0px;
-        text-align:center;
         bottom:0;
-        margin-left:30px;
-        margin-right:30px;
+        display: inline-block;
       }
       .centercopy {
         width:100%;
         background-color:rgba(0, 0, 0, 0.5);
         filter:alpha(opacity=50);
         color: #ccc;
+        position:absolute;
+        bottom: 0;
+        border-radius:25px;
+      }
+      .menugrid {
+        padding: 0px;
+        margin-top:7px;
+        list-style:none;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+      }
+      .menugrid li {
+        margin:8px;
+      }
+      .toppanel {
+        background-color:#e08f62;
+        filter:alpha(opacity=50);
+      }
+      .midpanel {
+        background-color:#ded7b1;
+        filter:alpha(opacity=50);
+      }
+      .botpanel {
+        background-color:#9dab86;
+        filter:alpha(opacity=50);
+      }
+      .menubox {
+        width:90%;
+        font-size:18px;
       }
     </style>
 
@@ -1491,9 +1515,10 @@
             var date = new Date();
             date.setTime(date.getTime()+(60*60*1000));
             var expires = "; expires="+date.toUTCString();
-            document.cookie = name+"="+value+expires+"; path=/; SameSite=None; Secure";
-            this.showIntro = true
+            //document.cookie = name+"="+value+expires+"; path=/; SameSite=None; Secure";
+            //this.showIntro = true
           }
+          this.showIntro = true
           
         },
         methods: {
@@ -1507,19 +1532,19 @@
 
             <div style="width:100%;">
             <div class="postest">
-            <a href="/#/login/bppuhyny">Login</a></li>
-            |<a href="/#/auth/bppuhyny">Sign Up</a></li>
-            |<a href="/#/contactForm/tlicintr">Business Inquiries</a></li>
-            |<a href="/#/pubgroup/jyyktmzx">About</a></li>
+            <a href="/#/login/bppuhyny">Login</a>
+            |<a href="/#/auth/bppuhyny">Sign Up</a>
+            <!--|<a href="/#/contactForm/tlicintr">Business Inquiries</a>
+            |<a href="/#/pubgroup/jyyktmzx">About</a>-->
             </div>
             <div v-if="showIntro" class="centerbox">
                 <div class="welcomebox centerbox centerpic">
-                  <div class="desc">
+                  <div class="">
                     <div class="centerbox centercopy">Welcome to Council, Idaho</div>
                   </div>
                 </div>
             </div>
-            <div v-if="showIntro" class="centerbox">
+ <!--             <div v-if="showIntro" class="centerbox">
               <div class="centerbox welcometext introtext">
  
 
@@ -1528,53 +1553,75 @@
 <p>Look around, post your own event, discover a local business, get involved, and let's make our small town stronger, together!</p>
               </div>
             </div>
-            </div>
-
-            <mt-button v-if="showIntro" class="centerbox" v-on:click="tourNext()" size="medium">Get Started</mt-button>
+            </div> -->
+            <!-- <mt-button v-if="showIntro" class="centerbox" v-on:click="tourNext()" size="medium">Get Started</mt-button>
             <div v-if="showIntro" class="centerbox">
               <div class="centerbox welcometext withborders">
                 Looking for something specific? Click on one of the groups below.
               </div>
-            </div>
-            <div class="centerbox">
-              <div class="grades">
-              <div class="desktopGrades desktopGrades1">
-              <div class="linkbox">
+            </div> -->
+            <div class="centerbox menubox">
+
+        
+              <ul class="menugrid">
+              <li>
+              <div class="linkbox toppanel">
               <a href="/#/group/bppuhyny">
               <h1>Local News<img class="smallmenu twobytwo" src="https://ourtownsite.org/grpFile?field=image&amp;name=20210425-004301cil-newspaper.svg" /></h1>
               </a>
-              <p>News by people in Council, for people in Council. All your local news in one place!</p>
+              <p>State and regional news of interest</p>
             
               </div>
-              </div>
-              <div class="desktopGrades desktopGrades2">
-              <div class="linkbox">
+              </li>
+              <li>
+              <div class="linkbox toppanel">
               <a href="/#/pubgroup/nibliqms">
               <h1>Calendar<img class="smallmenu twobytwo" src="https://ourtownsite.org/grpFile?field=image&amp;name=20210425-004425cil-calendar.svg" /></h1>
               </a>
-        <p>A place to see what’s happening in Council! Sign up to add your own Events.</p>
+        <p>Upcoming events in and around Council</p>
               </div>
-              </div>
-              <div class="desktopGrades desktopGrades3">
-              <div class="linkbox">
+              </li>
+              <li>
+              <div class="linkbox midpanel">
               <a href="/#/pubgroup/vbkuqsko">
               <h1>Bulletin Board
               <img class="smallmenu twobytwo" src="https://ourtownsite.org/grpFile?field=image&amp;name=20210425-004409cil-pin.svg" /></h1>
               </a>
-        <p>The Bulletin Board collects information about what’s happening in Council(?)</p>
+        <p>Lost and found | Help wanted | Fundraisers | Volunteers needed</p>
               </div>
-              </div>
-              <div class="desktopGrades desktopGrades4">
-              <div class="linkbox">
+              </li>
+              <li>
+              <div class="linkbox midpanel">
               <a href="/#/pubgroup/ekevbzyq">
               <h1>Classifieds
               <img class="smallmenu twobytwo" src="https://ourtownsite.org/grpFile?field=image&amp;name=20210425-004335cil-tag.svg" /></h1>
               </a>
-        <p>What people in Council are posting! Wanted ads, yard sale info; you name it, it’s here!</p>
+        <p>Items for sale | Land | Housing for sale or rent <br>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;  </p>
               </div>
+              </li>
+              <li>
+              <div class="linkbox botpanel">
+              <a href="/#/pubgroup/hdkqocon">
+              <h1>Support A Student
+              <img class="smallmenu twobytwo" src="https://ourtownsite.org/grpFile?field=image&amp;name=20210425-004231cil-education.svg" /></h1>
+              </a>
+        <p>Help a local student reach their goals!</p>
               </div>
+              </li>
+              <li>
+              <div class="linkbox botpanel">
+              <a href="/#/pubgroup/tlicintr">
+              <h1>Business Directory
+              <img class="smallmenu twobytwo" src="https://ourtownsite.org/grpFile?field=image&amp;name=20210425-003105cil-building.svg" /></h1>
+              </a>
+        <p>Support Council's businesses by shopping local!</p>
               </div>
-            </div>
+              </li>
+              
+              </ul>
+
+              </div>
+
             <div class="centerbox tourfooter">OurTown - Council, Idaho</div>
           </div>`
       }
@@ -1747,7 +1794,8 @@
                       }
                     }
                     if (this.shareLinks) {
-                      router.push( '/tourStart/' + this.$route.params.grp )
+                      router.push( '/tourStart' )
+                      //router.push( '/tourStart/' + this.$route.params.grp )
                       /*
                       var responses = []
                       this.spinnerHidden = false
@@ -6671,6 +6719,9 @@
         },{
             path: '/login',
             component: freeTrial
+        },{
+            path: '/tourStart',
+            component: tourStart
         },{
             path: '/login/:grp',
             component: freeTrial
