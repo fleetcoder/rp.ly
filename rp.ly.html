@@ -274,7 +274,7 @@
         margin-bottom:4px;
       }
       .fixedheader {
-        width: 1000px;
+        width: 100%;
       }
       @media only screen and (min-width: 1025px) {
         body {
@@ -2708,7 +2708,7 @@
             </div>
             <div v-else class="readertop">
               <!--<img v-if="publicImage !== ''" class="readerimg" :src="'myFile?staged=1&field=publicImage&name=' + publicImage" />-->
-              <h5  class="public_bio" v-html="publicBio"></h5>
+              <h5 v-if="!showPostButton" class="public_bio" v-html="publicBio"></h5>
             </div>
             <div id="calendar" ref="calendar" v-bind:class="{'is-hidden':calHidden}"></div>
             <div v-if="shareCal">
@@ -3883,7 +3883,7 @@
             body: '',
             authed: false,
             flagged: false,
-            flagtxt: 'Flag Post',
+            flagtxt: 'Flag As Inappropriate',
             contact: ''
           }
         },
