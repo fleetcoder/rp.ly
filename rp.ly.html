@@ -1073,6 +1073,9 @@
         width:90%;
         font-size:18px;
       }
+      .calitem {
+        display:inline-block;
+      }
     </style>
 
     <script id="client">
@@ -2709,8 +2712,10 @@
             </div>
             <div id="calendar" ref="calendar" v-bind:class="{'is-hidden':calHidden}"></div>
             <div v-if="shareCal">
-              <mt-cell class="imagecell public_img" v-for="(item, idx) in items" :title="item.name" is-link :to="item.link">
-              </mt-cell>
+              <div v-if="item.isHtml" class="leftfloat calitem" v-for="(item, idx) in items">
+                <p v-html="item.title"></p>
+              </div>
+              
               
             </div>
             <div v-else>
