@@ -2709,6 +2709,8 @@
             </div>
             <div id="calendar" ref="calendar" v-bind:class="{'is-hidden':calHidden}"></div>
             <div v-if="shareCal">
+              <mt-cell class="imagecell public_img" v-for="(item, idx) in items" :title="item.name" is-link :to="item.link">
+              </mt-cell>
               
             </div>
             <div v-else>
