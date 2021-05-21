@@ -2717,10 +2717,9 @@
             <div v-else>
               <!--<img class="groupimg" :src="'grpFile?field=image&name=' + groupPic" />-->
 
-              <mt-cell v-if="shareLinks" class="imagecell public_img" v-for="(item, idx) in items" :title="item.name" is-link :to="item.link">
-              </mt-cell>
 
-              <mt-cell v-if="!shareLinks" class="imagecell" v-for="(item, idx) in items" :title="item.name" is-link :to="item.link">
+
+              <mt-cell class="imagecell public_img" v-for="(item, idx) in items" :title="item.name" is-link :to="item.link">
                 <!--<p class="caption">
                   <span v-text="item.author"></span>
                   <img class="headericon" src="file/chevron-right.svg" />
