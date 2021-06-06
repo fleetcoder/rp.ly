@@ -1076,6 +1076,9 @@
       .calitem {
         display:inline-block;
       }
+      a.imagecell:nth-child(1) > div:nth-child(3) > div:nth-child(2) > p:nth-child(1) > p:nth-child(1) > img:nth-child(1) {
+        width:200px;
+      }
     </style>
 
     <script id="client">
@@ -4078,7 +4081,8 @@
             title : '',
             image : '',
             sound : '',
-            body: ''
+            body: '',
+            link: ''
           }
         },
         props: { posts : Array, selected: String, postto: Array },
@@ -4089,6 +4093,7 @@
               this.title = this.posts[j].title
               this.image = this.posts[j].image
               this.body = this.posts[j].body
+              this.link = this.posts[j].link
             }
           }
         },
@@ -4098,7 +4103,8 @@
             Vue.http.post( 'modPosts', {
               id : this.id,
               title : this.title,
-              body : this.body
+              body : this.body,
+              link : this.link
             }).then( ( response ) => {
               router.back()
             })
@@ -4142,6 +4148,7 @@
             <file-upload btn-label="Image" @change="stagedUpload('image')" :url="uploadTo + '&field=image'"></file-upload>
             <!--<mt-cell title="Sound:"><audio-player :src="'myFile?staged=1&field=sound&name=' + sound" /></mt-cell>
             <audio-recorder :upload-url="uploadTo + '&field=sound'"/>-->
+            <mt-field placeholder="Link..." type="text" v-model="link"></mt-field>
             <mt-button v-on:click="modPosts()" size="large">Save</mt-button>
             <mt-button class="del_linkpost" size="large" type="danger" v-on:click="delPosts()">Delete</mt-button>
           </div>`
@@ -8928,11 +8935,15 @@ def modPosts():
         ownerid = grpdata[0]['user_id']
     if not int(user['id']) == int(ownerid):
       return( json.dumps( [ 'Error' ] ) )
+  linkVal = ''
+  if not request.form.get('link') is None:
+    linkVal = request.form.get('link')
   newobj = {
     'title' : request.form.get('title'),
     'body' : request.form.get('body'),
     'image' : saveFile( 'image' ),
-    'sound' : saveFile( 'sound' )
+    'sound' : saveFile( 'sound' ),
+    'link' : linkVal
   }
   if newobj['image'] == '':
     del newobj['image']
