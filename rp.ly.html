@@ -274,7 +274,6 @@
         margin-bottom:4px;
       }
       .fixedheader {
-        width: 100%;
       }
       @media only screen and (min-width: 1025px) {
         body {
@@ -902,7 +901,7 @@
       }
       .desktopandmobile {
         display:inline;
-        width:50%;
+        wdith:60%;
         float:left;
       }
       .desktopfooter {
@@ -913,6 +912,14 @@
         font-size:12px;
         color: black;
         text-decoration-color: black;
+      }
+      @media only screen and (max-width: 1025px) {
+        .desktoponly {
+          padding-top:150px;
+          display:inline-block;
+          width:40%;
+          float:right;
+        }
       }
       @media only screen and (min-width: 1025px) {
         .postest a {
@@ -1963,7 +1970,6 @@
         template: `
           <div>
            <router-view />
-           <div v-bind:class="{'desktopandmobile':isDesktop}">
             <mt-header class="fixedheader" fixed :title="headerTitle">
               <a :href="publicLink" slot="left">
                 <img class="headericon" slot="icon" src="file/home.svg" />
@@ -1972,6 +1978,7 @@
                 <img class="headericon" slot="icon" src="file/menu.svg" />
               </a>
             </mt-header>
+           <div v-bind:class="{'desktopandmobile':isDesktop}">
             <div v-if="shareLinks" class="readertop">
             </div>
             <div v-else>
@@ -2682,12 +2689,12 @@
         template: `
           <div>
            <router-view />
-           <div v-bind:class="{'desktopandmobile':isDesktop}">
             <mt-header class="fixedheader" title="OurTown">
               <a slot="left" :href="publicLink">
                 <mt-button slot="left" icon="back">back</mt-button>
               </a>
             </mt-header>
+           <div v-bind:class="{'desktopandmobile':isDesktop}">
             <h3 v-if="showDidSponsor">You are registered! We will contact you to obtain your business logo or photo.</h3>
             <mt-button v-if="showSponsorButton" v-on:click="doRegister()" size="large">Register a Business</mt-button>
             <div v-if="doingSponsor">
