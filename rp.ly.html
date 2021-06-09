@@ -2732,6 +2732,11 @@
             this.menuVisible = !this.menuVisible
           }
         },
+        watch: {
+          '$route' (to, from) {
+            this.menuVisible = false
+          }
+        },
         template: `
           <div>
            <router-view />
