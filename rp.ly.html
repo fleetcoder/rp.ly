@@ -2180,7 +2180,8 @@
             grp:'',
             shareLinks:false,
             headerTitle:'',
-            groups:[]
+            groups:[],
+            menuVisible:false
           }
         },
         mounted: function() {
@@ -2726,6 +2727,9 @@
             } else {
               return false
             }
+          },
+          showMenu(){
+            this.menuVisible = !this.menuVisible
           }
         },
         template: `
@@ -2734,6 +2738,9 @@
             <mt-header class="fixedheader" title="OurTown">
               <a slot="left">
                 <mt-button slot="left" @click="$router.back()" icon="back">back</mt-button>
+              </a>
+              <a v-if="!isDesktop" v-on:click="showMenu()" slot="right">
+                <img class="headericon" slot="icon" src="file/menu.svg" />
               </a>
             </mt-header>
            <div v-bind:class="{'desktopandmobile':isDesktop}">
@@ -2823,6 +2830,13 @@
               <mt-cell v-if="authed" is-link @click.native="logOut()" title="Sign Out"></mt-cell>
               <mt-button v-if="showPostButton" v-on:click="doPost()" size="large">Click here to create a new post in {{name}}</mt-button>
             </div>
+            <mt-popup v-model="menuVisible" position="middle" class="topmenu">
+              <mt-cell is-link @click.native="showMenu()" title="Close Menu"></mt-cell>
+              <mt-cell v-for="(item,idx) in publicGroups" is-link :to="item.grpLink" :title="item.name"><img class="smallmenu" v-if="checkImage(item)" :src="item.image" /></mt-cell>
+              <mt-cell v-if="authed" is-link :to="'/myposts/' + grp" title="My Posts"></mt-cell>
+              <mt-cell v-if="authed" is-link @click.native="logOut()" title="Sign Out"></mt-cell>
+            </mt-popup>
+        
             <div v-else>
               <mt-button v-if="showPostButton" v-on:click="doPost()" size="medium">Click here to create a new post in {{name}}</mt-button>
             </div>
@@ -3209,9 +3223,6 @@
             <mt-header title="OurTown">
               <a slot="left">
                 <mt-button slot="left" @click="$router.go(-1)" icon="back">back</mt-button>
-              </a>
-              <a v-if="!isDesktop" v-on:click="showMenu()" slot="right">
-                <img class="headericon" slot="icon" src="file/menu.svg" />
               </a>
             </mt-header>
             <!--<img class="groupimg" :src="'grpFile?field=image&name=' + groupPic" />-->
