@@ -1113,6 +1113,12 @@
       .bizRegButt {
         margin-bottom:50px;
       }
+      .publicpagemenu {
+        top:212px;
+        width:100%;
+        margin-top:0;
+        padding-top:0;
+      }
     </style>
 
     <script id="client">
@@ -2831,7 +2837,7 @@
               <mt-cell v-if="authed" is-link @click.native="logOut()" title="Sign Out"></mt-cell>
               <mt-button v-if="showPostButton" v-on:click="doPost()" size="large">Click here to create a new post in {{name}}</mt-button>
             </div>
-            <mt-popup v-model="menuVisible" position="middle" class="topmenu">
+            <mt-popup v-model="menuVisible" position="middle" class="topmenu publicpagemenu">
               <mt-cell is-link @click.native="showMenu()" title="Close Menu"></mt-cell>
               <mt-cell v-for="(item,idx) in publicGroups" is-link :to="item.grpLink" :title="item.name"><img class="smallmenu" v-if="checkImage(item)" :src="item.image" /></mt-cell>
               <mt-cell v-if="authed" is-link :to="'/myposts/' + grp" title="My Posts"></mt-cell>
@@ -2845,7 +2851,8 @@
             <div style="width:100%;">
               <div class="postest">
                 
-                <a href="/#/contactForm/tlicintr">Request Help</a>
+            <a href="/#/login/bppuhyny">Login</a>
+            |<a href="/#/auth/bppuhyny">Sign Up</a>
                 |<a href="/#/pubgroup/jyyktmzx">About Us</a>
               </div>
             </div>
