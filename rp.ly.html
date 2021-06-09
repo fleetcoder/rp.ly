@@ -2521,6 +2521,7 @@
         },
         methods: {
           setup(){
+            this.menuVisible = false
             this.groupPic = ''
             this.items = []
             this.name = ''
@@ -2730,11 +2731,6 @@
           },
           showMenu(){
             this.menuVisible = !this.menuVisible
-          }
-        },
-        watch: {
-          '$route' (to, from) {
-            this.menuVisible = false
           }
         },
         template: `
