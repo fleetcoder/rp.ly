@@ -1443,7 +1443,11 @@
             </mt-tabbar>
             <mt-tab-container v-model="selected" class="introblock signupbox">
               <mt-tab-container-item id="tab1">
-                <mt-header title="Rp.ly"></mt-header>
+                <mt-header title="OurTown">
+                  <a slot="left">
+                    <mt-button slot="left" @click="$router.back()" icon="back">back</mt-button>
+                  </a>
+                </mt-header>
                 <h4>Register for an account:</h4>
                 <mt-field v-bind:class="{'is-hidden':inputnamehidden}" placeholder="Your name..." v-model="name"></mt-field>
                 <mt-field v-bind:class="{'is-hidden':registerHidden}" placeholder="E-mail Address..." type="email" :state="emailstatus" v-model="email"></mt-field>
@@ -1457,7 +1461,11 @@
                 <mt-spinner v-bind:class="{'is-hidden':spinnerHidden}" type="snake"></mt-spinner>
               </mt-tab-container-item>
               <mt-tab-container-item id="tab2">
-                <mt-header title="Rp.ly"></mt-header>
+                <mt-header title="OurTown">
+                  <a slot="left">
+                    <mt-button slot="left" @click="$router.back()" icon="back">back</mt-button>
+                  </a>
+                </mt-header>
                 <h4 v-bind:class="{'is-hidden':loginHidden}">Log in to your account:</h4>
                 <h4 v-bind:class="{'is-hidden':forgotHidden}">Reset your password:</h4>
                 <mt-field v-bind:class="{'is-hidden':loginHidden}" placeholder="E-mail Address..." type="email" :state="emailstatus" v-model="loginemail"></mt-field>
