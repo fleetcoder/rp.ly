@@ -318,7 +318,6 @@
       }
       .public_bio {
         margin:10px;
-        text-align:center; 
       }
       .public_img {
         margin-top:15px;
@@ -2725,7 +2724,7 @@
            <div v-bind:class="{'desktopandmobile':isDesktop}">
             <div v-if="!doingSponsor" class="readertop">
               <!--<img v-if="publicImage !== ''" class="readerimg" :src="'myFile?staged=1&field=publicImage&name=' + publicImage" />-->
-              <h5 v-if="!showPostButton" class="public_bio" v-html="publicBio"></h5>
+              <h5 style="text-align:center;" v-if="!showPostButton" class="public_bio" v-html="publicBio"></h5>
             </div>
             <div id="calendar" ref="calendar" v-bind:class="{'is-hidden':calHidden}"></div>
             <div v-if="shareCal">
