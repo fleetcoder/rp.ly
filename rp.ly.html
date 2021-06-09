@@ -2732,8 +2732,8 @@
           <div>
            <router-view />
             <mt-header class="fixedheader" title="OurTown">
-              <a slot="left" :href="publicLink">
-                <mt-button slot="left" icon="back">back</mt-button>
+              <a slot="left">
+                <mt-button slot="left" @click="$router.back()" icon="back">back</mt-button>
               </a>
             </mt-header>
            <div v-bind:class="{'desktopandmobile':isDesktop}">
@@ -3004,7 +3004,8 @@
             timeText: '',
             isDesktop: false,
             contactInfo: '',
-            contactText: 'Enter your phone number here...'
+            contactText: 'Enter your phone number here...',
+            menuVisible: false
           }
         },
         created() {
@@ -3198,6 +3199,9 @@
             let d = data.getDate()
             d = d < 10 ? ('0' + d) : d
             return y + '-' + m + '-' + d
+          },
+          showMenu(){
+            this.menuVisible = !this.menuVisible
           }
         },
         template: `
@@ -3205,6 +3209,9 @@
             <mt-header title="OurTown">
               <a slot="left">
                 <mt-button slot="left" @click="$router.go(-1)" icon="back">back</mt-button>
+              </a>
+              <a v-if="!isDesktop" v-on:click="showMenu()" slot="right">
+                <img class="headericon" slot="icon" src="file/menu.svg" />
               </a>
             </mt-header>
             <!--<img class="groupimg" :src="'grpFile?field=image&name=' + groupPic" />-->
