@@ -1133,6 +1133,9 @@
         margin-top:0;
         padding-top:0;
       }
+      .create_post_button {
+        padding:20px;
+      }
     </style>
 
     <script id="client">
@@ -2850,10 +2853,10 @@
               <mt-cell v-for="(item,idx) in publicGroups" is-link :to="item.grpLink" :title="item.name"><img class="smallmenu" v-if="checkImage(item)" :src="item.image" /></mt-cell>
               <mt-cell v-if="authed" is-link :to="'/myposts/' + grp" title="My Posts"></mt-cell>
               <mt-cell v-if="authed" is-link @click.native="logOut()" title="Sign Out"></mt-cell>
-              <mt-button v-if="showPostButton" v-on:click="doPost()" size="large">Click here to create a new post in {{name}}</mt-button>
+              <mt-button class="create_post_button" v-if="showPostButton" v-on:click="doPost()" size="large">Click here to create a new post in {{name}}</mt-button>
             </div>
             <div v-else>
-              <mt-button v-if="showPostButton" v-on:click="doPost()" size="medium">Click here to create a new post in {{name}}</mt-button>
+              <mt-button class="create_post_button" v-if="showPostButton" v-on:click="doPost()" size="medium">Click here to create a new post in {{name}}</mt-button>
             </div>
 
             <mt-popup v-model="menuVisible" position="middle" class="topmenu publicpagemenu">
