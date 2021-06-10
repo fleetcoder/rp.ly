@@ -3294,7 +3294,7 @@
                 <mt-cell title="" v-if="image !== ''"><img class="img" :src="'myFile?staged=1&field=image&name=' + image" /></mt-cell>
                 <!--<file-upload btn-label="Click here to upload a photo..." @change="stagedUpload('image')" :url="uploadTo + '?field=image'"></file-upload>-->
                 <mt-field v-if="title !== ''" :placeholder="contactText" v-model="contactInfo"></mt-field>
-                <mt-button v-on:click="addPosts()" size="large">Save Post in {{name}}</mt-button>
+                <mt-button class="create_post_button" v-on:click="addPosts()" size="large">Click here to post this in {{name}}</mt-button>
               </div>
               <div v-else>
                 <h4>Please use a mobile device to create your calendar item, desktop/laptop computers are currently not supported. Thank you :-)</h4>
@@ -3306,7 +3306,7 @@
               <mt-cell title="" v-if="image !== ''"><img class="img" :src="'myFile?staged=1&field=image&name=' + image" /></mt-cell>
               <file-upload btn-label="Click here to upload a photo..." @change="stagedUpload('image')" :url="uploadTo + '?field=image'"></file-upload>
               <mt-field v-if="title !== ''" :placeholder="contactText" v-model="contactInfo"></mt-field>
-              <mt-button v-on:click="addPosts()" size="large">Save Post in {{name}}</mt-button>
+              <mt-button class="create_post_button" v-on:click="addPosts()" size="large">Click here to post this in {{name}}</mt-button>
             </div>
           </div>`
       }
