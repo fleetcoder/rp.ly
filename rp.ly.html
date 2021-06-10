@@ -2545,6 +2545,7 @@
             this.groupPic = ''
             this.items = []
             this.name = ''
+            this.showSponsorButton = false
             this.showPostButton = false
             this.shareCal = false
             this.calendar = {}
@@ -2851,16 +2852,16 @@
               <mt-cell v-if="authed" is-link @click.native="logOut()" title="Sign Out"></mt-cell>
               <mt-button v-if="showPostButton" v-on:click="doPost()" size="large">Click here to create a new post in {{name}}</mt-button>
             </div>
+            <div v-else>
+              <mt-button v-if="showPostButton" v-on:click="doPost()" size="medium">Click here to create a new post in {{name}}</mt-button>
+            </div>
+
             <mt-popup v-model="menuVisible" position="middle" class="topmenu publicpagemenu">
               <mt-cell is-link @click.native="showMenu()" title="Close Menu"></mt-cell>
               <mt-cell v-for="(item,idx) in publicGroups" is-link :to="item.grpLink" :title="item.name"><img class="smallmenu" v-if="checkImage(item)" :src="item.image" /></mt-cell>
               <mt-cell v-if="authed" is-link :to="'/myposts/' + grp" title="My Posts"></mt-cell>
               <mt-cell v-if="authed" is-link @click.native="logOut()" title="Sign Out"></mt-cell>
             </mt-popup>
-        
-            <div v-else>
-              <mt-button v-if="showPostButton" v-on:click="doPost()" size="medium">Click here to create a new post in {{name}}</mt-button>
-            </div>
         
             <div style="width:100%;margin-top:100px;margin-bottom:40px;display:inline-block;">
               <div class="postest">
