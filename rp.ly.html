@@ -3304,7 +3304,7 @@
               <mt-field placeholder="Write your description here..." type="textarea" rows="14" v-model="title"></mt-field>
               <h1 v-if="title.length > 300">Please shorten your post to fewer than 300 characters, thank you!</h1>
               <mt-cell title="" v-if="image !== ''"><img class="img" :src="'myFile?staged=1&field=image&name=' + image" /></mt-cell>
-              <file-upload btn-label="Click here to upload a photo..." @change="stagedUpload('image')" :url="uploadTo + '?field=image'"></file-upload>
+              <file-upload accept="image/*" btn-label="Click here to upload a photo..." @change="stagedUpload('image')" :url="uploadTo + '?field=image'"></file-upload>
               <mt-field v-if="title !== ''" :placeholder="contactText" v-model="contactInfo"></mt-field>
               <mt-button class="create_post_button" v-on:click="addPosts()" size="large">Click here to post this in {{name}}</mt-button>
             </div>
@@ -4268,7 +4268,7 @@
             <mt-cell><vue-editor v-model="body"></vue-editor></mt-cell>
             <!--<mt-field placeholder="Story..." type="textarea" rows="20" v-model="body"></mt-field>-->
             <mt-cell title=""><img class="img" :src="'myFile?staged=1&field=image&name=' + image" /></mt-cell>
-            <file-upload btn-label="Image" @change="stagedUpload('image')" :url="uploadTo + '&field=image'"></file-upload>
+            <file-upload accept="image/*" btn-label="Image" @change="stagedUpload('image')" :url="uploadTo + '&field=image'"></file-upload>
             <!--<mt-cell title="Sound:"><audio-player :src="'myFile?staged=1&field=sound&name=' + sound" /></mt-cell>
             <audio-recorder :upload-url="uploadTo + '&field=sound'"/>-->
             <mt-field placeholder="Link..." type="text" v-model="link"></mt-field>
@@ -4326,7 +4326,7 @@
             <mt-spinner v-bind:class="{'is-hidden':spinnerHidden}" type="snake"></mt-spinner>
             <mt-field label="Title:" placeholder="Title.." v-model="title"></mt-field>
             <mt-cell title=""><img class="img" :src="'myFile?staged=1&field=image&name=' + image" /></mt-cell>
-            <file-upload btn-label="Image" @change="stagedUpload('image')" :url="uploadTo + '&field=image'"></file-upload>
+            <file-upload accept="image/*" btn-label="Image" @change="stagedUpload('image')" :url="uploadTo + '&field=image'"></file-upload>
             <mt-cell title="Sound:"><audio-player :src="'myFile?staged=1&field=sound&name=' + sound" /></mt-cell>
             <audio-recorder :upload-url="uploadTo + '&field=sound'"/>
             <mt-button v-on:click="modPosts()" size="large">Save</mt-button>
@@ -6479,7 +6479,7 @@
               align="left">
             </mt-checklist>
             <mt-cell v-bind:class="{'is-hidden':!pubHidden}" title=""><img class="img" :src="'myFile?staged=1&field=publicImage&name=' + publicImage" /></mt-cell>
-            <file-upload v-bind:class="{'is-hidden':!pubHidden}" btn-label="Change Author Photo" @change="stagedUpload('publicImage')" :url="uploadTo + '?field=publicImage'"></file-upload>
+            <file-upload accept="image/*" v-bind:class="{'is-hidden':!pubHidden}" btn-label="Change Author Photo" @change="stagedUpload('publicImage')" :url="uploadTo + '?field=publicImage'"></file-upload>
             <mt-field label="Custom Link rp.ly/..." placeholder="" v-model="publicPath"></mt-field>
             <mt-cell title="Advanced Options"><mt-switch v-model="optsHidden"></mt-switch></mt-cell>
             <mt-cell v-bind:class="{'is-hidden':!optsHidden}"  title="Resize photos"><mt-field v-model="maxRes" label="max. width in pixels"></mt-field><mt-switch v-model="doScale"></mt-switch></mt-cell>
@@ -6715,7 +6715,7 @@
                   align="left">
                 </mt-checklist>
                 <mt-cell v-bind:class="{'is-hidden':!pubHidden}" title=""><img class="img" :src="'myFile?staged=1&field=publicImage&name=' + publicImage" /></mt-cell>
-                <file-upload v-bind:class="{'is-hidden':!pubHidden}" :btn-label="upLabel" @change="stagedUpload('publicImage')" :url="uploadTo + '?field=publicImage'"></file-upload>
+                <file-upload accept="image/*" v-bind:class="{'is-hidden':!pubHidden}" :btn-label="upLabel" @change="stagedUpload('publicImage')" :url="uploadTo + '?field=publicImage'"></file-upload>
                 <mt-button class="buttonset" v-on:click="addGroups()" size="large" :disabled="saveDisabled">Save</mt-button>
                 <!--<mt-button class="buttonset" v-on:click="hideAddGroupForm()" size="large">
                     Cancel
