@@ -71,6 +71,7 @@ talisman = Talisman(
       'https://www.youtube.com/embed/90kS-WljHX0',
     ],
     'font-src': [
+      '*',
       'data:',
     ],
     'img-src': [
