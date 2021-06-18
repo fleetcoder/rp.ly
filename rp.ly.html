@@ -403,13 +403,14 @@
       a.imagecell > div:nth-child(3) > div:nth-child(2) > p:nth-child(1){
         
       }
+      .feedimages {
+        width:140px;
+        overflow:hidden;
+      }
       .article_img {
+        width:140px;
         margin-top:0px;
         margin-left:0px;
-        max-height:140px;
-        max-width:140px;
-        height:auto;
-        width:auto;
       }
       .article_hed {
         margin-top:0px;
@@ -421,9 +422,12 @@
         text-align:left;
       }
       @media only screen and (min-width: 1025px) {
+        .feedimages {
+          width:280px;
+          overflow:hidden;
+        }
         .article_img {
-          max-height:280px;
-          max-width:280px;
+          width:280px;
         }
         .article_hed {
           width: 350px;
@@ -2618,8 +2622,10 @@
                       for (var j = 0; j < response.body[0].length; j++) {
                         this.items.push(response.body[0][j])
                       }
+                      this.wrapImages()
                     } else {
                       this.items = response.body[0]
+                      this.wrapImages()
                       if (this.items.length > 9) {
                         this.moreHidden = false
                       }
@@ -2642,6 +2648,17 @@
               } else {
               }
             })
+          },
+          wrapImages(){
+            var images = document.getElementsByClassName("article_img");
+            for (var j = 0; j < images.length; j++) {
+              var element = images[j];
+              var parent = element.parentNode;
+              var wrapper = document.createElement('div');
+              wrapper.classList.add("feedimages");
+              parent.replaceChild(wrapper, element);
+              wrapper.appendChild(element);
+            }
           },
           imageLink(item){
             if ("undefined" !== typeof item.media) {
