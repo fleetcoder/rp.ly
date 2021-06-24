@@ -3084,7 +3084,7 @@
             contactInfo: '',
             contactText: 'Enter your phone number here...',
             menuVisible: false,
-            location:'',
+            locationData:'',
             locationText: 'Enter your location here...'
           }
         },
@@ -3177,6 +3177,15 @@
               this.spinnerHidden = true
               return
             }
+            if (this.locationData.length < 3) {
+              MintUI.Toast({
+                message: 'Please add location. Thank you!',
+                iconClass: 'icon icon-error',
+                duration: 4000
+              })
+              this.spinnerHidden = true
+              return
+            }
             if (!(this.shareCal === true)) {
               if (!(this.contactInfo.match(/\d/g) === null)) {
                 if (this.contactInfo.match(/\d/g).length===10) {
@@ -3189,6 +3198,14 @@
                   this.spinnerHidden = true
                   return
                 }
+              } else {
+                MintUI.Toast({
+                  message: 'Please add a 10-digit phone number. Thank you!',
+                  iconClass: 'icon icon-error',
+                  duration: 4000
+                })
+                this.spinnerHidden = true
+                return
               }
             }
             if (this.title.length > 300) {
@@ -3218,7 +3235,7 @@
               eventTime: evttime,
               contactInfo: this.contactInfo,
               timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-              location:location
+              location:this.locationData
             }).then( ( response ) => {
               this.spinnerHidden = true
               this.title = ''
@@ -3338,7 +3355,7 @@
               <mt-cell title="" v-if="image !== ''"><img class="img" :src="'myFile?staged=1&field=image&name=' + image" /></mt-cell>
               <file-upload accept="image/*" btn-label="Click here to upload a photo..." @change="stagedUpload('image')" :url="uploadTo + '?field=image'"></file-upload>
               <mt-field v-if="title !== ''" :placeholder="contactText" v-model="contactInfo"></mt-field>
-              <mt-field v-if="title !== ''" :placeholder="locationText" v-model="location"></mt-field>
+              <mt-field v-if="title !== ''" :placeholder="locationText" v-model="locationData"></mt-field>
               <mt-button class="create_post_button" v-on:click="addPosts()" size="large">Click here to post this in {{name}}</mt-button>
             </div>
           </div>`
@@ -4048,7 +4065,7 @@
             flagged: false,
             flagtxt: 'Flag this post as inappropriate',
             contact: '',
-            location: ''
+            locationData: ''
           }
         },
         props: {},
@@ -4069,7 +4086,7 @@
                 this.body = this.post.body
                 this.contact = this.post.contact
                 this.imageHidden = true
-                this.location = this.post.location
+                this.locationData = this.post.location
                 
                 if (response.body[1] == 'AUTHED') {
                   this.authed = true
@@ -4135,6 +4152,7 @@
             </mt-cell>
             <mt-cell> <p v-html="title"></p></mt-cell>
             <mt-cell> <p v-html="body"></p></mt-cell>
+            <mt-cell> <p v-html="locationData"></p></mt-cell>
             <mt-cell v-if="contact !== ''"> Contact: <p v-html="contact"></p></mt-cell>
         
             <!--<mt-cell v-bind:class="{'is-hidden':soundHidden}"><audio-player :src="'myFile?field=sound&name=' + sound" /></mt-cell>
@@ -8864,8 +8882,11 @@ def addPosts():
       'user_id' : session['user'],
       'flagged' : '0',
       'contact': contactInfo,
-      'created' : str( timezone( 'US/Pacific' ).localize( datetime.now() ) )
+      'created' : str( timezone( 'US/Pacific' ).localize( datetime.now() ) ),
+      'location': ''
     }
+    if not request.form.get('location') is None:
+      newrec['location'] = request.form.get('location')
     if not request.form.get('shareText') is None:
       postkey = randomword(8)
       newrec['title'] = request.form.get('headline')
