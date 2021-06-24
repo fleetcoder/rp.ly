@@ -3083,7 +3083,9 @@
             isDesktop: false,
             contactInfo: '',
             contactText: 'Enter your phone number here...',
-            menuVisible: false
+            menuVisible: false,
+            location:'',
+            locationText: 'Enter your location here...'
           }
         },
         created() {
@@ -3215,7 +3217,8 @@
               eventDate: evtdate,
               eventTime: evttime,
               contactInfo: this.contactInfo,
-              timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone
+              timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+              location:location
             }).then( ( response ) => {
               this.spinnerHidden = true
               this.title = ''
@@ -3335,6 +3338,7 @@
               <mt-cell title="" v-if="image !== ''"><img class="img" :src="'myFile?staged=1&field=image&name=' + image" /></mt-cell>
               <file-upload accept="image/*" btn-label="Click here to upload a photo..." @change="stagedUpload('image')" :url="uploadTo + '?field=image'"></file-upload>
               <mt-field v-if="title !== ''" :placeholder="contactText" v-model="contactInfo"></mt-field>
+              <mt-field v-if="title !== ''" :placeholder="locationText" v-model="location"></mt-field>
               <mt-button class="create_post_button" v-on:click="addPosts()" size="large">Click here to post this in {{name}}</mt-button>
             </div>
           </div>`
@@ -4043,7 +4047,8 @@
             authed: false,
             flagged: false,
             flagtxt: 'Flag this post as inappropriate',
-            contact: ''
+            contact: '',
+            location: ''
           }
         },
         props: {},
@@ -4064,6 +4069,7 @@
                 this.body = this.post.body
                 this.contact = this.post.contact
                 this.imageHidden = true
+                this.location = this.post.location
                 
                 if (response.body[1] == 'AUTHED') {
                   this.authed = true
