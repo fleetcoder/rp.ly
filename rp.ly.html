@@ -4042,7 +4042,7 @@
             body: '',
             authed: false,
             flagged: false,
-            flagtxt: 'Flag As Inappropriate',
+            flagtxt: 'Flag this post as inappropriate',
             contact: ''
           }
         },
@@ -4063,6 +4063,7 @@
                 this.sound = this.post.sound
                 this.body = this.post.body
                 this.contact = this.post.contact
+                this.imageHidden = true
                 
                 if (response.body[1] == 'AUTHED') {
                   this.authed = true
@@ -4118,7 +4119,7 @@
               <mt-button slot="left" @click="$router.go(-1)" icon="back">back</mt-button>
             </mt-header>
             <mt-spinner v-bind:class="{'is-hidden':spinnerHidden}" type="snake"></mt-spinner>
-            <mt-cell v-if="image !== ''">
+            <mt-cell v-if="!imageHidden">
               <div class="outer">
                 <img @contextmenu.prevent="doContextMenu" class="oimg cant-click" :src="'myFile?field=image&name=' + image" />
                 <div class="overlay">
