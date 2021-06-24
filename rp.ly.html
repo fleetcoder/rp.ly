@@ -2622,10 +2622,8 @@
                       for (var j = 0; j < response.body[0].length; j++) {
                         this.items.push(response.body[0][j])
                       }
-                      this.wrapImages()
                     } else {
                       this.items = response.body[0]
-                      this.wrapImages()
                       if (this.items.length > 9) {
                         this.moreHidden = false
                       }
@@ -3203,7 +3201,7 @@
             }
             Vue.http.post( 'addPosts', {
               recips: JSON.stringify([this.groupid]),
-              title: JSON.stringify(['<img class="article_img" src="' + postimg + '" alt="Image" /><h1 class="article_hed">' + this.title + ' ' + this.dateText + ' ' + this.timeText + '</h1>']),
+              title: JSON.stringify(['<div class="feedimages"><img class="article_img" src="' + postimg + '" alt="Image" /></div><h1 class="article_hed">' + this.title + ' ' + this.dateText + ' ' + this.timeText + '</h1>']),
               expirehours: 0,
               speedup: '',
               publicPost: 1,
@@ -7134,13 +7132,13 @@ def syncGroups():
                             if ogdata == 'og:title':
                               foundtit = True
                             if foundimg:
-                              newrec['title'] = newrec['title'] + '<img class="article_img" src="' + ogdata + '" alt="Image" />'
+                              newrec['title'] = newrec['title'] + '<div class="feedimages"><img class="article_img" src="' + ogdata + '" alt="Image" /></div>'
                               imageset = True
                               foundimg = False
                             if ogdata == 'og:image':
                               foundimg = True
             if 'weather' in item['link'].lower():
-              newrec['title'] = '<img class="article_img" src="' + 'file/weather.jpg' + '" alt="Image" />'
+              newrec['title'] = '<div class="feedimages"><img class="article_img" src="' + 'file/weather.jpg' + '" alt="Image" /></div>'
               newrec['title'] = newrec['title'] + '<h1 class="article_hed">' + foundtitle + '</h1>'
               flagged = 0
             if newrec['title'] == '':
@@ -8890,7 +8888,7 @@ def addPosts():
               if ogdata == 'og:title':
                 foundtit = True
               if foundimg:
-                newrec['title'] = newrec['title'] + '<img class="article_img" src="' + ogdata + '" alt="Image" />'
+                newrec['title'] = newrec['title'] + '<div class="feedimages"><img class="article_img" src="' + ogdata + '" alt="Image" /></div>'
                 imageset = True
                 foundimg = False
               if ogdata == 'og:image':

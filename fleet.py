@@ -36,6 +36,7 @@ import bcrypt
 import csv
 import socket
 import ssl
+from io import BytesIO
 
 appdir = os.getcwd() + '/'
 
