@@ -2635,9 +2635,6 @@
                         this.items[j].isHtml = true
                         this.items[j].textHidden = false
                       }
-
-
-                      
                       this.groups = response.body[1]
                       this.shareLinks = false
                       for (var j = 0; j < this.groups.length; j++) {
@@ -3211,7 +3208,7 @@
             }
             Vue.http.post( 'addPosts', {
               recips: JSON.stringify([this.groupid]),
-              title: JSON.stringify(['<div class="feedimages"><img class="article_img" src="' + postimg + '" alt="Image" /></div><h1 class="article_hed">' + this.title + ' ' + this.dateText + ' ' + this.timeText + '</h1>']),
+              title: JSON.stringify(['<h1 class="article_hed">' + this.title + ' ' + this.dateText + ' ' + this.timeText + '</h1>' + '<div class="feedimages"><img class="article_img" src="' + postimg + '" alt="Image" /></div>']),
               expirehours: 0,
               speedup: '',
               publicPost: 1,
@@ -7128,6 +7125,8 @@ def syncGroups():
                   imageset = False
                   flagged = moderationCheck(item['link'], True, str(html.text))
                   data = opengraphe.extract(str(html.text))
+                  mytitle = ''
+                  myimage = ''
                   if data:
                     if len(data) > 0:
                       for prop in data[0]['properties']:
@@ -7136,20 +7135,22 @@ def syncGroups():
                         for ogdata in prop:
                           if not titleset or not imageset:
                             if foundtit:
-                              newrec['title'] = newrec['title'] + '<h1 class="article_hed">' + ogdata + '</h1>'
+                              mytitle = '<h1 class="article_hed">' + ogdata + '</h1>'
                               titleset = True
                               foundtit = False
                             if ogdata == 'og:title':
                               foundtit = True
                             if foundimg:
-                              newrec['title'] = newrec['title'] + '<div class="feedimages"><img class="article_img" src="' + ogdata + '" alt="Image" /></div>'
+                              myimage = '<div class="feedimages"><img class="article_img" src="' + ogdata + '" alt="Image" /></div>'
                               imageset = True
                               foundimg = False
                             if ogdata == 'og:image':
                               foundimg = True
+                    if mytitle != '':
+                      newrec['title'] = mytitle + myimage
             if 'weather' in item['link'].lower():
-              newrec['title'] = '<div class="feedimages"><img class="article_img" src="' + 'file/weather.jpg' + '" alt="Image" /></div>'
-              newrec['title'] = newrec['title'] + '<h1 class="article_hed">' + foundtitle + '</h1>'
+              newrec['title'] = '<h1 class="article_hed">' + foundtitle + '</h1>'
+              newrec['title'] = newrec['title'] + '<div class="feedimages"><img class="article_img" src="' + 'file/weather.jpg' + '" alt="Image" /></div>'
               flagged = 0
             if newrec['title'] == '':
               newrec['title'] = newrec['title'] + '<h1 class="article_hed">' + foundtitle + '</h1>'
@@ -8885,6 +8886,8 @@ def addPosts():
         titleset = False
         imageset = False
         data = opengraphe.extract(str(html.text))
+        mytitle = ''
+        myimage = ''
         for prop in data[0]['properties']:
           foundtit = False
           foundimg = False
@@ -8892,17 +8895,19 @@ def addPosts():
             print(str(ogdata))
             if not titleset or not imageset:
               if foundtit:
-                newrec['title'] = newrec['title'] + '<h1 class="article_hed">' + ogdata + '</h1>'
+                mytitle = '<h1 class="article_hed">' + ogdata + '</h1>'
                 titleset = True
                 foundtit = False
               if ogdata == 'og:title':
                 foundtit = True
               if foundimg:
-                newrec['title'] = newrec['title'] + '<div class="feedimages"><img class="article_img" src="' + ogdata + '" alt="Image" /></div>'
+                myimage = '<div class="feedimages"><img class="article_img" src="' + ogdata + '" alt="Image" /></div>'
                 imageset = True
                 foundimg = False
               if ogdata == 'og:image':
                 foundimg = True
+        if mytitle != '':
+          newrec['title'] = mytitle + myimage
       except:
         print('EXC')
     if (newrec['sound'][-3:] == 'mp3'):
