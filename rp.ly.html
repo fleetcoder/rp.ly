@@ -1881,10 +1881,13 @@
                     }
                     this.groups = response.body[1]
                     this.shareLinks = false
+                    var redir = false
                     for (var j = 0; j < this.groups.length; j++) {
                       if (parseInt(this.groups[j].links) > 0) {
-                        this.shareLinks = true
-                        this.headerTitle = this.sharingGroup
+                        if (this.groups[j].label == this.name) {
+                          this.shareLinks = true
+                          this.headerTitle = this.sharingGroup
+                        }
                       }
                     }
                     if (this.shareLinks) {
@@ -2627,6 +2630,13 @@
                       if (this.items.length > 9) {
                         this.moreHidden = false
                       }
+                      for (var j = 0; j < this.items.length; j++) {
+                        this.items[j].imageHidden = true
+                        this.items[j].isHtml = true
+                        this.items[j].textHidden = false
+                      }
+
+
                       
                       this.groups = response.body[1]
                       this.shareLinks = false
