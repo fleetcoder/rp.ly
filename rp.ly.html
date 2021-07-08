@@ -1157,6 +1157,9 @@
       .hiddenimg > img {
         display:none;
       }
+      .recentarts > div > div > div > img {
+        display:none;
+      }
       .hiddenimg > h1 {
         font-size:14px;
         font-weight:normal;
@@ -1612,7 +1615,8 @@
             hedline:'',
             storyimg:'',
             grp:'ljhmdvqk',
-            items:[]
+            items:[],
+            artlink: ''
           }
         },
         props: {},
@@ -1623,6 +1627,7 @@
               for (var j = 0; j < 6; j++) {
                 if (j == 0) {
                   this.hedline = response.body[0][j].title
+                  this.artlink = response.body[0][j].link
                 } else {
                   this.items.push(response.body[0][j])
                 }
@@ -1667,6 +1672,9 @@
           },
           onContext(){
             
+          },
+          goArticle(link) {
+            window.location.href = link
           }
         },
         template: `
@@ -1694,12 +1702,12 @@
 <div class="container dtcontent">
   <div class="row">
     <div class="col-sm">
-        <div v-html="hedline"></div>
+        <div v-on:click="goArticle(artlink)" v-html="hedline"></div>
     </div>
     <div class="recentarts">
       <h6 class="sectionheader">Recent Articles</h6>
       <div v-for="(item, idx) in items">
-        <div class="hiddenimg" v-html="item.title"></div>
+        <div v-on:click="goArticle(item.link)" class="hiddenimg" v-html="item.title"></div>
       </div>
     </div>
     <div class="col-sm">
