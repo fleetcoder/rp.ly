@@ -1175,7 +1175,22 @@
         width:150px;
       }
       .navbar {
-        background-color:green;
+        background-color:white;
+      }
+      .navbar-nav {
+          float:none;
+          margin:0 auto;
+          display: block;
+          text-align: center;
+      }
+      .navbar-nav > li {
+          display: inline-block;
+          float:none;
+      }
+      .headerlogo {
+        width:50px;
+        margin-right:0px;
+        padding-right:0px;
       }
     </style>
 
@@ -1680,8 +1695,22 @@
         template: `
           <div class="content">
         <div v-if="isDesktop">
-  <b-navbar toggleable="lg" type="dark">
-    <b-navbar-brand href="#">OurTown - Council, ID</b-navbar-brand>
+<div class="container dtcontent">
+  <div class="row">
+    <div class="col-sm" style="text-align:right;">
+        <div><b-img class="headerlogo" src="https://ourtown.org/file/idaho.png" alt="Idaho Logo" /></div>
+    </div>
+    <div class="col-sm" style="white-space: nowrap;">
+        <h1>OurTown - Council, Idaho</h1>
+    </div>
+    <div class="col-sm">
+        &nbsp;
+    </div>
+        
+  </div>
+</div>
+  <b-navbar toggleable="lg" type="light">
+    <!--<b-navbar-brand href="#">OurTown - Council, ID</b-navbar-brand>-->
 
     <b-navbar-toggle target="nav-collapse"></b-navbar-toggle>
 
