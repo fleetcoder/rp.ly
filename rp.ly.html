@@ -3643,8 +3643,35 @@
             contactText: 'Enter your phone number here...',
             menuVisible: false,
             locationData:'',
-            locationText: 'Enter your location here...'
+            locationText: 'Enter your location here...',
+            timevalue: '',
+            datevalue:''
           }
+        },
+        watch: {
+            timevalue() {
+
+              //this.timevalue = this.timevalue.split(':').slice(0,2).join(':');
+              this.timeVal = this.timevalue
+              var arr1 = this.timeVal.split(':')
+              var ampm = 'a.m.'
+              if (parseInt(arr1[0]) > 12) {
+                ampm = 'p.m.'
+                arr1[0] = (parseInt(arr1[0]) - 12).toString()
+              }
+              if (parseInt(arr1[0]) == 0) {
+                arr1[0] = '12'
+              }
+              this.timeText = arr1 [0] + ':' + arr1 [1] + ' ' + ampm
+            },
+            datevalue() {
+              var monthNames = ["January", "February", "March", "April", "May", "June",
+                "July", "August", "September", "October", "November", "December"
+              ]
+              this.dateVal = this.datevalue
+              var arr1 = this.dateVal.split('-')
+              this.dateText = monthNames[parseInt(arr1[1]) - 1] + ' ' + arr1[2] + ', ' + arr1[0]
+            }
         },
         created() {
           var ua = navigator.userAgent || navigator.vendor || window.opera
@@ -3834,6 +3861,7 @@
             this.dateVal = data
             var arr1 = this.getDate(this.dateVal).split('-')
             this.dateText = monthNames[this.dateVal.getMonth()] + ' ' + arr1[2] + ', ' + arr1[0]
+            console.log('dateConfirm ' + this.dateText)
           },
           timeConfirm (data) {
             this.timeVal = data
@@ -3847,6 +3875,7 @@
               arr1[0] = '12'
             }
             this.timeText = arr1 [0] + ':' + arr1 [1] + ' ' + ampm
+            console.log('timeText ' + this.timeText)
           },
           getDate(data) {
             const y = data.getFullYear()
@@ -3871,8 +3900,30 @@
             <div v-html="publicInfo"></div>
             <mt-spinner v-bind:class="{'is-hidden':spinnerHidden}" type="snake"></mt-spinner>
             <div v-if="shareCal">
+            <div>
+                <label for="timeinput">Click on the clock to choose a time</label>
+                <b-input-group class="mb-3">
+                  <b-form-timepicker
+                    v-model="timevalue"
+                    button-only
+                    right
+                    locale="en"
+                    aria-controls="timeinput"
+                  ></b-form-timepicker>
+                </b-input-group>
+                <label for="datepickerinput">Click on the calendar to choose a date</label>
+                <b-input-group class="mb-3">
+                <b-form-datepicker 
+                  v-model="datevalue"
+                  id="datepickerinput"
+                  locale="en"
+                  button-only
+                  date-format-options="{ year: 'numeric', month: 'numeric', day: 'numeric' }"
+                  right
+                ></b-form-datepicker>
+                </b-input-group>
+              </div>
               <div v-if="!isDesktop">
-                <h1>{{dateText}}</h1>
                 <mt-datetime-picker
                 cancelText="Cancel"
                 confirmText="Confirm"
@@ -3885,22 +3936,12 @@
                 :startDate="startDate"
                 v-model="dateVal">
                 </mt-datetime-picker>
-                <mt-button class="datepicker" v-on:click="setDate()" size="large">Choose Event Date...</mt-button>
-                <h1>{{timeText}}</h1>
-                <mt-datetime-picker class="datepicker"
-                cancelText="Cancel"
-                confirmText="Confirm"
-                @confirm="timeConfirm"
-                type="time"
-                ref="picker2"
-                v-model="timeVal">
-                </mt-datetime-picker>
-                <mt-button class="datepicker" v-on:click="setTime()" size="large">Choose Event Time...</mt-button>
                 <mt-field placeholder="Write your description here..." type="textarea" rows="14" v-model="title"></mt-field>
                 <h1 v-if="title.length > 300">Please shorten your post to fewer than 300 characters, thank you!</h1>
                 <mt-cell title="" v-if="image !== ''"><img class="img" :src="'myFile?staged=1&field=image&name=' + image" /></mt-cell>
                 <!--<file-upload btn-label="Click here to upload a photo..." @change="stagedUpload('image')" :url="uploadTo + '?field=image'"></file-upload>-->
                 <mt-field v-if="title !== ''" :placeholder="contactText" v-model="contactInfo"></mt-field>
+                <mt-field v-if="title !== ''" :placeholder="locationText" v-model="locationData"></mt-field>
                 <mt-button class="create_post_button" v-on:click="addPosts()" size="large">Click here to post this in {{name}}</mt-button>
               </div>
               <div v-else>
