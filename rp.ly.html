@@ -1594,7 +1594,7 @@
               </mt-tab-container-item>
               <mt-tab-container-item id="tab2">
                 <mt-header title="OurTown">
-                  <a slot="left">
+                  <a slot="left" v-if="!isDesktop">
                     <mt-button slot="left" @click="$router.back()" icon="back">back</mt-button>
                   </a>
                 </mt-header>
