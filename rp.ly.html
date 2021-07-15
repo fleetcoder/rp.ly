@@ -1224,7 +1224,15 @@
         font-size: 12px;
         letter-spacing: 1px;
       }
-      
+      body > div {
+
+      }
+      @media only screen and (min-width: 1025px) {
+        body > div > div.mobilelayout {
+          margin: 0 auto;
+          width:1025px;
+        }
+      }
     </style>
 
     <script id="client">
@@ -2605,7 +2613,7 @@
           }
         },
         template: `
-          <div>
+          <div class="mobilelayout">
            <router-view />
             <mt-header class="fixedheader" fixed :title="headerTitle">
               <a :href="publicLink" slot="left">
@@ -3346,7 +3354,7 @@
           }
         },
         template: `
-          <div>
+          <div class="mobilelayout">
            <router-view />
             <mt-header class="fixedheader" title="OurTown">
               <a slot="left">
@@ -3578,7 +3586,7 @@
           }
         },
         template: `
-          <div>
+          <div class="mobilelayout">
             <mt-header title="OurTown">
               <a slot="left" :href="publicLink">
                 <mt-button slot="left" icon="back">back</mt-button>
@@ -3890,7 +3898,7 @@
           }
         },
         template: `
-          <div class="feedwrap">
+          <div class="feedwrap mobilelayout">
             <mt-header title="OurTown">
               <a slot="left">
                 <mt-button slot="left" @click="$router.go(-1)" icon="back">back</mt-button>
@@ -4239,7 +4247,7 @@
           }
         },
         template: `
-          <div>
+          <div class="mobilelayout">
             <mt-header title="Rp.ly">
               <a v-if="linked" slot="left">
                 <mt-button slot="left" @click="$router.go(-1)" icon="back">back</mt-button>
@@ -4403,7 +4411,7 @@
           }
         },
         template: `
-          <div class="feedwrap">
+          <div class="feedwrap mobilelayout">
             <mt-header title="Rp.ly">
               <a v-on:click="showHelp()" slot="left">
                 <img class="headericon" slot="icon" src="file/help-circle.svg" />
@@ -4736,7 +4744,7 @@
           }
         },
         template: `
-          <div>
+          <div class="mobilelayout">
             <mt-header title="OurTown">
               <mt-button slot="left" @click="$router.go(-1)" icon="back">back</mt-button>
             </mt-header>
@@ -4826,7 +4834,7 @@
           }
         },
         template: `
-          <div>
+          <div class="mobilelayout">
             <mt-header title="Rp.ly">
               <mt-button slot="left" @click="$router.go(-1)" icon="back">back</mt-button>
             </mt-header>
@@ -4970,7 +4978,7 @@
           }
         },
         template: `
-          <div>
+          <div class="mobilelayout">
             <mt-header title="Rp.ly">
               <router-link :to="'/showPosts/' + idx" slot="left">
                 <mt-button icon="back">back</mt-button>
@@ -6019,7 +6027,7 @@
           this.reset()
         },
         template: `
-          <div>
+          <div class="mobilelayout">
             <mt-spinner v-bind:class="{'is-hidden':spinnerHidden}" type="snake"></mt-spinner>
             <mt-tab-container v-model="selected">
               <mt-tab-container-item id="tab1">
