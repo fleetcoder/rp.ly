@@ -288,6 +288,9 @@
         margin-bottom:4px;
       }
       .fixedheader {
+        position:absolute;
+        left:0;
+        right:0;
       }
       @media only screen and (min-width: 1025px) {
         body > div {
@@ -295,8 +298,9 @@
           margin: 0px auto;
         }
         .fixedheader {
-          width: 100%;
-          margin: 0px auto;
+          position:absolute;
+          left:0;
+          right:0;
         }
         .mint-tabbar {
           width: 100%;
@@ -3587,7 +3591,7 @@
         },
         template: `
           <div class="mobilelayout">
-            <mt-header title="OurTown">
+            <mt-header class="fixedheader" title="OurTown">
               <a slot="left" :href="publicLink">
                 <mt-button slot="left" icon="back">back</mt-button>
               </a>
@@ -3899,7 +3903,7 @@
         },
         template: `
           <div class="feedwrap mobilelayout">
-            <mt-header title="OurTown">
+            <mt-header class="fixedheader" title="OurTown">
               <a slot="left">
                 <mt-button slot="left" @click="$router.go(-1)" icon="back">back</mt-button>
               </a>
