@@ -1171,12 +1171,17 @@
       }
       .sectionheader {
         text-align:left;
+        display:block;
       }
       .recentarts {
         width:140px;
+        vertical-align: top;
+        display: inline-block;
+        text-align: left;
       }
       .recentarts > div > div > h1 {
-        width:150px;
+        width:100%;
+        padding-right:5px;
       }
       .navbar {
         background-color:white;
@@ -1236,6 +1241,33 @@
           margin: 0 auto;
           width:1025px;
         }
+      }
+      .mainimage {
+        width:360px;
+        overflow:hidden;
+        display: inline-block;
+        text-align:left;
+      }
+      .mainhed {
+        padding:10px;
+        display:block;
+        text-align:left;
+      }
+      .goarticle {
+        cursor: pointer;
+        vertical-align: top;
+        display: inline-block;
+        text-align: center;
+        width:360px;
+      }
+      .bigmenu > div {
+        background-color:#ECEFA4;
+      }
+      .bigmenu > div > a {
+        color:black;
+      }
+      .bigmenu > div > a > h1 {
+        font-size:18px;
       }
     </style>
 
@@ -1686,6 +1718,8 @@
             artlink: '',
             calgrp:'nibliqms',
             calendar: {},
+            parsedimg:'',
+            parsedhed:'',
             events: [
               {
                 date: "2021/07/12",
@@ -2035,6 +2069,21 @@
               for (var j = 0; j < 6; j++) {
                 if (j == 0) {
                   this.hedline = response.body[0][j].title
+
+                  var el = document.createElement('div')
+                  el.innerHTML = this.hedline
+                  var x = el.getElementsByClassName("article_img");
+                  var i;
+                  for (i = 0; i < x.length; i++) {
+                    this.parsedimg = x[i].src
+                  }
+                  var y = el.getElementsByClassName("article_hed");
+                  var i;
+                  for (i = 0; i < y.length; i++) {
+                    this.parsedhed = y[i].innerText
+                  }
+
+
                   this.artlink = response.body[0][j].link
                 } else {
                   this.items.push(response.body[0][j])
@@ -2130,8 +2179,8 @@
     <b-collapse id="nav-collapse" is-nav>
 
       <b-navbar-nav>
-        <b-nav-item href="/#/pubgroup/nibliqms">Calendar</b-nav-item>
         <b-nav-item href="/#/pubgroup/nibliqms">Local News</b-nav-item>
+        <b-nav-item href="/#/pubgroup/nibliqms">Calendar</b-nav-item>
         <b-nav-item href="/#/pubgroup/ekevbzyq">Classified Ads</b-nav-item>
         <b-nav-item href="/#/pubgroup/vbkuqsko">Bulletin Board</b-nav-item>
         <b-nav-item href="/#/pubgroup/hdkqocon">Support A Student</b-nav-item>
@@ -2144,21 +2193,24 @@
 <div class="container dtcontent" style="width:80%;">
   <div class="row" >
     <div class="col-sm">
-        <div v-on:click="goArticle(artlink)" v-html="hedline"></div>
+        <div v-on:click="goArticle(artlink)" class="goarticle">
+          <b-img :src="parsedimg" alt="Article Image" class="mainimage" />
+          <div class="mainhed"><h3>{{parsedhed}}</h3></div>
+        </div>
     </div>
     <div class="recentarts">
-      <h6 class="sectionheader">Recent Articles</h6>
+      <div><h6 class="sectionheader">Recent Articles</h6></div>
       <div v-for="(item, idx) in items">
         <div v-on:click="goArticle(item.link)" class="hiddenimg" v-html="item.title"></div>
       </div>
     </div>
     <div class="col-sm">
-      <h6 class="sectionheader">Community Calendar</h6>
+      <div><h6 class="sectionheader">Community Calendar</h6></div>
             <div id="calendar" ref="calendar" class="smallcal"></div>
 
     </div>
   </div>
-  <div class="row">
+  <div class="row bigmenu">
     <div class="col-sm">
         <a href="/#/pubgroup/bppuhyny">
         <img class="smallmenu twobytwo" src="https://ourtown.org/grpFile?field=image&amp;name=20210425-004301cil-newspaper.svg" />
@@ -2190,6 +2242,23 @@
         </a>
   <p>Lost and found | Help wanted | Fundraisers</p>
     </div>
+    <div class="col-sm">
+        <a href="/#/pubgroup/hdkqocon">
+        <img class="smallmenu twobytwo" src="https://ourtown.org/grpFile?field=image&amp;name=20210425-004231cil-education.svg" />
+        <h1>Support A Student
+        </h1>
+        </a>
+  <p>Help a local student reach their goals!</p>
+    </div>
+    <div class="col-sm">
+        <a href="/#/pubgroup/tlicintr">
+        <img class="smallmenu twobytwo" src="https://ourtown.org/grpFile?field=image&amp;name=20210425-003105cil-building.svg" />
+        <h1>Business Directory
+        </h1>
+        </a>
+        <p>Support Council's businesses by shopping local!</p>
+    </div>
+
   </div>
 </div>
 
