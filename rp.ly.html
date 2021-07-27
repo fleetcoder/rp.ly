@@ -1270,6 +1270,23 @@
       .bigmenu > div > a > h1 {
         font-size:18px;
       }
+      a.imagecell > div > div > p > ul > li > img {
+        width:70%;
+      }
+      
+      a.imagecell > div > div > p > ul {
+        list-style:none;
+        font-size:18px;
+        white-space: nowrap;
+        float:left;
+        margin:20px;
+      }
+      .dtfooter {
+        margin:30px;
+      }
+      .dtfooter a {
+        color:black;
+      }
     </style>
 
     <script id="client">
@@ -2160,7 +2177,7 @@
     <b-collapse id="nav-collapse" is-nav>
 
       <b-navbar-nav>
-        <b-nav-item href="/#/pubgroup/nibliqms">Local News</b-nav-item>
+        <b-nav-item href="/#/pubgroup/bppuhyny">Local News</b-nav-item>
         <b-nav-item href="/#/pubgroup/nibliqms">Calendar</b-nav-item>
         <b-nav-item href="/#/pubgroup/ekevbzyq">Classified Ads</b-nav-item>
         <b-nav-item href="/#/pubgroup/vbkuqsko">Bulletin Board</b-nav-item>
@@ -2241,12 +2258,31 @@
     </div>
 
   </div>
+  <div class="row dtfooter">
+    <div class="col-sm">
+        
+            <a href="/#/login/bppuhyny">Login</a>
+            &nbsp;|&nbsp;
+            <a href="/#/auth/bppuhyny">Sign Up</a>
+            &nbsp;|&nbsp;
+            <a href="/#/pubgroup/jyyktmzx">About Us</a>
+
+
+    </div>
+  </div>
+        
 </div>
 
 </div> <!-- end isDesktop -->
 
             <div v-if="!isDesktop" class="mobcontent">
-            <div class="postest">
+
+            <mt-header class="fixedheader" fixed title="OurTown">
+            </mt-header>
+
+
+
+            <div class="postest" style="margin-top:50px;">
             <a href="/#/login/bppuhyny">Login</a>
             |<a href="/#/auth/bppuhyny">Sign Up</a>
             <!--|<a href="/#/contactForm/tlicintr">Business Inquiries</a>
@@ -2795,7 +2831,7 @@
               <mt-cell is-link @click.native="showMenu()" title="Close Menu"></mt-cell>
               <mt-cell v-for="(item,idx) in publicGroups" is-link :to="item.grpLink" :title="item.name"><img class="smallmenu" v-if="checkImage(item)" :src="item.image" /></mt-cell>
               <mt-cell v-if="authed" is-link :to="'/myposts/' + grp" title="My Posts"></mt-cell>
-              <mt-cell v-if="authed" is-link @click.native="logOut()" title="Sign Out"></mt-cell>
+              <mt-cell v-if="authed" is-link style="cursor:pointer;" @click.native="logOut()" title="Sign Out"></mt-cell>
             </mt-popup>
             <!--<mt-actionsheet
               cancelText="Close"
@@ -2806,7 +2842,7 @@
             <div class="desktoponly" v-if="isDesktop">
               <mt-cell v-for="(item,idx) in publicGroups" is-link :to="item.grpLink" :title="item.name"><img class="smallmenu" v-if="checkImage(item)" :src="item.image" /></mt-cell>
               <mt-cell v-if="authed" is-link :to="'/myposts/' + grp" title="My Posts"></mt-cell>
-              <mt-cell v-if="authed" is-link @click.native="logOut()" title="Sign Out"></mt-cell>
+              <mt-cell v-if="authed" is-link style="cursor:pointer;" @click.native="logOut()" title="Sign Out"></mt-cell>
             </div>
             
           </div>`
@@ -3509,7 +3545,7 @@
             <div class="desktoponly" v-if="isDesktop">
               <mt-cell v-for="(item,idx) in publicGroups" is-link :to="item.grpLink" :title="item.name"><img class="smallmenu" v-if="checkImage(item)" :src="item.image" /></mt-cell>
               <mt-cell v-if="authed" is-link :to="'/myposts/' + grp" title="My Posts"></mt-cell>
-              <mt-cell v-if="authed" is-link @click.native="logOut()" title="Sign Out"></mt-cell>
+              <mt-cell v-if="authed" is-link style="cursor:pointer;" @click.native="logOut()" title="Sign Out"></mt-cell>
               <mt-button class="create_post_button" v-if="showPostButton" v-on:click="doPost()" size="large">Click here to create a new post in {{name}}</mt-button>
             </div>
             <div v-else>
@@ -3520,7 +3556,7 @@
               <mt-cell is-link @click.native="showMenu()" title="Close Menu"></mt-cell>
               <mt-cell v-for="(item,idx) in publicGroups" is-link :to="item.grpLink" :title="item.name"><img class="smallmenu" v-if="checkImage(item)" :src="item.image" /></mt-cell>
               <mt-cell v-if="authed" is-link :to="'/myposts/' + grp" title="My Posts"></mt-cell>
-              <mt-cell v-if="authed" is-link @click.native="logOut()" title="Sign Out"></mt-cell>
+              <mt-cell v-if="authed" is-link style="cursor:pointer;" @click.native="logOut()" title="Sign Out"></mt-cell>
             </mt-popup>
         
             <div style="width:100%;margin-top:100px;margin-bottom:40px;display:inline-block;">
