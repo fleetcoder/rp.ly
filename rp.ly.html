@@ -745,6 +745,7 @@
         letter-spacing: .5px;
         padding: 2px 16px;
         vertical-align: top;
+        text-align:left;
       }
 
       .event.empty {
@@ -2040,7 +2041,7 @@
           }();
           this.calendar = new Calendar()
           this.calendar.el = this.$refs.calendar
-          Vue.http.get( 'getCal' + '?grp=' + this.$route.params.grp).then( ( response ) => {
+          Vue.http.get( 'getCal' + '?grp=' + this.calgrp).then( ( response ) => {
             if ( !!response.body ) {
               var calitems = response.body[0]
               var data = []
@@ -2090,26 +2091,6 @@
                 }
               }
               if (this.items.length > 0){
-              }
-            }
-          })
-          Vue.http.get( 'getCal' + '?grp=' + this.calgrp).then( ( response ) => {
-            if ( !!response.body ) {
-              var calitems = response.body[0]
-              var data = []
-              for (var j = 0; j < calitems.length; j++) {
-                data.push({ eventName: calitems[j]['title'], calendar: 'Local', color: 'green', date: moment(calitems[j]['pubDate'],'YYYY-MM-DD')})
-              }
-              this.calendar.events = data;
-              this.calendar.current = moment().date(1);
-              var self = this.calendar;
-              this.calendar.draw();
-              var current = this.calendar.el.querySelector('.today');
-              if(current) {
-                var self = this.calendar;
-                window.setTimeout(function() {
-                  self.openDay(current);
-                }, 500);
               }
             }
           })
