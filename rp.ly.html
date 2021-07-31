@@ -1287,6 +1287,10 @@
       .dtfooter a {
         color:black;
       }
+      .feedwrap > div:nth-child(2) {
+        padding-top: 100px;
+      }
+      
     </style>
 
     <script id="client">
@@ -4034,34 +4038,27 @@
                 ></b-form-datepicker>
                 </b-input-group>
               </div>
-              <div v-if="!isDesktop">
-                <mt-datetime-picker
-                cancelText="Cancel"
-                confirmText="Confirm"
-                @confirm="dateConfirm"
-                type="date"
-                ref="picker1"
-                   date-format = "{value}"
-                   month-format = "{value}"
-                   year-format = "{value}"
-                :startDate="startDate"
-                v-model="dateVal">
-                </mt-datetime-picker>
-                <mt-field placeholder="Write your description here..." type="textarea" rows="14" v-model="title"></mt-field>
-                <h1 v-if="title.length > 300">Please shorten your post to fewer than 300 characters, thank you!</h1>
-                <mt-cell title="" v-if="image !== ''"><img class="img" :src="'myFile?staged=1&field=image&name=' + image" /></mt-cell>
-                <!--<file-upload btn-label="Click here to upload a photo..." @change="stagedUpload('image')" :url="uploadTo + '?field=image'"></file-upload>-->
-                <mt-field v-if="title !== ''" :placeholder="contactText" v-model="contactInfo"></mt-field>
-                <mt-field v-if="title !== ''" :placeholder="locationText" v-model="locationData"></mt-field>
-                <mt-button class="create_post_button" v-on:click="addPosts()" size="large">Click here to post this in {{name}}</mt-button>
-              </div>
-              <div v-else>
-                <h4>Please use a mobile device to create your calendar item, desktop/laptop computers are currently not supported. Thank you :-)</h4>
-              </div>
+              <mt-datetime-picker
+              cancelText="Cancel"
+              confirmText="Confirm"
+              @confirm="dateConfirm"
+              type="date"
+              ref="picker1"
+                 date-format = "{value}"
+                 month-format = "{value}"
+                 year-format = "{value}"
+              :startDate="startDate"
+              v-model="dateVal">
+              </mt-datetime-picker>
+              <mt-field placeholder="Write your description here..." type="textarea" rows="8" v-model="title"></mt-field>
+              <mt-cell title="" v-if="image !== ''"><img class="img" :src="'myFile?staged=1&field=image&name=' + image" /></mt-cell>
+              <!--<file-upload btn-label="Click here to upload a photo..." @change="stagedUpload('image')" :url="uploadTo + '?field=image'"></file-upload>-->
+              <mt-field v-if="title !== ''" :placeholder="contactText" v-model="contactInfo"></mt-field>
+              <mt-field v-if="title !== ''" :placeholder="locationText" v-model="locationData"></mt-field>
+              <mt-button class="create_post_button" v-on:click="addPosts()" size="large">Click here to post this in {{name}}</mt-button>
             </div>
             <div v-else>
-              <mt-field placeholder="Write your description here..." type="textarea" rows="14" v-model="title"></mt-field>
-              <h1 v-if="title.length > 300">Please shorten your post to fewer than 300 characters, thank you!</h1>
+              <mt-field placeholder="Write your description here..." type="textarea" rows="8" v-model="title"></mt-field>
               <mt-cell title="" v-if="image !== ''"><img class="img" :src="'myFile?staged=1&field=image&name=' + image" /></mt-cell>
               <file-upload accept="image/*" btn-label="Click here to upload a photo..." @change="stagedUpload('image')" :url="uploadTo + '?field=image'"></file-upload>
               <mt-field v-if="title !== ''" :placeholder="contactText" v-model="contactInfo"></mt-field>
