@@ -3241,7 +3241,7 @@
               this.calendar.current = curr
               var self = this.calendar;
               this.calendar.draw();
-              var current = this.calendar.el.querySelector('.today');
+              var current = this.calendar.el.querySelector('div.week:nth-child(1) > div:nth-child(6)');
               if(current) {
                 var self = this.calendar;
                 window.setTimeout(function() {
