@@ -1293,6 +1293,12 @@
       .feedtopper {
         padding-top: 100px;
       }
+      .tourfooter a {
+        color:black;
+      }
+      .lessfeedtopper {
+        padding-top: 50px;
+      }
       
     </style>
 
@@ -1326,7 +1332,8 @@
             resetHidden: true,
             sentReset: false,
             savedReset: false,
-            isDesktop:false
+            isDesktop:false,
+            loggedInUserEmail:''
           }
         },
         created() {
@@ -1386,23 +1393,16 @@
                     return
                   }
                   if (response.body[0] == 'OK') {
+                    
                     this.emailstatus = 'success'
                     this.pwdstatus = 'success'
                     this.loginpassword = ''
+                    this.loggedInUserEmail = this.loginemail
                     this.loginemail = ''
-                    if (typeof this.$route.params.grp !== 'undefined') {
-                      if ('bppuhyny' == this.$route.params.grp) {
-                        router.push( '/group/' + this.$route.params.grp )
-                      } else {
-                        router.push( '/postgroup/' + this.$route.params.grp )
-                      }
-                    } else {
-                      if (typeof this.$route.params.postid !== 'undefined') {
-                        router.push( '/showPost/' + this.$route.params.postid )
-                      } else {
-                        window.location.href = '/'
-                      }
-                    }
+                    this.$refs['loggedin-modal'].show()
+                    /*
+*/
+                    
                   } else {
                     this.emailstatus = 'error'
                     this.pwdstatus = 'error'
@@ -1616,6 +1616,21 @@
                 this.password = ''
               }
             })
+          },
+          handleOk(){
+            if (typeof this.$route.params.grp !== 'undefined') {
+              if ('bppuhyny' == this.$route.params.grp) {
+                router.push( '/group/' + this.$route.params.grp )
+              } else {
+                router.push( '/postgroup/' + this.$route.params.grp )
+              }
+            } else {
+              if (typeof this.$route.params.postid !== 'undefined') {
+                router.push( '/showPost/' + this.$route.params.postid )
+              } else {
+                window.location.href = '/'
+              }
+            }
           }
         },
         template: `
@@ -1674,6 +1689,11 @@
                 <mt-spinner v-bind:class="{'is-hidden':spinnerHidden}" type="snake"></mt-spinner>
               </mt-tab-container-item>
             </mt-tab-container>
+            <div>
+              <b-modal ref="loggedin-modal" ok-only hide-header-close @ok="handleOk">
+                <p class="my-4">Welcome! You are logged in as {{loggedInUserEmail}}</p>
+              </b-modal>
+            </div>
           </div>`
       }
       const connect = {
@@ -2076,7 +2096,7 @@
               this.calendar.current = moment().date(1);
               var self = this.calendar;
               this.calendar.draw();
-              var current = this.calendar.el.querySelector('.today');
+              var current = this.calendar.el.querySelector('div.week:nth-child(1) > div:nth-child(6)');
               if(current) {
                 var self = this.calendar;
                 window.setTimeout(function() {
@@ -2289,13 +2309,8 @@
 
 
 
-            <div class="postest" style="margin-top:50px;">
-            <a href="/#/login/bppuhyny">Login</a>
-            |<a href="/#/auth/bppuhyny">Sign Up</a>
-            <!--|<a href="/#/contactForm/tlicintr">Business Inquiries</a>
-            |<a href="/#/pubgroup/jyyktmzx">About</a>-->
-            </div>
-            <div v-if="showIntro" class="centerbox">
+
+            <div v-if="showIntro" class="centerbox lessfeedtopper">
                 <div class="welcomebox centerbox centerpic">
                   <div class="">
                     <div class="centerbox centercopy">Welcome to Council, Idaho</div>
@@ -2386,7 +2401,15 @@
 
               </div>
 
-            <div class="centerbox tourfooter">OurTown - Council, Idaho</div>
+            <div class="centerbox tourfooter">
+              
+              <a href="/#/login/bppuhyny">Login</a>
+              &nbsp;|&nbsp;
+              <a href="/#/auth/bppuhyny">Sign Up</a>
+              &nbsp;|&nbsp;
+              <a href="/#/pubgroup/jyyktmzx">About Us</a>
+              
+              </div>
           </div>`
       }
       const contactForm = {
@@ -3496,6 +3519,9 @@
           },
           showMenu(){
             this.menuVisible = !this.menuVisible
+          },
+          linkGo(link){
+            window.location.href = link
           }
         },
         template: `
@@ -3522,7 +3548,7 @@
             <div id="calendar" ref="calendar" v-bind:class="{'is-hidden':calHidden}"></div>
             <div v-if="shareCal">
               <div v-if="item.isHtml" class="leftfloat calitem" v-for="(item, idx) in items">
-                <p v-html="item.title"></p>
+                <p v-html="item.title" @click="linkGo(item.link)"></p>
               </div>
               
               
@@ -3667,12 +3693,12 @@
             this.publicLink = publicData['publicLink']
             if ("undefined" !== typeof publicData['shareCal']) {
               if (parseInt(publicData['shareCal']) > 0) {
-                this.shareCal = true
-                this.calHidden = false
+                //this.shareCal = true
+                //this.calHidden = false
               }
             }
             if ("undefined" !== typeof publicData['publicName']) {
-              Vue.http.get( 'getPosts' + '?mine=1&grp=' + this.$route.params.grp).then( ( response ) => {
+              Vue.http.get( 'getPosts' + '?mine=1').then( ( response ) => {
                 if ( !!response.body ) {
                   if (this.cursor > 0) {
                     if (response.body[0].length < 10) {
@@ -3750,7 +3776,7 @@
             <div v-if="shareCal">
               
             </div>
-            <div v-else>
+            <div class="feedtopper" v-else>
               <!--<img class="groupimg" :src="'grpFile?field=image&name=' + groupPic" />-->
               <mt-cell class="imagecell" v-for="(item, idx) in items" :title="item.name">
                 <!--<p class="caption">
@@ -3806,7 +3832,8 @@
             locationData:'',
             locationText: 'Enter your location here...',
             timevalue: '',
-            datevalue:''
+            datevalue:'',
+            body:''
           }
         },
         watch: {
@@ -3932,6 +3959,15 @@
               this.spinnerHidden = true
               return
             }
+            if (this.body.length < 3) {
+              MintUI.Toast({
+                message: 'Please add location. Thank you!',
+                iconClass: 'icon icon-error',
+                duration: 4000
+              })
+              this.spinnerHidden = true
+              return
+            }
             if (!(this.shareCal === true)) {
               if (!(this.contactInfo.match(/\d/g) === null)) {
                 if (this.contactInfo.match(/\d/g).length===10) {
@@ -3962,9 +3998,11 @@
               evtdate = moment(moment.utc(this.dateVal).toDate()).local().format("YYYY-MM-DD")
               evttime = this.timeVal
             }
+            var formattedTitle = '<h1 class="article_hed">' + this.dateText + ' - - ' + this.timeText + ' - - ' + this.body + '</h1>' + '<div class="feedimages"><img class="article_img" src="' + postimg + '" alt="Image" /></div>'
+            var formattedBody = '<p>' + this.title + '</p>'
             Vue.http.post( 'addPosts', {
               recips: JSON.stringify([this.groupid]),
-              title: JSON.stringify(['<h1 class="article_hed">' + this.dateText + ' - - ' + this.timeText + ' - - ' + this.title + '</h1>' + '<div class="feedimages"><img class="article_img" src="' + postimg + '" alt="Image" /></div>']),
+              title: JSON.stringify([formattedTitle]),
               expirehours: 0,
               speedup: '',
               publicPost: 1,
@@ -3972,7 +4010,8 @@
               eventTime: evttime,
               contactInfo: this.contactInfo,
               timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-              location:this.locationData
+              location:this.locationData,
+              body:formattedBody
             }).then( ( response ) => {
               this.spinnerHidden = true
               this.title = ''
@@ -4092,6 +4131,7 @@
               <!--<file-upload btn-label="Click here to upload a photo..." @change="stagedUpload('image')" :url="uploadTo + '?field=image'"></file-upload>-->
               <mt-field v-if="title !== ''" :placeholder="contactText" v-model="contactInfo"></mt-field>
               <mt-field v-if="title !== ''" :placeholder="locationText" v-model="locationData"></mt-field>
+              <mt-field v-if="title !== ''" placeholder="Enter your title here..." v-model="body"></mt-field>
               <mt-button class="create_post_button" v-on:click="addPosts()" size="large">Click here to post this in {{name}}</mt-button>
             </div>
             <div v-else>
@@ -4100,6 +4140,7 @@
               <file-upload accept="image/*" btn-label="Click here to upload a photo..." @change="stagedUpload('image')" :url="uploadTo + '?field=image'"></file-upload>
               <mt-field v-if="title !== ''" :placeholder="contactText" v-model="contactInfo"></mt-field>
               <mt-field v-if="title !== ''" :placeholder="locationText" v-model="locationData"></mt-field>
+              <mt-field v-if="title !== ''" placeholder="Enter your title here..." v-model="body"></mt-field>
               <mt-button class="create_post_button" v-on:click="addPosts()" size="large">Click here to post this in {{name}}</mt-button>
             </div>
           </div>`
@@ -9697,6 +9738,7 @@ def addPosts():
       newrec['body'] = request.form.get('shareText')
     if not request.form.get('publicPost') is None:
       postkey = randomword(8)
+      newrec['body'] = request.form.get('body')
       newrec['key'] = postkey
       newrec['link'] = 'https://' + mydomain + '/post/' + postkey
     if not request.form.get('eventDate') is None:
