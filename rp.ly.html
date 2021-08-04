@@ -673,7 +673,7 @@
 
       .blue { background: rgba(156, 202, 235, 1); }
       .orange { background: rgba(247, 167, 0, 1); }
-      .green { background: rgba(153, 198, 109, 1); }
+      .green { background: #D54C4C; }
       .yellow { background: rgba(249, 233, 0, 1); }
 
       .details {
@@ -3771,11 +3771,9 @@
                 <mt-button slot="left" icon="back">back</mt-button>
               </a>
             </mt-header>
-            <mt-button v-if="showPostButton" v-on:click="doPost()" size="large">Post in {{name}}</mt-button>
-            <div id="calendar" ref="calendar" v-bind:class="{'is-hidden':calHidden}"></div>
-            <div v-if="shareCal">
-              
-            </div>
+
+
+
             <div class="feedtopper" v-else>
               <!--<img class="groupimg" :src="'grpFile?field=image&name=' + groupPic" />-->
               <mt-cell class="imagecell" v-for="(item, idx) in items" :title="item.name">
