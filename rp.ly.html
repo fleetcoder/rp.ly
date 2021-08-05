@@ -501,7 +501,7 @@
         float:left;
       }
       .topmenu {
-        top:192px;
+        top:220px;
         width:100%;
         margin-top:0;
         padding-top:0;
@@ -1157,12 +1157,17 @@
         margin-bottom:50px;
       }
       .publicpagemenu {
-        top:212px;
+        top:240px;
         width:100%;
         margin-top:0;
         padding-top:0;
       }
       .create_post_button {
+        padding-top:10px;
+        padding-bottom:50px;
+      }
+      .mobile_create_post_button {
+        margin-top:85px;
         padding-top:10px;
         padding-bottom:50px;
       }
@@ -3550,7 +3555,7 @@
             </mt-header>
 
             <div v-if="!isDesktop">
-              <mt-button class="create_post_button" v-if="showPostButton" v-on:click="doPost()" size="medium">Click here to create a new post in {{name}}</mt-button>
+              <mt-button class="mobile_create_post_button" v-if="showPostButton" v-on:click="doPost()" size="medium">Click here to create a new post in {{name}}</mt-button>
             </div>
 
            <div v-bind:class="{'desktopandmobile':isDesktop}">
