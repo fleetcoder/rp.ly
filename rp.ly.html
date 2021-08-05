@@ -1021,6 +1021,19 @@
         color: black;
         text-decoration-color: black;
       }
+      .menugrid h1 {
+        font-size: 16px;
+      }
+      .menugrid p {
+        font-size:12px;
+      }
+      .menugrid img {
+        max-height:20px;
+        max-width:20px;
+        width:20px;
+        height:20px;
+        margin-right:10px;
+      }
       @media only screen and (min-width: 1025px) {
         .desktopGrades h1 {
           font-size:32px;
@@ -2393,7 +2406,7 @@
               <h1>Business Directory
               </h1>
               </a>
-        <p>Support Council's businesses by shopping local!</p>
+        <p>Support Council's businesses - shop local!</p>
               </div>
               </li>
               
@@ -3527,7 +3540,7 @@
         template: `
           <div class="mobilelayout">
            <router-view />
-            <mt-header class="fixedheader" title="OurTown">
+            <mt-header fixed class="fixedheader" title="OurTown">
               <a slot="left" v-if="!isDesktop">
                 <mt-button slot="left" @click="$router.back()" icon="back">back</mt-button>
               </a>
@@ -3536,7 +3549,7 @@
               </a>
             </mt-header>
 
-            <div v-if="!isDesktop" class="feedtopper">
+            <div v-if="!isDesktop">
               <mt-button class="create_post_button" v-if="showPostButton" v-on:click="doPost()" size="medium">Click here to create a new post in {{name}}</mt-button>
             </div>
 
