@@ -22,7 +22,7 @@
 
     <div id="app"><router-view class="view"></router-view></div>
 
-    <!-- pallette: 222831 393e46 32e0c4 ffd3e1 -->
+    <!-- pallette: D54C4C 393e46 D9DD6B ffd3e1 -->
     <style id="style">
       @font-face {
         font-family: 'Lato';
@@ -63,19 +63,19 @@
         margin: 15px;
       }
       .mint-header {
-        background-color: #D9DD6B;
+        background-color: #D54C4C;
       }
       #app {
         margin:0;
       }
       .mint-button--primary {
-        background-color: #D9DD6B;
+        background-color: #D54C4C;
       }
       .mint-button--normal {
-        background-color: #32e0c4;
+        background-color: #D9DD6B;
       }
       .mint-button--default {
-        background-color: #32e0c4;
+        background-color: #D9DD6B;
       }
       .is-hidden {
         display: none;
@@ -1089,15 +1089,15 @@
         margin:8px;
       }
       .toppanel {
-        background-color:#e08f62;
+        background-color:#D9DD6B;
         filter:alpha(opacity=50);
       }
       .midpanel {
-        background-color:#ded7b1;
+        background-color:#ECEFA4;
         filter:alpha(opacity=50);
       }
       .botpanel {
-        background-color:#9dab86;
+        background-color:#D9DD6B;
         filter:alpha(opacity=50);
       }
       .menubox {
@@ -1214,20 +1214,20 @@
       }
       
       .smallcal >  .month > .week > .day {
-        background: #D9DD6B;
+        background: #D54C4C;
       }
       .smallcal >  .month > .week {
-        background: #D9DD6B;
+        background: #D54C4C;
         min-width: 280px;
       }
       .smallcal >  .month {
-        background: #D9DD6B;
+        background: #D54C4C;
       }
       .smallcal > .legend {
-        background: #D9DD6B;
+        background: #D54C4C;
       }
       .smallcal > {
-        background: #D9DD6B;
+        background: #D54C4C;
       }
 
       .smallcal >  .month > .week > .day > .day-number {
@@ -7002,7 +7002,7 @@
               grp:this.items[ this.idx ].key
             }).then( ( response ) => {
               this.groupEmbed = '<div style="font-family:courier,monospace;width:90%"><img style="height:auto;padding:30px;display:block;margin-left:auto;margin-right:auto;width:50%;padding:10px;" src="https://rp.ly/grpFile?field=image&name='
-              this.groupEmbed = this.groupEmbed + encodeURIComponent(this.items[ this.idx ].image) + '" /><p style="text-align:center;display:block;padding:10px;">' + response.body[0] + this.inviteText + response.body[1] + '</p><a style="text-align:center;background-color:#32e0c4;display:block;color:black;text-decoration:none;padding:10px;" href="https://rp.ly/grp/' +  this.items[ this.idx ].key + '">' + 'Join ' + response.body[0] + "'s Gallery" + '</a></p></div>'
+              this.groupEmbed = this.groupEmbed + encodeURIComponent(this.items[ this.idx ].image) + '" /><p style="text-align:center;display:block;padding:10px;">' + response.body[0] + this.inviteText + response.body[1] + '</p><a style="text-align:center;background-color:#D9DD6B;display:block;color:black;text-decoration:none;padding:10px;" href="https://rp.ly/grp/' +  this.items[ this.idx ].key + '">' + 'Join ' + response.body[0] + "'s Gallery" + '</a></p></div>'
             })*/
             this.$emit('on-tabs-hidden')
           },
@@ -8530,7 +8530,7 @@ def getGroupEmbed():
       imgsrc = urllib.parse.quote(items[0]['image'])
     if not ispublic:
       html = '<div style="font-family:courier,monospace;width:90%"><img alt="gallery image for ' + items[0]['name'] + '" style="height:auto;padding:30px;display:block;margin-left:auto;margin-right:auto;width:50%;padding:10px;" src="https://' + mydomain + '/grpFile?field=image&name='
-      html = html + imgsrc + '" /><p style="text-align:center;display:block;padding:10px;">' + owner['name'] + invitetext + items[0]['name'] + '</p><a style="text-align:center;background-color:#32e0c4;display:block;color:black;text-decoration:none;padding:10px;" href="https://' + mydomain + '/grp/' +  items[0]['key'] + '">' + 'Join ' + owner['name'] + "'s Gallery" + '</a></div>'
+      html = html + imgsrc + '" /><p style="text-align:center;display:block;padding:10px;">' + owner['name'] + invitetext + items[0]['name'] + '</p><a style="text-align:center;background-color:#D9DD6B;display:block;color:black;text-decoration:none;padding:10px;" href="https://' + mydomain + '/grp/' +  items[0]['key'] + '">' + 'Join ' + owner['name'] + "'s Gallery" + '</a></div>'
     else:
       html = '<img style="height:auto;padding:30px;display:block;margin-left:auto;margin-right:auto;width:50%;padding:10px;" src="https://' + mydomain + '/' + 'grpFile?field=publicImage&name=' + urllib.parse.quote(items[0]['publicImage']) + '" />'
       html = html + '<h3>' + items[0]['publicName'] + '</h3>'
