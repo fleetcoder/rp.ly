@@ -22,7 +22,7 @@
 
     <div id="app"><router-view class="view"></router-view></div>
 
-    <!-- pallette: D54C4C 393e46 D9DD6B ffd3e1 -->
+    <!-- pallette: 5F7A61 393e46 D9DD6B ffd3e1 -->
     <style id="style">
       @font-face {
         font-family: 'Lato';
@@ -63,13 +63,13 @@
         margin: 15px;
       }
       .mint-header {
-        background-color: #D54C4C;
+        background-color: #5F7A61;
       }
       #app {
         margin:0;
       }
       .mint-button--primary {
-        background-color: #D54C4C;
+        background-color: #5F7A61;
       }
       .mint-button--normal {
         background-color: #D9DD6B;
@@ -673,7 +673,7 @@
 
       .blue { background: rgba(156, 202, 235, 1); }
       .orange { background: rgba(247, 167, 0, 1); }
-      .green { background: #D54C4C; }
+      .green { background: #5F7A61; }
       .yellow { background: rgba(249, 233, 0, 1); }
 
       .details {
@@ -3761,6 +3761,9 @@
               router.push('/postgroup/' + this.$route.params.grp)
             }
           },
+          editPosts(key){
+            router.push('/postgroup/' + this.$route.params.grp + '/' + key)
+          },
           delPosts(id,idx){
             console.log('id ' + id.toString() + ' and ' + idx.toString())
             this.spinnerHidden = false
@@ -3784,6 +3787,7 @@
         },
         template: `
           <div class="mobilelayout">
+        
             <mt-header class="fixedheader" title="OurTown">
               <a v-if="!isDesktop" slot="left" :href="publicLink">
                 <mt-button slot="left" icon="back">back</mt-button>
@@ -3801,6 +3805,7 @@
                   <span v-text="item.to"></span>
                 </p>-->
                 <p class="caption" v-html="item.title"></p>
+                <mt-button size="large" type="primary" v-on:click="editPosts(item.key)">Edit</mt-button>
                 <mt-button class="del_linkpost" size="large" type="danger" v-on:click="delPosts(item.id,idx)">Delete</mt-button>
                 <!--<div class="outer">
                   <img class="oimg" :src="imageLink(item)" v-if="item.allowDownload" />
@@ -3849,7 +3854,9 @@
             locationText: 'Enter your location here...',
             timevalue: '',
             datevalue:'',
-            body:''
+            body:'',
+            post:{},
+            imageHidden:false
           }
         },
         watch: {
@@ -3878,6 +3885,60 @@
             }
         },
         created() {
+          if ("undefined" !== typeof this.$route.params.post) {
+            console.log('EDIT POST ' + this.$route.params.post)
+            
+            Vue.http.post( 'getPost', {
+              postid:this.$route.params.post
+            }).then( ( response ) => {
+              if (response.body.length > 0) {
+
+                this.post = response.body[0]
+                this.title = this.post.body
+                this.image = this.post.image
+                this.body = this.post.title
+                this.contactInfo = this.post.contact
+                this.imageHidden = true
+                this.locationData = this.post.location
+                
+                
+                var el = document.createElement('div')
+                el.innerHTML = this.body
+                var x = el.getElementsByClassName("article_img");
+                var i;
+                for (i = 0; i < x.length; i++) {
+                  this.image = x[i].src
+                }
+                var y = el.getElementsByClassName("article_hed");
+                var i;
+                for (i = 0; i < y.length; i++) {
+                  this.body = y[i].innerText
+                }
+
+                
+                
+                
+                if (response.body[1] == 'AUTHED') {
+                  this.authed = true
+                }
+  
+              }
+              
+              /*
+              if (this.sound == '') {
+                this.soundHidden = true
+              }
+              if (this.image == '') {
+                this.imageHidden = true
+              }
+              this.$emit('on-tabs-hidden')
+*/
+
+            })
+            
+            
+          }
+          
           var ua = navigator.userAgent || navigator.vendor || window.opera
           this.isInstagram = (ua.indexOf('Instagram') > -1) ? true : false
           this.spinnerHidden = false
@@ -4016,28 +4077,62 @@
             }
             var formattedTitle = '<h1 class="article_hed">' + this.dateText + ' - - ' + this.timeText + ' - - ' + this.body + '</h1>' + '<div class="feedimages"><img class="article_img" src="' + postimg + '" alt="Image" /></div>'
             var formattedBody = '<p>' + this.title + '</p>'
-            Vue.http.post( 'addPosts', {
-              recips: JSON.stringify([this.groupid]),
-              title: JSON.stringify([formattedTitle]),
-              expirehours: 0,
-              speedup: '',
-              publicPost: 1,
-              eventDate: evtdate,
-              eventTime: evttime,
-              contactInfo: this.contactInfo,
-              timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-              location:this.locationData,
-              body:formattedBody
-            }).then( ( response ) => {
-              this.spinnerHidden = true
-              this.title = ''
-              MintUI.Toast({
-                message: 'Your post was saved',
-                iconClass: 'icon icon-success',
-                duration: 1000
+
+
+            if ("undefined" !== typeof this.$route.params.post) {
+
+              Vue.http.post( 'modPosts', {
+                id : this.post.id,
+                title: JSON.stringify([formattedTitle]),
+                location:this.locationData,
+                body:formattedBody,
+                contactInfo: this.contactInfo,
+                eventDate: evtdate,
+                eventTime: evttime
+              }).then( ( response ) => {
+                this.spinnerHidden = true
+                this.title = ''
+                this.body = ''
+                MintUI.Toast({
+                  message: 'Your post was saved',
+                  iconClass: 'icon icon-success',
+                  duration: 1000
+                })
+                router.push('/pubgroup/' + this.$route.params.grp)
               })
-              router.push('/pubgroup/' + this.$route.params.grp)
-            })
+
+
+
+            } else {
+
+
+              Vue.http.post( 'addPosts', {
+                recips: JSON.stringify([this.groupid]),
+                title: JSON.stringify([formattedTitle]),
+                expirehours: 0,
+                speedup: '',
+                publicPost: 1,
+                eventDate: evtdate,
+                eventTime: evttime,
+                contactInfo: this.contactInfo,
+                timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+                location:this.locationData,
+                body:formattedBody
+              }).then( ( response ) => {
+                this.spinnerHidden = true
+                this.title = ''
+                this.body = ''
+                MintUI.Toast({
+                  message: 'Your post was saved',
+                  iconClass: 'icon icon-success',
+                  duration: 1000
+                })
+                router.push('/pubgroup/' + this.$route.params.grp)
+              })
+
+            }
+            
+            
           },
           stagedUpload(field){
             Vue.http.get( 'stagedFile?field=' + field ).then( ( response ) => {
@@ -7769,6 +7864,9 @@
             path: '/postgroup/:grp',
             component: PublicPostPage
         },{
+            path: '/postgroup/:grp/:post',
+            component: PublicPostPage
+        },{
             path: '/myposts/:grp',
             component: PublicMyPostsPage
         },{
@@ -9642,6 +9740,7 @@ def addFeeds():
       mod_one('settings',{'value':json.dumps(feeds)},sid)
   return json.dumps(feeds)
 
+
 @app.route('/addPosts',methods=['GET','POST'])
 def addPosts():
   setHdr = -1
@@ -9993,6 +10092,19 @@ def modPosts():
     'sound' : saveFile( 'sound' ),
     'link' : linkVal
   }
+  contactInfo = ''
+  if not request.form.get('contactInfo') is None:
+    contactInfo = request.form.get('contactInfo')
+    newobj['contact'] = contactInfo
+  if not request.form.get('location') is None:
+    newobj['location'] = request.form.get('location')
+  if not request.form.get('eventDate') is None:
+    if len(request.form.get('eventDate')) > 0:
+      eventdate = datetime.strptime(request.form.get('eventDate'), "%Y-%m-%d")
+      eventtime = request.form.get('eventTime').split(':')
+      newobj['event'] = str( timezone( request.form.get('timeZone') ).localize( 
+        eventdate.replace(hour=int(eventtime[0]), minute=int(eventtime[1]))
+      ))
   if newobj['image'] == '':
     del newobj['image']
   if newobj['sound'] == '':
