@@ -3378,6 +3378,9 @@
                         })
                       } else {
                         this.items = response.body[0]
+                        if (response.body[0].length < 10) {
+                          this.moreHidden = true
+                        }
                       }
 
                       if (this.items.length > 9) {
