@@ -2934,7 +2934,10 @@
             headerTitle:'',
             groups:[],
             menuVisible:false,
-            allitems:[]
+            allitems:[],
+            moreHidden:false,
+            loading:false,
+            cursor: 0
           }
         },
         mounted: function() {
@@ -3350,6 +3353,9 @@
                         this.moreHidden = true
                       }
                       for (var j = 0; j < response.body[0].length; j++) {
+                        response.body[0][j].imageHidden = true
+                        response.body[0][j].isHtml = true
+                        response.body[0][j].textHidden = false
                         this.items.push(response.body[0][j])
                       }
                     } else {
@@ -3547,6 +3553,36 @@
           },
           linkGo(link){
             window.location.href = link
+          },
+          showMore() {
+            MintUI.Indicator.open()
+            this.loading = true
+            setTimeout(() => {
+              this.cursor = this.items.length
+              this.loadPosts()
+              this.loading = false
+            }, 2500)
+          },
+          loadPosts(){
+            Vue.http.get( 'getPosts' + '?grp=' + this.$route.params.grp + '&cursor=' + this.cursor.toString()).then( ( response ) => {
+              setTimeout(() => {
+                MintUI.Indicator.close()
+              }, 500)
+              if ( !!response.body ) {
+                if (this.cursor > 0) {
+                  if (response.body[0].length < 10) {
+                    this.moreHidden = true
+                  }
+                  for (var j = 0; j < response.body[0].length; j++) {
+                    response.body[0][j].imageHidden = true
+                    response.body[0][j].isHtml = true
+                    response.body[0][j].textHidden = false
+                    this.items.push(response.body[0][j])
+                  }
+                }
+              }
+              this.spinnerHidden = true
+            })
           }
         },
         template: `
@@ -3601,6 +3637,8 @@
                 </vue-plyr>
                 <audio-player v-if="item.imageHidden" :src="'myFile?field=sound&name=' + item.sound" v-bind:class="{'is-hidden':item.soundHidden}" />
               </mt-cell>
+        
+        
 
 
               <mt-cell v-if="!shareLinks" class="imagecell public_img" v-for="(item, idx) in items" :title="item.name" is-link :to="item.link">
@@ -3623,6 +3661,7 @@
                 <audio-player v-if="item.imageHidden" :src="'myFile?field=sound&name=' + item.sound" v-bind:class="{'is-hidden':item.soundHidden}" />
               </div>
             </mt-cell>
+            <mt-button v-bind:class="{'is-hidden':moreHidden}" size="large" v-on:click="showMore()">Load More</mt-button>
             <h3 v-if="showDidSponsor">You are registered! We will contact you to obtain your business logo or photo.</h3>
             <mt-button v-if="showSponsorButton" v-on:click="doRegister()" size="large">Click Here To Register a Business</mt-button>
             <div v-if="doingSponsor">
