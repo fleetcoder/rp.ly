@@ -4075,7 +4075,11 @@
               evtdate = moment(moment.utc(this.dateVal).toDate()).local().format("YYYY-MM-DD")
               evttime = this.timeVal
             }
-            var formattedTitle = '<h1 class="article_hed">' + this.dateText + ' - - ' + this.timeText + ' - - ' + this.body + '</h1>' + '<div class="feedimages"><img class="article_img" src="' + postimg + '" alt="Image" /></div>'
+            var timetime = ''
+            if (this.shareCal === true) {
+              timetime = this.dateText + ' - - ' + this.timeText + ' - - '
+            }
+            var formattedTitle = '<h1 class="article_hed">' + timetime + this.body + '</h1>' + '<div class="feedimages"><img class="article_img" src="' + postimg + '" alt="Image" /></div>'
             var formattedBody = '<p>' + this.title + '</p>'
 
 
