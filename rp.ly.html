@@ -22,7 +22,7 @@
 
     <div id="app"><router-view class="view"></router-view></div>
 
-    <!-- pallette: 5F7A61 393e46 D9DD6B ffd3e1 -->
+    <!-- pallette: 865439 393e46 D9DD6B ffd3e1 -->
     <style id="style">
       @font-face {
         font-family: 'Lato';
@@ -63,13 +63,13 @@
         margin: 15px;
       }
       .mint-header {
-        background-color: #5F7A61;
+        background-color: #865439;
       }
       #app {
         margin:0;
       }
       .mint-button--primary {
-        background-color: #5F7A61;
+        background-color: #865439;
       }
       .mint-button--normal {
         background-color: #D9DD6B;
@@ -673,7 +673,7 @@
 
       .blue { background: rgba(156, 202, 235, 1); }
       .orange { background: rgba(247, 167, 0, 1); }
-      .green { background: #5F7A61; }
+      .green { background: #865439; }
       .yellow { background: rgba(249, 233, 0, 1); }
 
       .details {
@@ -3279,6 +3279,7 @@
         },
         methods: {
           setup(){
+            MintUI.Indicator.open()
             this.menuVisible = false
             this.groupPic = ''
             this.items = []
@@ -3337,6 +3338,9 @@
               }
               if ("undefined" !== typeof publicData['publicName']) {
                 Vue.http.get( 'getPosts' + '?grp=' + this.$route.params.grp).then( ( response ) => {
+                  setTimeout(() => {
+                    MintUI.Indicator.close()
+                  }, 500)
                   if ( !!response.body ) {
                     if (this.cursor > 0) {
                       if (response.body[0].length < 10) {
