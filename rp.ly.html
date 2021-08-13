@@ -1317,6 +1317,9 @@
       .lessfeedtopper {
         padding-top: 50px;
       }
+      div.mint-cell-wrapper > div.mint-cell-value > p {
+        padding:10px;
+      }
   
     </style>
 
@@ -5072,11 +5075,11 @@
                 <div class="row">
                   
                   <div class="col-sm">
-                    <p v-html="locationData"></p>
+                    <p>Location: {{locationData}}</p>
                   </div>
 
                   <div class="col-sm">
-                     <p>Contact: <p v-html="contact"></p></p>
+                     <p>Contact: {{contact}}</p>
                   </div>
 
                 </div>
@@ -5106,8 +5109,8 @@
               </mt-cell>
               <mt-cell class="feedtopper"> <p v-html="title"></p></mt-cell>
               <mt-cell> <p v-html="body"></p></mt-cell>
-              <mt-cell> <p v-html="locationData"></p></mt-cell>
-              <mt-cell v-if="contact !== ''"> Contact: <p v-html="contact"></p></mt-cell>
+              <mt-cell> <p>Location: {{locationData}}</p></mt-cell>
+              <mt-cell v-if="contact !== ''"> <p>Contact: {{contact}}</p></mt-cell>
         
               <!--<mt-cell v-bind:class="{'is-hidden':soundHidden}"><audio-player :src="'myFile?field=sound&name=' + sound" /></mt-cell>
               <mt-button size="large" v-on:click="delPosts()">Delete Photo</mt-button>-->
