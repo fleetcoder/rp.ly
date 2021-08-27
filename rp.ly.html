@@ -2130,12 +2130,30 @@
               this.calendar.current = moment().date(1);
               var self = this.calendar;
               this.calendar.draw();
-              var current = this.calendar.el.querySelector('div.week:nth-child(3) > div:nth-child(6)');
-              if(current) {
-                var self = this.calendar;
-                window.setTimeout(function() {
-                  self.openDay(current);
-                }, 500);
+              var current = false
+              var daylist = document.getElementsByClassName("day")
+              var today = moment().date()
+              for (var j = 0; j < daylist.length; j++) {
+                var el = daylist[j]
+                var dayNumber = +el.querySelectorAll('.day-number')[0].innerText || +el.querySelectorAll('.day-number')[0].textContent
+                var day = this.calendar.current.clone().date(dayNumber)
+                var todaysEvents = this.calendar.events.reduce(function(memo, ev) {
+                  if(ev.date.isSame(day, 'day')) {
+                    memo.push(ev)
+                  }
+                  return memo
+                }, [])
+                if (todaysEvents.length > 0) {
+                  if (false === current) {
+                    if (dayNumber >= today) {
+                      var current = el
+                      var self = this.calendar
+                      window.setTimeout(function() {
+                        self.openDay(current)
+                      }, 500)
+                    }
+                  }
+                }
               }
             }
           })
@@ -3278,12 +3296,30 @@
               this.calendar.current = curr
               var self = this.calendar;
               this.calendar.draw();
-              var current = this.calendar.el.querySelector('div.week:nth-child(3) > div:nth-child(6)');
-              if(current) {
-                var self = this.calendar;
-                window.setTimeout(function() {
-                  self.openDay(current);
-                }, 500);
+              var current = false
+              var daylist = document.getElementsByClassName("day")
+              var today = moment().date()
+              for (var j = 0; j < daylist.length; j++) {
+                var el = daylist[j]
+                var dayNumber = +el.querySelectorAll('.day-number')[0].innerText || +el.querySelectorAll('.day-number')[0].textContent
+                var day = this.calendar.current.clone().date(dayNumber)
+                var todaysEvents = this.calendar.events.reduce(function(memo, ev) {
+                  if(ev.date.isSame(day, 'day')) {
+                    memo.push(ev)
+                  }
+                  return memo
+                }, [])
+                if (todaysEvents.length > 0) {
+                  if (false === current) {
+                    if (dayNumber >= today) {
+                      var current = el
+                      var self = this.calendar
+                      window.setTimeout(function() {
+                        self.openDay(current)
+                      }, 500)
+                    }
+                  }
+                }
               }
             }
           })
