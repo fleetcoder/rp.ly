@@ -2950,7 +2950,7 @@
             </mt-header>
             <mt-popup v-model="menuVisible" position="middle" class="topmenu">
               <mt-cell is-link @click.native="showMenu()" title="Close Menu"></mt-cell>
-              <mt-cell v-for="(item,idx) in publicGroups" is-link :to="item.grpLink" :title="item.name"><img class="smallmenu" v-if="checkImage(item)" :src="item.image" /></mt-cell>
+              <mt-cell v-for="(item,idx) in staticLinks" is-link :to="item.grpLink" :title="item.name"><img class="smallmenu" v-if="checkImage(item)" :src="item.image" /></mt-cell>
               <mt-cell v-if="authed" is-link :to="'/myposts/' + grp" title="My Posts"></mt-cell>
               <mt-cell v-if="authed" is-link style="cursor:pointer;" @click.native="logOut()" title="Sign Out"></mt-cell>
             </mt-popup>
@@ -3818,7 +3818,7 @@
             <mt-popup v-model="menuVisible" position="middle" class="topmenu publicpagemenu">
               <mt-cell is-link @click.native="showMenu()" title="Close Menu"></mt-cell>
         
-              <mt-cell v-for="(item,idx) in publicGroups" is-link :to="item.grpLink" :title="item.name"><img class="smallmenu" v-if="checkImage(item)" :src="item.image" /></mt-cell>
+              <mt-cell v-for="(item,idx) in staticLinks" is-link :to="item.grpLink" :title="item.name"><img class="smallmenu" v-if="checkImage(item)" :src="item.image" /></mt-cell>
               <mt-cell v-if="authed" is-link :to="'/myposts/' + grp" title="My Posts"></mt-cell>
               <mt-cell v-if="authed" is-link style="cursor:pointer;" @click.native="logOut()" title="Sign Out"></mt-cell>
             </mt-popup>
