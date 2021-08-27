@@ -1333,6 +1333,20 @@
       a.imagecell:nth-child(1) > div:nth-child(3) > div:nth-child(2) > p:nth-child(1) > ul img {
         width: 70%;
       }
+      .desktopHeaderLink {
+        color:white;
+        text-decoration:none;
+      }
+      .desktopHeaderLink > div {
+        margin-right:20px;
+      }
+      .desktopHeaderLink:hover {
+        color:white;
+        text-decoration:underline;
+      }
+      .hoverlinks:hover {
+        text-decoration:underline;
+      }
   
     </style>
 
@@ -2256,12 +2270,12 @@
     <b-collapse id="nav-collapse" is-nav>
 
       <b-navbar-nav>
-        <b-nav-item href="/#/pubgroup/bppuhyny">Local News</b-nav-item>
-        <b-nav-item href="/#/pubgroup/nibliqms">Calendar</b-nav-item>
-        <b-nav-item href="/#/pubgroup/ekevbzyq">Classified Ads</b-nav-item>
-        <b-nav-item href="/#/pubgroup/vbkuqsko">Bulletin Board</b-nav-item>
-        <b-nav-item href="/#/pubgroup/hdkqocon">Support A Student</b-nav-item>
-        <b-nav-item href="/#/pubgroup/tlicintr">Business Directory</b-nav-item>
+        <b-nav-item class="hoverlinks" href="/#/pubgroup/bppuhyny">Local News</b-nav-item>
+        <b-nav-item class="hoverlinks" href="/#/pubgroup/nibliqms">Calendar</b-nav-item>
+        <b-nav-item class="hoverlinks" href="/#/pubgroup/ekevbzyq">Classified Ads</b-nav-item>
+        <b-nav-item class="hoverlinks" href="/#/pubgroup/vbkuqsko">Bulletin Board</b-nav-item>
+        <b-nav-item class="hoverlinks" href="/#/pubgroup/hdkqocon">Support A Student</b-nav-item>
+        <b-nav-item class="hoverlinks" href="/#/pubgroup/tlicintr">Business Directory</b-nav-item>
       </b-navbar-nav>
 
     </b-collapse>
@@ -2533,7 +2547,32 @@
             groupposts:{},
             grouppost: [],
             postlist: [],
-            isDesktop: false
+            isDesktop: false,
+            staticLinks:[{
+        "grpLink":"/#/pubgroup/bppuhyny",
+        "image":"https://ourtown.org/grpFile?field=image&amp;name=20210425-004301cil-newspaper.svg",
+        "name":"Local News"
+},{
+        "grpLink":"/#/pubgroup/nibliqms",
+        "image":"https://ourtown.org/grpFile?field=image&amp;name=20210425-004425cil-calendar.svg",
+        "name":"Calendar"
+},{
+        "grpLink":"/#/pubgroup/ekevbzyq",
+        "image":"https://ourtown.org/grpFile?field=image&amp;name=20210425-004335cil-tag.svg",
+        "name":"Classified Ads"
+},{
+        "grpLink":"/#/pubgroup/vbkuqsko",
+        "image":"https://ourtown.org/grpFile?field=image&amp;name=20210425-004409cil-pin.svg",
+        "name":"Bulletin Board"
+},{
+        "grpLink":"/#/pubgroup/hdkqocon",
+        "image":"https://ourtown.org/grpFile?field=image&amp;name=20210425-004231cil-education.svg",
+        "name":"Support A Student"
+},{
+        "grpLink":"/#/pubgroup/tlicintr",
+        "image":"https://ourtown.org/grpFile?field=image&amp;name=20210425-003105cil-building.svg",
+        "name":"Business Directory"
+}]
           }
         },
         created() {
@@ -2922,7 +2961,7 @@
             </mt-actionsheet>-->
             </div>
             <div class="desktoponly" v-if="isDesktop">
-              <mt-cell v-for="(item,idx) in publicGroups" is-link :to="item.grpLink" :title="item.name"><img class="smallmenu" v-if="checkImage(item)" :src="item.image" /></mt-cell>
+              <mt-cell v-for="(item,idx) in staticLinks" is-link :to="item.grpLink" :title="item.name"><img class="smallmenu" v-if="checkImage(item)" :src="item.image" /></mt-cell>
               <mt-cell v-if="authed" is-link :to="'/myposts/' + grp" title="My Posts"></mt-cell>
               <mt-cell v-if="authed" is-link style="cursor:pointer;" @click.native="logOut()" title="Sign Out"></mt-cell>
             </div>
@@ -2968,7 +3007,32 @@
             allitems:[],
             moreHidden:false,
             loading:false,
-            cursor: 0
+            cursor: 0,
+            staticLinks:[{
+        "grpLink":"/#/pubgroup/bppuhyny",
+        "image":"https://ourtown.org/grpFile?field=image&amp;name=20210425-004301cil-newspaper.svg",
+        "name":"Local News"
+},{
+        "grpLink":"/#/pubgroup/nibliqms",
+        "image":"https://ourtown.org/grpFile?field=image&amp;name=20210425-004425cil-calendar.svg",
+        "name":"Calendar"
+},{
+        "grpLink":"/#/pubgroup/ekevbzyq",
+        "image":"https://ourtown.org/grpFile?field=image&amp;name=20210425-004335cil-tag.svg",
+        "name":"Classified Ads"
+},{
+        "grpLink":"/#/pubgroup/vbkuqsko",
+        "image":"https://ourtown.org/grpFile?field=image&amp;name=20210425-004409cil-pin.svg",
+        "name":"Bulletin Board"
+},{
+        "grpLink":"/#/pubgroup/hdkqocon",
+        "image":"https://ourtown.org/grpFile?field=image&amp;name=20210425-004231cil-education.svg",
+        "name":"Support A Student"
+},{
+        "grpLink":"/#/pubgroup/tlicintr",
+        "image":"https://ourtown.org/grpFile?field=image&amp;name=20210425-003105cil-building.svg",
+        "name":"Business Directory"
+}]
           }
         },
         mounted: function() {
@@ -3652,6 +3716,9 @@
               <a v-if="!isDesktop" v-on:click="showMenu()" slot="right">
                 <img class="headericon" slot="icon" src="file/menu.svg" />
               </a>
+              <a v-on:click="doPost()" class="desktopHeaderLink" href="javascript:void(0)" slot="right" v-if="isDesktop">
+                <div v-if="showPostButton" >Create a new {{name}} post</div>
+              </a>
             </mt-header>
 
             <div v-if="!isDesktop">
@@ -3743,14 +3810,14 @@
         
             </div>
             <div class="desktoponly" v-if="isDesktop">
-              <mt-cell v-for="(item,idx) in publicGroups" is-link :to="item.grpLink" :title="item.name"><img class="smallmenu" v-if="checkImage(item)" :src="item.image" /></mt-cell>
+              <mt-cell v-for="(item,idx) in staticLinks" is-link :to="item.grpLink" :title="item.name"><img class="smallmenu" v-if="checkImage(item)" :src="item.image" /></mt-cell>
               <mt-cell v-if="authed" is-link :to="'/myposts/' + grp" title="My Posts"></mt-cell>
               <mt-cell v-if="authed" is-link style="cursor:pointer;" @click.native="logOut()" title="Sign Out"></mt-cell>
-              <mt-button class="create_post_button" v-if="showPostButton" v-on:click="doPost()" size="large">Click here to create a new post in {{name}}</mt-button>
             </div>
 
             <mt-popup v-model="menuVisible" position="middle" class="topmenu publicpagemenu">
               <mt-cell is-link @click.native="showMenu()" title="Close Menu"></mt-cell>
+        
               <mt-cell v-for="(item,idx) in publicGroups" is-link :to="item.grpLink" :title="item.name"><img class="smallmenu" v-if="checkImage(item)" :src="item.image" /></mt-cell>
               <mt-cell v-if="authed" is-link :to="'/myposts/' + grp" title="My Posts"></mt-cell>
               <mt-cell v-if="authed" is-link style="cursor:pointer;" @click.native="logOut()" title="Sign Out"></mt-cell>
