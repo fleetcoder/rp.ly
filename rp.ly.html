@@ -3353,9 +3353,9 @@
               var curr = moment().date(1)
               for (var j = 0; j < calitems.length; j++) {
                 var dtt = moment(calitems[j]['pubDate'],'YYYY-MM-DD')
-                if (dtt.month() == curr.month()) {
+                //if (dtt.month() == curr.month()) {
                   data.push({ eventName: calitems[j]['title'], calendar: 'Local', color: 'green', date: dtt})
-                }
+                  //}
               }
               this.calendar.events = data;
               this.calendar.current = curr
