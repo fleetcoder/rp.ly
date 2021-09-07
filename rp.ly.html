@@ -3348,7 +3348,7 @@
           this.calendar = new Calendar()
           this.calendar.el = this.$refs.calendar
           this.calendar.comp = this
-          Vue.http.get( 'getCal' + '?grp=' + this.$route.params.grp).then( ( response ) => {
+          Vue.http.get( 'getCal' + '?grp=' + 'nibliqms').then( ( response ) => {
             if ( !!response.body ) {
               var calitems = response.body[0]
               var data = []
