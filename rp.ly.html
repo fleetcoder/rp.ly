@@ -1347,6 +1347,10 @@
       .hoverlinks:hover {
         text-decoration:underline;
       }
+      .dtheader {
+        margin-top:100px;
+      }
+      
   
     </style>
 
@@ -2248,7 +2252,10 @@
         template: `
           <div class="content">
         <div v-if="isDesktop">
-<div class="container dtcontent">
+            <mt-header class="fixedheader" fixed title="OurTown">
+            </mt-header>
+        
+<div class="container dtcontent dtheader">
   <div class="row">
     <div class="col-sm" style="text-align:right;">
         <div><b-img class="headerlogo" src="https://ourtown.org/file/idaho.png" alt="Idaho Logo" /></div>
