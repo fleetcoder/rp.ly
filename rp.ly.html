@@ -3920,6 +3920,13 @@ errortext:''
                 this.emailstatus = 'error'
               }
             }
+          },
+          logOut(){
+            Vue.http.post( 'logout', {
+            }).then( ( response ) => {
+              this.authed = false
+              this.loggedInUserEmail = ''
+            })
           }
         },
         template: `
