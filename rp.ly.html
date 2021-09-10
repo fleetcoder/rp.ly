@@ -1336,9 +1336,10 @@
       .desktopHeaderLink {
         color:white;
         text-decoration:none;
+        font-weight:bold;
       }
       .desktopHeaderLink > div {
-        margin-right:20px;
+        margin-right:100px;
       }
       .desktopHeaderLink:hover {
         color:white;
@@ -1349,6 +1350,10 @@
       }
       .dtheader {
         margin-top:100px;
+      }
+      .reglink {
+        float:right;
+        margin-right:30px;
       }
       
   
@@ -3042,7 +3047,29 @@
         "grpLink":"/pubgroup/tlicintr",
         "image":"https://ourtown.org/grpFile?field=image&name=20210425-003105cil-building.svg",
         "name":"Business Directory"
-}]
+}],
+            selected: 'tab1',
+            inputnamehidden: false,
+registerHidden: false,
+emailstatus: '',
+email:'',
+pwdstatus:'',
+password:'',
+passwordcheck:'',
+signuphidden:true,
+sentcode:true,
+code:'',
+loginHidden:false,
+forgotHidden:true,
+loginemail:'',
+loginpassword:'',
+inputhidden:true,
+resetHidden:true,
+sentReset:false,
+savedReset:false,
+uname:'',
+loggedInUserEmail:'',
+errortext:''
           }
         },
         mounted: function() {
@@ -3407,6 +3434,9 @@
           }
         },
         methods: {
+          handleOk(){
+             this.$refs['login-modal'].hide()
+          },
           setup(){
             MintUI.Indicator.open()
             this.menuVisible = false
@@ -3577,10 +3607,18 @@
           },
           doPost(){
             if (!this.authed) {
-              router.push('/auth/' + this.$route.params.grp)
+              this.$refs['login-modal'].show()
+              
+              //router.push('/auth/' + this.$route.params.grp)
             } else {
               router.push('/postgroup/' + this.$route.params.grp)
             }
+          },
+          goLogin(){
+            this.selected = "tab2"
+          },
+          goReg(){
+            this.selected = "tab1"
           },
           doRegister(){
             if (!this.authed) {
@@ -3714,6 +3752,174 @@
               }
               this.spinnerHidden = true
             })
+          },
+          myLogin(){
+            if (this.loginemail.indexOf('@') !== -1) {
+              var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+              if (re.test(String(this.loginemail).toLowerCase())) {
+                this.emailstatus = 'success'
+                Vue.http.post( 'freeTrialLogin', {
+                  email : this.loginemail,
+                  pass : this.loginpassword,
+                  name: this.uname,
+                  phone: this.phone
+                }).then( ( response ) => {
+                  if (response.body[0] == 'error') {
+                    /*MintUI.Toast({
+                      message: 'Error',
+                      iconClass: 'icon icon-error',
+                      duration: 2000
+                    })*/
+                      this.errortext = 'Sorry, the login attempt was not successful'
+                    return
+                  }
+                  if (response.body[0] == 'OK') {
+                    this.authed = true
+                    this.emailstatus = 'success'
+                    this.pwdstatus = 'success'
+                    this.loginpassword = ''
+                    this.loggedInUserEmail = this.loginemail
+                    this.loginemail = ''
+                    this.$refs['login-modal'].hide()
+                    this.$refs['loggedin-modal'].show()
+                    /*
+*/
+                    
+                  } else {
+                    this.emailstatus = 'error'
+                    this.pwdstatus = 'error'
+                    this.errortext = 'Sorry, the login attempt was not successful'
+                    /*MintUI.Toast({
+                      message: 'Sorry, there was a problem logging in with that e-mail address',
+                      iconClass: 'icon icon-error',
+                      duration: 2000
+                    })*/
+                  }
+                  this.spinnerHidden = true
+                })
+              } else {
+                this.emailstatus = 'error'
+              }
+            } else {
+              if (this.email.match(/\d/g).length===10) {
+                this.emailstatus = 'success'
+                this.phone = this.email
+                this.email = ''
+                Vue.http.post( 'freeTrialLogin', {
+                  email : this.email,
+                  phone : this.phone
+                }).then( ( response ) => {
+                  if (response.body[0] == 'error') {
+                    MintUI.Toast({
+                      message: 'Error',
+                      iconClass: 'icon icon-error',
+                      duration: 2000
+                    })
+                    return
+                  }
+                  this.inputhidden = false
+                  this.sent = true
+                  this.sentcode = 'A code was just sent to your phone'
+                  this.loginHidden = true
+                 /* MintUI.Toast({
+                    message: 'Check your text messages for a link!',
+                    iconClass: 'icon icon-success',
+                    duration: 10000
+                   })*/
+                })
+              } else {
+                this.emailstatus = 'error'
+              }
+            }
+          },
+          doTrial(){
+            if (this.password.length > 5) {
+              this.pwdstatus = 'success'
+            } else {
+              this.errortext = 'Please use a password that is at least 6 characters long'
+              this.pwdstatus = 'error'
+              return
+            }
+            if (this.password.normalize() === this.passwordcheck.normalize()) {
+              this.pwdstatus = 'success'
+            } else {
+              this.errortext = 'Sorry, the passwords do not match'
+              this.pwdstatus = 'error'
+              return
+            }
+            if (this.email.indexOf('@') !== -1) {
+              var re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+              if (re.test(String(this.email).toLowerCase())) {
+                this.emailstatus = 'success'
+                Vue.http.post( 'freeTrial', {
+                  email : this.email,
+                  phone : this.phone,
+                  name: this.uname,
+                  pass: this.password
+                }).then( ( response ) => {
+                  if (response.body[0] == 'error') {
+                    this.inputnamehidden = false
+                    this.emailstatus = 'error'
+                    this.errortext = 'Sorry, the registration attempt was not successful'
+                    return
+                  }
+                  if (response.body[0] == 'OK') {
+                    this.passwordcheck = ''
+                    this.loggedInUserEmail = this.email
+                    this.email = ''
+                    this.uname = ''
+                    this.password = ''
+                    this.authed = true
+
+                    this.$refs['login-modal'].hide()
+                    this.$refs['loggedin-modal'].show()
+
+
+
+                  } else {
+                    this.emailstatus = 'error'
+                    this.errortext = 'Sorry, there was a problem registering with that e-mail address'
+
+                  }
+                  this.spinnerHidden = true
+                })
+              } else {
+                this.emailstatus = 'error'
+              }
+            } else {
+              if (this.email.match(/\d/g).length===10) {
+                this.inputnamehidden = true
+                this.emailstatus = 'success'
+                this.phone = this.email
+                this.email = ''
+                Vue.http.post( 'freeTrial', {
+                  email : this.email,
+                  phone : this.phone
+                }).then( ( response ) => {
+                  if (response.body[0] == 'error') {
+                    MintUI.Toast({
+                      message: 'Error',
+                      iconClass: 'icon icon-error',
+                      duration: 2000
+                    })
+                    this.emailstatus = 'error'
+                    this.inputnamehidden = false
+                    return
+                  }
+                  this.sentcode = 'A code was just sent to your phone'
+                  this.registerHidden = true
+                  this.signuphidden = false
+                  this.sent = true
+                 /* MintUI.Toast({
+                    message: 'Check your text messages for a link!',
+                    iconClass: 'icon icon-success',
+                    duration: 10000
+                   })*/
+                })
+              } else {
+                this.emailstatus = 'error'
+              }
+            }
           }
         },
         template: `
@@ -3727,7 +3933,8 @@
                 <img class="headericon" slot="icon" src="file/menu.svg" />
               </a>
               <a v-on:click="doPost()" class="desktopHeaderLink" href="javascript:void(0)" slot="right" v-if="isDesktop">
-                <div v-if="showPostButton" >Create a new {{name}} post</div>
+        
+                <div v-if="showPostButton" >[ Create a new {{name}} post ]</div>
               </a>
             </mt-header>
 
@@ -3842,6 +4049,54 @@
                 |<a href="/#/pubgroup/jyyktmzx">About Us</a>
               </div>
             </div>
+
+            <div>
+              <b-modal ref="login-modal" ok-only ok-title="Close" hide-header-close @ok="handleOk" >
+                <mt-tab-container v-model="selected" class="introblock signupbox">
+                  <mt-tab-container-item id="tab1">
+                    <h4>Register for an account:</h4>
+                    <mt-field v-bind:class="{'is-hidden':inputnamehidden}" placeholder="Your name..." v-model="uname"></mt-field>
+                    <mt-field v-bind:class="{'is-hidden':registerHidden}" placeholder="E-mail Address..." type="email" :state="emailstatus" v-model="email"></mt-field>
+                    <mt-field v-bind:class="{'is-hidden':registerHidden}" placeholder="Password..." type="password" :state="pwdstatus" v-model="password"></mt-field>
+                    <mt-field v-bind:class="{'is-hidden':registerHidden}" placeholder="Password (again)" type="password" :state="pwdstatus" v-model="passwordcheck"></mt-field>
+                    <mt-button v-bind:class="{'is-hidden':registerHidden}" v-on:click="doTrial()" size="large">Sign Up</mt-button>
+                    <mt-cell v-bind:class="{'is-hidden':signuphidden}" class="codeinput">{{sentcode}}</mt-cell>
+                    <mt-field v-bind:class="{'is-hidden':signuphidden}" class="codeinput" type="number" label="Code:" placeholder="***" v-model="code"></mt-field>
+                    <mt-button v-bind:class="{'is-hidden':signuphidden}" v-on:click="doCode()" size="large">Submit Code</mt-button>
+                    <div class="loginlink"><a href="javascript:void(0)" @click="goLogin()">Already Registered?</a></div>
+                    <mt-spinner v-bind:class="{'is-hidden':spinnerHidden}" type="snake"></mt-spinner>
+                    <div>{{errortext}}</div>
+                  </mt-tab-container-item>
+                  <mt-tab-container-item id="tab2">
+                    <h4 v-bind:class="{'is-hidden':loginHidden}">Log in to your account:</h4>
+                    <h4 v-bind:class="{'is-hidden':forgotHidden}">Reset your password:</h4>
+                    <mt-field v-bind:class="{'is-hidden':loginHidden}" placeholder="E-mail Address..." type="email" :state="emailstatus" v-model="loginemail"></mt-field>
+                    <mt-field v-bind:class="{'is-hidden':loginHidden}" placeholder="Password..." type="password" :state="pwdstatus" v-model="loginpassword"></mt-field>
+                    <mt-button v-bind:class="{'is-hidden':loginHidden}" v-on:click="myLogin()" size="large">Log In</mt-button>
+                    <mt-field v-bind:class="{'is-hidden':forgotHidden}" placeholder="E-mail Address..." type="email" :state="emailstatus" v-model="loginemail"></mt-field>
+                    <mt-button v-bind:class="{'is-hidden':forgotHidden}" v-on:click="myForgot()" size="large">Reset Password</mt-button>
+                    <mt-button v-bind:class="{'is-hidden':inputhidden}" v-on:click="doCode()" size="large">Submit Code</mt-button>
+                    <div v-bind:class="{'is-hidden':forgotHidden}" class="loginlink"><a href="javascript:void(0)" @click="goLoginForgot()">Log In</a></div>
+                    <div v-bind:class="{'is-hidden':loginHidden}" class="loginlink"><a href="javascript:void(0)" @click="goForgot()">Forgot Password?</a><a class="reglink" href="javascript:void(0)" @click="goReg()">Register for an account</a></div>
+                    <mt-field v-bind:class="{'is-hidden':resetHidden}" placeholder="Password..." type="password" :state="pwdstatus" v-model="password"></mt-field>
+                    <mt-field v-bind:class="{'is-hidden':resetHidden}" placeholder="Password (again)" type="password" :state="pwdstatus" v-model="passwordcheck"></mt-field>
+                    <mt-button v-bind:class="{'is-hidden':resetHidden}" v-on:click="doReset()" size="large">Reset Password</mt-button>
+                    <div v-bind:class="{'is-hidden':resetHidden}" class="loginlink"><a href="javascript:void(0)" @click="goLoginReset()">Log In</a></div>
+                    <mt-cell v-bind:class="{'is-hidden':!sentReset}" class="codeinput">A link has been sent to your e-mail address, click the link to reset your password.</mt-cell>
+                    <mt-cell v-bind:class="{'is-hidden':!savedReset}" class="codeinput">Your password has been reset.</mt-cell>
+                    <mt-spinner v-bind:class="{'is-hidden':spinnerHidden}" type="snake"></mt-spinner>
+                    <div>{{errortext}}</div>
+                  </mt-tab-container-item>
+                </mt-tab-container>
+              </b-modal>
+            </div>
+        
+            <div>
+              <b-modal ref="loggedin-modal" ok-only hide-header-close @ok="handleOk">
+                <p class="my-4">Welcome! You are logged in as {{loggedInUserEmail}}</p>
+              </b-modal>
+            </div>
+        
         
           </div>`
       }
