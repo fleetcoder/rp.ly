@@ -2162,7 +2162,9 @@
                 var day = this.calendar.current.clone().date(dayNumber)
                 var todaysEvents = this.calendar.events.reduce(function(memo, ev) {
                   if(ev.date.isSame(day, 'day')) {
-                    memo.push(ev)
+                    if (moment().month() == ev.date.month()) {
+                      memo.push(ev)
+                    }
                   }
                   return memo
                 }, [])
@@ -3406,7 +3408,9 @@ errortext:''
                 var day = this.calendar.current.clone().date(dayNumber)
                 var todaysEvents = this.calendar.events.reduce(function(memo, ev) {
                   if(ev.date.isSame(day, 'day')) {
-                    memo.push(ev)
+                    if (moment().month() == ev.date.month()) {
+                      memo.push(ev)
+                    }
                   }
                   return memo
                 }, [])
