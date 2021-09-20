@@ -1355,7 +1355,12 @@
         float:right;
         margin-right:30px;
       }
-      
+      .headertools {
+        padding-right:100px;
+      }
+      .headertoolsitem {
+        cursor: pointer;
+      }
   
     </style>
 
@@ -1833,7 +1838,30 @@
                 desc: "go to a party",
                 customClass: "highlight"
               }
-            ]
+            ],
+            selected: 'tab1',
+            inputnamehidden: false,
+registerHidden: false,
+emailstatus: '',
+email:'',
+pwdstatus:'',
+password:'',
+passwordcheck:'',
+signuphidden:true,
+sentcode:true,
+code:'',
+loginHidden:false,
+forgotHidden:true,
+loginemail:'',
+loginpassword:'',
+inputhidden:true,
+resetHidden:true,
+sentReset:false,
+savedReset:false,
+uname:'',
+loggedInUserEmail:'',
+errortext:'',
+            spinnerHidden:true
           }
         },
         mounted: function() {
@@ -2254,12 +2282,75 @@
           },
           goArticle(link) {
             window.location.href = link
+          },
+          showLogin(){
+              this.$refs['login-modal'].show()
+          },
+          handleOk() {
+            
+          },
+          goLogin(){
+            this.selected = "tab2"
+          },
+          goReg(){
+            this.selected = "tab1"
+          },
+          goForgot() {
+            this.resetHidden = true
+            this.forgotHidden = false
+            this.loginHidden = true
+          },
+          goLoginForgot() {
+            this.resetHidden = true
+            this.forgotHidden = true
+            this.loginHidden = false
+          },
+          goLoginReset() {
+            this.goLoginForgot()
+            window.location.href = 'https://' + window.location.hostname + '/#/login'
+          },
+          myForgot() {
+            Vue.http.post( 'sendResetPwd', {
+              email : this.loginemail,
+            }).then( ( response ) => {
+              if (response.body[0] == 'error') {
+                MintUI.Toast({
+                  message: 'Error',
+                  iconClass: 'icon icon-error',
+                  duration: 2000
+                })
+                this.emailstatus = 'error'
+              } else {
+                this.sentReset = true
+              }
+            })
+          },
+          doReset() {
+            Vue.http.post( 'saveResetPwd', {
+              pass : this.password,
+            }).then( ( response ) => {
+              if (response.body[0] == 'error') {
+                MintUI.Toast({
+                  message: 'Error',
+                  iconClass: 'icon icon-error',
+                  duration: 2000
+                })
+                this.emailstatus = 'error'
+              } else {
+                this.savedReset = true
+                this.sentReset = false
+                this.password = ''
+              }
+            })
           }
         },
         template: `
           <div class="content">
         <div v-if="isDesktop">
-            <mt-header class="fixedheader" fixed title="OurTown">
+            <mt-header class="fixedheader headertools" fixed title="OurTown">
+              <a v-if="isDesktop" v-on:click="showLogin()" class="headertoolsitem" slot="right">
+                Sign Up <img class="headericon" slot="icon" src="file/user.svg" />
+              </a>
             </mt-header>
         
 <div class="container dtcontent dtheader">
@@ -2368,9 +2459,9 @@
   <div class="row dtfooter">
     <div class="col-sm">
         
-            <a href="/#/login/bppuhyny">Login</a>
+            <a href="/#/login/bppuhyny">Pricing</a>
             &nbsp;|&nbsp;
-            <a href="/#/auth/bppuhyny">Sign Up</a>
+            <a href="/#/auth/bppuhyny">Privacy Policy</a>
             &nbsp;|&nbsp;
             <a href="/#/pubgroup/jyyktmzx">About Us</a>
 
@@ -2380,7 +2471,52 @@
         
 </div>
 
-</div> <!-- end isDesktop -->
+</div> 
+            
+            
+            <div>
+              <b-modal ref="login-modal" ok-only ok-title="Close" hide-header-close @ok="handleOk" >
+                <mt-tab-container v-model="selected" class="introblock signupbox">
+                  <mt-tab-container-item id="tab1">
+                    <h4>Register for an account:</h4>
+                    <mt-field v-bind:class="{'is-hidden':inputnamehidden}" placeholder="Your name..." v-model="uname"></mt-field>
+                    <mt-field v-bind:class="{'is-hidden':registerHidden}" placeholder="E-mail Address..." type="email" :state="emailstatus" v-model="email"></mt-field>
+                    <mt-field v-bind:class="{'is-hidden':registerHidden}" placeholder="Password..." type="password" :state="pwdstatus" v-model="password"></mt-field>
+                    <mt-field v-bind:class="{'is-hidden':registerHidden}" placeholder="Password (again)" type="password" :state="pwdstatus" v-model="passwordcheck"></mt-field>
+                    <mt-button v-bind:class="{'is-hidden':registerHidden}" v-on:click="doTrial()" size="large">Sign Up</mt-button>
+                    <mt-cell v-bind:class="{'is-hidden':signuphidden}" class="codeinput">{{sentcode}}</mt-cell>
+                    <mt-field v-bind:class="{'is-hidden':signuphidden}" class="codeinput" type="number" label="Code:" placeholder="***" v-model="code"></mt-field>
+                    <mt-button v-bind:class="{'is-hidden':signuphidden}" v-on:click="doCode()" size="large">Submit Code</mt-button>
+                    <div class="loginlink"><a href="javascript:void(0)" @click="goLogin()">Already Registered?</a></div>
+                    <mt-spinner v-bind:class="{'is-hidden':spinnerHidden}" type="snake"></mt-spinner>
+                    <div>{{errortext}}</div>
+                  </mt-tab-container-item>
+                  <mt-tab-container-item id="tab2">
+                    <h4 v-bind:class="{'is-hidden':loginHidden}">Log in to your account:</h4>
+                    <h4 v-bind:class="{'is-hidden':forgotHidden}">Reset your password:</h4>
+                    <mt-field v-bind:class="{'is-hidden':loginHidden}" placeholder="E-mail Address..." type="email" :state="emailstatus" v-model="loginemail"></mt-field>
+                    <mt-field v-bind:class="{'is-hidden':loginHidden}" placeholder="Password..." type="password" :state="pwdstatus" v-model="loginpassword"></mt-field>
+                    <mt-button v-bind:class="{'is-hidden':loginHidden}" v-on:click="myLogin()" size="large">Log In</mt-button>
+                    <mt-field v-bind:class="{'is-hidden':forgotHidden}" placeholder="E-mail Address..." type="email" :state="emailstatus" v-model="loginemail"></mt-field>
+                    <mt-button v-bind:class="{'is-hidden':forgotHidden}" v-on:click="myForgot()" size="large">Reset Password</mt-button>
+                    <mt-button v-bind:class="{'is-hidden':inputhidden}" v-on:click="doCode()" size="large">Submit Code</mt-button>
+                    <div v-bind:class="{'is-hidden':forgotHidden}" class="loginlink"><a href="javascript:void(0)" @click="goLoginForgot()">Log In</a></div>
+                    <div v-bind:class="{'is-hidden':loginHidden}" class="loginlink"><a href="javascript:void(0)" @click="goForgot()">Forgot Password?</a><a class="reglink" href="javascript:void(0)" @click="goReg()">Register for an account</a></div>
+                    <mt-field v-bind:class="{'is-hidden':resetHidden}" placeholder="Password..." type="password" :state="pwdstatus" v-model="password"></mt-field>
+                    <mt-field v-bind:class="{'is-hidden':resetHidden}" placeholder="Password (again)" type="password" :state="pwdstatus" v-model="passwordcheck"></mt-field>
+                    <mt-button v-bind:class="{'is-hidden':resetHidden}" v-on:click="doReset()" size="large">Reset Password</mt-button>
+                    <div v-bind:class="{'is-hidden':resetHidden}" class="loginlink"><a href="javascript:void(0)" @click="goLoginReset()">Log In</a></div>
+                    <mt-cell v-bind:class="{'is-hidden':!sentReset}" class="codeinput">A link has been sent to your e-mail address, click the link to reset your password.</mt-cell>
+                    <mt-cell v-bind:class="{'is-hidden':!savedReset}" class="codeinput">Your password has been reset.</mt-cell>
+                    <mt-spinner v-bind:class="{'is-hidden':spinnerHidden}" type="snake"></mt-spinner>
+                    <div>{{errortext}}</div>
+                  </mt-tab-container-item>
+                </mt-tab-container>
+              </b-modal>
+            </div>
+            
+            
+            <!-- end isDesktop -->
 
             <div v-if="!isDesktop" class="mobcontent">
 
@@ -2490,6 +2626,9 @@
               <a href="/#/pubgroup/jyyktmzx">About Us</a>
               
               </div>
+
+
+
           </div>`
       }
       const contactForm = {
@@ -3512,6 +3651,7 @@ errortext:''
                         this.moreHidden = true
                       }
                       for (var j = 0; j < response.body[0].length; j++) {
+                        console.log(response.body[0][j].link)
                         response.body[0][j].imageHidden = true
                         response.body[0][j].isHtml = true
                         response.body[0][j].textHidden = false
@@ -3544,6 +3684,7 @@ errortext:''
                         this.moreHidden = false
                       }
                       for (var j = 0; j < this.items.length; j++) {
+                        console.log(response.body[0][j].link)
                         this.items[j].imageHidden = true
                         this.items[j].isHtml = true
                         this.items[j].textHidden = false
@@ -9908,6 +10049,8 @@ def getPosts():
       if not item['link'] is None:
         if len(item['link']) > 0:
           item['isHtml'] = True
+          if mydomain in item['link']:
+            item['link'] = item['link'].replace('post','#/showPost')
       comms = get_one_by('posts',item['id'],'inreplyto')
       for comm in list(reversed(comms)):
         comm['author'] = get_user(comm['user_id'])['name']
