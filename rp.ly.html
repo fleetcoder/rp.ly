@@ -2094,7 +2094,7 @@ errortext:'',
                 var square = createElement('div', 'event-category ' + ev.color);
                 var span = createElement('span', '', ev.eventName);
                 var link = createElement('a')
-                link.appendChild(link)
+                link.appendChild(span)
                 link.title = ev.eventName
                 link.href = 'https://megapump.com'
                 div.appendChild(square);
@@ -3446,9 +3446,12 @@ errortext:''
                 var div = createElement('div', 'event');
                 var square = createElement('div', 'event-category ' + ev.color);
                 var span = createElement('span', '', ev.eventName);
-
+                var link = createElement('a')
+                link.appendChild(span)
+                link.title = ev.eventName
+                link.href = 'https://megapump.com'
                 div.appendChild(square);
-                div.appendChild(span);
+                div.appendChild(link);
                 wrapper.appendChild(div);
               });
 
