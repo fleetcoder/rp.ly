@@ -1883,7 +1883,7 @@ errortext:'',
               //Draw Month
               this.drawMonth();
 
-              this.drawLegend();
+              //this.drawLegend();
             }
 
             Calendar.prototype.drawHeader = function() {
@@ -2093,9 +2093,12 @@ errortext:'',
                 var div = createElement('div', 'event');
                 var square = createElement('div', 'event-category ' + ev.color);
                 var span = createElement('span', '', ev.eventName);
-
+                var link = createElement('a')
+                link.appendChild(link)
+                link.title = ev.eventName
+                link.href = 'https://megapump.com'
                 div.appendChild(square);
-                div.appendChild(span);
+                div.appendChild(link);
                 wrapper.appendChild(div);
               });
 
@@ -2180,7 +2183,7 @@ errortext:'',
               var calitems = response.body[0]
               var data = []
               for (var j = 0; j < calitems.length; j++) {
-                data.push({ eventName: calitems[j]['title'], calendar: 'Local', color: 'green', date: moment(calitems[j]['pubDate'],'YYYY-MM-DD')})
+                data.push({ eventName: calitems[j]['title'], calendar: 'Local', color: 'green', date: moment(calitems[j]['pubDate'],'YYYY-MM-DD'), eventLink: calitems[j]['link']})
               }
               this.calendar.events = data;
               this.calendar.current = moment().date(1);
@@ -3233,7 +3236,7 @@ errortext:''
               //Draw Month
               this.drawMonth();
 
-              this.drawLegend();
+              //this.drawLegend();
             }
 
             Calendar.prototype.drawHeader = function() {
@@ -3539,7 +3542,7 @@ errortext:''
               for (var j = 0; j < calitems.length; j++) {
                 var dtt = moment(calitems[j]['pubDate'],'YYYY-MM-DD')
                 //if (dtt.month() == curr.month()) {
-                  data.push({ eventName: calitems[j]['title'], calendar: 'Local', color: 'green', date: dtt})
+                  data.push({ eventName: calitems[j]['title'], calendar: 'Local', color: 'green', date: dtt, eventLink: calitems[j]['link']})
                   //}
               }
               this.calendar.events = data;
@@ -9962,6 +9965,8 @@ def getCal():
       if not item['link'] is None:
         if len(item['link']) > 0:
           item['isHtml'] = True
+          if mydomain in item['link']:
+            item['link'] = item['link'].replace('post','#/showPost')
       item['flagged'] = False
       comms = get_one_by('posts',item['id'],'inreplyto')
       for comm in list(reversed(comms)):
