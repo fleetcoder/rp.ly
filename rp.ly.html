@@ -1361,6 +1361,10 @@
       .headertoolsitem {
         cursor: pointer;
       }
+      .event > span:nth-child(1) {
+        color:black;
+      }
+
   
     </style>
 
@@ -2030,7 +2034,7 @@ errortext:'',
               var details, arrow;
               var dayNumber = +el.querySelectorAll('.day-number')[0].innerText || +el.querySelectorAll('.day-number')[0].textContent;
               var day = this.current.clone().date(dayNumber);
-
+              this.dayNum = dayNumber.toString()
               var currentOpened = document.querySelector('.details');
 
               //Check to see if there is an open detais box on the current row
@@ -2096,8 +2100,9 @@ errortext:'',
               });
 
               if(!events.length) {
+                var evtcopy = 'No Events ' + this.current.format('MMMM') + ' ' + this.dayNum
                 var div = createElement('div', 'event empty');
-                var span = createElement('span', '', 'No Events');
+                var span = createElement('span', '', evtcopy);
 
                 div.appendChild(span);
                 wrapper.appendChild(div);
@@ -3379,7 +3384,7 @@ errortext:''
               var details, arrow;
               var dayNumber = +el.querySelectorAll('.day-number')[0].innerText || +el.querySelectorAll('.day-number')[0].textContent;
               var day = this.current.clone().date(dayNumber);
-
+              this.dayNum = dayNumber.toString()
               var currentOpened = document.querySelector('.details');
 
               //Check to see if there is an open detais box on the current row
@@ -3445,8 +3450,11 @@ errortext:''
               });
 
               if(!events.length) {
+
+
+                var evtcopy = 'No Events ' + this.current.format('MMMM') + ' ' + this.dayNum
                 var div = createElement('div', 'event empty');
-                var span = createElement('span', '', 'No Events');
+                var span = createElement('span', '', evtcopy);
 
                 div.appendChild(span);
                 wrapper.appendChild(div);
