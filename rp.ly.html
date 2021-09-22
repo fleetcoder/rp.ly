@@ -1180,9 +1180,6 @@
       .hiddenimg > img {
         display:none;
       }
-      .recentarts > div > div > div > img {
-        display:none;
-      }
       .hiddenimg > h1 {
         font-size:14px;
         font-weight:normal;
@@ -1192,13 +1189,16 @@
         text-align:left;
         display:block;
       }
+      .recentarts > div > p > div > img {
+        width:80px;
+      }
       .recentarts {
-        width:140px;
+        width:240px;
         vertical-align: top;
         display: inline-block;
         text-align: left;
       }
-      .recentarts > div > div > h1 {
+      .recentarts > div > p > h1 {
         width:100%;
         padding-right:5px;
       }
@@ -2405,7 +2405,7 @@ errortext:'',
     <div class="recentarts">
       <div><h6 class="sectionheader">Recent Articles</h6></div>
       <div v-for="(item, idx) in items">
-        <div v-on:click="goArticle(item.link)" class="hiddenimg" v-html="item.title"></div>
+        <p v-on:click="goArticle(item.link)" class="hiddenimg" v-html="item.title"></p>
       </div>
     </div>
     <div class="col-sm">
