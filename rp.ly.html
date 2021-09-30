@@ -1880,7 +1880,8 @@ uname:'',
 loggedInUserEmail:'',
 errortext:'',
             spinnerHidden:true,
-            publicLink:'/#/group/bppuhyny'
+            publicLink:'/#/group/bppuhyny',
+            authed:false
           }
         },
         mounted: function() {
@@ -2272,6 +2273,16 @@ errortext:'',
               }
               if (this.items.length > 0){
               }
+              Vue.http.post( 'joinGroup', {
+                grp:this.grp
+              }).then( ( response ) => {
+                if (response.body[3] == 'AUTHED') {
+                  this.authed = true
+                } else {
+                  this.authed = false
+                }
+              })
+              
             }
           })
           var check = false;
@@ -2554,9 +2565,16 @@ errortext:'',
               <a :href="publicLink" slot="left">
                 <img class="headericon" slot="icon" src="file/home.svg" />
               </a>
+              <div v-if="!authed">
               <a v-if="isDesktop" v-on:click="showLogin()" class="headertoolsitem" slot="right">
                 Sign Up <img class="headericon" slot="icon" src="file/user.svg" />
               </a>
+              </div>
+              <div v-else>
+              <a v-if="isDesktop" v-on:click="logout()" class="headertoolsitem" slot="right">
+                Logout <img class="headericon" slot="icon" src="file/user.svg" />
+              </a>
+              </div>
         
             </mt-header>
         
