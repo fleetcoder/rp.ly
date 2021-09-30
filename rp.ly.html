@@ -2707,7 +2707,7 @@ errortext:'',
             
             
             <div>
-              <b-modal ref="login-modal" ok-only ok-title="Close" hide-header-close @ok="handleOk" >
+              <b-modal ref="loggein-modal" ok-only ok-title="Close" hide-header-close @ok="handleOk" >
                 <mt-tab-container v-model="selected" class="introblock signupbox">
                   <mt-tab-container-item id="tab1">
                     <h4>Register for an account:</h4>
@@ -2744,6 +2744,12 @@ errortext:'',
                     <div>{{errortext}}</div>
                   </mt-tab-container-item>
                 </mt-tab-container>
+              </b-modal>
+            </div>
+            
+            <div>
+              <b-modal ref="loggedin-modal" ok-only hide-header-close @ok="handleOk">
+                <p class="my-4">Welcome! You are logged in as {{loggedInUserEmail}}</p>
               </b-modal>
             </div>
             
