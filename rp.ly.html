@@ -4504,7 +4504,8 @@ errortext:''
             datevalue:'',
             body:'',
             post:{},
-            imageHidden:false
+            imageHidden:false,
+            publicLink:'/#/group/bppuhyny'
           }
         },
         watch: {
@@ -4531,6 +4532,16 @@ errortext:''
               var arr1 = this.dateVal.split('-')
               this.dateText = monthNames[parseInt(arr1[1]) - 1] + ' ' + arr1[2] + ', ' + arr1[0]
             }
+        },
+        mounted(){
+          var x = document.getElementsByClassName("mint-header-title");
+          for(var i = 0; i < x.length; i++) {
+            (function(index,comp) {
+              x[index].addEventListener("click", function() {
+                comp.goHome()
+               })
+            })(i,this);
+          }
         },
         created() {
           if ("undefined" !== typeof this.$route.params.post) {
@@ -4647,6 +4658,9 @@ errortext:''
           }
         },
         methods: {
+          goHome(){
+            window.location.href = this.publicLink
+          },
           imageLink(item){
             if ("undefined" !== typeof item.media) {
               return item.media
@@ -4845,9 +4859,12 @@ errortext:''
         },
         template: `
           <div class="feedwrap mobilelayout">
-            <mt-header class="fixedheader" title="OurTown">
+            <mt-header class="fixedheader headertools" title="OurTown">
               <a slot="left" v-if="!isDesktop">
                 <mt-button slot="left" @click="$router.go(-1)" icon="back">back</mt-button>
+              </a>
+              <a :href="publicLink" slot="left" v-if="isDesktop">
+                <img class="headericon" slot="icon" src="file/home.svg" />
               </a>
             </mt-header>
             <!--<img class="groupimg" :src="'grpFile?field=image&name=' + groupPic" />-->
@@ -5614,12 +5631,23 @@ errortext:''
             flagtxt: 'Flag this post as inappropriate',
             contact: '',
             locationData: '',
-            isDesktop: false
+            isDesktop: false,
+            publicLink:'/#/group/bppuhyny'
           }
         },
         props: {},
         created() {
           this.setData()
+        },
+        mounted(){
+          var x = document.getElementsByClassName("mint-header-title");
+          for(var i = 0; i < x.length; i++) {
+            (function(index,comp) {
+              x[index].addEventListener("click", function() {
+                comp.goHome()
+               })
+            })(i,this);
+          }
         },
         methods: {
           setData(){
@@ -5695,7 +5723,10 @@ errortext:''
         
             <div v-if="isDesktop">
         
-              <mt-header fixed title="OurTown">
+              <mt-header fixed title="OurTown" class="fixedheader headertools">
+              <a :href="publicLink" slot="left">
+                <img class="headericon" slot="icon" src="file/home.svg" />
+              </a>
 
               </mt-header>
         
