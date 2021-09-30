@@ -1875,7 +1875,8 @@ savedReset:false,
 uname:'',
 loggedInUserEmail:'',
 errortext:'',
-            spinnerHidden:true
+            spinnerHidden:true,
+            publicLink:'/#/group/bppuhyny'
           }
         },
         mounted: function() {
@@ -2228,6 +2229,14 @@ errortext:'',
               }
             }
           })
+          var x = document.getElementsByClassName("mint-header-title");
+          for(var i = 0; i < x.length; i++) {
+            (function(index,comp) {
+              x[index].addEventListener("click", function() {
+                comp.goHome()
+               })
+            })(i,this);
+          }
         },
         props: {},
         created() {
@@ -2307,6 +2316,9 @@ errortext:'',
           handleOk() {
             
           },
+          goHome(){
+            router.push( this.publicLink )
+          },
           goLogin(){
             this.selected = "tab2"
           },
@@ -2364,11 +2376,16 @@ errortext:'',
         },
         template: `
           <div class="content">
+        
         <div v-if="isDesktop">
-            <mt-header class="fixedheader headertools" fixed title="OurTown">
+            <mt-header ref="dt-header-ui" id="dt-header-ui" class="fixedheader headertools" fixed title="OurTown">
+              <a :href="publicLink" slot="left">
+                <img class="headericon" slot="icon" src="file/home.svg" />
+              </a>
               <a v-if="isDesktop" v-on:click="showLogin()" class="headertoolsitem" slot="right">
                 Sign Up <img class="headericon" slot="icon" src="file/user.svg" />
               </a>
+        
             </mt-header>
         
 <div class="container dtcontent dtheader">
@@ -3591,6 +3608,14 @@ errortext:''
               }
             }
           })
+          var x = document.getElementsByClassName("mint-header-title");
+          for(var i = 0; i < x.length; i++) {
+            (function(index,comp) {
+              x[index].addEventListener("click", function() {
+                comp.goHome()
+               })
+            })(i,this);
+          }
         },
         created() {
           this.setup()
@@ -3601,6 +3626,9 @@ errortext:''
           }
         },
         methods: {
+          goHome(){
+            router.push( this.publicLink )
+          },
           handleOk(){
              this.$refs['login-modal'].hide()
           },
@@ -4105,6 +4133,10 @@ errortext:''
               <a slot="left" v-if="!isDesktop">
                 <mt-button slot="left" @click="$router.back()" icon="back">back</mt-button>
               </a>
+              <a :href="publicLink" slot="left" v-if="isDesktop">
+                <img class="headericon" slot="icon" src="file/home.svg" />
+              </a>
+        
               <a v-if="!isDesktop" v-on:click="showMenu()" slot="right">
                 <img class="headericon" slot="icon" src="file/menu.svg" />
               </a>
