@@ -2555,6 +2555,12 @@ errortext:'',
                 this.emailstatus = 'error'
               }
             }
+          },
+          logOut(){
+            Vue.http.post( 'logout', {
+            }).then( ( response ) => {
+              window.location.href = this.publicLink
+            })
           }
         },
         template: `
@@ -2565,16 +2571,13 @@ errortext:'',
               <a :href="publicLink" slot="left">
                 <img class="headericon" slot="icon" src="file/home.svg" />
               </a>
-              <div v-if="!authed">
-              <a v-if="isDesktop" v-on:click="showLogin()" class="headertoolsitem" slot="right">
+
+              <a v-if="!authed" v-on:click="showLogin()" class="headertoolsitem" slot="right">
                 Sign Up <img class="headericon" slot="icon" src="file/user.svg" />
               </a>
-              </div>
-              <div v-else>
-              <a v-if="isDesktop" v-on:click="logout()" class="headertoolsitem" slot="right">
+              <a v-if="authed" v-on:click="logout()" class="headertoolsitem" slot="right">
                 Logout <img class="headericon" slot="icon" src="file/user.svg" />
               </a>
-              </div>
         
             </mt-header>
         
