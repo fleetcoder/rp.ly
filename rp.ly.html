@@ -65,6 +65,9 @@
       .mint-header {
         background-color: #616F39;
       }
+      .mint-header h1 {
+        cursor: pointer;
+      }
       #app {
         margin:0;
       }
@@ -1358,6 +1361,7 @@
       }
       .headertools {
         padding-right:100px;
+        padding-left:100px;
       }
       .headertoolsitem {
         cursor: pointer;
@@ -2317,7 +2321,7 @@ errortext:'',
             
           },
           goHome(){
-            router.push( this.publicLink )
+            window.location.href = this.publicLink
           },
           goLogin(){
             this.selected = "tab2"
@@ -3627,7 +3631,7 @@ errortext:''
         },
         methods: {
           goHome(){
-            router.push( this.publicLink )
+            window.location.href = this.publicLink
           },
           handleOk(){
              this.$refs['login-modal'].hide()
@@ -4129,7 +4133,7 @@ errortext:''
         template: `
           <div class="mobilelayout">
            <router-view />
-            <mt-header fixed class="fixedheader" title="OurTown">
+            <mt-header fixed class="fixedheader headertools" title="OurTown">
               <a slot="left" v-if="!isDesktop">
                 <mt-button slot="left" @click="$router.back()" icon="back">back</mt-button>
               </a>
