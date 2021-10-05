@@ -2226,7 +2226,7 @@ errortext:'',
                 }, [])
                 if (todaysEvents.length > 0) {
                   if (false === current) {
-                    if (dayNumber >= today) {
+                    if (dayNumber >= today && (el.className !== 'day other')) {
                       var current = el
                       var self = this.calendar
                       window.setTimeout(function() {
@@ -3799,7 +3799,7 @@ errortext:''
                 }, [])
                 if (todaysEvents.length > 0) {
                   if (false === current) {
-                    if (dayNumber >= today) {
+                    if (dayNumber >= today && (el.className !== 'day other')) {
                       var current = el
                       var self = this.calendar
                       window.setTimeout(function() {
