@@ -8931,7 +8931,7 @@ def syncGroups():
             if item['link'][-4:].lower()  in ['.mov','.mp4','.mp3','.m4v','.wav']:
               continue
             posts = get_one_by('posts',item['link'],'link')
-            if len(posts) > 0 and not 'weather' in item['link'].lower():
+            if len(posts) > 0 and not 'accuweather' in item['link'].lower():
               continue
             else:
               print('NEW ' + item['title'])
@@ -9008,7 +9008,7 @@ def syncGroups():
                               foundimg = True
                     if mytitle != '':
                       newrec['title'] = mytitle + myimage
-            if 'weather' in item['link'].lower():
+            if 'accuweather' in item['link'].lower():
               newrec['title'] = '<h1 class="article_hed">' + foundtitle + '</h1>'
               newrec['title'] = newrec['title'] + '<div class="feedimages"><img class="article_img" src="' + 'file/weather.jpg' + '" alt="Image" /></div>'
               flagged = 0
