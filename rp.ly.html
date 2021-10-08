@@ -1430,7 +1430,7 @@
           if (this.$route.path.includes('login')){
             this.selected = 'tab2'
           }
-          if (this.$route.path.substring(1) == 'reset'){
+          if (!(this.$route.path.match(/\/reset\//g) === null)) {
             this.selected = 'tab2'
             this.loginHidden = true
             this.resetHidden = false
@@ -1670,6 +1670,7 @@
           myForgot() {
             Vue.http.post( 'sendResetPwd', {
               email : this.loginemail,
+              dest: this.$route.params.grp
             }).then( ( response ) => {
               if (response.body[0] == 'error') {
                 MintUI.Toast({
@@ -1695,6 +1696,11 @@
                 })
                 this.emailstatus = 'error'
               } else {
+                if (typeof this.$route.params.grp !== 'undefined') {
+                  if ('bppuhyny' == this.$route.params.grp) {
+                    router.push( '/group/' + this.$route.params.grp )
+                  }
+                }
                 this.savedReset = true
                 this.sentReset = false
                 this.password = ''
@@ -2361,6 +2367,7 @@ errortext:'',
           myForgot() {
             Vue.http.post( 'sendResetPwd', {
               email : this.loginemail,
+              dest : this.grp
             }).then( ( response ) => {
               if (response.body[0] == 'error') {
                 MintUI.Toast({
@@ -8777,6 +8784,9 @@ errortext:''
             path: '/reset',
             component: freeTrial
         },{
+            path: '/reset/:grp',
+            component: freeTrial
+        },{
             path: '/auth',
             component: freeTrial
         },{
@@ -9126,11 +9136,14 @@ def sendResetPwd():
       'email':em,
       'code':ccd
     })
+  resetLink = '/doResetPwd?ccd=' + ccd
+  if not request.form.get('dest') is None:
+    resetLink = resetLink + "&dest=" + request.form.get('dest')
   message = Mail(
     from_email=' Request at ' + mydomain + ' <' + os.getenv('SENDGRID_FROM') + '>',
     to_emails=em,
     subject='The ' + mydomain + ' link you requested',
-    html_content='<strong>Your link for ' + mydomain + 'password reset<a href="https://' + mydomain + '/doResetPwd?ccd=' + ccd + '"><h2>Reset Password</h2></a></strong>')
+    html_content='<strong>Your link for ' + mydomain + 'password reset<a href="https://' + mydomain + resetLink + '"><h2>Reset Password</h2></a></strong>')
   sg = SendGridAPIClient(sendgrid_token)
   response = sg.send(message)
   return ''
@@ -9138,6 +9151,9 @@ def sendResetPwd():
 @app.route('/doResetPwd',methods=['GET'])
 def doResetPwd():
   code = request.args.get('ccd')
+  dest = ''
+  if not request.args.get('dest') is None:
+    dest = '/' + request.args.get('dest')
   item = get_one_by( 'resetcodes', code, 'code' )
   if len(item) > 0:
     del_one( 'resetcodes', item[0]['id'] )
@@ -9149,7 +9165,7 @@ def doResetPwd():
           u = usr['id']
           session.permanent = True
           session['user'] = str(u)
-          return redirect("https://" + mydomain + "/#/reset", code=302)
+          return redirect("https://" + mydomain + "/#/reset" + dest, code=302)
   return json.dumps( [ 'Error' ] )
 
 @app.route('/saveResetPwd',methods=['POST'])
