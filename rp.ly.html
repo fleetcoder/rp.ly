@@ -4788,9 +4788,9 @@ errortext:''
                 for (i = 0; i < y.length; i++) {
                   this.body = y[i].innerText
                 }
-                var splitted = this.title.split(" - - ")
+                var splitted = this.body.split(" - - ")
                 if (splitted.length > 2) {
-                  this.title = this.splitted[2]
+                  this.body = splitted[2]
                 }
                 
                 
@@ -4832,12 +4832,6 @@ errortext:''
               if (parseInt(publicData['shareCal']) > 0) {
                 this.shareCal = true
                 this.contactText = 'Enter your phone number or Web site link here...'
-                 if ("undefined" !== typeof this.$route.params.post) {
-                   var splitted = this.title.split(" - - ")
-                   if (splitted.length > 2) {
-                     this.title = this.splitted[2]
-                   }
-                 }
               }
             }
             this.name = response.body[1]
