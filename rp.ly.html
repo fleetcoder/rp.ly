@@ -4766,7 +4766,7 @@ errortext:''
                 this.contactInfo = this.post.contact
                 this.imageHidden = true
                 this.locationData = this.post.location
-                console.log(this.image)
+
                 
                 var el = document.createElement('div')
                 el.innerHTML = this.body
@@ -4779,6 +4779,9 @@ errortext:''
                     this.image = splitted[1]
                   }
                   this.filebase = 'myFile?field=image&name='
+                }
+                if (typeof this.image === "undefined") {
+                  this.image = ''
                 }
                 var y = el.getElementsByClassName("article_hed");
                 var i;
@@ -4826,6 +4829,12 @@ errortext:''
               if (parseInt(publicData['shareCal']) > 0) {
                 this.shareCal = true
                 this.contactText = 'Enter your phone number or Web site link here...'
+                 if ("undefined" !== typeof this.$route.params.post) {
+                   var splitted = this.title.split(" - - ")
+                   if (splitted.length > 2) {
+                     this.title = this.splitted[2]
+                   }
+                 }
               }
             }
             this.name = response.body[1]
