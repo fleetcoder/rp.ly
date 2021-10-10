@@ -4711,7 +4711,8 @@ errortext:''
             body:'',
             post:{},
             imageHidden:false,
-            publicLink:'/#/group/bppuhyny'
+            publicLink:'/#/group/bppuhyny',
+            filebase:'myFile?staged=1&field=image&name='
           }
         },
         watch: {
@@ -4759,13 +4760,13 @@ errortext:''
               if (response.body.length > 0) {
 
                 this.post = response.body[0]
-                this.title = this.post.body
+                this.title = this.post.body.replace("<p>","").replace("</p>","")
                 this.image = this.post.image
                 this.body = this.post.title
                 this.contactInfo = this.post.contact
                 this.imageHidden = true
                 this.locationData = this.post.location
-                
+                console.log(this.image)
                 
                 var el = document.createElement('div')
                 el.innerHTML = this.body
@@ -4773,6 +4774,11 @@ errortext:''
                 var i;
                 for (i = 0; i < x.length; i++) {
                   this.image = x[i].src
+                  var splitted = this.image.split("&name=")
+                  if (splitted.length > 0) {
+                    this.image = splitted[1]
+                  }
+                  this.filebase = 'myFile?field=image&name='
                 }
                 var y = el.getElementsByClassName("article_hed");
                 var i;
@@ -5009,6 +5015,7 @@ errortext:''
           stagedUpload(field){
             Vue.http.get( 'stagedFile?field=' + field ).then( ( response ) => {
               if ( !!response.body ) {
+                this.filebase = 'myFile?staged=1&field=image&name='
                 this[field] = response.body
               }
             })
@@ -5116,7 +5123,7 @@ errortext:''
               v-model="dateVal">
               </mt-datetime-picker>
               <mt-field placeholder="Write your description here..." type="textarea" rows="8" v-model="title"></mt-field>
-              <mt-cell title="" v-if="image !== ''"><img class="img" :src="'myFile?staged=1&field=image&name=' + image" /></mt-cell>
+              <mt-cell title="" v-if="image !== ''"><img class="img" :src="filebase + image" /></mt-cell>
               <!--<file-upload btn-label="Click here to upload a photo..." @change="stagedUpload('image')" :url="uploadTo + '?field=image'"></file-upload>-->
               <mt-field v-if="title !== ''" :placeholder="contactText" v-model="contactInfo"></mt-field>
               <mt-field v-if="title !== ''" :placeholder="locationText" v-model="locationData"></mt-field>
@@ -5125,7 +5132,7 @@ errortext:''
             </div>
             <div v-else>
               <mt-field placeholder="Write your description here..." type="textarea" rows="8" v-model="title"></mt-field>
-              <mt-cell title="" v-if="image !== ''"><img class="img" :src="'myFile?staged=1&field=image&name=' + image" /></mt-cell>
+              <mt-cell title="" v-if="image !== ''"><img class="img" :src="filebase + image" /></mt-cell>
               <file-upload accept="image/*" btn-label="Click here to upload a photo..." @change="stagedUpload('image')" :url="uploadTo + '?field=image'"></file-upload>
               <mt-field v-if="title !== ''" :placeholder="contactText" v-model="contactInfo"></mt-field>
               <mt-field v-if="title !== ''" :placeholder="locationText" v-model="locationData"></mt-field>
