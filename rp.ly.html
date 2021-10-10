@@ -4967,7 +4967,7 @@ errortext:''
 
               Vue.http.post( 'modPosts', {
                 id : this.post.id,
-                title: JSON.stringify([formattedTitle]),
+                title: formattedTitle,
                 location:this.locationData,
                 body:formattedBody,
                 contactInfo: this.contactInfo,
