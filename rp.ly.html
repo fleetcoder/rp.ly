@@ -6112,7 +6112,9 @@ errortext:''
             image : '',
             sound : '',
             body: '',
-            link: ''
+            link: '',
+            imagelink: '',
+            hedline:''
           }
         },
         props: { posts : Array, selected: String, postto: Array },
@@ -6124,16 +6126,40 @@ errortext:''
               this.image = this.posts[j].image
               this.body = this.posts[j].body
               this.link = this.posts[j].link
+              this.imagelink = this.posts[j].image
+
+              this.hedline = this.posts[j].title
+
+              var el = document.createElement('div')
+              el.innerHTML = this.hedline
+              var x = el.getElementsByClassName("article_img");
+              var i;
+              for (i = 0; i < x.length; i++) {
+                this.imagelink = x[i].src
+              }
+              var y = el.getElementsByClassName("article_hed");
+              var i;
+              for (i = 0; i < y.length; i++) {
+                this.title = y[i].innerText
+              }
+
+
+
+
+
             }
           }
         },
         methods: {
           modPosts(){
             this.spinnerHidden = false
+            var formattedTitle = '<h1 class="article_hed">' + this.title + '</h1>' + '<div class="feedimages"><img class="article_img" src="' + this.imagelink + '" alt="Image" /></div>'
+
+
             Vue.http.post( 'modPosts', {
               id : this.id,
-              title : this.title,
-              body : this.body,
+              title : formattedTitle,
+              body : '',
               link : this.link
             }).then( ( response ) => {
               router.back()
@@ -6174,6 +6200,7 @@ errortext:''
             <!--<mt-field placeholder="Story..." type="textarea" rows="10" v-model="title"></mt-field>-->
             <mt-cell><vue-editor v-model="body"></vue-editor></mt-cell>
             <!--<mt-field placeholder="Story..." type="textarea" rows="20" v-model="body"></mt-field>-->
+            <mt-field placeholder="Image Link..." type="text" v-model="imagelink"></mt-field>
             <mt-cell title=""><img class="img" :src="'myFile?staged=1&field=image&name=' + image" /></mt-cell>
             <file-upload accept="image/*" btn-label="Image" @change="stagedUpload('image')" :url="uploadTo + '&field=image'"></file-upload>
             <!--<mt-cell title="Sound:"><audio-player :src="'myFile?staged=1&field=sound&name=' + sound" /></mt-cell>
