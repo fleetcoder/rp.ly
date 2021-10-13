@@ -4954,6 +4954,15 @@ errortext:''
               postimg = 'file/cal.png'
               evtdate = moment(moment.utc(this.dateVal).toDate()).local().format("YYYY-MM-DD")
               evttime = this.timeVal
+              if (true !== moment(moment.utc(this.dateVal).toDate()).local().isAfter()) {
+                MintUI.Toast({
+                  message: 'Please use a future date. Thank you!',
+                  iconClass: 'icon icon-error',
+                  duration: 4000
+                })
+                this.spinnerHidden = true
+                return
+              }
             }
             var timetime = ''
             if (this.shareCal === true) {
