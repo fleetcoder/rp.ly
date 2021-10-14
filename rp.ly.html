@@ -2698,9 +2698,9 @@ errortext:'',
   <div class="row dtfooter">
     <div class="col-sm">
         
-            <a href="/#/login/bppuhyny">Pricing</a>
+            <a href="/#/pricing">Pricing</a>
             &nbsp;|&nbsp;
-            <a href="/#/auth/bppuhyny">Privacy Policy</a>
+            <a href="/#/privacyPolicy">Privacy Policy</a>
             &nbsp;|&nbsp;
             <a href="/#/pubgroup/jyyktmzx">About Us</a>
 
@@ -2864,9 +2864,10 @@ errortext:'',
 
             <div class="centerbox tourfooter">
               
-              <a href="/#/login/bppuhyny">Login</a>
+
+              <a href="/#/pricing">Pricing</a>
               &nbsp;|&nbsp;
-              <a href="/#/auth/bppuhyny">Sign Up</a>
+              <a href="/#/privacyPolicy">Privacy Policy</a>
               &nbsp;|&nbsp;
               <a href="/#/pubgroup/jyyktmzx">About Us</a>
               
@@ -4461,10 +4462,13 @@ errortext:''
         
             <div style="width:100%;margin-top:100px;margin-bottom:40px;display:inline-block;">
               <div class="postest">
-                
-            <a href="/#/login/bppuhyny">Login</a>
-            |<a href="/#/auth/bppuhyny">Sign Up</a>
-                |<a href="/#/pubgroup/jyyktmzx">About Us</a>
+
+        <a href="/#/pricing">Pricing</a>
+        &nbsp;|&nbsp;
+        <a href="/#/privacyPolicy">Privacy Policy</a>
+        &nbsp;|&nbsp;
+        <a href="/#/pubgroup/jyyktmzx">About Us</a>
+
               </div>
             </div>
 
@@ -8726,6 +8730,44 @@ errortext:''
             <mt-cell></mt-cell>
           </div>`
       }
+      const privacyPolicy = {
+        data() {
+          return {
+          }
+        },
+        props: {},
+        created() {
+        },
+        methods: {
+        },
+        template: `
+          <div>
+            <div style="margin-top:40px;"></div>
+
+            <div style="width:100%;padding:20px;">Privacy Policy</div>
+            <p>Coming soon...</p>
+
+          </div>`
+      }
+      const pricing = {
+        data() {
+          return {
+          }
+        },
+        props: {},
+        created() {
+        },
+        methods: {
+        },
+        template: `
+          <div>
+            <div style="margin-top:40px;"></div>
+
+            <div style="width:100%;padding:20px;">Pricing</div>
+            <p>Coming soon...</p>
+
+          </div>`
+      }
       const router = new VueRouter({routes:[
         { path: '', component: Posts,
           children: [{
@@ -8845,6 +8887,12 @@ errortext:''
         },{
             path: '/authpost/:postid',
             component: freeTrial
+        },{
+            path: '/pricing',
+            component: pricing
+        },{
+            path: '/privacyPolicy',
+            component: privacyPolicy
         }
       ]})
       const vueApp = new Vue({
