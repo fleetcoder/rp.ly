@@ -1382,7 +1382,14 @@
       a.imagecell > div > div > p > ul > li {
         padding-bottom:10px;
       }
-
+      .weatherwidget {
+        
+      }
+      .weatherwidget img {
+        width:30px;
+        margin:8px;
+        border-radius: 4px;
+      }
   
     </style>
 
@@ -1891,7 +1898,9 @@ loggedInUserEmail:'',
 errortext:'',
             spinnerHidden:true,
             publicLink:'/#/group/bppuhyny',
-            authed:false
+            authed:false,
+            weatherimg:"https://ourtown.org/file/weather.jpg",
+            weathertext:''
           }
         },
         mounted: function() {
@@ -2206,6 +2215,10 @@ errortext:'',
           this.calendar.el = this.$refs.calendar
           Vue.http.get( 'getCal' + '?grp=' + this.calgrp).then( ( response ) => {
             if ( !!response.body ) {
+              if (response.body.length > 1) {
+                this.weathertext = response.body[1][0]
+                this.weatherimg = response.body[1][1]
+              }
               var calitems = response.body[0]
               var data = []
               for (var j = 0; j < calitems.length; j++) {
@@ -2620,6 +2633,7 @@ errortext:'',
         <b-nav-item class="hoverlinks" href="/#/pubgroup/vbkuqsko">Bulletin Board</b-nav-item>
         <b-nav-item class="hoverlinks" href="/#/pubgroup/hdkqocon">Support A Student</b-nav-item>
         <b-nav-item class="hoverlinks" href="/#/pubgroup/tlicintr">Business Directory</b-nav-item>
+        <b-nav-item class="hoverlinks" href="/#/pubgroup/tlicintr"><div class="weatherwidget"><span v-html="weathertext"></span></div></b-nav-item>
       </b-navbar-nav>
 
     </b-collapse>
@@ -11300,11 +11314,13 @@ def getCal():
   public_group = 0
   group_id = 0
   gall_counts = {}
+  ppath = ''
   if not request.args.get('grp') is None:
     thisgroup = get_one_by( 'groups', request.args.get('grp'), 'key' )
     if len(thisgroup) > 0:
       if int(thisgroup[0]['public']) > 0:
         public_group = thisgroup[0]['id']
+        ppath = thisgroup[0]['publicPath']
         public_group_entry = {'value':int(thisgroup[0]['id']),'label':thisgroup[0]['name'],'links':thisgroup[0]['shareLinks']}
   for item in recs:
     is_public = False
@@ -11346,7 +11362,17 @@ def getCal():
             item['pubDate'] = datetime.strptime(d, "%Y-%m-%d %H:%M:%S%z").strftime('%Y-%m-%d')
             item['title'] = re.sub('<[^<]+?>', '', item['title'])
             posts.append(item)
-  return( json.dumps( [posts] ) )
+  weather = [
+    '',
+    "https://ourtown.org/file/weather.jpg"
+  ]
+  saved = get_one_by( 'forecasts', ppath, 'path' )
+  if len(saved) > 0:
+    weather = [
+      saved[0]['forecast'],
+      "https://ourtown.org/file/weather.jpg"
+    ]
+  return( json.dumps( [posts,weather] ) )
 
 @app.route('/getPosts',methods=['GET','POST'])
 def getPosts():
