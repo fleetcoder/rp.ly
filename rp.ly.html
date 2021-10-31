@@ -1386,9 +1386,13 @@
         
       }
       .weatherwidget img {
-        width:30px;
+        width:40px;
         margin:8px;
         border-radius: 4px;
+      }
+      .weatherwidget a {
+        text-decoration:none;
+        color:rgba(0,0,0,.55);
       }
   
     </style>
@@ -11366,12 +11370,13 @@ def getCal():
     '',
     "https://ourtown.org/file/weather.jpg"
   ]
-  saved = get_one_by( 'forecasts', ppath, 'path' )
-  if len(saved) > 0:
-    weather = [
-      saved[0]['forecast'],
-      "https://ourtown.org/file/weather.jpg"
-    ]
+  if not request.args.get('grp') is None:
+    saved = get_one_by( 'forecasts', request.args.get('grp'), 'groupcode' )
+    if len(saved) > 0:
+      weather = [
+        saved[0]['forecast'],
+        "https://ourtown.org/file/weather.jpg"
+      ]
   return( json.dumps( [posts,weather] ) )
 
 @app.route('/getPosts',methods=['GET','POST'])
