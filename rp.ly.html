@@ -1904,7 +1904,9 @@ errortext:'',
             publicLink:'/#/group/bppuhyny',
             authed:false,
             weatherimg:"https://ourtown.org/file/weather.jpg",
-            weathertext:''
+            weathertext:'',
+            contactemail:'',
+            contactbody:''
           }
         },
         mounted: function() {
@@ -2358,6 +2360,9 @@ errortext:'',
           handleOk() {
             
           },
+          handleContactOk() {
+            
+          },
           goHome(){
             window.location.href = this.publicLink
           },
@@ -2398,6 +2403,9 @@ errortext:'',
               }
             })
           },
+          doContact() {
+             this.$refs['contact-modal'].show()
+          },
           doReset() {
             Vue.http.post( 'saveResetPwd', {
               pass : this.password,
@@ -2414,6 +2422,21 @@ errortext:'',
                 this.sentReset = false
                 this.password = ''
               }
+            })
+          },
+          doPostContact(){
+            Vue.http.post( 'addInquiry', {
+              body:this.contactbody,
+              email:this.contactemail
+            }).then( ( response ) => {
+              MintUI.Toast({
+                message: 'MESSAGE SENT',
+                iconClass: 'icon icon-success',
+                duration: 4000
+              })
+               this.$refs['contact-modal'].hide()
+              this.contactbody = ''
+              this.contactemail = ''
             })
           },
           myLogin(){
@@ -2718,11 +2741,13 @@ errortext:'',
         
             <a href="/#/pricing">Pricing</a>
             &nbsp;|&nbsp;
-            <a href="/#/privacyPolicy">Privacy Policy</a>
+            <a href="/#/privacyPolicy">Privacy</a>
             &nbsp;|&nbsp;
             <a href="/#/terms">Terms</a>
             &nbsp;|&nbsp;
-            <a href="/#/pubgroup/jyyktmzx">About Us</a>
+            <a href="/#/pubgroup/jyyktmzx">About</a>
+            &nbsp;|&nbsp;
+            <a v-on:click="doContact()" href="javascript:void(0)">Contact</a>
 
 
     </div>
@@ -2732,6 +2757,17 @@ errortext:'',
 
 </div> 
             
+            
+            <div>
+              <b-modal ref="contact-modal" ok-only ok-title="Close" hide-header-close @ok="handleContactOk" >
+                <div style="width:100%;padding:20px;">Ask the OurTown Team a question:</div>
+
+                <mt-field placeholder="Email Address or Phone Number..." v-model="contactemail" type="email"></mt-field>
+                <mt-field type="textarea" rows="5" placeholder="Your question..." v-model="contactbody"></mt-field>
+                <mt-button v-on:click="doPostContact()" size="large">Send Question</mt-button>
+                <div class="centerbox tourfooter">OurTown - Council, Idaho</div>
+              </b-modal>
+            </div>
             
             <div>
               <b-modal ref="login-modal" ok-only ok-title="Close" hide-header-close @ok="handleOk" >
@@ -2887,11 +2923,13 @@ errortext:'',
 
               <a href="/#/pricing">Pricing</a>
               &nbsp;|&nbsp;
-              <a href="/#/privacyPolicy">Privacy Policy</a>
+              <a href="/#/privacyPolicy">Privacy</a>
               &nbsp;|&nbsp;
               <a href="/#/terms">Terms</a>
               &nbsp;|&nbsp;
-              <a href="/#/pubgroup/jyyktmzx">About Us</a>
+              <a href="/#/pubgroup/jyyktmzx">About</a>
+              &nbsp;|&nbsp;
+              <a v-on:click="doContact()" href="javascript:void(0)">Contact</a>
               
               </div>
 
@@ -3478,7 +3516,9 @@ sentReset:false,
 savedReset:false,
 uname:'',
 loggedInUserEmail:'',
-errortext:''
+errortext:'',
+contactbody:'',
+contactemail:''
           }
         },
         mounted: function() {
@@ -4371,6 +4411,27 @@ errortext:''
               this.authed = false
               this.loggedInUserEmail = ''
             })
+          },
+          doContact() {
+             this.$refs['contact-modal'].show()
+          },
+          doPostContact(){
+            Vue.http.post( 'addInquiry', {
+              body:this.contactbody,
+              email:this.contactemail
+            }).then( ( response ) => {
+              MintUI.Toast({
+                message: 'MESSAGE SENT',
+                iconClass: 'icon icon-success',
+                duration: 4000
+              })
+               this.$refs['contact-modal'].hide()
+              this.contactbody = ''
+              this.contactemail = ''
+            })
+          },
+          handleContactOk() {
+            
           }
         },
         template: `
@@ -4501,14 +4562,28 @@ errortext:''
 
         <a href="/#/pricing">Pricing</a>
         &nbsp;|&nbsp;
-        <a href="/#/privacyPolicy">Privacy Policy</a>
+        <a href="/#/privacyPolicy">Privacy</a>
         &nbsp;|&nbsp;
         <a href="/#/terms">Terms</a>
         &nbsp;|&nbsp;
-        <a href="/#/pubgroup/jyyktmzx">About Us</a>
+        <a href="/#/pubgroup/jyyktmzx">About</a>
+        &nbsp;|&nbsp;
+        <a v-on:click="doContact()" href="javascript:void(0)">Contact</a>
 
               </div>
             </div>
+
+            <div>
+              <b-modal ref="contact-modal" ok-only ok-title="Close" hide-header-close @ok="handleContactOk" >
+                <div style="width:100%;padding:20px;">Ask the OurTown Team a question:</div>
+
+                <mt-field placeholder="Email Address or Phone Number..." v-model="contactemail" type="email"></mt-field>
+                <mt-field type="textarea" rows="5" placeholder="Your question..." v-model="contactbody"></mt-field>
+                <mt-button v-on:click="doPostContact()" size="large">Send Question</mt-button>
+                <div class="centerbox tourfooter">OurTown - Council, Idaho</div>
+              </b-modal>
+            </div>
+
 
             <div>
               <b-modal ref="login-modal" ok-only ok-title="Close" hide-header-close @ok="handleOk" >
@@ -8773,7 +8848,9 @@ errortext:''
           return {
             isDesktop:false,
             publicLink:'/#/group/bppuhyny',
-            authed:false
+            authed:false,
+            contactbody:'',
+            contactemail:''
           }
         },
         props: {},
@@ -8785,9 +8862,43 @@ errortext:''
           }
         },
         methods: {
+          doContact() {
+             this.$refs['contact-modal'].show()
+          },
+          doPostContact(){
+            Vue.http.post( 'addInquiry', {
+              body:this.contactbody,
+              email:this.contactemail
+            }).then( ( response ) => {
+              MintUI.Toast({
+                message: 'MESSAGE SENT',
+                iconClass: 'icon icon-success',
+                duration: 4000
+              })
+               this.$refs['contact-modal'].hide()
+              this.contactbody = ''
+              this.contactemail = ''
+            })
+          },
+          handleContactOk() {
+            
+          }
         },
         template: `
           <div class="content">
+        
+            <div>
+              <b-modal ref="contact-modal" ok-only ok-title="Close" hide-header-close @ok="handleContactOk" >
+                <div style="width:100%;padding:20px;">Ask the OurTown Team a question:</div>
+
+                <mt-field placeholder="Email Address or Phone Number..." v-model="contactemail" type="email"></mt-field>
+                <mt-field type="textarea" rows="5" placeholder="Your question..." v-model="contactbody"></mt-field>
+                <mt-button v-on:click="doPostContact()" size="large">Send Question</mt-button>
+                <div class="centerbox tourfooter">OurTown - Council, Idaho</div>
+              </b-modal>
+            </div>
+
+        
         
         <div v-if="isDesktop">
             <mt-header ref="dt-header-ui" id="dt-header-ui" class="fixedheader headertools" fixed title="OurTown">
@@ -8956,11 +9067,13 @@ errortext:''
       
           <a href="/#/pricing">Pricing</a>
           &nbsp;|&nbsp;
-          <a href="/#/privacyPolicy">Privacy Policy</a>
+          <a href="/#/privacyPolicy">Privacy</a>
           &nbsp;|&nbsp;
           <a href="/#/terms">Terms</a>
           &nbsp;|&nbsp;
-          <a href="/#/pubgroup/jyyktmzx">About Us</a>
+          <a href="/#/pubgroup/jyyktmzx">About</a>
+          &nbsp;|&nbsp;
+          <a v-on:click="doContact()" href="javascript:void(0)">Contact</a>
 
 
   </div>
@@ -9107,11 +9220,13 @@ errortext:''
 
               <a href="/#/pricing">Pricing</a>
               &nbsp;|&nbsp;
-              <a href="/#/privacyPolicy">Privacy Policy</a>
+              <a href="/#/privacyPolicy">Privacy</a>
               &nbsp;|&nbsp;
               <a href="/#/terms">Terms</a>
               &nbsp;|&nbsp;
-              <a href="/#/pubgroup/jyyktmzx">About Us</a>
+              <a href="/#/pubgroup/jyyktmzx">About</a>
+              &nbsp;|&nbsp;
+              <a v-on:click="doContact()" href="javascript:void(0)">Contact</a>
               
               </div>
 
@@ -9126,7 +9241,9 @@ errortext:''
           return {
             isDesktop:false,
             publicLink:'/#/group/bppuhyny',
-            authed:false
+            authed:false,
+            contactbody:'',
+            contactemail:''
           }
         },
         props: {},
@@ -9138,9 +9255,42 @@ errortext:''
           }
         },
         methods: {
+          doContact() {
+             this.$refs['contact-modal'].show()
+          },
+          doPostContact(){
+            Vue.http.post( 'addInquiry', {
+              body:this.contactbody,
+              email:this.contactemail
+            }).then( ( response ) => {
+              MintUI.Toast({
+                message: 'MESSAGE SENT',
+                iconClass: 'icon icon-success',
+                duration: 4000
+              })
+               this.$refs['contact-modal'].hide()
+              this.contactbody = ''
+              this.contactemail = ''
+            })
+          },
+          handleContactOk() {
+          
+          }
         },
         template: `
           <div class="content">
+
+          <div>
+            <b-modal ref="contact-modal" ok-only ok-title="Close" hide-header-close @ok="handleContactOk" >
+              <div style="width:100%;padding:20px;">Ask the OurTown Team a question:</div>
+
+              <mt-field placeholder="Email Address or Phone Number..." v-model="contactemail" type="email"></mt-field>
+              <mt-field type="textarea" rows="5" placeholder="Your question..." v-model="contactbody"></mt-field>
+              <mt-button v-on:click="doPostContact()" size="large">Send Question</mt-button>
+              <div class="centerbox tourfooter">OurTown - Council, Idaho</div>
+            </b-modal>
+          </div>
+
         
         <div v-if="isDesktop">
             <mt-header ref="dt-header-ui" id="dt-header-ui" class="fixedheader headertools" fixed title="OurTown">
@@ -9254,11 +9404,13 @@ errortext:''
       
           <a href="/#/pricing">Pricing</a>
           &nbsp;|&nbsp;
-          <a href="/#/privacyPolicy">Privacy Policy</a>
+          <a href="/#/privacyPolicy">Privacy</a>
           &nbsp;|&nbsp;
           <a href="/#/terms">Terms</a>
           &nbsp;|&nbsp;
-          <a href="/#/pubgroup/jyyktmzx">About Us</a>
+          <a href="/#/pubgroup/jyyktmzx">About</a>
+          &nbsp;|&nbsp;
+          <a v-on:click="doContact()" href="javascript:void(0)">Contact</a>
 
 
   </div>
@@ -9352,11 +9504,13 @@ errortext:''
 
               <a href="/#/pricing">Pricing</a>
               &nbsp;|&nbsp;
-              <a href="/#/privacyPolicy">Privacy Policy</a>
+              <a href="/#/privacyPolicy">Privacy</a>
               &nbsp;|&nbsp;
               <a href="/#/terms">Terms</a>
               &nbsp;|&nbsp;
-              <a href="/#/pubgroup/jyyktmzx">About Us</a>
+              <a href="/#/pubgroup/jyyktmzx">About</a>
+              &nbsp;|&nbsp;
+              <a v-on:click="doContact()" href="javascript:void(0)">Contact</a>
               
               </div>
 
@@ -9371,7 +9525,9 @@ errortext:''
           return {
             isDesktop:false,
             publicLink:'/#/group/bppuhyny',
-            authed:false
+            authed:false,
+            contactbody:'',
+            contactemail:''
           }
         },
         props: {},
@@ -9384,9 +9540,42 @@ errortext:''
 
         },
         methods: {
+          doContact() {
+             this.$refs['contact-modal'].show()
+          },
+          doPostContact(){
+            Vue.http.post( 'addInquiry', {
+              body:this.contactbody,
+              email:this.contactemail
+            }).then( ( response ) => {
+              MintUI.Toast({
+                message: 'MESSAGE SENT',
+                iconClass: 'icon icon-success',
+                duration: 4000
+              })
+               this.$refs['contact-modal'].hide()
+              this.contactbody = ''
+              this.contactemail = ''
+            })
+          },
+          handleContactOk() {
+            
+          }
         },
         template: `
                 <div class="content">
+
+            
+            <div>
+              <b-modal ref="contact-modal" ok-only ok-title="Close" hide-header-close @ok="handleContactOk" >
+                <div style="width:100%;padding:20px;">Ask the OurTown Team a question:</div>
+
+                <mt-field placeholder="Email Address or Phone Number..." v-model="contactemail" type="email"></mt-field>
+                <mt-field type="textarea" rows="5" placeholder="Your question..." v-model="contactbody"></mt-field>
+                <mt-button v-on:click="doPostContact()" size="large">Send Question</mt-button>
+                <div class="centerbox tourfooter">OurTown - Council, Idaho</div>
+              </b-modal>
+            </div>
         
               <div v-if="isDesktop">
                   <mt-header ref="dt-header-ui" id="dt-header-ui" class="fixedheader headertools" fixed title="OurTown">
@@ -9452,11 +9641,13 @@ errortext:''
     
               <a href="/#/pricing">Pricing</a>
               &nbsp;|&nbsp;
-              <a href="/#/privacyPolicy">Privacy Policy</a>
+              <a href="/#/privacyPolicy">Privacy</a>
               &nbsp;|&nbsp;
               <a href="/#/terms">Terms</a>
               &nbsp;|&nbsp;
-              <a href="/#/pubgroup/jyyktmzx">About Us</a>
+              <a href="/#/pubgroup/jyyktmzx">About</a>
+              &nbsp;|&nbsp;
+              <a v-on:click="doContact()" href="javascript:void(0)">Contact</a>
 
 
       </div>
@@ -9499,11 +9690,13 @@ errortext:''
 
                     <a href="/#/pricing">Pricing</a>
                     &nbsp;|&nbsp;
-                    <a href="/#/privacyPolicy">Privacy Policy</a>
+                    <a href="/#/privacyPolicy">Privacy</a>
                     &nbsp;|&nbsp;
                     <a href="/#/terms">Terms</a>
                     &nbsp;|&nbsp;
-                    <a href="/#/pubgroup/jyyktmzx">About Us</a>
+                    <a href="/#/pubgroup/jyyktmzx">About</a>
+                    &nbsp;|&nbsp;
+                    <a v-on:click="doContact()" href="javascript:void(0)">Contact</a>
               
                     </div>
 
@@ -9656,7 +9849,7 @@ def addInquiry():
   message = Mail(
     from_email=' Request at ' + mydomain + ' <' + os.getenv('SENDGRID_FROM') + '>',
     to_emails=os.getenv('SENDGRID_FROM'),
-    subject='' + mydomain + ' business inquiry',
+    subject='' + mydomain + ' message sent from contact form',
     html_content='<p>FROM ' + request.form.get('email') + ' - ' + request.form.get('body') + '</p>')
   sg = SendGridAPIClient(sendgrid_token)
   response = sg.send(message)
