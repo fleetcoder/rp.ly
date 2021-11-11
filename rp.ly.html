@@ -1277,6 +1277,8 @@
         text-align:left;
       }
       .goarticle {
+        margin-top:0px;
+        padding-top:0px;
         cursor: pointer;
         vertical-align: top;
         display: inline-block;
@@ -2673,6 +2675,7 @@ errortext:'',
 <div class="container dtcontent" style="width:80%;">
   <div class="row" >
     <div class="col-sm">
+      <div><h6 class="sectionheader">Latest News</h6></div>
         <div v-on:click="goArticle(artlink)" class="goarticle">
           <b-img :src="parsedimg" alt="Article Image" class="mainimage" />
           <div class="mainhed"><h3>{{parsedhed}}</h3></div>
