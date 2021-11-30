@@ -4417,8 +4417,33 @@ contactemail:''
 
            <div v-bind:class="{'desktopandmobile':isDesktop}">
             <div v-if="!doingSponsor" class="readertop">
+        
+        
+            <h3 v-if="showDidSponsor">You are registered! We will contact you to obtain your business logo or photo.</h3>
+            <mt-button v-if="showSponsorButton" v-on:click="doRegister()" size="large">Click Here To Register a Business</mt-button>
+        
+        
               <!--<img v-if="publicImage !== ''" class="readerimg" :src="'myFile?staged=1&field=publicImage&name=' + publicImage" />-->
               <h5 style="text-align:center;" v-if="!showPostButton" class="public_bio" v-html="publicBio"></h5>
+            </div>
+            <div v-if="doingSponsor">
+              <mt-cell :title="sponsorGroupName"></mt-cell>
+              <mt-spinner v-bind:class="{'is-hidden':btSpinnerHidden}" type="snake"></mt-spinner>
+              <form action="/" method="post" id="cardForm" v-bind:class="{'is-hidden':formHidden}">
+                <label class="hosted-fields--label" for="card-number">Card Number</label>
+                <div id="card-number" class="hosted-field"></div>
+                <label class="hosted-fields--label" for="expiration-date">Expiration Date</label>
+                <div id="expiration-date" class="hosted-field"></div>
+                <label class="hosted-fields--label" for="cvv">CVV</label>
+                <div id="cvv" class="hosted-field"></div>
+                <label class="hosted-fields--label" for="cvv">Postal Code</label>
+                <div id="postal-code" class="hosted-field"></div>
+                <mt-radio v-model="plan" :options="plans"></mt-radio>
+                <div class="button-container">
+                  <input type="submit" class="button button--small button--green" value="Submit" id="submit"/>
+                </div>
+                <label class="hosted-fields--label">Cancel any time from the Settings menu</label>
+              </form>
             </div>
             <div id="calendar" ref="calendar" v-bind:class="{'is-hidden':calHidden}"></div>
             <div v-if="shareCal">
