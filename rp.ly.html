@@ -1916,14 +1916,20 @@ errortext:'',
         },
         mounted: function() {
 
-          if (window.navigator.standalone === true) {
-            // we good
-            this.$refs['add-modal'].hide()
-          } else {
-            // show modal
-            this.$refs['add-modal'].show()
+
+          if (this.isDesktop === true) {
             
-            //this.showAddPopup = true
+          } else {
+            if (window.navigator.standalone === true) {
+              // we good
+              this.$refs['add-modal'].hide()
+            } else {
+              // show modal
+              this.$refs['add-modal'].show()
+            
+              //this.showAddPopup = true
+            }
+            
           }
   
 
