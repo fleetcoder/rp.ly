@@ -1910,10 +1910,22 @@ errortext:'',
             weatherimg:"https://ourtown.org/file/weather.jpg",
             weathertext:'',
             contactemail:'',
-            contactbody:''
+            contactbody:'',
+            showAddPopup:false
           }
         },
         mounted: function() {
+
+          if (window.navigator.standalone === true) {
+            // we good
+            this.$refs['add-modal'].hide()
+          } else {
+            // show modal
+            this.$refs['add-modal'].show()
+            
+            //this.showAddPopup = true
+          }
+  
 
           !function() {
 
@@ -2278,6 +2290,17 @@ errortext:'',
         },
         props: {},
         created() {
+          
+          
+          if (window.navigator.standalone === true) {
+            // we good
+          } else {
+            // show modal
+  //          this.$refs['add-modal'].show()
+            
+            //this.showAddPopup = true
+          }
+          
           Vue.http.get( 'getPosts' + '?grp=' + this.grp).then( ( response ) => {
             if ( !!response.body ) {
               this.items = []
@@ -2365,6 +2388,9 @@ errortext:'',
             
           },
           handleContactOk() {
+            
+          },
+          handleAddOk() {
             
           },
           goHome(){
@@ -2620,6 +2646,7 @@ errortext:'',
         },
         template: `
           <div class="content">
+        
         
         <div v-if="isDesktop">
             <mt-header ref="dt-header-ui" id="dt-header-ui" class="fixedheader headertools" fixed title="OurTown">
@@ -2892,6 +2919,28 @@ errortext:'',
 
 
 
+            <div>
+              <b-modal ref="add-modal" ok-only ok-title="Close" hide-header-close @ok="handleAddOk" >
+                <img src="file/ot144.png" alt="OurTown logo" />
+        
+                <div style="width:100%;padding:20px;">How-To: Add OurTown to your Home Screen</div>
+<p><b>Android</b></p>
+<p>Launch <b>Chrome</b> app.</p>
+<p>Open <b>ourtown.org/councilid</b> - the site you want to pin to your phone's home screen.</p>
+<p>Tap the menu icon (3 dots in upper right-hand corner) and tap Add to homescreen.</p>
+<p>You'll be able to enter a name for the shortcut and then Chrome will add it to your home screen.</p>
+<p><b>iPhone</b></p>
+<p>Launch <b>Safari</b> app.</p>
+<p>Open <b>ourtown.org/councilid</b> - the site you want to pin to your phone's home screen.</p>
+<p>Tap Add to homescreen.</p>
+<p>You'll be able to enter a name for the shortcut and then your iPhone will add it to your home screen.</p>
+
+                <div class="centerbox tourfooter">OurTown - Council, Idaho</div>
+              </b-modal>
+            </div>
+
+
+
           </div>`
       }
       const contactForm = {
@@ -3091,7 +3140,7 @@ errortext:'',
                       }
                     }
                     if (this.shareLinks) {
-                      router.push( '/tourStart' )
+                      router.push( '/tourStart/' + this.$route.params.grp )
                       //router.push( '/tourStart/' + this.$route.params.grp )
                       /*
                       var responses = []
@@ -9766,7 +9815,7 @@ contactemail:''
             path: '/login',
             component: freeTrial
         },{
-            path: '/tourStart',
+            path: '/tourStart/:grp',
             component: tourStart
         },{
             path: '/login/:grp',
