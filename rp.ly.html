@@ -9972,6 +9972,8 @@ def startOT():
         items = get_one_by( 'groups', key, 'publicPath' )
         if len(items) > 0:
           return items[0]['key']
+      if 'ourtownsite' in ct['email']:
+        return 'ourtownsite'
   return '1'
 
 
