@@ -9963,10 +9963,12 @@ def getCities():
         #cd = cityst[0][:-5].replace(' ','').lower() + cityst[1][:1].lower()
         #cities[cd] = cityst[0][:-5] + ', ' + cityst[1]
         if len(cityst) > 1:
+          cityname = cityst[0].replace(' village,', ' town,')
+          cityname = cityname[:-5]
           if not cityst[1] in cities:
-            cities[cityst[1]] = [cityst[0][:-5]]
+            cities[cityst[1]] = [cityname]
           else:
-            cities[cityst[1]].append(cityst[0][:-5])
+            cities[cityst[1]].append(cityname)
   return json.dumps(cities)
 
 @app.route('/addInquiry',methods=['GET','POST'])
