@@ -1431,7 +1431,16 @@
             sentReset: false,
             savedReset: false,
             isDesktop:false,
-            loggedInUserEmail:''
+            loggedInUserEmail:'',
+            cities:{},
+            states:[],
+            isot:false,
+            stateoptions:[{ value: '', text: 'Please choose the State you live in' }],
+            state:'',
+            cityHidden:true,
+            city:'',
+            cityoptions:[],
+            stateHidden:true
           }
         },
         created() {
@@ -1449,6 +1458,25 @@
             this.loginHidden = true
             this.resetHidden = false
           }
+
+          if (window.location.hostname.toLowerCase().includes("ourtown")) {
+            this.isot = true
+          }
+          //this.isot = true
+          
+          this.stateHidden = false
+          Vue.http.get( 'getCities').then( ( response ) => {
+            if ( !!response.body ) {
+              this.states = []
+              this.cities = response.body
+              for (var key in this.cities) {
+                if (this.cities.hasOwnProperty(key)) {
+                  this.stateoptions.push({ value: key, text: key })
+                }
+              }
+            }
+          })
+
         },
         methods: {
           doCode() {
@@ -1556,6 +1584,29 @@
             this.registerHidden = false
           },
           doTrial(){
+            if (this.isot === true) {
+
+              if (this.state == '') {
+                MintUI.Toast({
+                  message: 'Please choose the state that you live in',
+                  iconClass: 'icon icon-error',
+                  duration: 2000
+                })
+
+                return
+
+              }
+              if (this.city == '') {
+                MintUI.Toast({
+                  message: 'Please choose the city that you live in',
+                  iconClass: 'icon icon-error',
+                  duration: 2000
+                })
+
+                return
+              }
+              
+            }
             if (this.password.length > 5) {
               this.pwdstatus = 'success'
             } else {
@@ -1586,7 +1637,9 @@
                   email : this.email,
                   phone : this.phone,
                   name: this.name,
-                  pass: this.password
+                  pass: this.password,
+                  state: this.state,
+                  city: this.city
                 }).then( ( response ) => {
                   if (response.body[0] == 'error') {
                     this.inputnamehidden = false
@@ -1735,6 +1788,14 @@
                 window.location.href = '/'
               }
             }
+          },
+          updateState(){
+            this.cityHidden = false
+            this.cityoptions = [{ value: '', text: 'Please choose the City you live in' }]
+            for (var ci in this.cities[this.state]) {
+              var city = this.cities[this.state][ci]
+              this.cityoptions.push({ value: city, text: city })
+            }
           }
         },
         template: `
@@ -1758,6 +1819,8 @@
                 </mt-header>
                 <h4>Register for an account:</h4>
                 <mt-field v-bind:class="{'is-hidden':inputnamehidden}" placeholder="Your name..." v-model="name"></mt-field>
+                <b-form-select v-bind:class="{'is-hidden':stateHidden}" label="State" @change="updateState()" v-model="state" :options="stateoptions"></b-form-select>
+                <b-form-select v-bind:class="{'is-hidden':cityHidden}" label="City" v-model="city" :options="cityoptions"></b-form-select>
                 <mt-field v-bind:class="{'is-hidden':registerHidden}" placeholder="E-mail Address..." type="email" :state="emailstatus" v-model="email"></mt-field>
                 <mt-field v-bind:class="{'is-hidden':registerHidden}" placeholder="Password..." type="password" :state="pwdstatus" v-model="password"></mt-field>
                 <mt-field v-bind:class="{'is-hidden':registerHidden}" placeholder="Password (again)" type="password" :state="pwdstatus" v-model="passwordcheck"></mt-field>
@@ -6510,7 +6573,8 @@ contactemail:''
             newGallery: false,
             newGalleryName: '',
             textpost: '',
-            headline: ''
+            headline: '',
+            isot:false
           }
         },
         components:{
@@ -6537,6 +6601,24 @@ contactemail:''
           }
         },
         created() {
+          if (window.location.hostname.toLowerCase().includes("ourtown")) {
+            this.isot = true
+          }
+          //this.isot = true
+          
+          
+          if (this.isot === true) {
+            Vue.http.get('startOT').then((response) => {
+              if(parseInt(response.body) != 1) {
+                window.location.href = 'https://' + window.location.hostname + '/#/group/' + response.body
+                return
+              } else {
+
+
+              }
+            })
+          }
+          
           if (this.$route.path.substring(1) == 'tab2'){
             this.selected = 'tab2'
           }
@@ -6548,7 +6630,7 @@ contactemail:''
             window.location.href = 'https://' + window.location.hostname + '/#/showPost/' + post
             return
           }
-          
+        
           if (!(window.location.href.match(/\/grp\//g) === null)) {
             var grp = window.location.pathname.substr(window.location.pathname.lastIndexOf('/') + 1)
             window.location.href = 'https://' + window.location.hostname + '/#/group/' + grp
@@ -6572,6 +6654,8 @@ contactemail:''
           if (typeof braintree !== "undefined") {
             this.subsHidden = false
           }
+
+
         },
         methods: {
           closeSponsor() {
@@ -9853,6 +9937,38 @@ contactemail:''
   </body>
   <script type="python" id="server">
 
+@app.route("/startOT", methods=['GET'])
+def startOT():
+  os.chdir(appdir)
+  if 'user' in session:
+    if int(session['user']) > 0:
+      id = session['user']
+      ct = get_one( 'contacts', id )[0]
+      if ct['state'] == 'Idaho' and ct['city'] == 'Council':
+        key = 'councilid'
+        items = get_one_by( 'groups', key, 'publicPath' )
+        if len(items) > 0:
+          return items[0]['key']
+  return '1'
+
+
+@app.route('/getCities',methods=['GET'])
+def getCities():
+  cities = {}
+  with open(appdir + 'cities.txt', encoding = "ISO-8859-1") as csv_file:
+    f = csv.reader(csv_file, delimiter=',')
+    for parts in f:
+      if len(parts) > 2:
+        cityst = parts[2].split(', ')
+        #cd = cityst[0][:-5].replace(' ','').lower() + cityst[1][:1].lower()
+        #cities[cd] = cityst[0][:-5] + ', ' + cityst[1]
+        if len(cityst) > 1:
+          if not cityst[1] in cities:
+            cities[cityst[1]] = [cityst[0][:-5]]
+          else:
+            cities[cityst[1]].append(cityst[0][:-5])
+  return json.dumps(cities)
+
 @app.route('/addInquiry',methods=['GET','POST'])
 def addInquiry():
   message = Mail(
@@ -10971,6 +11087,11 @@ def freeTrial():
   email = ''
   ra = randomword(6)
   newgrp = [2]
+  userstate = ''
+  usercity = ''
+  if not request.form.get("state") is None:
+    userstate = request.form.get("state")
+    usercity = request.form.get("city")
   u = add_one('contacts',{
     'name':cont['name'],
     'email':cont['email'].lower(),
@@ -10978,7 +11099,9 @@ def freeTrial():
     'password':getHashedPass(cont['pass'].encode('utf-8')),
     'groups':json.dumps(newgrp),
     'code':ra,
-    'created':str(datetime.now())
+    'created':str(datetime.now()),
+    'state':userstate,
+    'city':usercity
   })
   newrec = {
     'name' : 'My Photos',
