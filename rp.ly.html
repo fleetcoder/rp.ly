@@ -1464,18 +1464,20 @@
           }
           //this.isot = true
           
-          this.stateHidden = false
-          Vue.http.get( 'getCities').then( ( response ) => {
-            if ( !!response.body ) {
-              this.states = []
-              this.cities = response.body
-              for (var key in this.cities) {
-                if (this.cities.hasOwnProperty(key)) {
-                  this.stateoptions.push({ value: key, text: key })
+          if (this.isot === true) {
+            this.stateHidden = false
+            Vue.http.get( 'getCities').then( ( response ) => {
+              if ( !!response.body ) {
+                this.states = []
+                this.cities = response.body
+                for (var key in this.cities) {
+                  if (this.cities.hasOwnProperty(key)) {
+                    this.stateoptions.push({ value: key, text: key })
+                  }
                 }
               }
-            }
-          })
+            })
+          }
 
         },
         methods: {
@@ -6613,7 +6615,8 @@ contactemail:''
                 window.location.href = 'https://' + window.location.hostname + '/#/group/' + response.body
                 return
               } else {
-
+                
+                router.push('comingsoon')
 
               }
             })
@@ -9802,6 +9805,23 @@ contactemail:''
 
                 </div>`
       }
+      const ComingSoon = {
+        data() {
+          return {
+          }
+        },
+        props: {subsHidden: Boolean, groups: Array},
+        created() {
+        },
+        methods: {
+        },
+        template: `
+          <div>
+            <mt-header title="OurTown">
+            </mt-header>
+            <p>OurTown is coming to your city soon, email us at <a href="mailto:hello@ourtown.org">hello@ourtown.org</a> if your town is ready!</p>
+          </div>`
+      }
       const router = new VueRouter({routes:[
         { path: '', component: Posts,
           children: [{
@@ -9927,6 +9947,9 @@ contactemail:''
         },{
           path: '/terms',
           component: terms
+        },{
+          path: '/comingsoon',
+          component: ComingSoon
         }
       ]})
       const vueApp = new Vue({
