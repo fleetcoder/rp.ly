@@ -6612,8 +6612,12 @@ contactemail:''
           if (this.isot === true) {
             Vue.http.get('startOT').then((response) => {
               if(parseInt(response.body) != 1) {
-                window.location.href = 'https://' + window.location.hostname + '/#/group/' + response.body
-                return
+                if (response.body === 'ourtownsite') {
+                  
+                } else {
+                  window.location.href = 'https://' + window.location.hostname + '/#/group/' + response.body
+                  return
+                }
               } else {
                 
                 router.push('comingsoon')
