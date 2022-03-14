@@ -1453,7 +1453,7 @@
           if (this.$route.path.includes('login')){
             this.selected = 'tab2'
           }
-          if (this.$route.path.match(/\/reset\//g) === null) {
+          if (!(this.$route.path.match(/\/reset\//g) === null)) {
             this.selected = 'tab2'
             this.loginHidden = true
             this.resetHidden = false
