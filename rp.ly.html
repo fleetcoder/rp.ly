@@ -1453,7 +1453,7 @@
           if (this.$route.path.includes('login')){
             this.selected = 'tab2'
           }
-          if (!(this.$route.path.match(/\/reset\//g) === null)) {
+          if (this.$route.path.match(/\/reset\//g) === null) {
             this.selected = 'tab2'
             this.loginHidden = true
             this.resetHidden = false
@@ -9978,6 +9978,8 @@ def startOT():
           return items[0]['key']
       if 'ourtownsite' in ct['email']:
         return 'ourtownsite'
+      if 'ourtown.org' in ct['email']:
+        return 'ourtownsite'
   return '1'
 
 
@@ -10333,7 +10335,8 @@ def sendResetPwd():
     })
   resetLink = '/doResetPwd?ccd=' + ccd
   if not request.form.get('dest') is None:
-    resetLink = resetLink + "&dest=" + request.form.get('dest')
+    if not request.form.get('dest') == 'undefined':
+      resetLink = resetLink + "&dest=" + request.form.get('dest')
   message = Mail(
     from_email=' Request at ' + mydomain + ' <' + os.getenv('SENDGRID_FROM') + '>',
     to_emails=em,
