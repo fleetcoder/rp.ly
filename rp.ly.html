@@ -4597,7 +4597,7 @@ featuredBiz:''
         
               <!--<img v-if="publicImage !== ''" class="readerimg" :src="'myFile?staged=1&field=publicImage&name=' + publicImage" />-->
               <h5 style="text-align:center;" v-if="!showPostButton" class="public_bio" v-html="publicBio"></h5>
-              <div class="featuredBiz" v-html="featuredBiz"></div>
+              <div v-html="featuredBiz"></div>
               <div class="sasForm" v-if="showSasForm">
                 <h4 style="text-align:left;">Submit a Project</h4>
 
@@ -12447,7 +12447,7 @@ def joinGroup():
           'publicGroups':linkedgrps,
           'shareCal':shareCal
         })
-    featuredBiz = '<div><h5>Featured Business</h5><a href="https://www.facebook.com/CalfPenProducts/"><img src="https://ourtown.org/file/calfpen.jpg" /><h3>Calf Pen Bakery</h3></a></div>'
+    featuredBiz = '<div class="featuredBiz"><h5>Featured Business</h5><a href="https://www.facebook.com/CalfPenProducts/"><img src="https://ourtown.org/file/calfpen.jpg" /><h3>Calf Pen Bakery</h3></a></div>'
     result = [owner['name'],items[0]['name'],imgsrc,authd,items[0]['id'],member,publicData,shareLinks,allowPosts,featuredBiz]
   return json.dumps(result)
 
