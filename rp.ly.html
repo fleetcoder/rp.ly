@@ -10056,7 +10056,11 @@ def startOT():
         return 'ourtownsite'
       if 'ourtown.org' in ct['email']:
         return 'ourtownsite'
-  return 'councilid'
+  key = 'councilid'
+  items = get_one_by( 'groups', key, 'publicPath' )
+  if len(items) > 0:
+    return items[0]['key']
+  return "error"
 
 
 @app.route('/getCities',methods=['GET'])
