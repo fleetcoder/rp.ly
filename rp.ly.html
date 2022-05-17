@@ -5770,6 +5770,11 @@ featuredBiz:''
         },
         props: { items : Array, editHidden: Boolean, cangrps : Array, moreHidden: Boolean, doSponsor: Object },
         created() {
+          if (window.location.hostname.toLowerCase().includes("ourtown")) {
+            window.location.href = 'https://ourtown.org/councilid'
+            return
+          }
+
           if (this.items.length == 0) {
             this.moreHidden = true
           }
@@ -10051,7 +10056,7 @@ def startOT():
         return 'ourtownsite'
       if 'ourtown.org' in ct['email']:
         return 'ourtownsite'
-  return '1'
+  return 'councilid'
 
 
 @app.route('/getCities',methods=['GET'])
