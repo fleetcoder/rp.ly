@@ -5771,8 +5771,15 @@ featuredBiz:''
         props: { items : Array, editHidden: Boolean, cangrps : Array, moreHidden: Boolean, doSponsor: Object },
         created() {
           if (window.location.hostname.toLowerCase().includes("ourtown")) {
-            window.location.href = 'https://ourtown.org/councilid'
-            return
+            Vue.http.get('/startOT').then((response) => {
+                if (response.body === 'ourtownsite') {
+                
+                } else {
+                  window.location.href = 'https://ourtown.org/councilid'
+                  return
+                }
+            })
+
           }
 
           if (this.items.length == 0) {
@@ -6686,12 +6693,12 @@ featuredBiz:''
           
           
           if (this.isot === true) {
-            Vue.http.get('startOT').then((response) => {
+            Vue.http.get('/startOT').then((response) => {
               if(parseInt(response.body) != 1) {
                 if (response.body === 'ourtownsite') {
                   
                 } else {
-                  window.location.href = 'https://' + window.location.hostname + '?gr=' + response.body + '#/group/' + response.body
+                  window.location.href = 'https://' + window.location.hostname + '?gr=a' + response.body + '#/group/' + response.body
                   return
                 }
               } else {
@@ -6716,7 +6723,7 @@ featuredBiz:''
         
           if (!(window.location.href.match(/\/grp\//g) === null)) {
             var grp = window.location.pathname.substr(window.location.pathname.lastIndexOf('/') + 1)
-            window.location.href = 'https://' + window.location.hostname + '?gr=' + grp  + '#/group/' + grp
+            window.location.href = 'https://' + window.location.hostname + '?gr=b' + grp  + '#/group/' + grp
             return
           }
           if ('postid' in this.$route.params) {
