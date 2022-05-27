@@ -2010,10 +2010,10 @@ errortext:'',
           } else {
             if (window.navigator.standalone === true) {
               // we good
-              this.$refs['add-modal'].hide()
+              //this.$refs['add-modal'].hide()
             } else {
               // show modal
-              this.$refs['add-modal'].show()
+              //this.$refs['add-modal'].show()
             
               //this.showAddPopup = true
             }
@@ -5772,12 +5772,12 @@ featuredBiz:''
         created() {
           if (window.location.hostname.toLowerCase().includes("ourtown")) {
             Vue.http.get('/startOT').then((response) => {
-                if (response.body === 'ourtownsite') {
+              if (response.body === 'ourtownsite') {
                 
-                } else {
-                  window.location.href = 'https://ourtown.org/councilid'
-                  return
-                }
+              } else {
+                window.location.href = 'https://' + window.location.hostname + '?gr=' + response.body + '#/group/' + response.body
+                return
+              }
             })
 
           }
@@ -11240,6 +11240,13 @@ def freeTrial():
   response = make_response(json.dumps( [ 'OK' ] ))
   session.permanent = True
   session['user'] = str(u)
+  message = Mail(
+    from_email=' Admin at ' + mydomain + ' <' + os.getenv('SENDGRID_FROM') + '>',
+    to_emails=os.getenv('SENDGRID_FROM'),
+    subject='' + mydomain + ' - new user signed up',
+    html_content='<p>New user <a href="' + cont['email'].lower() + '">' + cont['email'].lower() + '</a> - ' + cont['name'] + '</p>')
+  sg = SendGridAPIClient(sendgrid_token)
+  mailresponse = sg.send(message)
   return response
 
 @app.route('/freeTrialLogin', methods=['GET','POST'])
@@ -12185,16 +12192,24 @@ def addPosts():
               hrs = interv / int(notiprefs['freq'])
               if 'last_notif' in notiprefs:
                 dt = parser.parse(notiprefs['last_notif'], tzinfos=tzinfos) + timedelta(hours=int(hrs))
-                if dt < timezone( 'US/Pacific' ).localize( datetime.now() ):
+                if 'ourtown.org' == mydomain:
+                  # every time
                   notify_photo( con['id'], grpdata[0]['key'], sendemail, sendphone )
-                  notiprefs['last_notif'] = str( timezone( 'US/Pacific' ).localize( datetime.now() ) )
-                  mod_one('settings',{'value':json.dumps(notiprefs)},prefid)
+                else:
+                  if dt < timezone( 'US/Pacific' ).localize( datetime.now() ):
+                    notify_photo( con['id'], grpdata[0]['key'], sendemail, sendphone )
+                    notiprefs['last_notif'] = str( timezone( 'US/Pacific' ).localize( datetime.now() ) )
+                    mod_one('settings',{'value':json.dumps(notiprefs)},prefid)
             else:
               dt = parser.parse(grpdata[0]['last_notif'], tzinfos=tzinfos) + timedelta(hours=12)
-              if dt < timezone( 'US/Pacific' ).localize( datetime.now() ):
+              if 'ourtown.org' == mydomain:
+                # every time
                 notify_photo( con['id'], grpdata[0]['key'], True, True )
-                if not grpdata[0]['id'] in sentgrps:
-                  sentgrps.append(grpdata[0]['id'])
+              else:
+                if dt < timezone( 'US/Pacific' ).localize( datetime.now() ):
+                  notify_photo( con['id'], grpdata[0]['key'], True, True )
+                  if not grpdata[0]['id'] in sentgrps:
+                    sentgrps.append(grpdata[0]['id'])
           else:
             notify_photo( con['id'], grpdata[0]['key'], True, True )
             if not grpdata[0]['id'] in sentgrps:
