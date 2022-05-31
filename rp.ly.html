@@ -6141,7 +6141,7 @@ featuredBiz:''
             contact: '',
             locationData: '',
             isDesktop: false,
-            publicLink:'/#/group/bppuhyny'
+            publicLink:'https://ourtown.org'
           }
         },
         props: {},
@@ -6692,7 +6692,12 @@ featuredBiz:''
           //this.isot = true
           
           
-          if (this.isot === true) {
+          var doRedirect = true;
+          if (!(window.location.href.match(/\/showPost\//g) === null)) {
+            doRedirect = false;
+          }
+          
+          if (this.isot === true && doRedirect === true) {
             Vue.http.get('/startOT').then((response) => {
               if(parseInt(response.body) != 1) {
                 if (response.body === 'ourtownsite') {
@@ -13025,6 +13030,9 @@ def myFile():
     if (thefile[-3:].lower() in ['mov','mp4']):
       return send_from_directory(appdir + 'myfiles/', request.args.get('name'), conditional=True)
     print(thefile,file=sys.stderr)
+    return send_file( thefile, mimetype=ftype)
+  else:
+    thefile = appdir + 'public/' + 'no-image.jpg'
     return send_file( thefile, mimetype=ftype)
   return 'Error'
 
