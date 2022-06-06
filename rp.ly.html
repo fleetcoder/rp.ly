@@ -920,6 +920,10 @@
         }
       }
       .desktoponly {
+        position: -webkit-sticky;
+         position: sticky;
+         top: 0;
+        
         padding-top:40px;
         display:inline-block;
         width:325px;
@@ -941,6 +945,10 @@
       }
       @media only screen and (max-width: 1025px) {
         .desktoponly {
+          position: -webkit-sticky;
+           position: sticky;
+           top: 0;
+          
           padding-top:40px;
           display:inline-block;
           width:40%;
@@ -1420,6 +1428,14 @@
       }
       .public_bio h2 {
         text-align:left;
+      }
+      .sectionTopper h5 {
+        text-decoration:underline;
+      }
+      @media only screen and (min-width: 1025px) {
+        .sectionTopper h5 {
+          text-decoration:underline;
+        }
       }
   
     </style>
@@ -4620,10 +4636,12 @@ featuredBiz:''
             <div v-if="!isDesktop">
               <mt-button class="mobile_create_post_button" v-if="showPostButton" v-on:click="doPost()" size="medium">Click here to create a new post in {{name}}</mt-button>
             </div>
+        
 
            <div v-bind:class="{'desktopandmobile':isDesktop}">
             <div v-if="!doingSponsor" class="readertop">
         
+            <div class="sectionTopper"><h5>{{name}}</h5></div>
         
             <h3 v-if="showDidSponsor">You are registered! We will contact you to obtain your business logo or photo.</h3>
             <mt-button v-if="showSponsorButton" v-on:click="doRegister()" size="large">Click Here To Register a Business</mt-button>
