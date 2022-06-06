@@ -4099,6 +4099,10 @@ featuredBiz:''
                         response.body[0][j].imageHidden = true
                         response.body[0][j].isHtml = true
                         response.body[0][j].textHidden = false
+                        response.body[0][j].target = "_self"
+                        if ( !response.body[0][j].link.includes("ourtown.org")) {
+                          response.body[0][j].target = "_blank"
+                        }
                         this.items.push(response.body[0][j])
                       }
                     } else {
@@ -4132,6 +4136,10 @@ featuredBiz:''
                         this.items[j].imageHidden = true
                         this.items[j].isHtml = true
                         this.items[j].textHidden = false
+                        this.items[j].target = "_self"
+                        if ( !this.items[j].link.includes("ourtown.org")) {
+                          response.body[0][j].target = "_blank"
+                        }
                       }
                       this.groups = response.body[1]
                       this.shareLinks = false
@@ -4350,6 +4358,10 @@ featuredBiz:''
                     response.body[0][j].imageHidden = true
                     response.body[0][j].isHtml = true
                     response.body[0][j].textHidden = false
+                    response.body[0][j].target = "_self"
+                    if ( !response.body[0][j].link.includes("ourtown.org")) {
+                      response.body[0][j].target = "_blank"
+                    }
                     this.items.push(response.body[0][j])
                   }
                 }
@@ -4665,7 +4677,7 @@ featuredBiz:''
             <div v-else>
               <!--<img class="groupimg" :src="'grpFile?field=image&name=' + groupPic" />-->
 
-              <mt-cell v-if="shareLinks" class="imagecell public_img" v-for="(item, idx) in items" :title="item.name" is-link :to="item.link" target="_blank">
+              <mt-cell v-if="shareLinks" class="imagecell public_img" v-for="(item, idx) in items" :title="item.name" is-link :to="item.link" :target="item.target">
                 <!--
                 <div v-if="shareLinks" v-for="(group, idx) in publicGroups">
                 <div><img class="grimg" :src="group.image" /><h3>{{group.name}}</h3></div>
