@@ -2473,7 +2473,8 @@ errortext:'',
             
           },
           goArticle(link) {
-            window.location.href = link
+            //window.location.href = link
+            window.open(link, '_blank').focus();
           },
           showLogin(){
               this.$refs['login-modal'].show()
@@ -2674,6 +2675,16 @@ errortext:'',
                     return
                   }
                   if (response.body[0] == 'OK') {
+                    
+                    
+                    if (typeof this.$route.params.grp !== 'undefined') {
+                      if ('bppuhyny' == this.$route.params.grp) {
+                      
+                      } else {
+                        router.push( '/postgroup/' + this.$route.params.grp )
+                      }
+                    }
+                    
                     this.passwordcheck = ''
                     this.loggedInUserEmail = this.email
                     this.email = ''
@@ -4313,7 +4324,8 @@ featuredBiz:''
             this.menuVisible = !this.menuVisible
           },
           linkGo(link){
-            window.location.href = link
+            //window.location.href = link
+            window.open(link, '_blank').focus();
           },
           showMore() {
             MintUI.Indicator.open()
@@ -4456,6 +4468,16 @@ featuredBiz:''
                     return
                   }
                   if (response.body[0] == 'OK') {
+                    
+                    
+                    if (typeof this.$route.params.grp !== 'undefined') {
+                      if ('bppuhyny' == this.$route.params.grp) {
+                      
+                      } else {
+                        router.push( '/postgroup/' + this.$route.params.grp )
+                      }
+                    }
+                    
                     this.passwordcheck = ''
                     this.loggedInUserEmail = this.email
                     this.email = ''
