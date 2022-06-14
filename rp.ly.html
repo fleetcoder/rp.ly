@@ -12516,6 +12516,7 @@ def joinGroup():
         if int(items[0]['id']) in groups:
           member = 'MEMBER'
     owner = get_user(items[0]['user_id'])
+    curr = {"email":""}
     if not 'name' in owner:
       owner = {'name':''}
     imgsrc = ''
