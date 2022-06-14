@@ -5474,8 +5474,11 @@ featuredBiz:''
               <mt-field placeholder="Write your description here..." type="textarea" rows="8" v-model="title"></mt-field>
               <mt-cell title="" v-if="image !== ''"><img class="img" :src="filebase + image" /></mt-cell>
               <!--<file-upload btn-label="Click here to upload a photo..." @change="stagedUpload('image')" :url="uploadTo + '?field=image'"></file-upload>-->
+              <div style="padding:10px;">How would you like to be contacted? (change this to a phone number if you prefer)</div>
               <mt-field v-if="title !== ''" :placeholder="contactText" v-model="contactInfo"></mt-field>
+              <div style="padding:10px;">Your location?</div>
               <mt-field v-if="title !== ''" :placeholder="locationText" v-model="locationData"></mt-field>
+              <div style="padding:10px;">Title/Headline</div>
               <mt-field v-if="title !== ''" placeholder="Type a headline/title here..." v-model="body"></mt-field>
               <mt-button class="create_post_button" v-on:click="addPosts()" size="large">Click here to post this in {{name}}</mt-button>
             </div>
