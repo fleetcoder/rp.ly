@@ -1437,6 +1437,10 @@
           text-decoration:underline;
         }
       }
+      .sasForm {
+        padding-left:10px;
+        padding-right:10px;
+      }
   
     </style>
 
@@ -4657,11 +4661,11 @@ featuredBiz:''
                 <h4 style="text-align:left;">Submit a Project</h4>
 
                 <h6 style="text-align:left;">Contact Person's Name (parent or teacher)</h6>
-                <mt-field placeholder="Type name here..." v-model="sasContactName" type="email"></mt-field>
+                <mt-field placeholder="Type name here..." v-model="sasContactName" type="text"></mt-field>
                 <h6 style="text-align:left;">Contact Person's Phone / Email</h6>
-                <mt-field placeholder="Type contact info here..." v-model="sasContactInfo" type="email"></mt-field>
+                <mt-field placeholder="Type contact info here..." v-model="sasContactInfo" type="text"></mt-field>
                 <h6 style="text-align:left;">Student's Name</h6>
-                <mt-field placeholder="Type name here..." v-model="sasStudentName" type="email"></mt-field>
+                <mt-field placeholder="Type name here..." v-model="sasStudentName" type="text"></mt-field>
                 <h6 style="text-align:left;">Student's Project (brief description)</h6>
                 <mt-field type="textarea" rows="10" placeholder="Type your description here..." v-model="sasProjectInfo"></mt-field>
                 <mt-button v-on:click="doSasSubmit()" size="large">Click Here To Submit Project</mt-button>
@@ -5154,6 +5158,13 @@ featuredBiz:''
                 this.contactText = 'Enter your phone number or Web site link here...'
               }
             }
+            if (!(typeof response.body[10] == 'undefined')) {
+              this.contactInfo = response.body[10]
+            }
+            if (!(typeof response.body[11] == 'undefined')) {
+              this.locationText = response.body[11]
+            }
+
             this.name = response.body[1]
             if (this.name == 'Business Directory') {
               router.push( '/pubgroup/' + this.$route.params.grp )
@@ -11270,8 +11281,8 @@ def freeTrial():
   email = ''
   ra = randomword(6)
   newgrp = [2]
-  userstate = ''
-  usercity = ''
+  userstate = 'Idaho'
+  usercity = 'Council'
   if not request.form.get("state") is None:
     userstate = request.form.get("state")
     usercity = request.form.get("city")
@@ -11719,7 +11730,11 @@ def getPosts():
       is_public = True
     if can('get','posts',user,item) or is_public:
       if int(item['user_id']) > 0:
-        item['author'] = get_user(item['user_id'])['name']
+        item['author'] = get_user(item['user_id'])
+        if not 'name' in item['author']:
+          item['author'] = ''
+        else:
+          item['author'] = item['author']['name']
       else:
         item['author'] = ''
       item['to'] = ''
@@ -12541,7 +12556,11 @@ def joinGroup():
           'shareCal':shareCal
         })
     featuredBiz = '<div class="featuredBiz"><h5>Featured Business</h5><a href="https://www.facebook.com/CalfPenProducts/"><img src="https://ourtown.org/file/calfpen.jpg" /><h3>Calf Pen Bakery</h3></a></div>'
-    result = [owner['name'],items[0]['name'],imgsrc,authd,items[0]['id'],member,publicData,shareLinks,allowPosts,featuredBiz]
+    ownerloc = 'Council'
+    if 'state' in owner and 'city' in owner:
+      if not owner['state'] is None and not owner['city'] is None:
+        ownerloc = owner['city'] + ' ' + owner['state']
+    result = [owner['name'],items[0]['name'],imgsrc,authd,items[0]['id'],member,publicData,shareLinks,allowPosts,featuredBiz,owner['email'],ownerloc]
   return json.dumps(result)
 
 @app.route('/addGroups',methods=['GET','POST'])
