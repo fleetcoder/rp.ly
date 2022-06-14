@@ -5162,7 +5162,7 @@ featuredBiz:''
               this.contactInfo = response.body[10]
             }
             if (!(typeof response.body[11] == 'undefined')) {
-              this.locationText = response.body[11]
+              this.locationData = response.body[11]
             }
 
             this.name = response.body[1]
@@ -5476,7 +5476,7 @@ featuredBiz:''
               <!--<file-upload btn-label="Click here to upload a photo..." @change="stagedUpload('image')" :url="uploadTo + '?field=image'"></file-upload>-->
               <mt-field v-if="title !== ''" :placeholder="contactText" v-model="contactInfo"></mt-field>
               <mt-field v-if="title !== ''" :placeholder="locationText" v-model="locationData"></mt-field>
-              <mt-field v-if="title !== ''" placeholder="Enter your title here..." v-model="body"></mt-field>
+              <mt-field v-if="title !== ''" placeholder="Type a headline/title here..." v-model="body"></mt-field>
               <mt-button class="create_post_button" v-on:click="addPosts()" size="large">Click here to post this in {{name}}</mt-button>
             </div>
             <div v-else>
@@ -5485,7 +5485,7 @@ featuredBiz:''
               <file-upload accept="image/*" btn-label="Click here to upload a photo..." @change="stagedUpload('image')" :url="uploadTo + '?field=image'"></file-upload>
               <mt-field v-if="title !== ''" :placeholder="contactText" v-model="contactInfo"></mt-field>
               <mt-field v-if="title !== ''" :placeholder="locationText" v-model="locationData"></mt-field>
-              <mt-field v-if="title !== ''" placeholder="Enter your title here..." v-model="body"></mt-field>
+              <mt-field v-if="title !== ''" placeholder="Type a headline/title here..." v-model="body"></mt-field>
               <mt-button class="create_post_button" v-on:click="addPosts()" size="large">Click here to post this in {{name}}</mt-button>
             </div>
           </div>`
