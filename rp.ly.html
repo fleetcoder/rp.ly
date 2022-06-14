@@ -12556,11 +12556,11 @@ def joinGroup():
           'shareCal':shareCal
         })
     featuredBiz = '<div class="featuredBiz"><h5>Featured Business</h5><a href="https://www.facebook.com/CalfPenProducts/"><img src="https://ourtown.org/file/calfpen.jpg" /><h3>Calf Pen Bakery</h3></a></div>'
-    ownerloc = 'Council'
-    if 'state' in owner and 'city' in owner:
-      if not owner['state'] is None and not owner['city'] is None:
-        ownerloc = owner['city'] + ' ' + owner['state']
-    result = [owner['name'],items[0]['name'],imgsrc,authd,items[0]['id'],member,publicData,shareLinks,allowPosts,featuredBiz,owner['email'],ownerloc]
+    currloc = 'Council'
+    if 'state' in curr and 'city' in curr:
+      if not curr['state'] is None and not curr['city'] is None:
+        currloc = curr['city'] + ' ' + curr['state']
+    result = [owner['name'],items[0]['name'],imgsrc,authd,items[0]['id'],member,publicData,shareLinks,allowPosts,featuredBiz,curr['email'],currloc]
   return json.dumps(result)
 
 @app.route('/addGroups',methods=['GET','POST'])
