@@ -12504,6 +12504,7 @@ def joinGroup():
   if 'user' in session:
     if int(session['user']) > 0:
       authd = 'AUTHED'
+  curr = {"email":""}
   items = get_one_by( 'groups', request.form.get('grp'), 'key' )
   if not len(items) > 0:
     items = get_one( 'groups', request.form.get('grp') )
@@ -12516,7 +12517,6 @@ def joinGroup():
         if int(items[0]['id']) in groups:
           member = 'MEMBER'
     owner = get_user(items[0]['user_id'])
-    curr = {"email":""}
     if not 'name' in owner:
       owner = {'name':''}
     imgsrc = ''
