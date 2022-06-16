@@ -11326,6 +11326,34 @@ def freeTrial():
     html_content='<p>New user <a href="' + cont['email'].lower() + '">' + cont['email'].lower() + '</a> - ' + cont['name'] + '</p>')
   sg = SendGridAPIClient(sendgrid_token)
   mailresponse = sg.send(message)
+  greeting = ""
+  greeting = greeting + "<p>Welcome to OurTown!</p>"
+  greeting = greeting + "<p>You have just joined a community of individuals looking to strengthen our own small towns by sharing local news, events, and information, for free. </p>"
+  greeting = greeting + "<p>This site does not collect user data, does not track individual usage, and strives to keep everything as transparent as humanly possible. </p>"
+  greeting = greeting + "<p>If you’d like to help us improve, please share your thoughts on:</p>"
+  greeting = greeting + "<p>1 what worked for you?</p>"
+  greeting = greeting + "<p>2 what didn’t work for you?</p>"
+  greeting = greeting + "<p>3 what do you suggest?</p>"
+  greeting = greeting + "<p>Thank you and happy community building!</p>"
+  greeting = greeting + "<p>Sincerely,<br/>"
+  greeting = greeting + "The OurTown Team</p>"
+  try:
+    message = Mail(
+      from_email=' The team at ' + mydomain + ' <' + os.getenv('SENDGRID_FROM') + '>',
+      to_emails=cont['email'],
+      subject='OurTown - welcome',
+      html_content=greeting)
+    sg = SendGridAPIClient(sendgrid_token)
+    mailresponse = sg.send(message)
+    message = Mail(
+      from_email=' The team at ' + mydomain + ' <' + os.getenv('SENDGRID_FROM') + '>',
+      to_emails=os.getenv('SENDGRID_FROM'),
+      subject='OurTown - welcome',
+      html_content=greeting)
+    sg = SendGridAPIClient(sendgrid_token)
+    mailresponse = sg.send(message)
+  except:
+    pass
   return response
 
 @app.route('/freeTrialLogin', methods=['GET','POST'])
