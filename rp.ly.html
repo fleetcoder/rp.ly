@@ -1394,16 +1394,31 @@
         padding-bottom:10px;
       }
       .weatherwidget {
-        
+        position:relative;
+        top:5px;
       }
       .weatherwidget img {
         width:30px;
-        margin:8px;
+        margin-top:8px;
         border-radius: 4px;
       }
       .weatherwidget a {
         text-decoration:none;
         color:rgba(0,0,0,.55);
+      }
+      @media only screen and (min-width: 1025px) {
+        .weatherwidget {
+          top:0px;
+        }
+        .weatherwidget img {
+          width:30px;
+          margin:8px;
+          border-radius: 4px;
+        }
+        .weatherwidget a {
+          text-decoration:none;
+          color:rgba(0,0,0,.55);
+        }
       }
       .featuredBiz {
         width:100%;
@@ -2963,6 +2978,7 @@ errortext:'',
             </div> -->
             <div class="centerbox menubox">
 
+            <div class="weatherwidget"><span v-html="weathertext"></span></div>
         
               <ul class="menugrid">
               <li>
@@ -11695,7 +11711,9 @@ def getCal():
   ]
   if not request.args.get('grp') is None:
     saved = get_one_by( 'forecasts', request.args.get('grp'), 'groupcode' )
-    if len(saved) > 0:
+    if not len(saved) > 0:
+      app.logger.error('NO WEATAHER ' + request.args.get('grp'))
+    else:
       weather = [
         saved[0]['forecast'],
         "https://ourtown.org/file/weather.jpg"
