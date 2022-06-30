@@ -10182,6 +10182,26 @@ featuredBiz:''
   </body>
   <script type="python" id="server">
 
+
+@app.route("/sessionStart", methods=['GET'])
+def sessionStart():
+  add_one('usersessions',{
+    "address":request.remote_addr,
+    "platform":request.user_agent.platform,
+    "browser":request.user_agent.browser,
+    "version":request.user_agent.version,
+    "language":request.user_agent.languate
+  })
+  return 'OK'
+
+@app.route("/sessionList", methods=['GET'])
+def sessionList():
+  sess = get_all('usersessions')
+  out = ''
+  for s in sess:
+    out = out + json.dumps(s)
+  return out
+
 @app.route("/startOT", methods=['GET'])
 def startOT():
   os.chdir(appdir)
