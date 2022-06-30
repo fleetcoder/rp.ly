@@ -2187,6 +2187,9 @@ errortext:'',
               var number = createElement('div', 'day-number', day.format('DD'));
 
 
+              var moname = createElement('div', 'month-name', day.format('MMMM'));
+              moname.setAttribute('style', 'display:none');
+
               //Events
               var events = createElement('div', 'day-events');
               this.drawEvents(day, events);
@@ -2194,6 +2197,7 @@ errortext:'',
               outer.appendChild(name);
               outer.appendChild(number);
               outer.appendChild(events);
+              outer.appendChild(moname);
               this.week.appendChild(outer);
             }
 
@@ -2224,6 +2228,16 @@ errortext:'',
             }
 
             Calendar.prototype.openDay = function(el) {
+              var moNumber = el.querySelectorAll('.month-name')[0].innerText
+
+            const monthNames = ["January", "February", "March", "April", "May", "June",
+              "July", "August", "September", "October", "November", "December"
+            ];
+
+            const d = new Date();
+            if (moNumber !== monthNames[d.getMonth()]) {
+              return
+            }
               var details, arrow;
               var dayNumber = +el.querySelectorAll('.day-number')[0].innerText || +el.querySelectorAll('.day-number')[0].textContent;
               var day = this.current.clone().date(dayNumber);
@@ -3797,6 +3811,9 @@ featuredBiz:''
               //Day Name
               var name = createElement('div', 'day-name', day.format('ddd'));
 
+              var moname = createElement('div', 'month-name', day.format('MMMM'));
+              moname.setAttribute('style', 'display:none');
+
               //Day Number
               var number = createElement('div', 'day-number', day.format('DD'));
 
@@ -3808,6 +3825,7 @@ featuredBiz:''
               outer.appendChild(name);
               outer.appendChild(number);
               outer.appendChild(events);
+              outer.appendChild(moname);
               this.week.appendChild(outer);
             }
 
@@ -3838,6 +3856,16 @@ featuredBiz:''
             }
 
             Calendar.prototype.openDay = function(el) {
+              var moNumber = el.querySelectorAll('.month-name')[0].innerText
+
+            const monthNames = ["January", "February", "March", "April", "May", "June",
+              "July", "August", "September", "October", "November", "December"
+            ];
+
+            const d = new Date();
+            if (moNumber !== monthNames[d.getMonth()]) {
+              return
+            }
               var details, arrow;
               var dayNumber = +el.querySelectorAll('.day-number')[0].innerText || +el.querySelectorAll('.day-number')[0].textContent;
               var day = this.current.clone().date(dayNumber);
@@ -5308,8 +5336,11 @@ featuredBiz:''
             if (this.shareCal === true) {
               postimg = 'file/cal.png'
               evtdate = moment(moment.utc(this.dateVal).toDate()).local().format("YYYY-MM-DD")
+              var evtc = moment(moment.utc(this.dateVal).toDate()).local().subtract(3,'days')
+              console.log(evtdate)
+              console.log(evtc)
               evttime = this.timeVal
-              if (true !== moment(moment.utc(this.dateVal).toDate()).local().isAfter()) {
+              /*if (true !== moment().isBefore(evtc)) {
                 MintUI.Toast({
                   message: 'Please use a future date. Thank you!',
                   iconClass: 'icon icon-error',
@@ -5317,7 +5348,7 @@ featuredBiz:''
                 })
                 this.spinnerHidden = true
                 return
-              }
+              }*/
             }
             var timetime = ''
             if (this.shareCal === true) {
