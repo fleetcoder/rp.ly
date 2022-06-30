@@ -10193,7 +10193,8 @@ def sessionStart():
     "platform":request.user_agent.platform,
     "browser":request.user_agent.browser,
     "version":request.user_agent.version,
-    "language":request.user_agent.language
+    "language":request.user_agent.language,
+    'created' : str( timezone( 'US/Pacific' ).localize( datetime.now() ) )
   })
   return 'OK'
 
