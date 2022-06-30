@@ -2228,14 +2228,15 @@ errortext:'',
             }
 
             Calendar.prototype.openDay = function(el) {
+              var calMo = this.current.clone().month()
               var moNumber = el.querySelectorAll('.month-name')[0].innerText
 
             const monthNames = ["January", "February", "March", "April", "May", "June",
               "July", "August", "September", "October", "November", "December"
             ];
 
-            const d = new Date();
-            if (moNumber !== monthNames[d.getMonth()]) {
+
+            if (moNumber !== monthNames[calMo]) {
               return
             }
               var details, arrow;
@@ -3856,14 +3857,15 @@ featuredBiz:''
             }
 
             Calendar.prototype.openDay = function(el) {
+              var calMo = this.current.clone().month()
               var moNumber = el.querySelectorAll('.month-name')[0].innerText
 
             const monthNames = ["January", "February", "March", "April", "May", "June",
               "July", "August", "September", "October", "November", "December"
             ];
 
-            const d = new Date();
-            if (moNumber !== monthNames[d.getMonth()]) {
+
+            if (moNumber !== monthNames[calMo]) {
               return
             }
               var details, arrow;
