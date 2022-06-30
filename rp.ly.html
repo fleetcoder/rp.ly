@@ -2443,6 +2443,9 @@ errortext:'',
         created() {
           
           
+          Vue.http.get( 'sessionStart' ).then( ( response ) => {
+            //
+          })
           if (window.navigator.standalone === true) {
             // we good
           } else {
