@@ -12181,10 +12181,10 @@ def freeTrialLogin():
         session.permanent = True
         session['user'] = str(u)
         session["business"] = '0'
-        if not os.getenv('BT_ID') is None and not curr['email'] == '':
+        if not os.getenv('BT_ID') is None and not cont['email'] == '':
           tok = gateway.client_token.generate()
           collection = gateway.customer.search(
-            braintree.CustomerSearch.email == curr['email']
+            braintree.CustomerSearch.email == cont['email']
           )
           if len(list(collection.items)) > 0:
             customer = list(collection.items)[0]
@@ -13419,7 +13419,8 @@ def joinGroup():
         currloc = curr['city'] + ' ' + curr['state']
     biz = '0'
     if 'business' in session:
-      session["business"] = '1'
+      if session['business'] == '1':
+        biz = '1'
     result = [owner['name'],items[0]['name'],imgsrc,authd,items[0]['id'],member,publicData,shareLinks,allowPosts,featuredBiz,curr['email'],currloc,biz]
   return json.dumps(result)
 
