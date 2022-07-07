@@ -3202,7 +3202,8 @@ errortext:'',
         "grpLink":"/pubgroup/tlicintr",
         "image":"https://ourtown.org/grpFile?field=image&name=20210425-003105cil-building.svg",
         "name":"Business Directory"
-}]
+}],
+            isbiz:false
           }
         },
         created() {
@@ -3250,6 +3251,11 @@ errortext:'',
                 }
               } else {
                 this.authed = false
+              }
+              if (!(typeof response.body[12] == 'undefined')) {
+                if (response.body[12] == '1') {
+                  this.isbiz = true
+                }
               }
               var publicData = JSON.parse(response.body[6])
               if ("undefined" !== typeof publicData['publicName']) {
@@ -3582,7 +3588,7 @@ errortext:'',
               <mt-cell is-link @click.native="showMenu()" title="Close Menu"></mt-cell>
               <mt-cell v-if="shareLinks" v-for="(item,idx) in staticLinks" is-link :to="item.grpLink" :title="item.name"><img class="smallmenu" v-if="checkImage(item)" :src="item.image" /></mt-cell>
               <mt-cell v-if="authed" is-link :to="'/myposts/' + grp" title="My Posts"></mt-cell>
-              <mt-cell v-if="authed" is-link :to="'/mybiz/' + grp" title="My Business"></mt-cell>
+              <mt-cell v-if="isbiz" is-link :to="'/mybiz/' + grp" title="My Business"></mt-cell>
               <mt-cell v-if="authed" is-link style="cursor:pointer;" @click.native="logOut()" title="Sign Out"></mt-cell>
             </mt-popup>
             <!--<mt-actionsheet
@@ -3596,7 +3602,7 @@ errortext:'',
                 <p>&nbsp;</p>
                 <mt-cell v-for="(item,idx) in staticLinks" is-link :to="item.grpLink" :title="item.name"><img class="smallmenu" v-if="checkImage(item)" :src="item.image" /></mt-cell>
                 <mt-cell v-if="authed" is-link :to="'/myposts/' + grp" title="My Posts"></mt-cell>
-                <mt-cell v-if="authed" is-link :to="'/mybiz/' + grp" title="My Business"></mt-cell>
+                <mt-cell v-if="isbiz" is-link :to="'/mybiz/' + grp" title="My Business"></mt-cell>
                 <mt-cell v-if="authed" is-link style="cursor:pointer;" @click.native="logOut()" title="Sign Out"></mt-cell>
               </div>
             </div>
@@ -3692,7 +3698,8 @@ loggedInUserEmail:'',
 errortext:'',
 contactbody:'',
 contactemail:'',
-featuredBiz:''
+featuredBiz:'',
+isbiz:false
           }
         },
         mounted: function() {
@@ -4143,6 +4150,11 @@ featuredBiz:''
               }
               if (this.name == 'Support A Student') {
                 this.showSasForm = true
+              }
+              if (!(typeof response.body[12] == 'undefined')) {
+                if (response.body[12] == '1') {
+                  this.isbiz = true
+                }
               }
               if (response.body[3] == 'AUTHED') {
                 if (response.body[5] == 'MEMBER') {
@@ -4828,7 +4840,7 @@ featuredBiz:''
               <p>&nbsp;</p>
               <mt-cell v-for="(item,idx) in staticLinks" is-link :to="item.grpLink" :title="item.name"><img class="smallmenu" v-if="checkImage(item)" :src="item.image" /></mt-cell>
               <mt-cell v-if="authed" is-link :to="'/myposts/' + grp" title="My Posts"></mt-cell>
-              <mt-cell v-if="authed" is-link :to="'/mybiz/' + grp" title="My Business"></mt-cell>
+              <mt-cell v-if="isbiz" is-link :to="'/mybiz/' + grp" title="My Business"></mt-cell>
               <mt-cell v-if="authed" is-link style="cursor:pointer;" @click.native="logOut()" title="Sign Out"></mt-cell>
             </div>
 
@@ -4837,7 +4849,7 @@ featuredBiz:''
         
               <mt-cell v-for="(item,idx) in staticLinks" is-link :to="item.grpLink" :title="item.name"><img class="smallmenu" v-if="checkImage(item)" :src="item.image" /></mt-cell>
               <mt-cell v-if="authed" is-link :to="'/myposts/' + grp" title="My Posts"></mt-cell>
-              <mt-cell v-if="authed" is-link :to="'/mybiz/' + grp" title="My Business"></mt-cell>
+              <mt-cell v-if="isbiz" is-link :to="'/mybiz/' + grp" title="My Business"></mt-cell>
               <mt-cell v-if="authed" is-link style="cursor:pointer;" @click.native="logOut()" title="Sign Out"></mt-cell>
             </mt-popup>
         
@@ -12168,6 +12180,18 @@ def freeTrialLogin():
         response = make_response(json.dumps( [ 'OK' ] ))
         session.permanent = True
         session['user'] = str(u)
+        session["business"] = '0'
+        if not os.getenv('BT_ID') is None and not curr['email'] == '':
+          tok = gateway.client_token.generate()
+          collection = gateway.customer.search(
+            braintree.CustomerSearch.email == curr['email']
+          )
+          if len(list(collection.items)) > 0:
+            customer = list(collection.items)[0]
+          if len(list(collection.items)) > 0:
+            for sub in customer.credit_cards[0].subscriptions:
+              if sub.status == 'Active':
+                session["business"] = '1'
         return response
       else:
         return json.dumps( [ 'Error' ] )
@@ -13393,7 +13417,10 @@ def joinGroup():
     if 'state' in curr and 'city' in curr:
       if not curr['state'] is None and not curr['city'] is None:
         currloc = curr['city'] + ' ' + curr['state']
-    result = [owner['name'],items[0]['name'],imgsrc,authd,items[0]['id'],member,publicData,shareLinks,allowPosts,featuredBiz,curr['email'],currloc]
+    biz = '0'
+    if 'business' in session:
+      session["business"] = '1'
+    result = [owner['name'],items[0]['name'],imgsrc,authd,items[0]['id'],member,publicData,shareLinks,allowPosts,featuredBiz,curr['email'],currloc,biz]
   return json.dumps(result)
 
 @app.route('/addGroups',methods=['GET','POST'])
