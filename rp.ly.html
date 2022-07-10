@@ -3203,7 +3203,8 @@ errortext:'',
         "image":"https://ourtown.org/grpFile?field=image&name=20210425-003105cil-building.svg",
         "name":"Business Directory"
 }],
-            isbiz:false
+            isbiz:false,
+            bizdir:'tlicintr'
           }
         },
         created() {
@@ -3588,7 +3589,7 @@ errortext:'',
               <mt-cell is-link @click.native="showMenu()" title="Close Menu"></mt-cell>
               <mt-cell v-if="shareLinks" v-for="(item,idx) in staticLinks" is-link :to="item.grpLink" :title="item.name"><img class="smallmenu" v-if="checkImage(item)" :src="item.image" /></mt-cell>
               <mt-cell v-if="authed" is-link :to="'/myposts/' + grp" title="My Posts"></mt-cell>
-              <mt-cell v-if="isbiz" is-link :to="'/mybiz/' + grp" title="My Business"></mt-cell>
+              <mt-cell v-if="isbiz" is-link :to="'/postbiz/' + bizdir" title="My Business"></mt-cell>
               <mt-cell v-if="authed" is-link style="cursor:pointer;" @click.native="logOut()" title="Sign Out"></mt-cell>
             </mt-popup>
             <!--<mt-actionsheet
@@ -3602,7 +3603,7 @@ errortext:'',
                 <p>&nbsp;</p>
                 <mt-cell v-for="(item,idx) in staticLinks" is-link :to="item.grpLink" :title="item.name"><img class="smallmenu" v-if="checkImage(item)" :src="item.image" /></mt-cell>
                 <mt-cell v-if="authed" is-link :to="'/myposts/' + grp" title="My Posts"></mt-cell>
-                <mt-cell v-if="isbiz" is-link :to="'/mybiz/' + grp" title="My Business"></mt-cell>
+                <mt-cell v-if="isbiz" is-link :to="'/postbiz/' + bizdir" title="My Business"></mt-cell>
                 <mt-cell v-if="authed" is-link style="cursor:pointer;" @click.native="logOut()" title="Sign Out"></mt-cell>
               </div>
             </div>
@@ -3699,7 +3700,9 @@ errortext:'',
 contactbody:'',
 contactemail:'',
 featuredBiz:'',
-isbiz:false
+isbiz:false,
+bizdir:'tlicintr'
+
           }
         },
         mounted: function() {
@@ -4397,6 +4400,7 @@ isbiz:false
                       iconClass: 'icon icon-error',
                       duration: 5000
                     })
+                    router.push( '/postbiz/tlicintr' )
                   })
                   checkout.teardown(function () {
                     checkout = null
@@ -4840,7 +4844,7 @@ isbiz:false
               <p>&nbsp;</p>
               <mt-cell v-for="(item,idx) in staticLinks" is-link :to="item.grpLink" :title="item.name"><img class="smallmenu" v-if="checkImage(item)" :src="item.image" /></mt-cell>
               <mt-cell v-if="authed" is-link :to="'/myposts/' + grp" title="My Posts"></mt-cell>
-              <mt-cell v-if="isbiz" is-link :to="'/mybiz/' + grp" title="My Business"></mt-cell>
+              <mt-cell v-if="isbiz" is-link :to="'/postbiz/' + bizdir" title="My Business"></mt-cell>
               <mt-cell v-if="authed" is-link style="cursor:pointer;" @click.native="logOut()" title="Sign Out"></mt-cell>
             </div>
 
@@ -4849,7 +4853,7 @@ isbiz:false
         
               <mt-cell v-for="(item,idx) in staticLinks" is-link :to="item.grpLink" :title="item.name"><img class="smallmenu" v-if="checkImage(item)" :src="item.image" /></mt-cell>
               <mt-cell v-if="authed" is-link :to="'/myposts/' + grp" title="My Posts"></mt-cell>
-              <mt-cell v-if="isbiz" is-link :to="'/mybiz/' + grp" title="My Business"></mt-cell>
+              <mt-cell v-if="isbiz" is-link :to="'/postbiz/' + bizdir" title="My Business"></mt-cell>
               <mt-cell v-if="authed" is-link style="cursor:pointer;" @click.native="logOut()" title="Sign Out"></mt-cell>
             </mt-popup>
         
@@ -5663,70 +5667,22 @@ isbiz:false
           }
         },
         created() {
-          if ("undefined" !== typeof this.$route.params.post) {
-            console.log('EDIT POST ' + this.$route.params.post)
+
             
-            Vue.http.post( 'getPost', {
-              postid:this.$route.params.post
+            Vue.http.post( 'getBiz', {
+              grp:this.$route.params.grp
             }).then( ( response ) => {
-              if (response.body.length > 0) {
-
-                this.post = response.body[0]
-                this.title = this.post.body.replace("<p>","").replace("</p>","")
-                this.image = this.post.image
-                this.body = this.post.title
-                this.contactInfo = this.post.contact
-                this.imageHidden = true
-                this.locationData = this.post.location
-
-                
-                var el = document.createElement('div')
-                el.innerHTML = this.body
-                var x = el.getElementsByClassName("article_img");
-                var i;
-                for (i = 0; i < x.length; i++) {
-                  this.image = x[i].src
-                  var splitted = this.image.split("&name=")
-                  if (splitted.length > 0) {
-                    this.image = splitted[1]
-                  }
-                  this.filebase = 'myFile?field=image&name='
-                }
-                if (typeof this.image === "undefined") {
-                  this.image = ''
-                }
-                var y = el.getElementsByClassName("article_hed");
-                var i;
-                for (i = 0; i < y.length; i++) {
-                  this.body = y[i].innerText
-                }
-                var splitted = this.body.split(" - - ")
-                if (splitted.length > 2) {
-                  this.body = splitted[2]
-                }
-                
-                
-                
-                if (response.body[1] == 'AUTHED') {
-                  this.authed = true
-                }
-  
-              }
               
-              /*
-              if (this.sound == '') {
-                this.soundHidden = true
-              }
-              if (this.image == '') {
-                this.imageHidden = true
-              }
-              this.$emit('on-tabs-hidden')
-*/
+              this.body = response.body['name']
+              this.image = response.body['logo']
+              this.contactInfo = response.body['link']
+              this.post = response.body['post']
+              
 
             })
             
             
-          }
+
           
           var ua = navigator.userAgent || navigator.vendor || window.opera
           this.isInstagram = (ua.indexOf('Instagram') > -1) ? true : false
@@ -5736,26 +5692,11 @@ isbiz:false
           }).then( ( response ) => {
             this.groupPic = response.body[2]
             var publicData = JSON.parse(response.body[6])
-            if ("undefined" !== typeof publicData['publicName']) {
-              this.publicInfo = publicData['publicBio'].replace("\n","<br>")
-            }
-            console.log(publicData)
-            if ("undefined" !== typeof publicData['shareCal']) {
-              if (parseInt(publicData['shareCal']) > 0) {
-                this.shareCal = true
-                this.contactText = 'Enter your phone number or Web site link here...'
-              }
-            }
-            if (!(typeof response.body[10] == 'undefined')) {
-              this.contactInfo = response.body[10]
-            }
-            if (!(typeof response.body[11] == 'undefined')) {
-              this.locationData = response.body[11]
-            }
+
 
             this.name = response.body[1]
             if (this.name == 'Business Directory') {
-              router.push( '/pubgroup/' + this.$route.params.grp )
+              //router.push( '/pubgroup/' + this.$route.params.grp )
             }
             if (response.body[3] == 'AUTHED') {
               if (response.body[5] == 'MEMBER') {
@@ -5812,6 +5753,38 @@ isbiz:false
             } else {
               return 'myFile?field=video&name=' + item.video
             }
+          },
+          saveBiz(){
+            var postimg = ''
+            var timetime = ''
+            var formattedBody = ''
+            var formattedTitle = '<h1 class="article_hed"><span style=\"color: rgb(0, 0, 0);\">' + this.body + '</span></h1>' + '<div class="feedimages"><img class="article_img" src="' + 'myFile?field=image&name=' + this.image + '" alt="Image" /></div>'
+            var linky = ''
+            if (!(this.contactInfo.match(/http/g) === null)) {
+              linky = this.contactInfo
+            }
+            Vue.http.post( 'modPosts', {
+              id : this.post.id,
+              title: formattedTitle,
+              link:linky,
+              location:this.locationData,
+              body:formattedBody,
+              contactInfo: this.contactInfo,
+              eventDate: '',
+              eventTime: '',
+              timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone
+            }).then( ( response ) => {
+              this.spinnerHidden = true
+              this.title = ''
+              this.body = ''
+              MintUI.Toast({
+                message: 'Your business info was saved',
+                iconClass: 'icon icon-success',
+                duration: 1000
+              })
+              //router.push('/pubgroup/' + this.$route.params.grp)
+            })
+            
           },
           addPosts(){
             this.spinnerHidden = false
@@ -6024,7 +5997,7 @@ isbiz:false
               </a>
             </mt-header>
             <!--<img class="groupimg" :src="'grpFile?field=image&name=' + groupPic" />-->
-            <div v-html="publicInfo"></div>
+            <div>&nbsp;</div>
             <mt-spinner v-bind:class="{'is-hidden':spinnerHidden}" type="snake"></mt-spinner>
             <div v-if="shareCal">
             <div>
@@ -6071,19 +6044,15 @@ isbiz:false
               <mt-field v-if="title !== ''" :placeholder="locationText" v-model="locationData"></mt-field>
               <div v-if="title !== ''" style="padding:10px;text-align:left;">Title/Headline</div>
               <mt-field v-if="title !== ''" placeholder="Type a headline/title here..." v-model="body"></mt-field>
-              <mt-button class="create_post_button" v-on:click="addPosts()" size="large">Click here to post this in {{name}}</mt-button>
             </div>
             <div v-else>
-              <mt-field placeholder="Write your description here..." type="textarea" rows="8" v-model="title"></mt-field>
               <mt-cell title="" v-if="image !== ''"><img class="img" :src="filebase + image" /></mt-cell>
-              <file-upload accept="image/*" btn-label="Click here to upload a photo..." @change="stagedUpload('image')" :url="uploadTo + '?field=image'"></file-upload>
-              <div v-if="title !== ''" style="padding:10px;text-align:left;">How would you like to be contacted? (change this to a phone number if you prefer)</div>
-              <mt-field v-if="title !== ''" :placeholder="contactText" v-model="contactInfo"></mt-field>
-              <div v-if="title !== ''" style="padding:10px;text-align:left;">Your location?</div>
-              <mt-field v-if="title !== ''" :placeholder="locationText" v-model="locationData"></mt-field>
-              <div v-if="title !== ''" style="padding:10px;text-align:left;">Title/Headline</div>
-              <mt-field v-if="title !== ''" placeholder="Type a headline/title here..." v-model="body"></mt-field>
-              <mt-button class="create_post_button" v-on:click="addPosts()" size="large">Click here to post this in {{name}}</mt-button>
+              <file-upload accept="image/*" btn-label="Click here to upload a logo..." @change="stagedUpload('image')" :url="uploadTo + '?field=image'"></file-upload>
+              <div style="padding:10px;text-align:left;">Web site link</div>
+              <mt-field  placeholder="https://... click here to type or paste a Web site link" v-model="contactInfo"></mt-field>
+              <div style="padding:10px;text-align:left;">Business Name</div>
+              <mt-field placeholder="click here to type a Business Name..." v-model="body"></mt-field>
+              <mt-button class="create_post_button" v-on:click="saveBiz()" size="large">Click here to post this in {{name}}</mt-button>
             </div>
           </div>`
       }
@@ -12432,16 +12401,57 @@ def getPost():
 
 @app.route('/getBiz',methods=['POST'])
 def getBiz():
-  biz = 'tlicintr'
-  p = get_one_by( 'posts', request.form.get('postid'), 'key' )
-  post = [{}]
-  if len(p) > 0:
-    post = p[0]
-  authd = ''
-  if 'user' in session:
-    if int(session['user']) > 0:
-      authd = 'AUTHED'
-  return json.dumps([post[0],authd])
+  settings = get_one_by( 'settings', session['user'], 'user_id' )
+  bizData = {}
+  if len(settings) > 1:
+    for it in settings:
+      if it['name'] == 'bizData':
+        bizData = json.loads(it['value'])
+  if not 'logo' in bizData:
+    app.logger.error('ADD BIZ')
+    sett = add_one('settings',{
+      'name':'bizData',
+      'value':json.dumps({
+        'name' : "",
+        'logo' : "",
+        'link' : ""
+      }),
+      'user_id':session['user']
+    })
+  items = get_one_by( 'groups', request.form.get('grp'), 'key' )
+  posts = get_one_by('posts',session['user'],'user_id')
+  post = {}
+  for it in posts:
+    #del_one('posts',it['id'])
+    #app.logger.error('DEL ' + str(it['id']))
+    groups = json.loads(it['groups'])
+    if items[0]['id'] in groups:
+      post = it
+  if not 'title' in post:
+    app.logger.error('ADDPO')
+    newrec = {
+      'title' : '',
+      'image' : '',
+      'sound' : '',
+      'video' : '',
+      'groups' : json.dumps([items[0]['id']]),
+      'inreplyto' : '',
+      'link':'',
+      'user_id' : session['user'],
+      'flagged' : '0',
+      'created' : str( timezone( 'US/Pacific' ).localize( datetime.now() ) )
+    }
+    rid = add_one( 'posts', newrec )
+  posts = get_one_by('posts',session['user'],'user_id')
+  post = {}
+  for it in posts:
+    #del_one('posts',it['id'])
+    #app.logger.error('DEL ' + str(it['id']))
+    groups = json.loads(it['groups'])
+    if items[0]['id'] in groups:
+      post = it
+  bizData['post'] = post
+  return( json.dumps(bizData))
 
 @app.route('/getCal',methods=['GET'])
 def getCal():
