@@ -6048,8 +6048,8 @@ bizdir:'tlicintr'
             <div v-else>
               <mt-cell title="" v-if="image !== ''"><img class="img" :src="filebase + image" /></mt-cell>
               <file-upload accept="image/*" btn-label="Click here to upload a logo..." @change="stagedUpload('image')" :url="uploadTo + '?field=image'"></file-upload>
-              <div style="padding:10px;text-align:left;">Web site link</div>
-              <mt-field  placeholder="https://... click here to type or paste a Web site link" v-model="contactInfo"></mt-field>
+              <div style="padding:10px;text-align:left;">Web site link or contact info</div>
+              <mt-field  placeholder="click here to type a Web site link, phone # or email address" v-model="contactInfo"></mt-field>
               <div style="padding:10px;text-align:left;">Business Name</div>
               <mt-field placeholder="click here to type a Business Name..." v-model="body"></mt-field>
               <mt-button class="create_post_button" v-on:click="saveBiz()" size="large">Click here to post this in {{name}}</mt-button>
@@ -7074,15 +7074,16 @@ bizdir:'tlicintr'
                 <mt-button slot="left" @click="$router.go(-1)" icon="back">back</mt-button>
               </mt-header>
               <mt-spinner v-bind:class="{'is-hidden':spinnerHidden}" type="snake"></mt-spinner>
-              <mt-cell class="feedtopper"> <p v-html="body"></p></mt-cell>
-              <mt-cell style="width:100%;">
-                <div style="width:100%;border:1px solid red;text-align:center;">
-                  <img @contextmenu.prevent="doContextMenu" class="oimg" :src="'myFile?field=image&name=' + image" />
+                <div style="width:100%;text-align:center;margin-top:100px;">
+                  <h1>{{body}}</h1>
                 </div>
-              </mt-cell>
-              <mt-cell>                    <h1>{{body}}</h1></mt-cell>
+                <div style="width:100%;text-align:center;">
+                  <img @contextmenu.prevent="doContextMenu" :src="'myFile?field=image&name=' + image" />
+                </div>
 
-              <mt-cell v-if="contact !== ''"> <p class="mobilepara" v-html="contact"></p></mt-cell>
+                <div style="width:100%;text-align:center;">
+                  <p class="mobilepara" v-html="contact"></p
+                </div>
 
 
         
