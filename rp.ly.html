@@ -5766,9 +5766,9 @@ bizdir:'tlicintr'
             Vue.http.post( 'modPosts', {
               id : this.post.id,
               title: formattedTitle,
-              link:linky,
+              link:'https://ourtown.org/#/showBiz/' + this.post.key,
               location:this.locationData,
-              body:formattedBody,
+              body:this.body,
               contactInfo: this.contactInfo,
               eventDate: '',
               eventTime: '',
@@ -5782,7 +5782,7 @@ bizdir:'tlicintr'
                 iconClass: 'icon icon-success',
                 duration: 1000
               })
-              //router.push('/pubgroup/' + this.$route.params.grp)
+              router.push('/pubgroup/' + this.$route.params.grp)
             })
             
           },
@@ -6977,20 +6977,23 @@ bizdir:'tlicintr'
             if (check === false) {
               this.isDesktop = true
             }
-            Vue.http.post( 'getBiz', {
+            Vue.http.post( 'getPost', {
               postid:this.id
             }).then( ( response ) => {
               if (response.body.length > 0) {
 
                 this.post = response.body[0]
-                this.title = this.post.title
+                //this.title = this.post.title
                 this.image = this.post.image
-                this.sound = this.post.sound
+                //this.sound = this.post.sound
                 this.body = this.post.body
                 this.contact = this.post.contact
-                this.imageHidden = true
-                this.locationData = this.post.location
+                //this.imageHidden = true
+                //this.locationData = this.post.location
                 
+                if (!(this.contact.match(/http/g) === null)) {
+                  this.contact = '<a href="' + this.contact + '">' + this.contact + '</a>'
+                }
                 if (response.body[1] == 'AUTHED') {
                   this.authed = true
                 }
@@ -7017,30 +7020,7 @@ bizdir:'tlicintr'
             e.preventDefault()
           },
           addBiz() {
-            Vue.http.post( 'addPosts', {
-              recips: JSON.stringify([this.groupid]),
-              title: JSON.stringify([formattedTitle]),
-              expirehours: 0,
-              speedup: '',
-              publicPost: 1,
-              eventDate: evtdate,
-              eventTime: evttime,
-              contactInfo: this.contactInfo,
-              timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-              location:this.locationData,
-              body:formattedBody
-            }).then( ( response ) => {
-              this.spinnerHidden = true
-              this.title = ''
-              this.body = ''
-              MintUI.Toast({
-                message: 'Your post was saved',
-                iconClass: 'icon icon-success',
-                duration: 1000
-              })
-              router.push('/pubgroup/' + this.$route.params.grp)
-            })
-            
+
           }
         },
         template: `
@@ -7060,10 +7040,11 @@ bizdir:'tlicintr'
                 <div class="row">
         
                   <div class="col-sm">
-                    <p v-html="title"></p>
+                    <h1>{{body}}</h1>
                   </div>
         
                   <div class="col-sm">
+                    <img @contextmenu.prevent="doContextMenu" class="oimg" :src="'myFile?field=image&name=' + image" />
                     <p v-html="body"></p>
                   </div>
 
@@ -7072,16 +7053,16 @@ bizdir:'tlicintr'
                 <div class="row">
                   
                   <div class="col-sm">
-                    <p>Location: {{locationData}}</p>
+
                   </div>
 
                   <div class="col-sm">
-                     <p>Contact: {{contact}}</p>
+                     <p v-html="contact"></p>
                   </div>
 
                 </div>
         
-              <mt-button size="large" v-on:click="addBiz()">addBiz</mt-button>
+
 
 
               </div>
@@ -7093,20 +7074,17 @@ bizdir:'tlicintr'
                 <mt-button slot="left" @click="$router.go(-1)" icon="back">back</mt-button>
               </mt-header>
               <mt-spinner v-bind:class="{'is-hidden':spinnerHidden}" type="snake"></mt-spinner>
-              <mt-cell v-if="!imageHidden">
-                <div class="outer">
-                  <img @contextmenu.prevent="doContextMenu" class="oimg cant-click" :src="'myFile?field=image&name=' + image" />
-                  <div class="overlay">
-                    <p class="text">&nbsp;</p>
-                  </div>
+              <mt-cell class="feedtopper"> <p v-html="body"></p></mt-cell>
+              <mt-cell style="width:100%;">
+                <div style="width:100%;border:1px solid red;text-align:center;">
+                  <img @contextmenu.prevent="doContextMenu" class="oimg" :src="'myFile?field=image&name=' + image" />
                 </div>
               </mt-cell>
-              <mt-cell class="feedtopper"> <p v-html="title"></p></mt-cell>
-              <mt-cell> <p class="mobilepara" v-html="body"></p></mt-cell>
-              <mt-cell> <p class="mobilepara">Location: {{locationData}}</p></mt-cell>
-              <mt-cell v-if="contact !== ''"> <p class="mobilepara">Contact: {{contact}}</p></mt-cell>
+              <mt-cell>                    <h1>{{body}}</h1></mt-cell>
 
-              <mt-button size="large" v-on:click="addBiz()">addBiz</mt-button>
+              <mt-cell v-if="contact !== ''"> <p class="mobilepara" v-html="contact"></p></mt-cell>
+
+
         
             </div>
           </div>`
@@ -7507,6 +7485,10 @@ bizdir:'tlicintr'
           if (!(window.location.href.match(/\/showPost\//g) === null)) {
             doRedirect = false;
           }
+          if (!(window.location.href.match(/\/showBiz\//g) === null)) {
+            doRedirect = false;
+          }
+          
           
           if (this.isot === true && doRedirect === true) {
             Vue.http.get('/startOT').then((response) => {
@@ -12432,6 +12414,7 @@ def getBiz():
     newrec = {
       'title' : '',
       'image' : '',
+      'key' : randomword(8),
       'sound' : '',
       'video' : '',
       'groups' : json.dumps([items[0]['id']]),
@@ -12441,7 +12424,18 @@ def getBiz():
       'flagged' : '0',
       'created' : str( timezone( 'US/Pacific' ).localize( datetime.now() ) )
     }
-    rid = add_one( 'posts', newrec )
+    if not os.getenv('BT_ID') is None and not cont['email'] == '':
+      cont = get_one( 'contacts', session['user'] )[0]
+      tok = gateway.client_token.generate()
+      collection = gateway.customer.search(
+        braintree.CustomerSearch.email == cont['email']
+      )
+      if len(list(collection.items)) > 0:
+        customer = list(collection.items)[0]
+      if len(list(collection.items)) > 0:
+        for sub in customer.credit_cards[0].subscriptions:
+          if sub.status == 'Active':
+            rid = add_one( 'posts', newrec )
   posts = get_one_by('posts',session['user'],'user_id')
   post = {}
   for it in posts:
