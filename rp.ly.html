@@ -12424,8 +12424,8 @@ def getBiz():
       'flagged' : '0',
       'created' : str( timezone( 'US/Pacific' ).localize( datetime.now() ) )
     }
+    cont = get_one( 'contacts', session['user'] )[0]
     if not os.getenv('BT_ID') is None and not cont['email'] == '':
-      cont = get_one( 'contacts', session['user'] )[0]
       tok = gateway.client_token.generate()
       collection = gateway.customer.search(
         braintree.CustomerSearch.email == cont['email']
