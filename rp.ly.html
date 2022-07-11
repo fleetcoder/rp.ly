@@ -12855,6 +12855,57 @@ def getPosts():
               mysett['email'] = False
         following.append(mysett)
   grps.reverse()
+  if len(thisgroup) > 0:
+    if thisgroup[0]['name'] == 'Classifieds' and request.args.get('cursor') is None:
+      recs.reverse()
+      for item in recs:
+        groups = json.loads(item['groups'])
+        if thisgroup[0]['id'] in groups:
+          if 'link' in item:
+            if not item['link'] is None:
+              if mydomain in item['link']:
+                if int(item['user_id']) > 0:
+                  item['author'] = get_user(item['user_id'])
+                  if not 'name' in item['author']:
+                    item['author'] = ''
+                  else:
+                    item['author'] = item['author']['name']
+                else:
+                  item['author'] = ''
+                item['to'] = ''
+                item['imageHidden'] = False
+                item['allowDownload'] = False
+                item['isOwner'] = False
+                item['textHidden'] = True
+                item['showCommentField'] = False
+                item['comments'] = []
+                item['published'] = item['created']
+                item['isHtml'] = False
+                if not item['link'] is None:
+                  if len(item['link']) > 0:
+                    item['isHtml'] = True
+                    if mydomain in item['link']:
+                      item['link'] = item['link'].replace('post','#/showPost')
+                comms = get_one_by('posts',item['id'],'inreplyto')
+                for comm in list(reversed(comms)):
+                  comm['author'] = get_user(comm['user_id'])['name']
+                  item['comments'].append(comm)
+                if item['image'] == '':
+                  item['imageHidden'] = True
+                item['soundHidden'] = False
+                if item['sound'] == '':
+                  item['soundHidden'] = True
+                if item['image'] == '' and item['sound'] == '':
+                  item['textHidden'] = False
+                  if item['title'] == '':
+                    item['title'] = '(untitled)'
+                item['isVideo'] = False
+                if not item['video'] == '':
+                  item['imageHidden'] = True
+                  item['isVideo'] = True
+                  if item['title'] == '':
+                    item['title'] = '(untitled)'
+                posts.insert(0,item)
   return( json.dumps( [posts,grps,abils,user['code'],cangrps,following] ) )
 
 @app.route('/dropFeed',methods=['GET','POST'])
