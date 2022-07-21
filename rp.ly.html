@@ -4949,7 +4949,8 @@ bizdir:'tlicintr'
             shareCal: false,
             calendar: {},
             calHidden: true,
-            isDesktop: false
+            isDesktop: false,
+            groups: []
           }
         },
         mounted: function() {
@@ -5002,6 +5003,8 @@ bizdir:'tlicintr'
                       this.moreHidden = false
                     }
                   }
+                  this.groups = response.body[1]
+                  
                 }
                 this.spinnerHidden = true
               })
@@ -5033,7 +5036,46 @@ bizdir:'tlicintr'
             }
           },
           editPosts(key){
-            router.push('/postgroup/' + this.$route.params.grp + '/' + key)
+            
+            
+            
+            Vue.http.post( 'getPost', {
+              postid:key
+            }).then( ( response ) => {
+              if (response.body.length > 0) {
+                this.post = response.body[0]
+                console.log(this.post)
+  
+                var grpid = JSON.parse(this.post.groups)
+
+
+                Vue.http.post( 'getPostGroup', {
+                  gid:grpid[0]
+                }).then( ( response ) => {
+                  
+                  router.push('/postgroup/' + response.body + '/' + key)
+              
+                })
+
+/*
+                for (var i = 0; i < this.groups.length; i++) {
+                  console.log(this.groups[0].value)
+                  console.log(grpid[0])
+                  if (parseInt(this.groups[i].id) == parseInt(grpid[0])) {
+                    console.log(this.groups[i].id)
+                    //this.$emit('update:postto', [this.groups[i].id])
+                  }
+                }
+  */
+  
+              }
+              
+            })
+            
+            
+            
+            
+            
           },
           delPosts(id,idx){
             console.log('id ' + id.toString() + ' and ' + idx.toString())
@@ -7863,19 +7905,19 @@ bizdir:'tlicintr'
                 hostedFields: {
                   number: {
                     selector: "#card-number",
-                    placeholder: "4111 1111 1111 1111"
+                    placeholder: "4111411141114111"
                   },
                   cvv: {
                     selector: "#cvv",
-                    placeholder: "111"
+                    placeholder: "123"
                   },
                   expirationDate: {
                     selector: "#expiration-date",
-                    placeholder: "MM/YY"
+                    placeholder: "MMYY"
                   },
                   postalCode: {
                     selector: "#postal-code",
-                    placeholder: "32323"
+                    placeholder: "32345"
                   },
                   styles: {
                     'input': {
@@ -10852,6 +10894,11 @@ bizdir:'tlicintr'
   </body>
   <script type="python" id="server">
 
+@app.route("/getPostGroup", methods=['POST'])
+def getPostGroup():
+  gid = request.form.get('gid')
+  grpdata = get_one('groups',gid)
+  return grpdata[0]['key']
 
 @app.route("/sessionStart", methods=['GET'])
 def sessionStart():
@@ -12856,57 +12903,58 @@ def getPosts():
               mysett['email'] = False
         following.append(mysett)
   grps.reverse()
-  if len(thisgroup) > 0:
-    if thisgroup[0]['name'] == 'Classifieds' and request.args.get('cursor') is None:
-      recs.reverse()
-      for item in recs:
-        groups = json.loads(item['groups'])
-        if thisgroup[0]['id'] in groups:
-          if 'link' in item:
-            if not item['link'] is None:
-              if mydomain in item['link']:
-                if int(item['user_id']) > 0:
-                  item['author'] = get_user(item['user_id'])
-                  if not 'name' in item['author']:
-                    item['author'] = ''
+  if request.args.get('mine') is None:
+    if len(thisgroup) > 0:
+      if thisgroup[0]['name'] == 'Classifieds' and request.args.get('cursor') is None:
+        recs.reverse()
+        for item in recs:
+          groups = json.loads(item['groups'])
+          if thisgroup[0]['id'] in groups:
+            if 'link' in item:
+              if not item['link'] is None:
+                if mydomain in item['link']:
+                  if int(item['user_id']) > 0:
+                    item['author'] = get_user(item['user_id'])
+                    if not 'name' in item['author']:
+                      item['author'] = ''
+                    else:
+                      item['author'] = item['author']['name']
                   else:
-                    item['author'] = item['author']['name']
-                else:
-                  item['author'] = ''
-                item['to'] = ''
-                item['imageHidden'] = False
-                item['allowDownload'] = False
-                item['isOwner'] = False
-                item['textHidden'] = True
-                item['showCommentField'] = False
-                item['comments'] = []
-                item['published'] = item['created']
-                item['isHtml'] = False
-                if not item['link'] is None:
-                  if len(item['link']) > 0:
-                    item['isHtml'] = True
-                    if mydomain in item['link']:
-                      item['link'] = item['link'].replace('post','#/showPost')
-                comms = get_one_by('posts',item['id'],'inreplyto')
-                for comm in list(reversed(comms)):
-                  comm['author'] = get_user(comm['user_id'])['name']
-                  item['comments'].append(comm)
-                if item['image'] == '':
-                  item['imageHidden'] = True
-                item['soundHidden'] = False
-                if item['sound'] == '':
-                  item['soundHidden'] = True
-                if item['image'] == '' and item['sound'] == '':
-                  item['textHidden'] = False
-                  if item['title'] == '':
-                    item['title'] = '(untitled)'
-                item['isVideo'] = False
-                if not item['video'] == '':
-                  item['imageHidden'] = True
-                  item['isVideo'] = True
-                  if item['title'] == '':
-                    item['title'] = '(untitled)'
-                posts.insert(0,item)
+                    item['author'] = ''
+                  item['to'] = ''
+                  item['imageHidden'] = False
+                  item['allowDownload'] = False
+                  item['isOwner'] = False
+                  item['textHidden'] = True
+                  item['showCommentField'] = False
+                  item['comments'] = []
+                  item['published'] = item['created']
+                  item['isHtml'] = False
+                  if not item['link'] is None:
+                    if len(item['link']) > 0:
+                      item['isHtml'] = True
+                      if mydomain in item['link']:
+                        item['link'] = item['link'].replace('post','#/showPost')
+                  comms = get_one_by('posts',item['id'],'inreplyto')
+                  for comm in list(reversed(comms)):
+                    comm['author'] = get_user(comm['user_id'])['name']
+                    item['comments'].append(comm)
+                  if item['image'] == '':
+                    item['imageHidden'] = True
+                  item['soundHidden'] = False
+                  if item['sound'] == '':
+                    item['soundHidden'] = True
+                  if item['image'] == '' and item['sound'] == '':
+                    item['textHidden'] = False
+                    if item['title'] == '':
+                      item['title'] = '(untitled)'
+                  item['isVideo'] = False
+                  if not item['video'] == '':
+                    item['imageHidden'] = True
+                    item['isVideo'] = True
+                    if item['title'] == '':
+                      item['title'] = '(untitled)'
+                  posts.insert(0,item)
   return( json.dumps( [posts,grps,abils,user['code'],cangrps,following] ) )
 
 @app.route('/dropFeed',methods=['GET','POST'])
