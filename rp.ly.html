@@ -1463,6 +1463,9 @@
         padding-left:10px;
         padding-right:10px;
       }
+      .sponsorgroup {
+        margin-top:15px;
+      }
   
     </style>
 
@@ -4357,7 +4360,7 @@ bizdir:'tlicintr'
                 hostedFields: {
                   number: {
                     selector: "#card-number",
-                    placeholder: "4111 1111 1111 1111"
+                    placeholder: "4111411141114111"
                   },
                   cvv: {
                     selector: "#cvv",
@@ -4365,7 +4368,7 @@ bizdir:'tlicintr'
                   },
                   expirationDate: {
                     selector: "#expiration-date",
-                    placeholder: "MM/YY"
+                    placeholder: "MMYY"
                   },
                   postalCode: {
                     selector: "#postal-code",
@@ -4764,7 +4767,7 @@ bizdir:'tlicintr'
               </div>
             </div>
             <div v-if="doingSponsor">
-              <mt-cell :title="sponsorGroupName"></mt-cell>
+              <mt-cell class="sponsorgroup" :title="sponsorGroupName"></mt-cell>
               <mt-spinner v-bind:class="{'is-hidden':btSpinnerHidden}" type="snake"></mt-spinner>
               <form action="/" method="post" id="cardForm" v-bind:class="{'is-hidden':formHidden}">
                 <label class="hosted-fields--label" for="card-number">Card Number</label>
