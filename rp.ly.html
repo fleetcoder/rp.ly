@@ -5719,10 +5719,13 @@ bizdir:'tlicintr'
               grp:this.$route.params.grp
             }).then( ( response ) => {
               
-              this.body = response.body['name']
-              this.image = response.body['logo']
-              this.contactInfo = response.body['link']
               this.post = response.body['post']
+
+              this.body = this.post.body
+              this.filebase = 'myFile?field=image&name='
+              
+              this.image = this.post.image
+              this.contactInfo = this.post.contact
               
 
             })
@@ -10920,8 +10923,14 @@ def sessionStart():
 def sessionList():
   sess = get_all('usersessions')
   out = ''
+  lim = 0
+  comm = ""
   for s in sess:
-    out = out + json.dumps(s)
+    out = out + comm + json.dumps(s)
+    comm = ","
+    lim = lim + 1
+    if lim > 100:
+      break
   return out
 
 @app.route("/startOT", methods=['GET'])
