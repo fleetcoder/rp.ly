@@ -5807,7 +5807,7 @@ bizdir:'tlicintr'
             var postimg = ''
             var timetime = ''
             var formattedBody = ''
-            var formattedTitle = '<h1 class="article_hed"><span style=\"color: rgb(0, 0, 0);\">' + this.body + '</span></h1>' + '<div class="feedimages"><img class="article_img" src="' + 'myFile?field=image&name=' + this.image + '" alt="Image" /></div>'
+            var formattedTitle = '<ul><li><span style="color: rgb(0, 0, 0);">' + this.body + '</span></li><li><img src="' + 'myFile?field=image&name=' + this.image + '"></li></ul>'
             var linky = ''
             if (!(this.contactInfo.match(/http/g) === null)) {
               linky = this.contactInfo
