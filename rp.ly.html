@@ -12709,6 +12709,9 @@ def getPosts():
       if not request.args.get('mine') is None:
         if not item['isOwner']:
           continue
+        minegroup = get_one( 'groups', pgrps[0])
+        if minegroup[0]['name'] == 'Business Directory':
+          continue
       if request.args.get('mine') is None:
         if 'flagged' in item:
           if not item['flagged'] is None:
