@@ -1979,7 +1979,7 @@
         },
         template: `
           <div>
-            <mt-header title="Rp.ly">
+            <mt-header title="">
             </mt-header>
             <mt-cell>{{sentcode}}</mt-cell>
             <mt-field type="number" class="codeinput" label="Code:" placeholder="***" v-model="code"></mt-field>
@@ -3176,7 +3176,7 @@ errortext:'',
             groupLink: '',
             menuVisible: false,
             actions:[],
-            headerTitle: "Rp.ly",
+            headerTitle: "",
             selected: "1",
             groupposts:{},
             grouppost: [],
@@ -5587,6 +5587,7 @@ bizdir:'tlicintr'
                     right
                     locale="en"
                     aria-controls="timeinput"
+                    minutes-step=15
                   ></b-form-timepicker>
                 </b-input-group>
                 <label for="datepickerinput">Click on the calendar to choose a date</label>
@@ -6058,6 +6059,7 @@ bizdir:'tlicintr'
                     right
                     locale="en"
                     aria-controls="timeinput"
+                    minutes-step=15
                   ></b-form-timepicker>
                 </b-input-group>
                 <label for="datepickerinput">Click on the calendar to choose a date</label>
@@ -6386,7 +6388,7 @@ bizdir:'tlicintr'
         },
         template: `
           <div class="mobilelayout">
-            <mt-header title="Rp.ly">
+            <mt-header title="">
               <a v-if="linked" slot="left">
                 <mt-button slot="left" @click="$router.go(-1)" icon="back">back</mt-button>
               </a>
@@ -6562,7 +6564,7 @@ bizdir:'tlicintr'
         },
         template: `
           <div class="feedwrap mobilelayout">
-            <mt-header title="Rp.ly">
+            <mt-header title="">
               <a v-on:click="showHelp()" slot="left">
                 <img class="headericon" slot="icon" src="file/help-circle.svg" />
               </a>
@@ -6765,7 +6767,7 @@ bizdir:'tlicintr'
         },
         template: `
           <div class="feedwrap">
-            <mt-header title="Rp.ly">
+            <mt-header title="">
               <mt-button slot="left" @click="$router.go(-1)" icon="back">back</mt-button>
               <!--<a v-if="!cogHidden" v-on:click="gallEmbed()" slot="right">
                 <img class="headericon codeinput" slot="icon" src="file/code.svg" />
@@ -7206,7 +7208,7 @@ bizdir:'tlicintr'
         },
         template: `
           <div class="mobilelayout">
-            <mt-header title="Rp.ly">
+            <mt-header title="">
               <mt-button slot="left" @click="$router.go(-1)" icon="back">back</mt-button>
             </mt-header>
             <mt-spinner v-bind:class="{'is-hidden':spinnerHidden}" type="snake"></mt-spinner>
@@ -7317,7 +7319,7 @@ bizdir:'tlicintr'
         },
         template: `
           <div class="feedwrap">
-            <mt-header title="Rp.ly">
+            <mt-header title="">
               <mt-button slot="left" @click="$router.go(-1)" icon="back">back</mt-button>
             </mt-header>
             <mt-spinner v-bind:class="{'is-hidden':spinnerHidden}" type="snake"></mt-spinner>
@@ -7377,7 +7379,7 @@ bizdir:'tlicintr'
         },
         template: `
           <div class="mobilelayout">
-            <mt-header title="Rp.ly">
+            <mt-header title="">
               <router-link :to="'/showPosts/' + idx" slot="left">
                 <mt-button icon="back">back</mt-button>
               </router-link>
@@ -8468,7 +8470,7 @@ bizdir:'tlicintr'
                 <h3 v-if="gettingStarted">Welcome!</h3>
               </mt-tab-container-item>
               <mt-tab-container-item id="tab2" class="addphotostab">
-                <mt-header title="Rp.ly">
+                <mt-header title="">
                   <a v-if="showBackToGallery" v-on:click="backToGalleries()" slot="left">
                     <mt-button icon="back">back</mt-button>
                   </a>
@@ -8873,7 +8875,7 @@ bizdir:'tlicintr'
         },
         template: `
           <div class="feedwrap">
-            <mt-header title="Rp.ly">
+            <mt-header title="">
               <router-link to="/" slot="left">
                 <mt-button icon="back">back</mt-button>
               </router-link>
@@ -8927,7 +8929,7 @@ bizdir:'tlicintr'
         },
         template: `
           <div>
-            <mt-header title="Rp.ly">
+            <mt-header title="">
               <router-link to="/contacts" slot="left">
                 <mt-button icon="back">back</mt-button>
               </router-link>
@@ -8983,7 +8985,7 @@ bizdir:'tlicintr'
         },
         template: `
           <div>
-            <mt-header title="Rp.ly">
+            <mt-header title="">
               <router-link :to="'/showContacts/' + idx" slot="left">
                 <mt-button icon="back">back</mt-button>
               </router-link>
@@ -9112,7 +9114,7 @@ bizdir:'tlicintr'
                 <router-view v-bind:items="items" v-bind:editHidden="editHidden" @on-update-list="getContacts" @on-tabs-hidden="hideTabs" @on-show-add-contact="showAddContactForm"  />
               </mt-tab-container-item>
               <mt-tab-container-item id="tab2">
-                <mt-header title="Rp.ly"></mt-header>
+                <mt-header title=""></mt-header>
                 <mt-field placeholder="Name.." v-model="name"></mt-field>
                 <mt-field :state="validEmail" @keyup.native="checkEmail" placeholder="Email..(optional)" v-model="email" type="email"></mt-field>
                 <mt-field :state="validPhone" @keyup.native="checkPhone" placeholder="Phone..(optional)" v-model="phone"></mt-field>
@@ -9156,7 +9158,7 @@ bizdir:'tlicintr'
         },
         template: `
           <div class="feedwrap">
-            <mt-header title="Rp.ly">
+            <mt-header title="">
               <a v-on:click="showHelp()" slot="left">
                 <img class="headericon" slot="icon" src="file/help-circle.svg" />
               </a>
@@ -9235,7 +9237,7 @@ bizdir:'tlicintr'
         },
         template: `
           <div>
-            <mt-header title="Rp.ly">
+            <mt-header title="">
               <mt-button slot="left" @click="$router.go(-1)" icon="back">back</mt-button>
             </mt-header>
             <mt-spinner v-bind:class="{'is-hidden':spinnerHidden}" type="snake"></mt-spinner>
@@ -9550,7 +9552,7 @@ bizdir:'tlicintr'
         },
         template: `
           <div class="feedwrap">
-            <mt-header title="Rp.ly">
+            <mt-header title="">
               <!--<router-link :to="'/showGroups/' + idx" slot="left">
                 <mt-button icon="back">back</mt-button>
               </router-link>-->
@@ -9791,7 +9793,7 @@ bizdir:'tlicintr'
                 <router-view v-bind:items="items" v-bind:othergroups="othergroups" v-bind:groups="groups" v-bind:editHidden="editHidden" @on-update-list="getGroups" @on-tabs-hidden="hideTabs" @on-show-add-group="showAddGroupForm" @on-show-help="showHelp" @on-show-settings="showSettings" @on-update-photos="getPosts" />
               </mt-tab-container-item>
               <mt-tab-container-item id="tab2">
-                <mt-header title="Rp.ly">
+                <mt-header title="">
                   <a slot="left">
                     <mt-button slot="left" @click="hideAddGroupForm()" icon="back">back</mt-button>
                   </a>
@@ -9847,7 +9849,7 @@ bizdir:'tlicintr'
         },
         template: `
           <div>
-            <mt-header title="Rp.ly">
+            <mt-header title="">
               <router-link to="/" slot="left">
                 <mt-button icon="back">back</mt-button>
               </router-link>
@@ -9869,7 +9871,7 @@ bizdir:'tlicintr'
         },
         template: `
           <div>
-            <mt-header title="Rp.ly">
+            <mt-header title="">
             </mt-header>
             <mt-cell is-link to="/groups" title="Galleries"></mt-cell>
             <mt-cell is-link to="/contacts" title="Contacts"></mt-cell>
@@ -11975,6 +11977,9 @@ def doRegistry():
       if result.is_success:
         if not customer is None:
           notify_sponsor( request.form.get('plan_id'), request.form.get('group_id'), curr['name'] )
+          response = make_response(json.dumps( [ 'OK' ] ))
+          session["business"] = '1'
+          return response
         print("success")
       else:
         print(result.errors)
