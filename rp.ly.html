@@ -5872,22 +5872,23 @@ bizdir:'tlicintr'
               if (!(this.contactInfo.match(/\d/g) === null)) {
                 if (this.contactInfo.match(/\d/g).length===10) {
                 } else {
-                  MintUI.Toast({
+                  /*MintUI.Toast({
                     message: 'Please add a 10-digit phone number. Thank you!',
                     iconClass: 'icon icon-error',
                     duration: 4000
                   })
                   this.spinnerHidden = true
-                  return
+                  return*/
                 }
               } else {
+                /*
                 MintUI.Toast({
                   message: 'Please add a 10-digit phone number. Thank you!',
                   iconClass: 'icon icon-error',
                   duration: 4000
                 })
                 this.spinnerHidden = true
-                return
+                return*/
               }
             }
             var postimg = 'myFile?field=image&name=' + this.image
