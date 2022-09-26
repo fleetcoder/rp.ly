@@ -12694,6 +12694,7 @@ def getPosts():
         item['author'] = ''
       item['to'] = ''
       item['imageHidden'] = False
+      item['isSpecial'] = False
       item['allowDownload'] = False
       item['isOwner'] = False
       item['textHidden'] = True
@@ -13008,6 +13009,7 @@ def getPosts():
                   tzinfos = {"-08:00": tz.gettz('US/Pacific')}
                   dt = parser.parse(item['created'], tzinfos=tzinfos) + timedelta(hours=5)
                   if dt < timezone( 'US/Pacific' ).localize( datetime.now() ):
+                    item['isSpecial'] = True
                     posts.insert(0,item)
   return( json.dumps( [posts,grps,abils,user['code'],cangrps,following] ) )
 
