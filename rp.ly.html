@@ -1467,6 +1467,24 @@
       .sponsorgroup {
         margin-top:35px;
       }
+      .special {
+        padding:10px;
+        background-color:#D9DD6B;
+      }
+      .special > p > h1 {
+        font-weight:bold;
+        background-color:white;
+        padding:5px;
+      }
+      .special > img {
+        padding:10px;
+        float:left;
+        width:100px;
+        height:100px;
+        background-color:white;
+        border-radius: 5px;
+      }
+      
   
     </style>
 
@@ -4802,7 +4820,15 @@ bizdir:'tlicintr'
                 <div v-if="shareLinks" v-for="(group, idx) in publicGroups">
                 <div><img class="grimg" :src="group.image" /><h3>{{group.name}}</h3></div>
                 <mt-cell class="imagecell public_img" v-for="(item, iidx) in grouppost[idx]" :title="item.name">-->
-                <p class="" v-html="item.title" v-bind:class="{'is-hidden':item.textHidden}"></p>
+        <div v-if="item.target !== '_self'" >
+                <p v-html="item.title" v-bind:class="{'is-hidden':item.textHidden}"></p>
+        </div>
+        <div v-else class="special">
+                <p v-html="item.title" v-bind:class="{'is-hidden':item.textHidden}"></p>
+          <img src="file/OTLOGO122.png" />
+        
+        </div>
+                
                 <!--<mt-button v-if="shareLinks" class="caption readstory" @click="linkGo(item.link)">Read Story</mt-button>
                 <span v-if="item.isHtml" v-bind:class="{'is-hidden':item.showCommentField}" class="comment" v-on:click="addComment(idx)"><img class="comment" slot="icon" src="file/message-square.svg" /></span>-->
                 <mt-field v-bind:class="{'is-hidden':!item.showCommentField}" placeholder="Comment..." v-model="item.comment"></mt-field>
