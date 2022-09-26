@@ -12980,8 +12980,8 @@ def getPosts():
                       item['title'] = '(untitled)'
                   from dateutil import tz
                   tzinfos = {"-08:00": tz.gettz('US/Pacific')}
-                  dt = parser.parse(item['created'], tzinfos=tzinfos) - timedelta(hours=6)
-                  if not dt < timezone( 'US/Pacific' ).localize( datetime.now() ):
+                  dt = parser.parse(item['created'], tzinfos=tzinfos) + timedelta(hours=5)
+                  if dt < timezone( 'US/Pacific' ).localize( datetime.now() ):
                     posts.insert(0,item)
   return( json.dumps( [posts,grps,abils,user['code'],cangrps,following] ) )
 
