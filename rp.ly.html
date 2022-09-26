@@ -4820,10 +4820,10 @@ bizdir:'tlicintr'
                 <div v-if="shareLinks" v-for="(group, idx) in publicGroups">
                 <div><img class="grimg" :src="group.image" /><h3>{{group.name}}</h3></div>
                 <mt-cell class="imagecell public_img" v-for="(item, iidx) in grouppost[idx]" :title="item.name">-->
-        <div v-if="item.target !== '_self'" >
-                <p v-html="item.title" v-bind:class="{'is-hidden':item.textHidden}"></p>
-        </div>
-        <div v-else class="special">
+
+                <p v-if="!item.isSpecial" v-html="item.title" v-bind:class="{'is-hidden':item.textHidden}"></p>
+
+        <div v-if="item.isSpecial" class="special">
                 <p v-html="item.title" v-bind:class="{'is-hidden':item.textHidden}"></p>
           <img src="file/OTLOGO122.png" />
         
