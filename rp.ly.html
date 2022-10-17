@@ -2075,7 +2075,8 @@ errortext:'',
             contactemail:'',
             contactbody:'',
             showAddPopup:false,
-            searchText:''
+            searchText:'',
+            searchresults:[]
           }
         },
         mounted: function() {
@@ -2855,7 +2856,25 @@ errortext:'',
              this.$refs['search-modal'].hide()
           },
           performSearch() {
-            
+
+            Vue.http.get( 'getPosts' + '?grp=' + this.$route.params.grp).then( ( response ) => {
+              if ( !!response.body ) {
+                if (this.cursor > 0) {
+                  if (response.body[0].length < 10) {
+                    this.moreHidden = true
+                  }
+                  for (var j = 0; j < response.body[0].length; j++) {
+                    this.searchresults.push(response.body[0][j])
+                  }
+                } else {
+                  this.searchresults = response.body[0]
+                  if (this.searchresults.length > 9) {
+                    this.moreHidden = false
+                  }
+                }
+              }
+            })
+
           },
           startSearch() {
             //this.$refs.searchinput.$el.focus()
@@ -3064,9 +3083,12 @@ errortext:'',
               </form>
             </div>
 
-              <b-modal @shown="startSearch" ref="search-modal" ok-only ok-title="Close" hide-header-close @ok="handleSearchOk" >
+              <b-modal @shown="startSearch" ref="search-modal" ok-only ok-title="Close" @ok="handleSearchOk" >
                 <input ref="searchinput" placeholder="Search..." v-model="searchText" type="text" class="searchinput" />
                 <mt-button v-on:click="performSearch()" size="large">Search</mt-button>
+                <ul>
+                  <li v-for="(item, idx) in searchresults">{{item.name}}</li>
+                </ul>
               </b-modal>
 
 
