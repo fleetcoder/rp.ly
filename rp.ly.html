@@ -1493,6 +1493,9 @@
         width:70px;
         margin-top:5px;
       }
+      .searchinput {
+        width:100%;
+      }
   
     </style>
 
@@ -2071,7 +2074,8 @@ errortext:'',
             weathertext:'',
             contactemail:'',
             contactbody:'',
-            showAddPopup:false
+            showAddPopup:false,
+            searchText:''
           }
         },
         mounted: function() {
@@ -2839,6 +2843,23 @@ errortext:'',
             }).then( ( response ) => {
               window.location.href = this.publicLink
             })
+          },
+          doSearch(){
+             this.$refs['search-modal'].show()
+
+
+
+            
+          },
+          handleSearchOk() {
+             this.$refs['search-modal'].hide()
+          },
+          performSearch() {
+            
+          },
+          startSearch() {
+            //this.$refs.searchinput.$el.focus()
+            this.$refs.searchinput.focus()
           }
         },
         template: `
@@ -3037,11 +3058,18 @@ errortext:'',
               <form>
               <span v-html="weathertext"></span>
               <span>
-                  <input type="text" placeholder="Search" class="searchform" />
+                  <input v-on:click="doSearch()" type="text" placeholder="Search" class="searchform" />
                   <img class="searchicon" src="/file/search.svg" />
               </span>
               </form>
             </div>
+
+              <b-modal @shown="startSearch" ref="search-modal" ok-only ok-title="Close" hide-header-close @ok="handleSearchOk" >
+                <input ref="searchinput" placeholder="Search..." v-model="searchText" type="text" class="searchinput" />
+                <mt-button v-on:click="performSearch()" size="large">Search</mt-button>
+              </b-modal>
+
+
         
               <ul class="menugrid">
               <li>
