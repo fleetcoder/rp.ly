@@ -3087,7 +3087,7 @@ errortext:'',
                 <input ref="searchinput" placeholder="Search..." v-model="searchText" type="text" class="searchinput" />
                 <mt-button v-on:click="performSearch()" size="large">Search</mt-button>
                 <ul>
-                  <li v-for="(item, idx) in searchresults">{{item.name}}</li>
+                  <li v-for="(item, idx) in searchresults"><a :href="item.link">{{item.title}}</a></li>
                 </ul>
               </b-modal>
 
