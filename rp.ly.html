@@ -1484,7 +1484,14 @@
         background-color:white;
         border-radius: 5px;
       }
-      
+      .searchicon {
+        width:20px;
+        height:20px;
+      }
+      .searchform {
+        width:80px;
+        margin-top:5px;
+      }
   
     </style>
 
@@ -3025,7 +3032,15 @@ errortext:'',
             </div> -->
             <div class="centerbox menubox">
 
-            <div class="weatherwidget"><span v-html="weathertext"></span></div>
+            <div class="weatherwidget">
+              <span v-html="weathertext"></span>
+              <span>
+                <form>
+                  <input type="text" placeholder="Search" class="searchform" />
+                  <img class="searchicon" src="/file/search.svg" />
+                </form>
+              </span>
+            </div>
         
               <ul class="menugrid">
               <li>
@@ -12763,10 +12778,11 @@ def getPosts():
             if ":" == d[-3]:
               d = d[:-3]+d[-2:]
             item['pubDate'] = datetime.strptime(d, "%Y-%m-%d %H:%M:%S%z").strftime('%Y-%m-%d')
-      if len(thisgroup) > 0 and 'name' in thisgroup[0]:
-        if thisgroup[0]['name'] == 'Classifieds':
-          dt = parser.parse(item['created'], tzinfos=tzinfos) - timedelta(hours=2)
-          item['title'] = item['title'].replace('"article_hed">','"article_hed">'+dt.strftime('%b %d %-I:%M %p') + ' ')
+      if not request.args.get('grp') is None:
+        if len(thisgroup) > 0 and 'name' in thisgroup[0]:
+          if thisgroup[0]['name'] == 'Classifieds':
+            dt = parser.parse(item['created'], tzinfos=tzinfos) - timedelta(hours=6)
+            item['title'] = item['title'].replace('"article_hed">','"article_hed">'+dt.strftime('%b %d %-I%p - ') + ' ')
       gall_limit = False
       for pgrp in pgrps:
         if pgrp in groups:
