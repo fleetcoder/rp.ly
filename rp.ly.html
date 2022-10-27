@@ -2857,7 +2857,7 @@ errortext:'',
           },
           performSearch() {
 
-            Vue.http.get( 'getPosts' + '?grp=' + this.$route.params.grp).then( ( response ) => {
+            Vue.http.get( 'getPosts' + '?grp=' + this.$route.params.grp + '&q=' + encodeURIComponent(this.searchText)).then( ( response ) => {
               if ( !!response.body ) {
                 if (this.cursor > 0) {
                   if (response.body[0].length < 10) {
