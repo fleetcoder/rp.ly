@@ -12778,7 +12778,7 @@ def getPosts():
       for fie in ['body','title']:
         if fie in item:
           if not item[fie] is None:
-            if search.lower() in item[fie]:
+            if search.lower() in item[fie].lower():
               searchmatch = True
               break
       if not searchmatch:
