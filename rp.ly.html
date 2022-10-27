@@ -1189,6 +1189,7 @@
         margin-top:85px;
         padding-top:10px;
         padding-bottom:50px;
+        width:100%;
       }
       .mobcontent {
         width:100%;
@@ -1495,6 +1496,15 @@
       }
       .searchinput {
         width:100%;
+      }
+      #datepickerinput__calendar-wrapper_ > header {
+        display:none;
+      }
+      #datepickerinput__calendar-grid-help_ > div {
+        display:none;
+      }
+      #datepickerinput__calendar-nav_ > button:nth-child(3) > div > svg > g > g > circle {
+        display:none;
       }
   
     </style>
@@ -2857,6 +2867,7 @@ errortext:'',
           },
           performSearch() {
             
+            this.searchresults = []
             Vue.http.get( 'getPosts' + '?grp=' + this.$route.params.grp + '&q=' + encodeURIComponent(this.searchText)).then( ( response ) => {
               if ( !!response.body ) {
                 if (this.cursor > 0) {
@@ -5682,6 +5693,20 @@ bizdir:'tlicintr'
             <div v-html="publicInfo"></div>
             <mt-spinner v-bind:class="{'is-hidden':spinnerHidden}" type="snake"></mt-spinner>
             <div v-if="shareCal">
+              <div>
+                <b-calendar 
+                  v-model="datevalue"
+                  id="datepickerinput"
+                  locale="en"
+                  button-only
+                  date-format-options="{ year: 'numeric', month: 'numeric', day: 'numeric' }"
+                ></b-calendar>
+               <p>Event Title</p>
+               <p>Location</p>
+               <p>Start</p>
+               <p>End</p>
+               <p>Repeat</p>
+              </div>
             <div>
                 <label for="timeinput">Click on the clock to choose a time</label>
                 <b-input-group class="mb-3">
@@ -5696,14 +5721,6 @@ bizdir:'tlicintr'
                 </b-input-group>
                 <label for="datepickerinput">Click on the calendar to choose a date</label>
                 <b-input-group class="mb-3">
-                <b-form-datepicker 
-                  v-model="datevalue"
-                  id="datepickerinput"
-                  locale="en"
-                  button-only
-                  date-format-options="{ year: 'numeric', month: 'numeric', day: 'numeric' }"
-                  right
-                ></b-form-datepicker>
                 </b-input-group>
               </div>
               <mt-datetime-picker
