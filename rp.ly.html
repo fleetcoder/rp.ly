@@ -2856,18 +2856,27 @@ errortext:'',
              this.$refs['search-modal'].hide()
           },
           performSearch() {
-
+            
             Vue.http.get( 'getPosts' + '?grp=' + this.$route.params.grp + '&q=' + encodeURIComponent(this.searchText)).then( ( response ) => {
               if ( !!response.body ) {
                 if (this.cursor > 0) {
                   if (response.body[0].length < 10) {
                     this.moreHidden = true
                   }
+                  //for (var j = 0; j < response.body[0].length; j++) {
+                  //  this.searchresults.push(response.body[0][j])
+                  //}
+                } else {
+                  //this.searchresults = response.body[0]
+                  
                   for (var j = 0; j < response.body[0].length; j++) {
+                    response.body[0][j].target = "_self"
+                    response.body[0][j].title = "<a href=\" " + response.body[0][j].link + "\">" + response.body[0][j].title + "</a>"
+                    if ( !response.body[0][j].link.includes("ourtown.org")) {
+                      response.body[0][j].target = "_blank"
+                    }
                     this.searchresults.push(response.body[0][j])
                   }
-                } else {
-                  this.searchresults = response.body[0]
                   if (this.searchresults.length > 9) {
                     this.moreHidden = false
                   }
@@ -2878,6 +2887,7 @@ errortext:'',
           },
           startSearch() {
             //this.$refs.searchinput.$el.focus()
+            this.searchresults = []
             this.$refs.searchinput.focus()
           }
         },
@@ -12748,7 +12758,7 @@ def getPosts():
           searchgrps = json.loads(grps[0]['publicGroups'])
           merged_groups = merged_groups + searchgrps
       search = request.args.get('q')
-      for fie in ['title']:
+      for fie in ['body','title']:
         if fie in item:
           if not item[fie] is None:
             if search.lower() in item[fie]:
