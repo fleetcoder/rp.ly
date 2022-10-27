@@ -12739,6 +12739,25 @@ def getPosts():
     thisgroup = get_one( 'groups', request.args.get('grpid') )
     group_id = thisgroup[0]['id']
   for item in recs:
+    searchmatch = False
+    searchgrps = []
+    if not request.args.get('q') is None:
+      grps = get_one_by( 'groups', request.args.get('grp'), 'key' )
+      if not grps[0]['publicGroups'] is None:
+        if len(grps[0]['publicGroups']) > 0:
+          searchgrps = json.loads(grps[0]['publicGroups'])
+          merged_groups = merged_groups + searchgrps
+      search = request.args.get('q')
+      for fie in ['title']:
+        if fie in item:
+          if not item[fie] is None:
+            if search.lower() in item[fie]:
+              searchmatch = True
+              break
+      if not searchmatch:
+        continue
+      else:
+        app.logger.error("MATCH " + item['title'])
     is_public = False
     if not item['inreplyto'] == '':
       continue
