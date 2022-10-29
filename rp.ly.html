@@ -1506,6 +1506,50 @@
       #datepickerinput__calendar-nav_ > button:nth-child(3) > div > svg > g > g > circle {
         display:none;
       }
+      #datepickerinput__calendar-nav_ > button:nth-child(5) {
+        display:none;
+      }
+      #datepickerinput__calendar-nav_ > button:nth-child(1) {
+        display:none;
+      }
+      /*
+      #datepickerinput__calendar-nav_ {
+        width:350px;
+      }
+      #datepickerinput__calendar-grid_ {
+        width:350px;
+      }
+      */
+      #datepickerinput__calendar-grid_ {
+        margin-bottom:10px;
+      }
+      .calinput {
+        background-color:#ddd;
+        margin-left:10px;
+
+      }
+      .caltimeinput {
+        background-color:#ddd;
+        margin-left:10px;
+        width:40px;
+      }
+      .callabel {
+        font-weight:bold;
+      }
+      .calsubmit {
+        width:150px;
+        margin: 0 auto;
+        background-color:#ddd;
+        font-weight:bold;
+      }
+      .calperiod {
+        background-color:#ddd;
+      }
+      .calcheckinput {
+        float:left;
+      }
+      
+
   
     </style>
 
@@ -5284,6 +5328,8 @@ bizdir:'tlicintr'
             locationText: 'Enter your location here...',
             timevalue: '',
             datevalue:'',
+            endVal:'',
+            endTime:'',
             body:'',
             post:{},
             imageHidden:false,
@@ -5677,6 +5723,11 @@ bizdir:'tlicintr'
           goHome(){
             router.push('/tourStart/bppuhyny')
             //window.location.href = this.publicLink
+          },
+          onContext(ctx) {
+            this.dateVal = ctx.activeFormatted
+            this.endVal = ctx.activeFormatted
+            //this.context = ctx
           }
         },
         template: `
@@ -5695,56 +5746,108 @@ bizdir:'tlicintr'
             <div v-if="shareCal">
               <div>
                 <b-calendar 
-                  v-model="datevalue"
+                  @context="onContext"
                   id="datepickerinput"
                   locale="en"
                   button-only
                   date-format-options="{ year: 'numeric', month: 'numeric', day: 'numeric' }"
                 ></b-calendar>
-               <p>Event Title</p>
-               <p>Location</p>
-               <p>Start</p>
-               <p>End</p>
-               <p>Repeat</p>
+               <table style="margin: 0 auto;">
+                <tr>
+                  <td>
+                    <table cellpadding="5">
+                      <tr>
+                        <td>
+                         <span class="callabel">Event Title</span>
+                        </td>
+                        <td>
+                          <input class="calinput"type="text" v-model="body" />
+                        </td>
+                        <td>
+                        </td>
+                        <td>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>
+                         <span class="callabel">Location</span>
+                        </td>
+                        <td>
+                          <input class="calinput"type="text" v-model="locationData" />
+                        </td>
+                        <td>
+                        </td>
+                        <td>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>
+                         <span class="callabel">Start</span>
+                        </td>
+                        <td>
+                          <input class="calinput"type="text" v-model="dateVal" />
+                        </td>
+                        <td>
+                         <span class="callabel">Time</span>
+                        </td>
+                        <td>
+                          <input class="caltimeinput"type="text" v-model="timeVal" />
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>
+                         <span class="callabel">End</span>
+                        </td>
+                        <td>
+                          <input class="calinput"type="text" v-model="endVal" />
+                        </td>
+                        <td>
+                         <span class="callabel">Time</span>
+                        </td>
+                        <td>
+                          <input class="caltimeinput"type="text" v-model="endTime" />
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>
+                         <span class="callabel">Repeat</span>
+                        </td>
+                        <td>
+                          <input class="calcheckinput" type="checkbox" />
+                        </td>
+                        <td colspan="2">
+                            <table>
+                              <tr>
+                                <td>
+                                  <span class="callabel">Period</span>
+                                </td>
+                                <td>
+                                  <select name="period" id="period-select" class="calperiod" size="3">
+                                      <option value="daily">Daily</option>
+                                      <option value="weekly">Weekly</option>
+                                      <option value="monthly">Monthly</option>
+                                  </select>
+                                </td>
+                              </tr>
+                            </table>
+                        </td>
+                      </tr>
+                    </table>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <table>
+                    </table>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <div class="calsubmit">Submit</div>
+                  </td>
+                </tr>
+               </table>
               </div>
-            <div>
-                <label for="timeinput">Click on the clock to choose a time</label>
-                <b-input-group class="mb-3">
-                  <b-form-timepicker
-                    v-model="timevalue"
-                    button-only
-                    right
-                    locale="en"
-                    aria-controls="timeinput"
-                    minutes-step=15
-                  ></b-form-timepicker>
-                </b-input-group>
-                <label for="datepickerinput">Click on the calendar to choose a date</label>
-                <b-input-group class="mb-3">
-                </b-input-group>
-              </div>
-              <mt-datetime-picker
-              cancelText="Cancel"
-              confirmText="Confirm"
-              @confirm="dateConfirm"
-              type="date"
-              ref="picker1"
-                 date-format = "{value}"
-                 month-format = "{value}"
-                 year-format = "{value}"
-              :startDate="startDate"
-              v-model="dateVal">
-              </mt-datetime-picker>
-              <mt-field placeholder="Write your description here..." type="textarea" rows="8" v-model="title"></mt-field>
-              <mt-cell title="" v-if="image !== ''"><img class="img" :src="filebase + image" /></mt-cell>
-              <!--<file-upload btn-label="Click here to upload a photo..." @change="stagedUpload('image')" :url="uploadTo + '?field=image'"></file-upload>-->
-              <div v-if="title !== ''" style="padding:10px;text-align:left;">How would you like to be contacted? (change this to a phone number if you prefer)</div>
-              <mt-field v-if="title !== ''" :placeholder="contactText" v-model="contactInfo"></mt-field>
-              <div v-if="title !== ''" style="padding:10px;text-align:left;">Your location?</div>
-              <mt-field v-if="title !== ''" :placeholder="locationText" v-model="locationData"></mt-field>
-              <div v-if="title !== ''" style="padding:10px;text-align:left;">Title/Headline</div>
-              <mt-field v-if="title !== ''" placeholder="Type a headline/title here..." v-model="body"></mt-field>
-              <mt-button class="create_post_button" v-on:click="addPosts()" size="large">Click here to post this in {{name}}</mt-button>
             </div>
             <div v-else>
               <mt-field placeholder="Write your description here..." type="textarea" rows="8" v-model="title"></mt-field>
