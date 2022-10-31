@@ -1533,6 +1533,11 @@
         margin-left:10px;
         width:40px;
       }
+      .calcheckinput {
+        background-color:#ddd;
+        margin-left:10px;
+        width:40px;
+      }
       .callabel {
         font-weight:bold;
         white-space:nowrap;
@@ -5321,6 +5326,7 @@ bizdir:'tlicintr'
             timeVal:'',
             dateText: '',
             timeText: '',
+            timeTextEnd: '',
             isDesktop: false,
             contactInfo: '',
             contactText: 'Enter your phone number here...',
@@ -5328,9 +5334,17 @@ bizdir:'tlicintr'
             locationData:'',
             locationText: 'Enter your location here...',
             timevalue: '',
+            timevalueend:'',
             datevalue:'',
             endVal:'',
             endTime:'',
+            doRepeat:'',
+            repeatPeriod:'monthly',
+            repeatOptions:[
+              { text: 'Daily', value: 'daily' },
+              { text: 'Weekly', value: 'weekly' },
+              { text: 'Monthly', value: 'monthly' }
+            ],
             body:'',
             post:{},
             imageHidden:false,
@@ -5353,6 +5367,21 @@ bizdir:'tlicintr'
                 arr1[0] = '12'
               }
               this.timeText = arr1 [0] + ':' + arr1 [1] + ' ' + ampm
+            },
+            timevalueend() {
+
+              //this.timevalue = this.timevalue.split(':').slice(0,2).join(':');
+              this.timeVal = this.timevalueend
+              var arr1 = this.timeVal.split(':')
+              var ampm = 'a.m.'
+              if (parseInt(arr1[0]) > 12) {
+                ampm = 'p.m.'
+                arr1[0] = (parseInt(arr1[0]) - 12).toString()
+              }
+              if (parseInt(arr1[0]) == 0) {
+                arr1[0] = '12'
+              }
+              this.timeTextEnd = arr1 [0] + ':' + arr1 [1] + ' ' + ampm
             },
             datevalue() {
               var monthNames = ["January", "February", "March", "April", "May", "June",
@@ -5556,6 +5585,15 @@ bizdir:'tlicintr'
               this.spinnerHidden = true
               return
             }
+            if (this.timevalue < 1) {
+              MintUI.Toast({
+                message: 'Please add the event time. Thank you!',
+                iconClass: 'icon icon-error',
+                duration: 4000
+              })
+              this.spinnerHidden = true
+              return
+            }
             if (!(this.shareCal === true)) {
               if (!(this.contactInfo.match(/\d/g) === null)) {
                 if (this.contactInfo.match(/\d/g).length===10) {
@@ -5583,9 +5621,16 @@ bizdir:'tlicintr'
             var postimg = 'myFile?field=image&name=' + this.image
             var evtdate = ''
             var evttime = ''
+            var evtdateend = ''
+            var evttimeend = ''
             if (this.shareCal === true) {
               postimg = 'file/cal.png'
               evtdate = moment(moment.utc(this.dateVal).toDate()).local().format("YYYY-MM-DD")
+              
+              if (this.timevalueend > 1) {
+                evtdateend = moment(moment.utc(this.dateValEnd).toDate()).local().format("YYYY-MM-DD")
+                evttimeend = this.endVal
+              }
               var evtc = moment(moment.utc(this.dateVal).toDate()).local().subtract(3,'days')
               console.log(evtdate)
               console.log(evtc)
@@ -5635,7 +5680,21 @@ bizdir:'tlicintr'
 
             } else {
 
-
+              console.log(
+                {
+                               recips: JSON.stringify([this.groupid]),
+                               title: JSON.stringify([formattedTitle]),
+                               expirehours: 0,
+                               speedup: '',
+                               publicPost: 1,
+                               eventDate: evtdate,
+                               eventTime: evttime,
+                               contactInfo: this.contactInfo,
+                               timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+                               location:this.locationData,
+                               body:formattedBody
+                             }
+              )
               Vue.http.post( 'addPosts', {
                 recips: JSON.stringify([this.groupid]),
                 title: JSON.stringify([formattedTitle]),
@@ -5644,6 +5703,9 @@ bizdir:'tlicintr'
                 publicPost: 1,
                 eventDate: evtdate,
                 eventTime: evttime,
+                doRepeat: this.doRepeat,
+                eventDateEnd: evtdateend,
+                eventTimeEnd: evttimeend,
                 contactInfo: this.contactInfo,
                 timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
                 location:this.locationData,
@@ -5729,6 +5791,14 @@ bizdir:'tlicintr'
             this.dateVal = ctx.activeFormatted
             this.endVal = ctx.activeFormatted
             //this.context = ctx
+          },
+          setRepeat(){
+            console.log('doR')
+            if (this.doRepeat === '') {
+              this.doRepeat = 'X'
+            } else {
+              this.doRepeat = ''
+            }
           }
         },
         template: `
@@ -5792,7 +5862,13 @@ bizdir:'tlicintr'
                          <span class="callabel">Time</span>
                         </td>
                         <td>
-                          <input class="caltimeinput"type="text" v-model="timeVal" />
+                            <b-form-timepicker
+                              label-no-time-selected=""
+                              v-model="timevalue"
+                              locale="en"
+                              aria-controls="timeinput"
+                              minutes-step=15
+                            ></b-form-timepicker>
                         </td>
                       </tr>
                       <tr>
@@ -5806,7 +5882,13 @@ bizdir:'tlicintr'
                          <span class="callabel">Time</span>
                         </td>
                         <td>
-                          <input class="caltimeinput"type="text" v-model="endTime" />
+                            <b-form-timepicker
+                              v-model="timevalueend"
+                              label-no-time-selected=""
+                              locale="en"
+                              aria-controls="timeinput"
+                              minutes-step=15
+                            ></b-form-timepicker>
                         </td>
                       </tr>
                       <tr>
@@ -5814,7 +5896,7 @@ bizdir:'tlicintr'
                          <span class="callabel">Repeat</span>
                         </td>
                         <td>
-                          <input class="calcheckinput" type="checkbox" />
+                          <input v-on:click="setRepeat()" class="calcheckinput"type="text" v-model="doRepeat" />
                         </td>
                         <td colspan="2">
                             <table>
@@ -5823,11 +5905,7 @@ bizdir:'tlicintr'
                                   <span class="callabel">Period</span>
                                 </td>
                                 <td>
-                                  <select name="period" id="period-select" class="calperiod" size="3">
-                                      <option value="daily">Daily</option>
-                                      <option value="weekly">Weekly</option>
-                                      <option value="monthly">Monthly</option>
-                                  </select>
+                                  <b-form-select v-model="repeatPeriod" :options="repeatOptions" :select-size="3"></b-form-select>
                                 </td>
                               </tr>
                             </table>
@@ -5844,7 +5922,7 @@ bizdir:'tlicintr'
                 </tr>
                 <tr>
                   <td>
-                    <div class="calsubmit">Submit</div>
+                    <div class="calsubmit" v-on:click="addPosts()" >Submit</div>
                   </td>
                 </tr>
                </table>
@@ -13397,6 +13475,15 @@ def addPosts():
         newrec['event'] = str( timezone( request.form.get('timeZone') ).localize( 
           eventdate.replace(hour=int(eventtime[0]), minute=int(eventtime[1]))
         ))
+        if not request.form.get('eventDateEnd') == '':
+          # set end of date
+          eventdate = datetime.strptime(request.form.get('eventDateEnd'), "%Y-%m-%d")
+          eventtime = request.form.get('eventTimeEnd').split(':')
+          newrec['eventend'] = str( timezone( request.form.get('timeZone') ).localize( 
+            eventdate.replace(hour=int(eventtime[0]), minute=int(eventtime[1]))
+          ))
+      if not request.form.get('doRepeat') == '':
+        newrec['dorepeat'] = '1'
     if not request.form.get('shareLink') is None:
       newrec['link'] = request.form.get('shareLink')
       user_agent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1985.143 Safari/537.36'
