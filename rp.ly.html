@@ -5625,13 +5625,13 @@ bizdir:'tlicintr'
             var evttimeend = ''
             if (this.shareCal === true) {
               postimg = 'file/cal.png'
-              evtdate = moment(moment.utc(this.dateVal).toDate()).local().format("YYYY-MM-DD")
+              evtdate = moment(this.dateVal).local().format("YYYY-MM-DD")
               
               if (this.timevalueend > 1) {
-                evtdateend = moment(moment.utc(this.dateValEnd).toDate()).local().format("YYYY-MM-DD")
+                evtdateend = moment(this.dateValEnd).local().format("YYYY-MM-DD")
                 evttimeend = this.endVal
               }
-              var evtc = moment(moment.utc(this.dateVal).toDate()).local().subtract(3,'days')
+              var evtc = moment(this.dateVal).local().subtract(3,'days')
               console.log(evtdate)
               console.log(evtc)
               evttime = this.timeVal
@@ -5704,6 +5704,7 @@ bizdir:'tlicintr'
                 eventDate: evtdate,
                 eventTime: evttime,
                 doRepeat: this.doRepeat,
+                repeatPeriod: this.repeatPeriod,
                 eventDateEnd: evtdateend,
                 eventTimeEnd: evttimeend,
                 contactInfo: this.contactInfo,
@@ -6199,8 +6200,8 @@ bizdir:'tlicintr'
             var evttime = ''
             if (this.shareCal === true) {
               postimg = 'file/cal.png'
-              evtdate = moment(moment.utc(this.dateVal).toDate()).local().format("YYYY-MM-DD")
-              var evtc = moment(moment.utc(this.dateVal).toDate()).local().subtract(3,'days')
+              evtdate = moment(this.dateVal).local().format("YYYY-MM-DD")
+              var evtc = moment(this.dateVal).local().subtract(3,'days')
               console.log(evtdate)
               console.log(evtc)
               evttime = this.timeVal
@@ -13484,6 +13485,7 @@ def addPosts():
           ))
       if not request.form.get('doRepeat') == '':
         newrec['dorepeat'] = '1'
+        newrec['period'] = request.form.get('repeatPeriod')
     if not request.form.get('shareLink') is None:
       newrec['link'] = request.form.get('shareLink')
       user_agent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1985.143 Safari/537.36'
