@@ -5857,7 +5857,7 @@ bizdir:'tlicintr'
                          <span class="callabel">Event Title</span>
                         </td>
                         <td colspan="3" style="text-align:left;">
-                          <input class="calinputlong"type="text" v-model="title" />
+                          <input class="calinputlong"type="text" v-model="body" />
                         </td>
                       </tr>
                       <tr>
@@ -5883,6 +5883,7 @@ bizdir:'tlicintr'
                               label-no-time-selected=""
                               v-model="timevalue"
                               locale="en"
+                              right
                               aria-controls="timeinput"
                               minutes-step=15
                             ></b-form-timepicker>
@@ -5903,6 +5904,7 @@ bizdir:'tlicintr'
                               v-model="timevalueend"
                               label-no-time-selected=""
                               locale="en"
+                              right
                               aria-controls="timeinput"
                               minutes-step=15
                             ></b-form-timepicker>
@@ -5913,7 +5915,14 @@ bizdir:'tlicintr'
                          <span class="callabel">Repeat</span>
                         </td>
                         <td class="floattop">
-                          <input v-on:click="setRepeat()" class="calcheckinput"type="text" v-model="doRepeat" />
+                           <b-form-checkbox
+                                id="checkbox-1"
+                                v-model="doRepeat"
+                                name="checkbox-1"
+                                value="X"
+                                class="calcheckinput"
+                              >&nbsp;
+                              </b-form-checkbox>
                         </td>
                         <td colspan="2" class="floattop">
                             <table>
@@ -13500,6 +13509,7 @@ def addPosts():
             eventdate.replace(hour=int(eventtime[0]), minute=int(eventtime[1]))
           ))
       if not request.form.get('doRepeat') == '':
+        app.logger.error('set doRepeat YES')
         newrec['dorepeat'] = '1'
         newrec['period'] = request.form.get('repeatPeriod')
     if not request.form.get('shareLink') is None:
