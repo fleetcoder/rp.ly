@@ -1523,10 +1523,29 @@
       #datepickerinput__calendar-grid_ {
         margin-bottom:10px;
       }
+      .calinputlong {
+        background-color:#ddd;
+        margin-left:10px;
+        width:200px;
+      }
+      @media only screen and (min-width: 1025px) {
+        .calinputlong {
+          background-color:#ddd;
+          margin-left:10px;
+          width:240px;
+        }
+      }
       .calinput {
         background-color:#ddd;
         margin-left:10px;
-
+        width:80px;
+      }
+      @media only screen and (min-width: 1025px) {
+        .calinput {
+          background-color:#ddd;
+          margin-left:10px;
+          width:140px;
+        }
       }
       .caltimeinput {
         background-color:#ddd;
@@ -1543,16 +1562,21 @@
         white-space:nowrap;
       }
       .calsubmit {
-        width:150px;
+        width:200px;
         margin: 0 auto;
+        margin-top:10px;
         background-color:#ddd;
         font-weight:bold;
+        padding:10px;
       }
       .calperiod {
         background-color:#ddd;
       }
       .calcheckinput {
         float:left;
+      }
+      .floattop {
+        vertical-align: text-top;
       }
       
 
@@ -5829,31 +5853,23 @@ bizdir:'tlicintr'
                   <td>
                     <table cellpadding="5">
                       <tr>
-                        <td>
+                        <td style="text-align:left;">
                          <span class="callabel">Event Title</span>
                         </td>
-                        <td>
-                          <input class="calinput"type="text" v-model="body" />
-                        </td>
-                        <td>
-                        </td>
-                        <td>
+                        <td colspan="3" style="text-align:left;">
+                          <input class="calinputlong"type="text" v-model="title" />
                         </td>
                       </tr>
                       <tr>
-                        <td>
+                        <td  style="text-align:left;">
                          <span class="callabel">Location</span>
                         </td>
-                        <td>
-                          <input class="calinput"type="text" v-model="locationData" />
-                        </td>
-                        <td>
-                        </td>
-                        <td>
+                        <td colspan="3" style="text-align:left;">
+                          <input class="calinputlong"type="text" v-model="locationData" />
                         </td>
                       </tr>
                       <tr>
-                        <td>
+                        <td style="text-align:left;">
                          <span class="callabel">Start</span>
                         </td>
                         <td>
@@ -5873,7 +5889,7 @@ bizdir:'tlicintr'
                         </td>
                       </tr>
                       <tr>
-                        <td>
+                        <td style="text-align:left;">
                          <span class="callabel">End</span>
                         </td>
                         <td>
@@ -5893,16 +5909,16 @@ bizdir:'tlicintr'
                         </td>
                       </tr>
                       <tr>
-                        <td>
+                        <td class="floattop" style="text-align:left;">
                          <span class="callabel">Repeat</span>
                         </td>
-                        <td>
+                        <td class="floattop">
                           <input v-on:click="setRepeat()" class="calcheckinput"type="text" v-model="doRepeat" />
                         </td>
-                        <td colspan="2">
+                        <td colspan="2" class="floattop">
                             <table>
                               <tr>
-                                <td>
+                                <td class="floattop">
                                   <span class="callabel">Period</span>
                                 </td>
                                 <td>
