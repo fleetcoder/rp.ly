@@ -5815,6 +5815,16 @@ bizdir:'tlicintr'
           onContext(ctx) {
             this.dateVal = ctx.activeFormatted
             this.endVal = ctx.activeFormatted
+
+
+            var monthNames = ["January", "February", "March", "April", "May", "June",
+              "July", "August", "September", "October", "November", "December"
+            ]
+            //this.dateVal = this.datevalue
+            var arr1 = this.dateVal.split('/')
+            //console.log(arr1)
+            this.dateText = monthNames[parseInt(arr1[0]) - 1] + ' ' + arr1[1] + ', ' + arr1[2]
+            //this.dateText = this.dateVal
             //this.context = ctx
           },
           setRepeat(){
