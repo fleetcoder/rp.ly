@@ -1578,7 +1578,35 @@
       .floattop {
         vertical-align: text-top;
       }
-      
+      #__BVID__9___BV_modal_body_ > ul > li > a > h1 {
+        margin-top:10px;
+        margin-left:10px;
+        float: right;
+        font-size: 18px;
+        width: 190px;
+        cursor: pointer;
+        text-align:left;
+        color:black;
+      }
+      #__BVID__9___BV_modal_body_ > ul > li > a > div > img {
+        width:140px;
+        margin-top:0px;
+        margin-left:0px;
+      }
+      #__BVID__9___BV_modal_body_ > ul > li > a > div {
+        margin-top: 15px;
+        width:140px;
+        overflow:hidden;
+      }
+
+      @media only screen and (min-width: 1025px) {
+        #__BVID__9___BV_modal_body_ > ul > li > a > h1 {
+          width: 350px;
+        }
+        #__BVID__9___BV_modal_body_ > ul > li > a > div > img {
+          width:280px;
+        }
+      }
 
   
     </style>
@@ -3181,9 +3209,9 @@ errortext:'',
               <b-modal @shown="startSearch" ref="search-modal" ok-only ok-title="Close" @ok="handleSearchOk" >
                 <input ref="searchinput" placeholder="Search..." v-model="searchText" type="text" class="searchinput" />
                 <mt-button v-on:click="performSearch()" size="large">Search</mt-button>
-                <ul style="list-decoration:none;">
-                  <li v-for="(item, idx) in searchresults" v-html="item.title"></li>
-                </ul>
+                <div>
+                  <div v-for="(item, idx) in searchresults" v-html="item.title"></div>
+                </div>
               </b-modal>
 
 
@@ -12988,18 +13016,29 @@ def getPosts():
     searchmatch = False
     searchgrps = []
     if not request.args.get('q') is None:
+      posts_limit = 50
       grps = get_one_by( 'groups', request.args.get('grp'), 'key' )
       if not grps[0]['publicGroups'] is None:
         if len(grps[0]['publicGroups']) > 0:
           searchgrps = json.loads(grps[0]['publicGroups'])
           merged_groups = merged_groups + searchgrps
       search = request.args.get('q')
+      skipstrings = [
+        'storage.googleapis.com'
+      ]
       for fie in ['body','title']:
         if fie in item:
           if not item[fie] is None:
-            if search.lower() in item[fie].lower():
-              searchmatch = True
-              break
+            if len(item[fie]) < 5000:
+              ser = item[fie]
+              for ss in skipstrings:
+                ser = ser.replace(ss,'')
+              if search.lower() in ser.lower():
+                searchmatch = True
+                item['title'] = item['title'].replace('<ul><li><span style="color: rgb(0, 0, 0);">','<h1 class="article_hed">')
+                item['title'] = item['title'].replace('</span></li><li><img','</h1><div class="feedimages"><img class="article_img" ')
+                item['title'] = item['title'].replace('</li></ul>','</div>')
+                break
       if not searchmatch:
         continue
       else:
