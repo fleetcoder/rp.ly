@@ -11311,15 +11311,15 @@ def startOT():
     if int(session['user']) > 0:
       id = session['user']
       ct = get_one( 'contacts', id )[0]
+      if 'ourtownsite' in ct['email']:
+        return 'ourtownsite'
+      if 'ourtown.org' in ct['email']:
+        return 'ourtownsite'
       if ct['state'] == 'Idaho' and ct['city'] == 'Council':
         key = 'councilid'
         items = get_one_by( 'groups', key, 'publicPath' )
         if len(items) > 0:
           return items[0]['key']
-      if 'ourtownsite' in ct['email']:
-        return 'ourtownsite'
-      if 'ourtown.org' in ct['email']:
-        return 'ourtownsite'
   key = 'councilid'
   items = get_one_by( 'groups', key, 'publicPath' )
   if len(items) > 0:
