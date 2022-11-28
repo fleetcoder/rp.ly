@@ -3912,7 +3912,9 @@ contactbody:'',
 contactemail:'',
 featuredBiz:'',
 isbiz:false,
-bizdir:'tlicintr'
+bizdir:'tlicintr',
+searchText:'',
+searchresults:[]
 
           }
         },
@@ -4920,6 +4922,52 @@ bizdir:'tlicintr'
                 this.sentReset = true
               }
             })
+          },
+          doSearch(){
+             this.$refs['search-modal'].show()
+
+
+
+            
+          },
+          handleSearchOk() {
+             this.$refs['search-modal'].hide()
+          },
+          performSearch() {
+            
+            this.searchresults = []
+            Vue.http.get( 'getPosts' + '?grp=' + this.$route.params.grp + '&q=' + encodeURIComponent(this.searchText)).then( ( response ) => {
+              if ( !!response.body ) {
+                if (this.cursor > 0) {
+                  if (response.body[0].length < 10) {
+                    this.moreHidden = true
+                  }
+                  //for (var j = 0; j < response.body[0].length; j++) {
+                  //  this.searchresults.push(response.body[0][j])
+                  //}
+                } else {
+                  //this.searchresults = response.body[0]
+                  
+                  for (var j = 0; j < response.body[0].length; j++) {
+                    response.body[0][j].target = "_self"
+                    response.body[0][j].title = "<a href=\" " + response.body[0][j].link + "\">" + response.body[0][j].title + "</a>"
+                    if ( !response.body[0][j].link.includes("ourtown.org")) {
+                      response.body[0][j].target = "_blank"
+                    }
+                    this.searchresults.push(response.body[0][j])
+                  }
+                  if (this.searchresults.length > 9) {
+                    this.moreHidden = false
+                  }
+                }
+              }
+            })
+
+          },
+          startSearch() {
+            //this.$refs.searchinput.$el.focus()
+            this.searchresults = []
+            this.$refs.searchinput.focus()
           }
         },
         template: `
@@ -5059,8 +5107,28 @@ bizdir:'tlicintr'
             <mt-button v-bind:class="{'is-hidden':moreHidden}" size="large" v-on:click="showMore()">Load More</mt-button>
 
             </div>
+
+            <b-modal @shown="startSearch" ref="search-modal" ok-only ok-title="Close" @ok="handleSearchOk" >
+              <input ref="searchinput" placeholder="Search..." v-model="searchText" type="text" class="searchinput" />
+              <mt-button v-on:click="performSearch()" size="large">Search</mt-button>
+              <div>
+                <div v-for="(item, idx) in searchresults" v-html="item.title"></div>
+              </div>
+            </b-modal>
+
+
+
             <div class="desktoponly" v-if="isDesktop">
-              <p>&nbsp;</p>
+
+
+
+
+
+              <span>
+                  <input v-on:click="doSearch()" type="text" placeholder="Search" class="searchform" />
+                  <img class="searchicon" src="/file/search.svg" />
+              </span>
+              
               <mt-cell v-for="(item,idx) in staticLinks" is-link :to="item.grpLink" :title="item.name"><img class="smallmenu" v-if="checkImage(item)" :src="item.image" /></mt-cell>
               <mt-cell v-if="authed" is-link :to="'/myposts/' + grp" title="My Posts"></mt-cell>
               <mt-cell v-if="isbiz" is-link :to="'/postbiz/' + bizdir" title="My Business"></mt-cell>
