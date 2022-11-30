@@ -3729,7 +3729,9 @@ errortext:'',
           },
           startSearch() {
             //this.$refs.searchinput.$el.focus()
-            this.showMenu()
+            if (this.menuVisible === true) {
+              this.menuVisible = false
+            }
             this.searchresults = []
             this.$refs.searchinput.focus()
           }
@@ -5062,6 +5064,12 @@ searchresults:[]
 
             <div v-if="!isDesktop">
               <mt-button class="mobile_create_post_button" v-if="showPostButton" v-on:click="doPost()" size="medium">Click here to create a new post in {{name}}</mt-button>
+
+              <span>
+                  <input v-on:click="doSearch()" type="text" placeholder="Search" class="searchform" />
+                  <img class="searchicon" src="/file/search.svg" />
+              </span>
+
             </div>
         
 
