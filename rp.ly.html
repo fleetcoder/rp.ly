@@ -3045,6 +3045,11 @@ errortext:'',
     <b-collapse id="nav-collapse" is-nav>
 
       <b-navbar-nav>
+              <span>
+                  <input v-on:click="doSearch()" type="text" placeholder="Search" class="searchform" />
+                  <img class="searchicon" src="/file/search.svg" />
+              </span>
+        
         <b-nav-item class="hoverlinks" href="/#/pubgroup/bppuhyny">Local News</b-nav-item>
         <b-nav-item class="hoverlinks" href="/#/pubgroup/nibliqms">Calendar</b-nav-item>
         <b-nav-item class="hoverlinks" href="/#/pubgroup/ekevbzyq">Classified Ads</b-nav-item>
@@ -4936,7 +4941,7 @@ searchresults:[]
           performSearch() {
             
             this.searchresults = []
-            Vue.http.get( 'getPosts' + '?grp=' + this.$route.params.grp + '&q=' + encodeURIComponent(this.searchText)).then( ( response ) => {
+            Vue.http.get( 'getPosts' + '?grp=' + this.$route.params.grp + '&ingroup=1' + '&q=' + encodeURIComponent(this.searchText)).then( ( response ) => {
               if ( !!response.body ) {
                 if (this.cursor > 0) {
                   if (response.body[0].length < 10) {
@@ -13088,7 +13093,10 @@ def getPosts():
       grps = get_one_by( 'groups', request.args.get('grp'), 'key' )
       if not grps[0]['publicGroups'] is None:
         if len(grps[0]['publicGroups']) > 0:
-          searchgrps = json.loads(grps[0]['publicGroups'])
+          if not request.args.get('ingroup') is None:
+            searchgrps = []
+          else:
+            searchgrps = json.loads(grps[0]['publicGroups'])
           merged_groups = merged_groups + searchgrps
       search = request.args.get('q')
       skipstrings = [
