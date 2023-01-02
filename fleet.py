@@ -1191,7 +1191,9 @@ def expandSearch(search_term):
             if (lemma_name != word and lemma_name not in synonyms):
                 synonyms.append(lemma_name)
     for o in synonyms:
-      out.append(o)
+      res = o.split(' ')
+      for ss in res:
+        out.append(ss)
     for o in search_tokens:
       out.append(o)
   return out
