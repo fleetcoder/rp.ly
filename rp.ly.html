@@ -13188,8 +13188,8 @@ def getPosts():
   if not request.args.get('grpid') is None:
     thisgroup = get_one( 'groups', request.args.get('grpid') )
     group_id = thisgroup[0]['id']
-  app.logger.error('SEARCH ' + json.dumps(searches))
   searches = expandSearch(request.args.get('q'))
+  app.logger.error('SEARCH ' + json.dumps(searches))
   for item in recs:
     searchmatch = False
     searchgrps = []
