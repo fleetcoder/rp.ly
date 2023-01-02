@@ -13222,8 +13222,6 @@ def getPosts():
                   break
       if not searchmatch:
         continue
-      else:
-        app.logger.error("MATCH " + item['title'])
     is_public = False
     if not item['inreplyto'] == '':
       continue
