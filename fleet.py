@@ -1175,6 +1175,27 @@ def getHashedPass( password ):
 def checkPass( password, hashedPassword ):
   return bcrypt.checkpw( password, hashedPassword )
 
+def expandSearch(search_term):
+  search_tokens = nltk.word_tokenize(search_term)
+  out = []
+  for token in search_tokens:
+    word = token.lower()
+    synonyms = []
+    synsets = wordnet.synsets(word)
+    if (len(synsets) == 0):
+        return []
+    for synset in synsets:
+        lemma_names = synset.lemma_names()
+        for lemma_name in lemma_names:
+            lemma_name = lemma_name.lower().replace('_', ' ')
+            if (lemma_name != word and lemma_name not in synonyms):
+                synonyms.append(lemma_name)
+    for o in synonyms:
+      out.append(o)
+    for o in search_tokens:
+      out.append(o)
+  return out
+
 exec(server,globals(),{'app':app,'request':request,'abilities':abilities,'estimator':estimator})
 
 update_abilities()
