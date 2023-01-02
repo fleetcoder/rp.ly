@@ -6191,7 +6191,8 @@ searchresults:[]
             post:{},
             imageHidden:false,
             publicLink:'/#/group/bppuhyny',
-            filebase:'myFile?staged=1&field=image&name='
+            filebase:'myFile?staged=1&field=image&name=',
+            searchkw:''
           }
         },
         watch: {
@@ -6338,7 +6339,8 @@ searchresults:[]
               contactInfo: this.contactInfo,
               eventDate: '',
               eventTime: '',
-              timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone
+              timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+              searchkw: this.searchkw
             }).then( ( response ) => {
               this.spinnerHidden = true
               this.title = ''
@@ -6620,6 +6622,8 @@ searchresults:[]
               <mt-field  placeholder="click here to type a Web site link, phone # or email address" v-model="contactInfo"></mt-field>
               <div style="padding:10px;text-align:left;">Business Name</div>
               <mt-field placeholder="click here to type a Business Name..." v-model="body"></mt-field>
+              <div style="padding:10px;text-align:left;">Search Keywords (optional)</div>
+              <mt-field placeholder="(optional) Type search keywords that you want to be found by..." v-model="searchkw"></mt-field>
               <mt-button class="create_post_button" v-on:click="saveBiz()" size="large">Click here to post this in {{name}}</mt-button>
             </div>
           </div>`
@@ -13208,7 +13212,7 @@ def getPosts():
         'storage.googleapis.com'
       ]
       for search in searches:
-        for fie in ['body','title']:
+        for fie in ['body','title','keywords']:
           if fie in item:
             if not item[fie] is None:
               if len(item[fie]) < 5000:
@@ -13985,6 +13989,8 @@ def modPosts():
     newobj['contact'] = contactInfo
   if not request.form.get('location') is None:
     newobj['location'] = request.form.get('location')
+  if not request.form.get('searchkw') is None:
+    newobj['keywords'] = request.form.get('searchkw')
   if not request.form.get('eventDate') is None:
     if len(request.form.get('eventDate')) > 0:
       eventdate = datetime.strptime(request.form.get('eventDate'), "%Y-%m-%d")
