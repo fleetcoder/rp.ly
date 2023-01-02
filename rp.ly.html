@@ -11420,6 +11420,34 @@ searchresults:[]
   </body>
   <script type="python" id="server">
 
+@app.route("/expandSearchEnable", methods=['GET'])
+def expandSearchEnable():
+  nltk.download('punkt')
+  nltk.download('wordnet')
+  nltk.download('omw-1.4')
+  return 'ENABLED'
+
+def expandSearch(search_term):
+  search_tokens = nltk.word_tokenize(search_term)
+  out = []
+  for token in search_tokens:
+    word = token.lower()
+    synonyms = []
+    synsets = wordnet.synsets(word)
+    if (len(synsets) == 0):
+        return []
+    for synset in synsets:
+        lemma_names = synset.lemma_names()
+        for lemma_name in lemma_names:
+            lemma_name = lemma_name.lower().replace('_', ' ')
+            if (lemma_name != word and lemma_name not in synonyms):
+                synonyms.append(lemma_name)
+    for o in synonyms:
+      out.append(o)
+    for o in search_tokens:
+      out.append(o)
+  return out
+
 @app.route("/getPostGroup", methods=['POST'])
 def getPostGroup():
   gid = request.form.get('gid')
@@ -13173,23 +13201,25 @@ def getPosts():
           else:
             searchgrps = json.loads(grps[0]['publicGroups'])
           merged_groups = merged_groups + searchgrps
-      search = request.args.get('q')
+      searches = expandSearch(request.args.get('q'))
+      app.logger.error('SEARCH ' + json.dumps(searches))
       skipstrings = [
         'storage.googleapis.com'
       ]
-      for fie in ['body','title']:
-        if fie in item:
-          if not item[fie] is None:
-            if len(item[fie]) < 5000:
-              ser = item[fie]
-              for ss in skipstrings:
-                ser = ser.replace(ss,'')
-              if search.lower() in ser.lower():
-                searchmatch = True
-                item['title'] = item['title'].replace('<ul><li><span style="color: rgb(0, 0, 0);">','<h1 class="article_hed">')
-                item['title'] = item['title'].replace('</span></li><li><img','</h1><div class="feedimages"><img class="article_img" ')
-                item['title'] = item['title'].replace('</li></ul>','</div>')
-                break
+      for search in searches:
+        for fie in ['body','title']:
+          if fie in item:
+            if not item[fie] is None:
+              if len(item[fie]) < 5000:
+                ser = item[fie]
+                for ss in skipstrings:
+                  ser = ser.replace(ss,'')
+                if search.lower() in ser.lower():
+                  searchmatch = True
+                  item['title'] = item['title'].replace('<ul><li><span style="color: rgb(0, 0, 0);">','<h1 class="article_hed">')
+                  item['title'] = item['title'].replace('</span></li><li><img','</h1><div class="feedimages"><img class="article_img" ')
+                  item['title'] = item['title'].replace('</li></ul>','</div>')
+                  break
       if not searchmatch:
         continue
       else:

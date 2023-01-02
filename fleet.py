@@ -37,6 +37,14 @@ import csv
 import socket
 import ssl
 from io import BytesIO
+from gensim.models import Word2Vec
+import dataclasses
+import nltk
+from nltk.corpus import wordnet
+from itertools import chain
+
+
+
 
 appdir = os.getcwd() + '/'
 
