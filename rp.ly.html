@@ -4485,6 +4485,7 @@ searchresults:[]
               var urlAdd = ""
               if ("undefined" !== typeof this.$route.params.search) {
                 this.searchText = this.$route.params.search
+                //console.log('searcText = ' + this.$route.params.search)
                 urlAdd = '&q=' + encodeURIComponent(this.searchText)
                 this.name = 'Search Results'
               }
@@ -5029,6 +5030,9 @@ searchresults:[]
               router.push( '/pubgroup/' + this.$route.params.grp + '/' + encodeURIComponent(this.searchText) + '/ingroup' )
               this.setup()
             } else {
+              //console.log(this.searchText)
+              //console.log(this.$route.params.search)
+              this.$route.params.search = encodeURIComponent(this.searchText)
               this.setup()
             }
 
