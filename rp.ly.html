@@ -5027,6 +5027,7 @@ searchresults:[]
              //this.$refs['search-modal'].show()
             if ("undefined" == typeof this.$route.params.ingroup) {
               router.push( '/pubgroup/' + this.$route.params.grp + '/' + encodeURIComponent(this.searchText) + '/ingroup' )
+              this.setup()
             } else {
               this.setup()
             }
