@@ -2958,8 +2958,8 @@ errortext:'',
             })
           },
           doSearch(){
-             this.$refs['search-modal'].show()
-
+             //this.$refs['search-modal'].show()
+            router.push( '/pubgroup/' + this.$route.params.grp + '/' + encodeURIComponent(this.searchText) )
 
 
             
@@ -3002,6 +3002,13 @@ errortext:'',
             //this.$refs.searchinput.$el.focus()
             this.searchresults = []
             this.$refs.searchinput.focus()
+          },
+          onEnter: function() {
+            this.doSearch()
+            //this.msg = 'on enter event';
+          },
+          noop() {
+            
           }
         },
         template: `
@@ -3046,8 +3053,8 @@ errortext:'',
 
       <b-navbar-nav>
               <span>
-                  <input v-on:click="doSearch()" type="text" placeholder="Search" class="searchform" />
-                  <img class="searchicon" src="/file/search.svg" />
+                  <input type="text" v-model="searchText" v-on:keyup.enter="onEnter" placeholder="Search" class="searchform" />
+                  <img v-on:click="doSearch()" class="searchicon" src="/file/search.svg" />
               </span>
         
         <b-nav-item class="hoverlinks" href="/#/pubgroup/bppuhyny">Local News</b-nav-item>
@@ -3212,11 +3219,11 @@ errortext:'',
             <div class="centerbox menubox">
 
             <div class="weatherwidget">
-              <form>
+              <form v-on:submit.prevent="noop">
               <span v-html="weathertext"></span>
               <span>
-                  <input v-on:click="doSearch()" type="text" placeholder="Search" class="searchform" />
-                  <img class="searchicon" src="/file/search.svg" />
+                  <input v-model="searchText" v-on:keyup.enter="onEnter" type="text" placeholder="Search" class="searchform" />
+                  <img class="searchicon" src="/file/search.svg" v-on:click="doSearch()" />
               </span>
               </form>
             </div>
@@ -3688,7 +3695,9 @@ errortext:'',
             }
           },
           doSearch(){
-             this.$refs['search-modal'].show()
+            router.push( '/pubgroup/' + this.$route.params.grp + '/' + encodeURIComponent(this.searchText) )
+             
+             //this.$refs['search-modal'].show()
 
 
 
@@ -3734,6 +3743,13 @@ errortext:'',
             }
             this.searchresults = []
             this.$refs.searchinput.focus()
+          },
+          onEnter: function() {
+            this.doSearch()
+            //this.msg = 'on enter event';
+          },
+          noop() {
+            
           }
         },
         template: `
@@ -3856,8 +3872,8 @@ errortext:'',
             </mt-header>
             <mt-popup v-model="menuVisible" position="middle" class="topmenu">
               <span>
-                  <input v-on:click="doSearch()" type="text" placeholder="Search" class="searchform" />
-                  <img class="searchicon" src="/file/search.svg" />
+                  <input v-model="searchText" v-on:keyup.enter="onEnter" type="text" placeholder="Search" class="searchform" />
+                  <img class="searchicon" src="/file/search.svg" v-on:click="doSearch()" />
               </span>
         
               <mt-cell is-link @click.native="showMenu()" title="Close Menu"></mt-cell>
@@ -4466,8 +4482,15 @@ searchresults:[]
                   this.calHidden = false
                 }
               }
+              var urlAdd = ""
+              if ("undefined" !== typeof this.$route.params.search) {
+                this.searchText = this.$route.params.search
+                urlAdd = '&q=' + encodeURIComponent(this.searchText)
+                this.name = 'Search Results'
+              }
+              
               if ("undefined" !== typeof publicData['publicName']) {
-                Vue.http.get( 'getPosts' + '?grp=' + this.$route.params.grp).then( ( response ) => {
+                Vue.http.get( 'getPosts' + '?grp=' + this.$route.params.grp + urlAdd).then( ( response ) => {
                   setTimeout(() => {
                     MintUI.Indicator.close()
                   }, 500)
@@ -4997,8 +5020,9 @@ searchresults:[]
             })
           },
           doSearch(){
-             this.$refs['search-modal'].show()
+             //this.$refs['search-modal'].show()
 
+            router.push( '/pubgroup/' + this.$route.params.grp + '/' + encodeURIComponent(this.searchText) )
 
 
             
@@ -5041,6 +5065,13 @@ searchresults:[]
             //this.$refs.searchinput.$el.focus()
             this.searchresults = []
             this.$refs.searchinput.focus()
+          },
+          onEnter: function() {
+            this.doSearch()
+            //this.msg = 'on enter event';
+          },
+          noop() {
+            
           }
         },
         template: `
@@ -5067,8 +5098,11 @@ searchresults:[]
               <mt-button class="mobile_create_post_button" v-if="showPostButton" v-on:click="doPost()" size="medium">Click here to create a new post in {{name}}</mt-button>
 
               <span>
-                  <input v-on:click="doSearch()" type="text" placeholder="Search" class="searchform" />
-                  <img class="searchicon" src="/file/search.svg" />
+              <form v-on:submit.prevent="noop">
+                  
+                  <input v-model="searchText" v-on:keyup.enter="onEnter" type="text" placeholder="Search" class="searchform" />
+                  <img class="searchicon" src="/file/search.svg" v-on:click="doSearch()" />
+              </form>
               </span>
 
             </div>
@@ -5204,8 +5238,8 @@ searchresults:[]
 
 
               <span>
-                  <input v-on:click="doSearch()" type="text" placeholder="Search" class="searchform" />
-                  <img class="searchicon" src="/file/search.svg" />
+                  <input v-model="searchText" v-on:keyup.enter="onEnter" type="text" placeholder="Search" class="searchform" />
+                  <img class="searchicon" src="/file/search.svg" v-on:click="doSearch()" />
               </span>
               
               <mt-cell v-for="(item,idx) in staticLinks" is-link :to="item.grpLink" :title="item.name"><img class="smallmenu" v-if="checkImage(item)" :src="item.image" /></mt-cell>
@@ -11358,6 +11392,9 @@ searchresults:[]
             component: GroupPage
         },{
             path: '/pubgroup/:grp',
+            component: PublicGroupPage
+        },{
+            path: '/pubgroup/:grp/:search',
             component: PublicGroupPage
         },{
             path: '/postgroup/:grp',
