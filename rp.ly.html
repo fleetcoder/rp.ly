@@ -4491,6 +4491,7 @@ searchresults:[]
               if ("undefined" !== typeof this.$route.params.ingroup) {
                 urlAdd = urlAdd + '&ingroup=1'
               }
+              console.log(urlAdd)
               
               if ("undefined" !== typeof publicData['publicName']) {
                 Vue.http.get( 'getPosts' + '?grp=' + this.$route.params.grp + urlAdd).then( ( response ) => {
@@ -5024,8 +5025,11 @@ searchresults:[]
           },
           doSearch(){
              //this.$refs['search-modal'].show()
-
-            router.push( '/pubgroup/' + this.$route.params.grp + '/' + encodeURIComponent(this.searchText) + '/ingroup' )
+            if ("undefined" == typeof this.$route.params.ingroup) {
+              router.push( '/pubgroup/' + this.$route.params.grp + '/' + encodeURIComponent(this.searchText) + '/ingroup' )
+            } else {
+              this.setup()
+            }
 
 
             
