@@ -1607,6 +1607,11 @@
           width:280px;
         }
       }
+      
+      .searchWrap {
+        margin-top:20px;
+      }
+      
 
   
     </style>
@@ -5109,9 +5114,11 @@ searchresults:[]
             <div v-if="!isDesktop">
               <mt-button class="mobile_create_post_button" v-if="showPostButton" v-on:click="doPost()" size="medium">Click here to create a new post in {{name}}</mt-button>
 
+              <div v-if="!showPostButton" class="searchWrap">&nbsp;</div>
+
               <span>
               <form v-on:submit.prevent="noop">
-                  
+                
                   <input v-model="searchText" v-on:keyup.enter="onEnter" type="text" placeholder="Search" class="searchform" />
                   <img class="searchicon" src="/file/search.svg" v-on:click="doSearch()" />
               </form>
