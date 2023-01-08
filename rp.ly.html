@@ -1611,7 +1611,14 @@
       .searchWrap {
         margin-top:20px;
       }
-      
+      .importlink {
+        margin-left:80px;
+        color:black;
+        font-size:24px;
+      }
+      .importlinktable {
+        vertical-align: text-top;
+      }
 
   
     </style>
@@ -5602,7 +5609,9 @@ searchresults:[]
             post:{},
             imageHidden:false,
             publicLink:'/#/group/bppuhyny',
-            filebase:'myFile?staged=1&field=image&name='
+            filebase:'myFile?staged=1&field=image&name=',
+            showImport:false,
+            callink:""
           }
         },
         watch: {
@@ -6064,6 +6073,32 @@ searchresults:[]
             } else {
               this.doRepeat = ''
             }
+          },
+          doImport() {
+            this.showImport = true
+          },
+          addCalLink() {
+            if (this.callink.length < 5) {
+              MintUI.Toast({
+                message: 'Please copy and paste a calendar URL/Link. Thank you!',
+                iconClass: 'icon icon-error',
+                duration: 4000
+              })
+              this.spinnerHidden = true
+              return
+            }
+            Vue.http.post( 'addInquiry', {
+              body:this.callink + ' calendar link was submitted',
+              email:""
+            }).then( ( response ) => {
+              MintUI.Toast({
+                message: 'CALENDAR LINK SAVED - PLEASE ALLOW 24 HOURS FOR PROCESSING',
+                iconClass: 'icon icon-success',
+                duration: 4000
+              })
+              this.callink = ''
+            })
+            
           }
         },
         template: `
@@ -6088,6 +6123,9 @@ searchresults:[]
                   button-only
                   date-format-options="{ year: 'numeric', month: 'numeric', day: 'numeric' }"
                 ></b-calendar>
+               <table style="margin: 0 auto;">
+                <tr><td>
+        
                <table style="margin: 0 auto;">
                 <tr>
                   <td>
@@ -6192,6 +6230,32 @@ searchresults:[]
                   </td>
                 </tr>
                </table>
+
+
+
+</td><td v-if="isDesktop" class="importlinktable">
+                              
+                      <a v-if="!showImport" href="javascript:void(0)" @click="doImport()" class="importlink">Import Calendar</a>
+                              
+                              <table border="0" v-if="showImport">
+                              <tr>
+                        <td style="text-align:left;">
+                         <span class="callabel">Calendar URL/Link</span>
+                        </td>
+                        <td style="text-align:left;">
+                          <input class="calinputlong"type="text" v-model="callink" />
+                        </td>
+                      </tr>
+<tr>
+                  <td colspan="2">
+                    <div class="calsubmit" v-on:click="addCalLink()" >Import Calendar</div>
+                  </td>
+</tr>
+                              </table>
+                              
+                              
+                              </td></tr></table>
+                              
               </div>
             </div>
             <div v-else>
@@ -11587,11 +11651,18 @@ def getCities():
 
 @app.route('/addInquiry',methods=['GET','POST'])
 def addInquiry():
+  ema = request.form.get('email')
+  if "" == ema:
+    try:
+      curr = current_user()
+      ema = curr['name'] + ' ' + curr['email']
+    except:
+      pass
   message = Mail(
     from_email=' Request at ' + mydomain + ' <' + os.getenv('SENDGRID_FROM') + '>',
     to_emails=os.getenv('SENDGRID_FROM'),
     subject='' + mydomain + ' message sent from contact form',
-    html_content='<p>FROM ' + request.form.get('email') + ' - ' + request.form.get('body') + '</p>')
+    html_content='<p>FROM ' + ema + ' - ' + request.form.get('body') + '</p>')
   sg = SendGridAPIClient(sendgrid_token)
   response = sg.send(message)
   return 'OK'
