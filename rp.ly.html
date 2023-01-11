@@ -5583,7 +5583,7 @@ searchresults:[]
             },
             startDate: new Date(),
             dateVal:'',
-            timeVal:'',
+            timeVal:'10:00:00',
             dateText: '',
             timeText: '',
             timeTextEnd: '',
@@ -13862,16 +13862,22 @@ def addPosts():
       if len(request.form.get('eventDate')) > 0:
         eventdate = datetime.strptime(request.form.get('eventDate'), "%Y-%m-%d")
         eventtime = request.form.get('eventTime').split(':')
-        newrec['event'] = str( timezone( request.form.get('timeZone') ).localize( 
-          eventdate.replace(hour=int(eventtime[0]), minute=int(eventtime[1]))
-        ))
+        if len(eventtime[0]) > 0 and len(eventtime[1]) > 0:
+          newrec['event'] = str( timezone( request.form.get('timeZone') ).localize( 
+            eventdate.replace(hour=int(eventtime[0]), minute=int(eventtime[1]))
+          ))
+        else:
+          app.logger.error('NO EVENTSTART ' + request.form.get('eventTime'))
         if not request.form.get('eventDateEnd') == '':
           # set end of date
           eventdate = datetime.strptime(request.form.get('eventDateEnd'), "%Y-%m-%d")
           eventtime = request.form.get('eventTimeEnd').split(':')
-          newrec['eventend'] = str( timezone( request.form.get('timeZone') ).localize( 
-            eventdate.replace(hour=int(eventtime[0]), minute=int(eventtime[1]))
-          ))
+          if len(eventtime[0]) > 0 and len(eventtime[1]) > 0:
+            newrec['eventend'] = str( timezone( request.form.get('timeZone') ).localize( 
+              eventdate.replace(hour=int(eventtime[0]), minute=int(eventtime[1]))
+            ))
+          else:
+            app.logger.error('NO EVENT END ' + request.form.get('eventDateEnd'))
       if not request.form.get('doRepeat') == '':
         app.logger.error('set doRepeat YES')
         newrec['dorepeat'] = '1'
