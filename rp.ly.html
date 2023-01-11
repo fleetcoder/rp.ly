@@ -14003,7 +14003,7 @@ def addPosts():
       user_agent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1985.143 Safari/537.36'
       headers = {'User-Agent': user_agent}
       try:
-        html = requests.get(newrec['link'],headers=headers,timeout=5)
+        html = requests.get(os.getenv('PREPEND_URL') + urllib.parse.quote_plus(newrec['link']),headers=headers,timeout=60)
         opengraphe = OpenGraphExtractor()
         titleset = False
         imageset = False
