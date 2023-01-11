@@ -1528,6 +1528,12 @@
         margin-left:10px;
         width:200px;
       }
+      .calinputlongarea {
+        background-color:#ddd;
+        margin-left:10px;
+        width:200px;
+        float:left;
+      }
       @media only screen and (min-width: 1025px) {
         .calinputlong {
           background-color:#ddd;
@@ -1618,6 +1624,12 @@
       }
       .importlinktable {
         vertical-align: text-top;
+      }
+      .dtimg {
+        max-width:350px;
+        height:auto;
+        width:auto;
+        
       }
 
   
@@ -6135,7 +6147,7 @@ searchresults:[]
                          <span class="callabel">Event Title</span>
                         </td>
                         <td colspan="3" style="text-align:left;">
-                          <input class="calinputlong"type="text" v-model="body" />
+                          <input class="calinputlong"type="text" v-model="body" placeholder="Example" />
                         </td>
                       </tr>
                       <tr>
@@ -6144,6 +6156,21 @@ searchresults:[]
                         </td>
                         <td colspan="3" style="text-align:left;">
                           <input class="calinputlong"type="text" v-model="locationData" />
+                        </td>
+                      </tr>
+                      <tr>
+                        <td  style="text-align:left;">
+                         <span class="callabel">Contact</span>
+                        </td>
+                        <td colspan="3" style="text-align:left;">
+                          <input placeholder="...enter phone or email" class="calinputlong" type="text" v-model="contactInfo" />
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>
+                        </td>
+                        <td>
+                         <span class="callabel">(change email to phone # if you prefer)</span>
                         </td>
                       </tr>
                       <tr>
@@ -6259,16 +6286,104 @@ searchresults:[]
               </div>
             </div>
             <div v-else>
-              <mt-field placeholder="Write your description here..." type="textarea" rows="8" v-model="title"></mt-field>
+
+
+<!--              <mt-field placeholder="Write your description here..." type="textarea" rows="8" v-model="title"></mt-field>
               <mt-cell title="" v-if="image !== ''"><img class="img" :src="filebase + image" /></mt-cell>
-              <file-upload accept="image/*" btn-label="Click here to upload a photo..." @change="stagedUpload('image')" :url="uploadTo + '?field=image'"></file-upload>
               <div v-if="title !== ''" style="padding:10px;text-align:left;">How would you like to be contacted? (change this to a phone number if you prefer)</div>
               <mt-field v-if="title !== ''" :placeholder="contactText" v-model="contactInfo"></mt-field>
               <div v-if="title !== ''" style="padding:10px;text-align:left;">Your location?</div>
               <mt-field v-if="title !== ''" :placeholder="locationText" v-model="locationData"></mt-field>
               <div v-if="title !== ''" style="padding:10px;text-align:left;">Title/Headline</div>
               <mt-field v-if="title !== ''" placeholder="Type a headline/title here..." v-model="body"></mt-field>
-              <mt-button class="create_post_button" v-on:click="addPosts()" size="large">Click here to post this in {{name}}</mt-button>
+              <mt-button class="create_post_button" v-on:click="addPosts()" size="large">Click here to post this in {{name}}</mt-button> -->
+
+
+               <table style="margin: 0 auto;">
+                <tr>
+                  <td v-if="isDesktop">
+                      <div style="margin-right:30px;text-align:center;">
+                        <img class="img dtimg" :src="filebase + image" />
+                        <file-upload style="width:200px;margin-top:20px;" accept="image/*" btn-label="Upload photo..." @change="stagedUpload('image')" :url="uploadTo + '?field=image'"></file-upload>
+                      </div>
+                  </td>
+
+                  <td>
+
+               <table style="margin: 0 auto;">
+                <tr>
+                  <td>
+                    <table cellpadding="5">
+                      <tr>
+                        <td style="text-align:left;">
+                         <span class="callabel">Post Title</span>
+                        </td>
+                        <td colspan="3" style="text-align:left;">
+                          <input placeholder="Example" class="calinputlong" type="text" v-model="body" />
+                        </td>
+                      </tr>
+                      <tr>
+                        <td  style="text-align:left;">
+                         <span class="callabel">Location</span>
+                        </td>
+                        <td colspan="3" style="text-align:left;">
+                          <input class="calinputlong"type="text" v-model="locationData" />
+                        </td>
+                      </tr>
+                      <tr>
+                        <td  style="text-align:left;">
+                         <span class="callabel">Contact</span>
+                        </td>
+                        <td colspan="3" style="text-align:left;">
+                          <input placeholder="...enter phone or email" class="calinputlong" type="text" v-model="contactInfo" />
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>
+                        </td>
+                        <td>
+                         <span class="callabel">(change email to phone # if you prefer)</span>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>
+                         <span class="callabel">Description</span>
+                        </td>
+                        <td>
+                         <textarea rows="8" v-model="title" placeholder="Example" class="calinputlongarea" ></textarea>
+                        </td>
+                      </tr>
+
+                    </table>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <table>
+                    </table>
+                  </td>
+                </tr>
+                <tr v-if="!isDesktop" >
+                  <td>
+                        <img class="img" :src="filebase + image" />
+                        <file-upload accept="image/*" btn-label="Upload photo..." @change="stagedUpload('image')" :url="uploadTo + '?field=image'"></file-upload>
+
+                  </td>
+                </tr>
+
+                <tr>
+                  <td>
+                    <div class="calsubmit" v-on:click="addPosts()" >Submit</div>
+                  </td>
+                </tr>
+               </table>
+                              
+                  </td>
+                </tr>
+              </table>
+
+
+
             </div>
           </div>`
       }
