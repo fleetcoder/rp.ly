@@ -11845,7 +11845,8 @@ def syncGroups():
                   titleset = False
                   imageset = False
                   flagged = moderationCheck(item['link'], True, str(html.text))
-                  data = opengraphe.extract(str(html.text))
+                  #data = opengraphe.extract(str(html.text))
+                  data = opengraphe.extract(unicodedata.normalize('NFKD', html.content.decode('utf-8')).encode('ascii', 'ignore'))
                   mytitle = ''
                   myimage = ''
                   if data:
@@ -13891,7 +13892,8 @@ def addPosts():
         opengraphe = OpenGraphExtractor()
         titleset = False
         imageset = False
-        data = opengraphe.extract(str(html.text))
+        data = opengraphe.extract(unicodedata.normalize('NFKD', html.content.decode('utf-8')).encode('ascii', 'ignore'))
+        #data = opengraphe.extract(str(html.text))
         mytitle = ''
         myimage = ''
         for prop in data[0]['properties']:
