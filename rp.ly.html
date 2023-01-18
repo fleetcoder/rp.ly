@@ -12049,6 +12049,19 @@ def syncGroups():
                         for ogdata in prop:
                           if not titleset or not imageset:
                             if foundtit:
+                              try:
+                                r = requests.head(newrec['link'], allow_redirects=True,timeout=5)
+                                parsed_url = urllib.parse.urlparse(r.url)
+                                if not parsed_url.netloc is None:
+                                  out = parsed_url.netloc
+                                  parts = out.split(".")
+                                  outparts = []
+                                  for pp in parts:
+                                    if pp != 'www':
+                                      outparts.append(pp)
+                                  ogdata = ogdata + " - " + ".".join(outparts)
+                              except:
+                                pass
                               mytitle = '<h1 class="article_hed">' + ogdata + '</h1>'
                               titleset = True
                               foundtit = False
@@ -14095,6 +14108,19 @@ def addPosts():
             print(str(ogdata))
             if not titleset or not imageset:
               if foundtit:
+                try:
+                  r = requests.head(newrec['link'], allow_redirects=True,timeout=5)
+                  parsed_url = urllib.parse.urlparse(r.url)
+                  if not parsed_url.netloc is None:
+                    out = parsed_url.netloc
+                    parts = out.split(".")
+                    outparts = []
+                    for pp in parts:
+                      if pp != 'www':
+                        outparts.append(pp)
+                    ogdata = ogdata + " - " + ".".join(outparts)
+                except:
+                  pass
                 mytitle = '<h1 class="article_hed">' + ogdata + '</h1>'
                 titleset = True
                 foundtit = False
