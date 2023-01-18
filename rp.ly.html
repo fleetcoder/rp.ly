@@ -4066,7 +4066,8 @@ featuredBiz:'',
 isbiz:false,
 bizdir:'tlicintr',
 searchText:'',
-searchresults:[]
+searchresults:[],
+platform:"iphone"
 
           }
         },
@@ -5148,7 +5149,20 @@ searchresults:[]
           },
           noop() {
             
+          },
+          addApp(){
+            var userAgent = navigator.userAgent || navigator.vendor || window.opera;
+            if (/android/i.test(userAgent)) {
+              this.platform = "android";
+            }
+            
+            this.$refs['add-modal'].show()
+            this.menuVisible = false
+          },
+          handleAddOk() {
+            
           }
+          
         },
         template: `
           <div class="mobilelayout">
@@ -5333,6 +5347,8 @@ searchresults:[]
               <mt-cell v-for="(item,idx) in staticLinks" is-link :to="item.grpLink" :title="item.name"><img class="smallmenu" v-if="checkImage(item)" :src="item.image" /></mt-cell>
               <mt-cell v-if="authed" is-link :to="'/myposts/' + grp" title="My Posts"></mt-cell>
               <mt-cell v-if="isbiz" is-link :to="'/postbiz/' + bizdir" title="My Business"></mt-cell>
+              <mt-cell is-link style="cursor:pointer;" @click.native="addApp()" title="Install OurTown App"></mt-cell>
+
               <mt-cell v-if="authed" is-link style="cursor:pointer;" @click.native="logOut()" title="Sign Out"></mt-cell>
             </mt-popup>
         
@@ -5410,6 +5426,27 @@ searchresults:[]
                 <p class="my-4">Welcome! You are logged in as {{loggedInUserEmail}}</p>
               </b-modal>
             </div>
+        
+        
+            <div>
+              <b-modal ref="add-modal" ok-only ok-title="Close" hide-header-close @ok="handleAddOk" >
+                <center><img src="file/oticon.png" class="oticon" alt="OurTown logo" /></center>
+                <div style="margin-top:20px;"><p>OurTown is coming to the mobile app store soon! Today you can add OurTown to your phone's home screen:</p></div>
+
+<div v-if="platform == 'android'">
+<p>1. Tap the menu icon (3 dots in upper right-hand corner) <p>
+        <p>2. tap <b>Add To Home Screen</b></p>
+<p>3. You'll be able to enter a name for the shortcut and then Chrome will add the OurTown icon to your phone's home screen.</p>
+</div>
+<div v-if="platform == 'iphone'">
+<p>1. Tap the up-arrow</p>
+        <p>2. Tap <b>Add to Home Screen</b></p>
+<p>3. You'll be able to enter a name for the shortcut and then your iPhone will add the OurTown icon to your phone's home screen.</p>
+</div>
+
+              </b-modal>
+            </div>
+        
         
         
           </div>`
