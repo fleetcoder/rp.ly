@@ -3923,7 +3923,7 @@ errortext:'',
               <mt-cell v-if="shareLinks" v-for="(item,idx) in staticLinks" is-link :to="item.grpLink" :title="item.name"><img class="smallmenu" v-if="checkImage(item)" :src="item.image" /></mt-cell>
               <mt-cell v-if="authed" is-link :to="'/myposts/' + grp" title="My Posts"></mt-cell>
               <mt-cell v-if="isbiz" is-link :to="'/postbiz/' + bizdir" title="My Business"></mt-cell>
-              <mt-cell is-link style="cursor:pointer;" @click.native="addApp()" title="Install OurTown App"></mt-cell>
+              <mt-cell is-link style="cursor:pointer;" @click.native="addApp()" title="Install OurTown App"><img class="smallmenu" src="file/upload.svg" /></mt-cell>
               <mt-cell v-if="authed" is-link style="cursor:pointer;" @click.native="logOut()" title="Sign Out"></mt-cell>
             </mt-popup>
             <!--<mt-actionsheet
@@ -5347,7 +5347,7 @@ platform:"iphone"
               <mt-cell v-for="(item,idx) in staticLinks" is-link :to="item.grpLink" :title="item.name"><img class="smallmenu" v-if="checkImage(item)" :src="item.image" /></mt-cell>
               <mt-cell v-if="authed" is-link :to="'/myposts/' + grp" title="My Posts"></mt-cell>
               <mt-cell v-if="isbiz" is-link :to="'/postbiz/' + bizdir" title="My Business"></mt-cell>
-              <mt-cell is-link style="cursor:pointer;" @click.native="addApp()" title="Install OurTown App"></mt-cell>
+              <mt-cell is-link style="cursor:pointer;" @click.native="addApp()" title="Install OurTown App"><img class="smallmenu" src="file/upload.svg" /></mt-cell>
 
               <mt-cell v-if="authed" is-link style="cursor:pointer;" @click.native="logOut()" title="Sign Out"></mt-cell>
             </mt-popup>
