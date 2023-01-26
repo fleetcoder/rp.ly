@@ -7874,6 +7874,14 @@ platform:"iphone"
                 
                 if (!(this.contact.match(/http/g) === null)) {
                   this.contact = '<a href="' + this.contact + '">' + this.contact + '</a>'
+                } else {
+                  if (String(this.contact)
+                  .toLowerCase()
+                  .match(
+                    /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+                  )) {
+                    this.contact = '<a href=mailto:"' + this.contact + '">' + this.contact + '</a>'
+                  }
                 }
                 if (response.body[1] == 'AUTHED') {
                   this.authed = true
@@ -12003,7 +12011,7 @@ def syncGroups():
             user_agent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1985.143 Safari/537.36'
             headers = {'User-Agent': user_agent}
             try:
-              html = requests.get(item['link'],headers=headers,timeout=5)
+              html = requests.get(item['link'],headers=headers,timeout=15)
             except (requests.exceptions.ConnectionError, requests.exceptions.Timeout):
               timingout = True
               print('TIMING OUT ' + fd)
@@ -12050,7 +12058,7 @@ def syncGroups():
                           if not titleset or not imageset:
                             if foundtit:
                               try:
-                                r = requests.head(newrec['link'], allow_redirects=True,timeout=5)
+                                r = requests.head(item['link'], allow_redirects=True,timeout=5)
                                 parsed_url = urllib.parse.urlparse(r.url)
                                 if not parsed_url.netloc is None:
                                   out = parsed_url.netloc
@@ -14342,6 +14350,26 @@ def modPosts():
   contactInfo = ''
   if not request.form.get('contactInfo') is None:
     contactInfo = request.form.get('contactInfo')
+    if not "http" in contactInfo and not "https" in contactInfo:
+      try:
+        hostname = contactInfo
+        if hostname[-1] == ".":
+            # strip exactly one dot from the right, if present
+            hostname = hostname[:-1]
+        if len(hostname) > 253:
+            return False
+
+        labels = hostname.split(".")
+
+        # the TLD must be not all-numeric
+        if re.match(r"[0-9]+$", labels[-1]):
+            return False
+
+        allowed = re.compile(r"(?!-)[a-z0-9-]{1,63}(?<!-)$", re.IGNORECASE)
+        if all(allowed.match(label) for label in labels):
+          contactInfo = 'http://' + contactInfo
+      except:
+        pass
     newobj['contact'] = contactInfo
   if not request.form.get('location') is None:
     newobj['location'] = request.form.get('location')
