@@ -7883,6 +7883,9 @@ platform:"iphone"
                     this.contact = '<a href=mailto:"' + this.contact + '">' + this.contact + '</a>'
                   }
                 }
+                if (this.contact.match(/\d/g).length===10) {
+                  this.contact = '<a href=tel:"' + this.contact + '">' + this.contact + '</a>'
+                }
                 if (response.body[1] == 'AUTHED') {
                   this.authed = true
                 }
