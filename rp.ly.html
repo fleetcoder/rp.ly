@@ -7880,11 +7880,11 @@ platform:"iphone"
                   .match(
                     /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
                   )) {
-                    this.contact = '<a href=mailto:"' + this.contact + '">' + this.contact + '</a>'
+                    this.contact = '<a href="mailto:' + this.contact + '">' + this.contact + '</a>'
                   }
                 }
                 if (this.contact.match(/\d/g).length===10) {
-                  this.contact = '<a href=tel:"' + this.contact + '">' + this.contact + '</a>'
+                  this.contact = '<a href="tel:' + this.contact + '">' + this.contact + '</a>'
                 }
                 if (response.body[1] == 'AUTHED') {
                   this.authed = true
