@@ -1637,6 +1637,9 @@
         width:auto;
         
       }
+      .bizblurb {
+        margin:30px;
+      }
 
   
     </style>
@@ -5206,6 +5209,8 @@ platform:"iphone"
             <div class="sectionTopper"><h5>{{name}}</h5></div>
         
             <h3 v-if="showDidSponsor">You are registered! We will contact you to obtain your business logo or photo.</h3>
+<div class="bizblurb" v-if="showSponsorButton">Businesses in this directory have paid a small fee so that OurTown's Support A Student page remains free to the community, giving our students the opportunity to gain support for their personal and educational growth. 
+Show your appreciation for our town's businesses and SHOP LOCAL!</div>
             <mt-button v-if="showSponsorButton" v-on:click="doRegister()" size="large">Click Here To Register a Business</mt-button>
         
         
