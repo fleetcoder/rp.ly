@@ -12070,7 +12070,7 @@ def syncGroups():
                           if not titleset or not imageset:
                             if foundtit:
                               try:
-                                r = requests.head(item['link'], allow_redirects=True,timeout=5)
+                                r = requests.head(item['link'], allow_redirects=True,timeout=15)
                                 parsed_url = urllib.parse.urlparse(r.url)
                                 if not parsed_url.netloc is None:
                                   out = parsed_url.netloc
@@ -12095,6 +12095,22 @@ def syncGroups():
                               foundimg = True
                     if mytitle != '':
                       newrec['title'] = mytitle + myimage
+                    else:
+                      hostname = ""
+                      try:
+                        r = requests.head(item['link'], allow_redirects=True,timeout=15)
+                        parsed_url = urllib.parse.urlparse(r.url)
+                        if not parsed_url.netloc is None:
+                          out = parsed_url.netloc
+                          parts = out.split(".")
+                          outparts = []
+                          for pp in parts:
+                            if pp != 'www':
+                              outparts.append(pp)
+                          hostname = "  " + ".".join(outparts)
+                          newrec['title'] = newrec['title'] + hostname
+                      except:
+                        pass
             if 'accuweather' in item['link'].lower():
               newrec['title'] = '<h1 class="article_hed">' + foundtitle + '</h1>'
               newrec['title'] = newrec['title'] + '<div class="feedimages"><img class="article_img" src="' + 'file/weather.jpg' + '" alt="Image" /></div>'
