@@ -14055,7 +14055,7 @@ def addPosts():
             hostname = hostname[:-1]
           if not len(hostname) > 253:
             labels = hostname.split(".")
-            if re.match(r"[0-9]+$", labels[-1]):
+            if not re.match(r"[0-9]+$", labels[-1]):
               allowed = re.compile(r"(?!-)[a-z0-9-]{1,63}(?<!-)$", re.IGNORECASE)
               if all(allowed.match(label) for label in labels):
                 if "." in contactInfo:
@@ -14374,7 +14374,7 @@ def modPosts():
           hostname = hostname[:-1]
         if not len(hostname) > 253:
           labels = hostname.split(".")
-          if re.match(r"[0-9]+$", labels[-1]):
+          if not re.match(r"[0-9]+$", labels[-1]):
             allowed = re.compile(r"(?!-)[a-z0-9-]{1,63}(?<!-)$", re.IGNORECASE)
             if all(allowed.match(label) for label in labels):
               if "." in contactInfo:
