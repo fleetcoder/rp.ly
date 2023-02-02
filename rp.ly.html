@@ -6236,6 +6236,7 @@ Show your appreciation for our town's businesses and SHOP LOCAL!</div>
                           <input class="calinputlong"type="text" v-model="body" placeholder="Example" />
                         </td>
                       </tr>
+        
                       <tr>
                         <td  style="text-align:left;">
                          <span class="callabel">Location</span>
@@ -6257,6 +6258,14 @@ Show your appreciation for our town's businesses and SHOP LOCAL!</div>
                         </td>
                         <td>
                          <span class="callabelchange">(change to email or website if you prefer)</span>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>
+                         <span class="callabel">Description</span>
+                        </td>
+                        <td colspan="3">
+                         <textarea rows="8" v-model="title" placeholder="Example" class="calinputlongarea" ></textarea>
                         </td>
                       </tr>
                       <tr>
@@ -12095,28 +12104,34 @@ def syncGroups():
                               foundimg = True
                     if mytitle != '':
                       newrec['title'] = mytitle + myimage
-                    else:
-                      hostname = ""
-                      try:
-                        r = requests.head(item['link'], allow_redirects=True,timeout=15)
-                        parsed_url = urllib.parse.urlparse(r.url)
-                        if not parsed_url.netloc is None:
-                          out = parsed_url.netloc
-                          parts = out.split(".")
-                          outparts = []
-                          for pp in parts:
-                            if pp != 'www':
-                              outparts.append(pp)
-                          hostname = "  " + ".".join(outparts)
-                          newrec['title'] = newrec['title'] + hostname
-                      except:
-                        pass
             if 'accuweather' in item['link'].lower():
               newrec['title'] = '<h1 class="article_hed">' + foundtitle + '</h1>'
               newrec['title'] = newrec['title'] + '<div class="feedimages"><img class="article_img" src="' + 'file/weather.jpg' + '" alt="Image" /></div>'
               flagged = 0
             if newrec['title'] == '':
-              newrec['title'] = newrec['title'] + '<h1 class="article_hed">' + foundtitle + '</h1>'
+              hostname = ""
+              try:
+                r = requests.head(item['link'], allow_redirects=True,timeout=15)
+                parsed_url = urllib.parse.urlparse(r.url)
+                if not parsed_url.netloc is None:
+                  out = parsed_url.netloc
+                  parts = out.split(".")
+                  outparts = []
+                  for pp in parts:
+                    if pp != 'www':
+                      outparts.append(pp)
+                  hostname = "  " + ".".join(outparts)
+              except:
+                pass
+              newrec['title'] = newrec['title'] + '<h1 class="article_hed">' + foundtitle + hostname + '</h1>'
+              if 'idfg' in newrec['link']:
+                img = BeautifulSoup(html.content.decode('utf-8'), "html.parser").find_all('div', attrs={"class":"article__field-post-thumbnail"})
+                imgurl = ""
+                for i in img:
+                  fgi = i.find_all('img')
+                  imgurl = fgi[0]['src']
+                  myimage = '<div class="feedimages"><img class="article_img" src="' + 'https://idfg.idaho.gov' + imgurl + '" alt="Image" /></div>'
+                newrec['title'] = newrec['title'] + myimage
             if not flagged > 0:
               rid = add_one( 'posts', newrec )
               added = added + 1
