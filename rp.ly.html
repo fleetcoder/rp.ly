@@ -14173,7 +14173,8 @@ def addPosts():
       newrec['link'] = request.form.get('shareLink')
       for manual in [
         "idahopress.com",
-        "idahonews.com"
+        "idahonews.com",
+        "postregister.com"
       ]:
         if manual in newrec['link']:
           message = Mail(
