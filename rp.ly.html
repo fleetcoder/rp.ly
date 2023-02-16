@@ -14171,6 +14171,21 @@ def addPosts():
         newrec['period'] = request.form.get('repeatPeriod')
     if not request.form.get('shareLink') is None:
       newrec['link'] = request.form.get('shareLink')
+      for manual in [
+        "idahopress.com",
+        "idahonews.com"
+      ]:
+        if manual in newrec['link']:
+          message = Mail(
+            from_email=' Admin at ' + mydomain + ' <' + os.getenv('SENDGRID_FROM') + '>',
+            to_emails=os.getenv('SENDGRID_FROM'),
+            subject='' + mydomain + ' - new editorial assistant request',
+            html_content='<p>New article <a href="' + newrec['link'] + '">' + newrec['link'] + '</a></p>'
+          )
+          sg = SendGridAPIClient(sendgrid_token)
+          mailresponse = sg.send(message)
+          response = make_response(json.dumps( [ "Editorial Assistant Notified" ] ))
+          return response
       user_agent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1985.143 Safari/537.36'
       headers = {'User-Agent': user_agent}
       try:
