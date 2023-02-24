@@ -7840,7 +7840,7 @@ Show your appreciation for our town's businesses and SHOP LOCAL!</div>
               <mt-cell class="feedtopper"> <p v-html="title"></p></mt-cell>
               <mt-cell> <p class="mobilepara" v-html="body"></p></mt-cell>
               <mt-cell> <p class="mobilepara">Location: {{locationData}}</p></mt-cell>
-              <mt-cell v-if="contact !== ''"> <p class="mobilepara">Contact: {{contact}}</p></mt-cell>
+              <mt-cell v-if="contact !== ''"> <p class="mobilepara"><div v-html="contact"></div></p></mt-cell>
         
               <!--<mt-cell v-bind:class="{'is-hidden':soundHidden}"><audio-player :src="'myFile?field=sound&name=' + sound" /></mt-cell>
               <mt-button size="large" v-on:click="delPosts()">Delete Photo</mt-button>-->
@@ -7906,20 +7906,32 @@ Show your appreciation for our town's businesses and SHOP LOCAL!</div>
                 //this.imageHidden = true
                 //this.locationData = this.post.location
                 
-                if (!(this.contact.match(/http/g) === null)) {
-                  this.contact = '<a href="' + this.contact + '">' + this.contact + '</a>'
-                } else {
-                  if (String(this.contact)
-                  .toLowerCase()
-                  .match(
-                    /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
-                  )) {
-                    this.contact = '<a href="mailto:' + this.contact + '">' + this.contact + '</a>'
-                  }
+                var matches = this.contact.match(/([a-zA-Z0-9._-]+@[a-zA-Z0-9._-]+\.[a-zA-Z0-9_-]+)/gi);
+
+                if (matches)
+                if (matches[0]){
+                  this.contact = this.contact.replace(matches[0],'<a href="mailto:' + matches[0] + '">' + matches[0] + '</a>');
                 }
-                if (this.contact.match(/\d/g).length===10) {
-                  this.contact = '<a href="tel:' + this.contact + '">' + this.contact + '</a>'
+
+                
+
+
+                var matches = this.contact.match(/(?:[-+() ]*\d){10,13}/gm);
+
+                if (matches)
+                if (matches[0]){
+                  this.contact = this.contact.replace(matches[0],'<a href="tel:' + matches[0] + '">' + matches[0] + '</a>');
                 }
+                
+                
+                var matches = this.contact.match(/(http|ftp|https):\/\/([\w_-]+(?:(?:\.[\w_-]+)+))([\w.,@?^=%&:\/~+#-]*[\w@?^=%&\/~+#-])/ig);
+
+                if (matches)
+                if (matches[0]){
+
+                  this.contact = this.contact.replace(matches[0],'<a href="' + matches[0] + '">' + matches[0] + '</a>');
+                }
+
                 if (response.body[1] == 'AUTHED') {
                   this.authed = true
                 }
