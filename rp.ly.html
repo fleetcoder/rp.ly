@@ -14198,6 +14198,7 @@ def addPosts():
           return response
       user_agent = 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/36.0.1985.143 Safari/537.36'
       headers = {'User-Agent': user_agent}
+      mytitle = ''
       try:
         html = requests.get(os.getenv('PREPEND_URL') + urllib.parse.quote_plus(newrec['link']),headers=headers,timeout=60)
         opengraphe = OpenGraphExtractor()
@@ -14205,7 +14206,6 @@ def addPosts():
         imageset = False
         data = opengraphe.extract(unicodedata.normalize('NFKD', html.content.decode('utf-8')).encode('ascii', 'ignore'))
         #data = opengraphe.extract(str(html.text))
-        mytitle = ''
         myimage = ''
         for prop in data[0]['properties']:
           foundtit = False
@@ -14242,6 +14242,19 @@ def addPosts():
           newrec['title'] = mytitle + myimage
       except:
         print('EXC')
+    if not request.form.get('shareLink') is None:
+      newrec['link'] = request.form.get('shareLink')
+      if mytitle == '':
+        message = Mail(
+          from_email=' Admin at ' + mydomain + ' <' + os.getenv('SENDGRID_FROM') + '>',
+          to_emails=os.getenv('SENDGRID_FROM'),
+          subject='' + mydomain + ' - new editorial assistant request',
+          html_content='<p>New article <a href="' + newrec['link'] + '">' + newrec['link'] + '</a></p>'
+        )
+        sg = SendGridAPIClient(sendgrid_token)
+        mailresponse = sg.send(message)
+        response = make_response(json.dumps( [ "Editorial Assistant Notified" ] ))
+        return response
     if (newrec['sound'][-3:] == 'mp3'):
       #speedup = request.form.get('speedup')
       speedup = 0.9
