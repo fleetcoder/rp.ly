@@ -5848,7 +5848,8 @@ Show your appreciation for our town's businesses and SHOP LOCAL!</div>
               }
             }
             if (!(typeof response.body[10] == 'undefined')) {
-              this.contactInfo = response.body[10]
+              if (this.contactInfo == '')
+                this.contactInfo = response.body[10];
             }
             if (!(typeof response.body[11] == 'undefined')) {
               this.locationData = response.body[11]
@@ -14448,16 +14449,17 @@ def modPosts():
         ownerid = grpdata[0]['user_id']
     if not int(user['id']) == int(ownerid):
       return( json.dumps( [ 'Error' ] ) )
-  linkVal = ''
-  if not request.form.get('link') is None:
-    linkVal = request.form.get('link')
   newobj = {
     'title' : request.form.get('title'),
     'body' : request.form.get('body'),
     'image' : saveFile( 'image' ),
-    'sound' : saveFile( 'sound' ),
-    'link' : linkVal
+    'sound' : saveFile( 'sound' )
   }
+  linkVal = ''
+  if not request.form.get('link') is None:
+    linkVal = request.form.get('link')
+    if not linkVal == '':
+      newobj['link'] = linkVal
   contactInfo = ''
   if not request.form.get('contactInfo') is None:
     contactInfo = request.form.get('contactInfo')
