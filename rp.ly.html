@@ -5779,6 +5779,16 @@ Show your appreciation for our town's businesses and SHOP LOCAL!</div>
                 this.contactInfo = this.post.contact
                 this.imageHidden = true
                 this.locationData = this.post.location
+                this.repeatPeriod = this.post.period
+                this.doRepeat = this.post.dorepeat
+
+                if (this.doRepeat === '') {
+
+                } else {
+                  this.doRepeat = 'X'
+                }
+
+
 
                 
                 var el = document.createElement('div')
@@ -6017,15 +6027,26 @@ Show your appreciation for our town's businesses and SHOP LOCAL!</div>
 
             if ("undefined" !== typeof this.$route.params.post) {
 
+              if (this.doRepeat === 'X') {
+                this.doRepeat = '1'
+              } else {
+                this.doRepeat = ''
+              }
+
+
               Vue.http.post( 'modPosts', {
                 id : this.post.id,
                 title: formattedTitle,
-                location:this.locationData,
-                body:formattedBody,
-                contactInfo: this.contactInfo,
                 eventDate: evtdate,
                 eventTime: evttime,
-                timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone
+                doRepeat: this.doRepeat,
+                repeatPeriod: this.repeatPeriod,
+                eventDateEnd: evtdateend,
+                eventTimeEnd: evttimeend,
+                contactInfo: this.contactInfo,
+                timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+                location:this.locationData,
+                body:formattedBody
               }).then( ( response ) => {
                 this.spinnerHidden = true
                 this.title = ''
@@ -6322,6 +6343,7 @@ Show your appreciation for our town's businesses and SHOP LOCAL!</div>
                                 name="checkbox-1"
                                 value="X"
                                 class="calcheckinput"
+                                unchecked-value=""
                               >&nbsp;
                               </b-form-checkbox>
                         </td>
@@ -14486,9 +14508,29 @@ def modPosts():
     if len(request.form.get('eventDate')) > 0:
       eventdate = datetime.strptime(request.form.get('eventDate'), "%Y-%m-%d")
       eventtime = request.form.get('eventTime').split(':')
-      newobj['event'] = str( timezone( request.form.get('timeZone') ).localize( 
-        eventdate.replace(hour=int(eventtime[0]), minute=int(eventtime[1]))
-      ))
+      if len(eventtime[0]) > 0 and len(eventtime[1]) > 0:
+        newobj['event'] = str( timezone( request.form.get('timeZone') ).localize( 
+          eventdate.replace(hour=int(eventtime[0]), minute=int(eventtime[1]))
+        ))
+      else:
+        app.logger.error('NO EVENTSTART ' + request.form.get('eventTime'))
+      if not request.form.get('eventDateEnd') == '':
+        # set end of date
+        eventdate = datetime.strptime(request.form.get('eventDateEnd'), "%Y-%m-%d")
+        eventtime = request.form.get('eventTimeEnd').split(':')
+        if len(eventtime[0]) > 0 and len(eventtime[1]) > 0:
+          newobj['eventend'] = str( timezone( request.form.get('timeZone') ).localize( 
+            eventdate.replace(hour=int(eventtime[0]), minute=int(eventtime[1]))
+          ))
+        else:
+          app.logger.error('NO EVENT END ' + request.form.get('eventDateEnd'))
+    newobj['dorepeat'] = ''
+    if not request.form.get('doRepeat') == '':
+      app.logger.error('set doRepeat YESSS' + request.form.get('doRepeat'))
+      newobj['dorepeat'] = '1'
+      newobj['period'] = request.form.get('repeatPeriod')
+    else:
+      app.logger.error('set doRepeat NOOO')
   if newobj['image'] == '':
     del newobj['image']
   if newobj['sound'] == '':
