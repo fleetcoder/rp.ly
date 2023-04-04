@@ -14206,8 +14206,9 @@ def addPosts():
             ))
           else:
             app.logger.error('NO EVENT END ' + request.form.get('eventDateEnd'))
+      newrec['dorepeat'] = ''
       if not request.form.get('doRepeat') == '':
-        app.logger.error('set doRepeat YES')
+        app.logger.error('set doRepeat YES ' + request.form.get('doRepeat'))
         newrec['dorepeat'] = '1'
         newrec['period'] = request.form.get('repeatPeriod')
     if not request.form.get('shareLink') is None:
