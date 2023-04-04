@@ -6078,6 +6078,12 @@ Show your appreciation for our town's businesses and SHOP LOCAL!</div>
                                body:formattedBody
                              }
               )
+              if (this.doRepeat === 'X') {
+                this.doRepeat = '1'
+              } else {
+                this.doRepeat = ''
+              }
+              
               Vue.http.post( 'addPosts', {
                 recips: JSON.stringify([this.groupid]),
                 title: JSON.stringify([formattedTitle]),
