@@ -13766,6 +13766,7 @@ def getPosts():
           if thisgroup[0]['name'] == 'Classifieds':
             dt = parser.parse(item['created'], tzinfos=tzinfos) - timedelta(hours=6)
             item['title'] = item['title'].replace('"article_hed">','"article_hed">'+dt.strftime('%b %d %-I%p - ') + ' ')
+            item['title'] = item['title'].replace('<span class="separator">·</','')
       gall_limit = False
       for pgrp in pgrps:
         if pgrp in groups:
