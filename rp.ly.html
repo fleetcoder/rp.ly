@@ -1644,6 +1644,20 @@
       .bizblurb {
         margin:30px;
       }
+      .sascopy {
+        text-align:left;
+        margin:10px;
+      }
+      .sashed {
+        margin-top:20px;
+      }
+      .saslabel {
+        font-weight:bold;
+        width:100px;
+        padding-right:5px;
+        margin-right:5px;
+      }
+      
 
   
     </style>
@@ -4074,7 +4088,18 @@ isbiz:false,
 bizdir:'tlicintr',
 searchText:'',
 searchresults:[],
-platform:"iphone"
+platform:"iphone",
+image:'',
+body:'',
+title:'',
+parentstatement:'',
+studentstatement:'',
+parentname:'',
+parentcontact:'',
+goalamount:'',
+projectname:'',
+filebase:'',
+image:''
 
           }
         },
@@ -5064,13 +5089,16 @@ platform:"iphone"
               //3. 
               //3. 
             Vue.http.post( 'addInquiry', {
-              body:"<p><h2>Support A Student Submission</h2></p><p>CONTACT</p><p>" + this.sasContactName + "</p><p>CONTACT INFO</p><p>" + this.sasContactInfo + "</p><p>STUDENT NAME</p><p>" + this.sasStudentName + "</p><p>PROJECT INFO</p><p>" + this.sasProjectInfo + "</p>",
+              body:"<p><h2>Support A Student Submission</h2></p><p>Project Name</p><p>" + this.projectname + "</p><p>Goal Amount</p><p>" + this.goalamount + "</p><p>Parent Name</p><p>" + this.parentname + "</p><p>Parent Contact</p><p>" + this.parentcontact + "</p><p>Parent Project Description</p><p>" + this.parentstatement + "</p><p>Student Statement</p><p>" + this.studentstatement + "</p><p>Project Image link</p><p>" + "https://ourtown.org/pubFile?staged=1&field=image&name=" + this.image + "</p>",
               email:this.sasContactInfo
             }).then( ( response ) => {
-              this.sasContactName = ''
-              this.sasContactInfo = ''
-              this.sasStudentName = ''
-              this.sasProjectInfo = ''
+              this.projectname = ''
+              this.goalamount = ''
+              this.parentname = ''
+              this.parentcontact = ''
+              this.parentstatement = ''
+              this.studentstatement = ''
+              this.image = ''
               MintUI.Toast({
                 message: 'PROJECT SUBMITTED THANK YOU',
                 iconClass: 'icon icon-success',
@@ -5168,7 +5196,16 @@ platform:"iphone"
           },
           handleAddOk() {
             
+          },
+          stagedUpload(field){
+            Vue.http.get( 'publicFile?field=' + field ).then( ( response ) => {
+              if ( !!response.body ) {
+                this.filebase = 'pubFile?staged=1&field=image&name='
+                this.image = response.body
+              }
+            })
           }
+          
           
         },
         template: `
@@ -5222,17 +5259,121 @@ Show your appreciation for our town's businesses and SHOP LOCAL!</div>
               <h5 style="text-align:center;" v-if="!showPostButton" class="public_bio" v-html="publicBio"></h5>
               <div v-html="featuredBiz"></div>
               <div class="sasForm" v-if="showSasForm">
-                <h4 style="text-align:left;">Submit a Project</h4>
+        
+                <h4 class="sashed">Welcome to Support A Student!</h4>
+                <p class="sascopy">At OurTown, we believe in supporting EVERY member of our small communities, especially our children. So we created a page to help local students reach their 4-H, scholastic, personal and/or FFA goals.</p>
+                <p class="sascopy">Better yet, fundraising on Support A Student is ABSOLUTELY FREE for the student -- no fees of any kind are deducted from the funds raised!</p>
+                <p class="sascopy">How is that possible?</p>
+                <p class="sascopy">Through registration fees paid by local businesses who join OurTown's business directory.</p>
+                <h4 class="sashed">Getting Started</h4>
+                <p class="sascopy">It's easy to get started! Simply complete the form below to enter information about your student's project and goal.</p>
+                <p class="sascopy">The student's parent/guardian completes the form with his or her own contact information, leaving the Personal Project Statement for the student to complete (in their own words).</p>
+                <p class="sascopy">If any additional information is needed, an OurTown team member will contact you prior to the project being posted on the site.</p>
+                <p class="sascopy">All projects will remain live for 90 days, after which 100% of the funds raised will be mailed to the parent/guardian.</p>
+                <p class="sascopy">If you'd like your student's identity to remain private, simply choose a Project Title that does not include the student's name and a Project Photo that does not include the student's face.</p>
+                <h4 class="sashed">Questions?</h4>
+                <p class="sascopy">Email us anytime at <a href="mailto:councilid@ourtown.org">councilid@ourtown.org</a></p>
 
-                <h6 style="text-align:left;">Contact Person's Name (parent or teacher)</h6>
-                <mt-field placeholder="Type name here..." v-model="sasContactName" type="text"></mt-field>
-                <h6 style="text-align:left;">Contact Person's Phone / Email</h6>
-                <mt-field placeholder="Type contact info here..." v-model="sasContactInfo" type="text"></mt-field>
-                <h6 style="text-align:left;">Student's Name</h6>
-                <mt-field placeholder="Type name here..." v-model="sasStudentName" type="text"></mt-field>
-                <h6 style="text-align:left;">Student's Project (brief description)</h6>
-                <mt-field type="textarea" rows="10" placeholder="Type your description here..." v-model="sasProjectInfo"></mt-field>
-                <mt-button v-on:click="doSasSubmit()" size="large">Click Here To Submit Project</mt-button>
+
+
+               <!-- sasformer -->
+               <table style="margin: 0 auto;">
+                <tr>
+                  <td v-if="isDesktop">
+        
+        
+                      <div style="text-align:center;">
+                        <img class="img dtimg" style="width:200px;" :src="'pubFile?staged=1&field=image&name=' + image" />
+                        <file-upload style="width:200px;margin-top:20px;" accept="image/*" btn-label="Upload photo..." @change="stagedUpload('image')" :url="'publicUploadFile?field=image'"></file-upload>
+                      </div>
+
+                  </td>
+
+                  <td>
+               <table style="margin: 0 auto;">
+                <tr>
+                  <td>
+                    <table cellpadding="5">
+                      <tr>
+                        <td style="text-align:left;">
+                         <div class="saslabel">Project Name</div>
+                        </td>
+                        <td colspan="3" style="text-align:left;">
+                          <input placeholder="Example Project" class="calinputlong" type="text" v-model="projectname" />
+                        </td>
+                      </tr>
+                      <tr>
+                        <td  style="text-align:left;">
+                         <div class="saslabel">Goal Amount ($)</div>
+                        </td>
+                        <td colspan="3" style="text-align:left;">
+                          <input placeholder="$" class="calinputlong"type="text" v-model="goalamount" />
+                        </td>
+                      </tr>
+                      <tr>
+                        <td  style="text-align:left;">
+                         <div class="saslabel">Parent/Guardian Name</div>
+                        </td>
+                        <td colspan="3" style="text-align:left;">
+                          <input class="calinputlong" type="text" v-model="parentname" />
+                        </td>
+                      </tr>
+                      <tr>
+                        <td  style="text-align:left;">
+                         <div class="saslabel">Parent/Guardian Phone or Email</div>
+                        </td>
+                        <td colspan="3" style="text-align:left;">
+                          <input placeholder="...enter phone or email" class="calinputlong" type="text" v-model="parentcontact" />
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>
+                         <div class="saslabel">Parent/Guardian Project Description</div>
+                        </td>
+                        <td>
+                         <textarea rows="8" v-model="parentstatement" placeholder="Example" class="calinputlongarea" ></textarea>
+                        </td>
+                      </tr>
+                      <tr>
+                        <td>
+                         <div class="saslabel">Student's Personal Statement</div>
+                        </td>
+                        <td>
+                         <textarea rows="8" v-model="studentstatement" placeholder="Example" class="calinputlongarea" ></textarea>
+                        </td>
+                      </tr>
+
+                    </table>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <table>
+                    </table>
+                  </td>
+                </tr>
+                <tr v-if="!isDesktop" >
+                  <td>
+                        <img class="img" :src="'pubFile?staged=1&field=image&name=' + image" />
+                        <file-upload accept="image/*" btn-label="Upload photo..." @change="stagedUpload('image')" :url="'publicUploadFile?field=image'"></file-upload>
+
+                  </td>
+                </tr>
+
+                <tr>
+                  <td>
+                    <div class="calsubmit" v-on:click="doSasSubmit()" >Submit</div>
+                  </td>
+                </tr>
+               </table>
+                              
+                  </td>
+                </tr>
+              </table>
+
+
+        
+
               
               </div>
             </div>
@@ -14532,13 +14673,13 @@ def modPosts():
           ))
         else:
           app.logger.error('NO EVENT END ' + request.form.get('eventDateEnd'))
-    newobj['dorepeat'] = ''
-    if not request.form.get('doRepeat') == '':
-      app.logger.error('set doRepeat YESSS' + request.form.get('doRepeat'))
-      newobj['dorepeat'] = '1'
-      newobj['period'] = request.form.get('repeatPeriod')
-    else:
-      app.logger.error('set doRepeat NOOO')
+      newobj['dorepeat'] = ''
+      if not request.form.get('doRepeat') == '':
+        app.logger.error('set doRepeat YESSS' + request.form.get('doRepeat'))
+        newobj['dorepeat'] = '1'
+        newobj['period'] = request.form.get('repeatPeriod')
+      else:
+        app.logger.error('set doRepeat NOOO')
   if newobj['image'] == '':
     del newobj['image']
   if newobj['sound'] == '':
@@ -14687,7 +14828,7 @@ def joinGroup():
           'publicGroups':linkedgrps,
           'shareCal':shareCal
         })
-    featuredBiz = '<div class="featuredBiz"><h5>Featured Business</h5><a href="http://www.ceadogs.com"><img src="https://ourtown.org/myFile?field=image&name=20230304-1944397C676AD5-04D4-481B-9B52-4AEA53E811FA.png" /><h3>Canine Etiquette Academy LLC</h3></a></div>'
+    featuredBiz = '<div class="featuredBiz"><h5>Featured Business</h5><a href="https://councilcomputer.com"><img src="https://ourtown.org/myFile?field=image&name=20230502-173411CC_logo_border.png" /><h3>Council Computers</h3></a></div>'
     currloc = 'Council'
     if 'state' in curr and 'city' in curr:
       if not curr['state'] is None and not curr['city'] is None:
@@ -15113,6 +15254,73 @@ def uploadFile():
     setSession(request.args.get('field'),fname)
     return response
   return 'OK'
+
+
+@app.route('/publicUploadFile',methods=['GET','POST'])
+def publicUploadFile():
+  filedata = {}
+  if not os.path.exists(appdir + 'myfiles'):
+    os.makedirs(appdir + 'myfiles')
+  if request.method == 'POST':
+    if (sys.getsizeof(request.get_data()) > 5000):
+      fi = tempfile.NamedTemporaryFile(delete=False)
+      f = open(fi.name, 'w+b')
+      f.write(request.get_data())
+      f.close()
+      filedata['tmp_name'] = fi.name
+      filedata['name'] = time.strftime("%d_%m_%Y_%H_%M_%S_") + '.mp3'
+    if 'file' in request.files:
+      file = request.files['file']
+      if not file.filename == '':
+        if file and allowed_file(file.filename):
+          fi = tempfile.NamedTemporaryFile(delete=False)
+          file.save(fi.name)
+          filedata['tmp_name'] = fi.name
+          filedata['name'] = file.filename
+  if 'name' in filedata:
+    fname = time.strftime("%Y%m%d-%H%M%S") + filedata['name']
+    filepath = appdir + 'myfiles/' + fname
+    copyfile(filedata['tmp_name'], filepath)
+    if not filepath[-3:].lower() in ['opml','xml','mp3']:
+      try:
+        image=Image.open(filepath)
+        for orientation in ExifTags.TAGS.keys():
+          if ExifTags.TAGS[orientation]=='Orientation':
+            break
+        exif=dict(image._getexif().items())
+        if exif[orientation] == 3:
+          image=image.rotate(180, expand=True)
+        elif exif[orientation] == 6:
+          image=image.rotate(270, expand=True)
+        elif exif[orientation] == 8:
+          image=image.rotate(90, expand=True)
+        image.save(filepath)
+        image.close()
+      except (AttributeError, KeyError, IndexError):
+        # cases: image don't have getexif
+        pass
+    response = make_response(json.dumps( [ 'OK' ] ))
+    app.logger.error('set session publicUpload to ' + fname)
+    session['publicUpload'] = fname
+    return response
+  return 'OK'
+
+@app.route('/publicFile',methods=['GET','POST'])
+def publicFile():
+  return(session['publicUpload'])
+
+@app.route('/pubFile',methods=['GET','POST'])
+def pubFile():
+  try:
+    thefile = False
+    thefile = appdir + 'myfiles/' + request.args.get('name')
+    ftype = 'image/jpeg'
+    return send_file( thefile, mimetype=ftype)
+  except:
+    pass
+  thefile = appdir + 'public/' + 'no-image.jpg'
+  return send_file( thefile, mimetype=ftype)
+
 
 @app.route('/uploadMulti',methods=['GET','POST'])
 def uploadMulti():
