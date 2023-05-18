@@ -11834,7 +11834,9 @@ Show your appreciation for our town's businesses and SHOP LOCAL!</div>
           <div>
             <mt-header ref="dt-header-ui" id="dt-header-ui" class="fixedheader headertools" fixed title="OurTown">
               <a href="https://ourtown.org" slot="left">
-                <img class="headericon" slot="icon" src="file/home.svg" />
+                <mt-button slot="left" @click="$router.go(-1)" icon="back">back</mt-button>
+              
+  
               </a>
             </mt-header>
         
@@ -11958,10 +11960,8 @@ Show your appreciation for our town's businesses and SHOP LOCAL!</div>
         template: `
           <div>
             <mt-header ref="dt-header-ui" id="dt-header-ui" class="fixedheader headertools" fixed title="OurTown">
-              <a href="https://ourtown.org" slot="left">
-                <img class="headericon" slot="icon" src="file/home.svg" />
-              </a>
-        
+                <mt-button slot="left" @click="$router.go(-1)" icon="back">back</mt-button>
+          
             </mt-header>
         <div class="saspagewrap">
               <h1>&nbsp;</h1>
