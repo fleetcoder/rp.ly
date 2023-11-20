@@ -13938,6 +13938,8 @@ def getBiz():
 
 @app.route('/getCal',methods=['GET'])
 def getCal():
+  import calendar
+  cal = calendar.Calendar()
   user = current_user()
   recs = get_all('posts')
   posts = []
