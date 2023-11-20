@@ -14001,6 +14001,43 @@ def getCal():
               d = d[:-3]+d[-2:]
             item['pubDate'] = datetime.strptime(d, "%Y-%m-%d %H:%M:%S%z").strftime('%Y-%m-%d')
             item['title'] = re.sub('<[^<]+?>', '', item['title'])
+            try:
+              currdate = timezone( 'US/Pacific' ).localize( datetime.now() )
+              if int(item['dorepeat']) == 1:
+                eventdate = datetime.strptime(d, "%Y-%m-%d %H:%M:%S%z")
+                for day in cal.itermonthdays(currdate.year, currdate.month):
+                  if day > 0:
+                    checkday = datetime.strptime(str(currdate.year) + '-' + str(currdate.month) + '-' + str(day).zfill(1), "%Y-%m-%d")
+                    if item["period"] == 'monthly':
+                      if week_of_month(checkday) == week_of_month(eventdate):
+                        if eventdate.weekday() == checkday.weekday():
+                          ritem = item.copy()
+                          titleparts = ritem['title'].split(" - - ")
+                          ritem['title'] = checkday.strftime('%b %d') + ' - - ' + titleparts[1] + ' - - ' + titleparts[2]
+                          ritem['pubDate'] = checkday.strftime('%Y-%m-%d')
+                          ritem['event'] = checkday.strftime("%Y-%m-%d %H:%M:%S%z")
+                          ritem['eventend'] = (checkday + timedelta(hours=2)).strftime("%Y-%m-%d %H:%M:%S%z")
+                          posts.append(ritem)
+                    if item["period"] == 'weekly':
+                      if eventdate.weekday() == checkday.weekday():
+                        ritem = item.copy()
+                        titleparts = ritem['title'].split(" - - ")
+                        ritem['title'] = checkday.strftime('%b %d') + ' - - ' + titleparts[1] + ' - - ' + titleparts[2]
+                        ritem['pubDate'] = checkday.strftime('%Y-%m-%d')
+                        ritem['event'] = checkday.strftime("%Y-%m-%d %H:%M:%S%z")
+                        ritem['eventend'] = (checkday + timedelta(hours=2)).strftime("%Y-%m-%d %H:%M:%S%z")
+                        posts.append(ritem)
+                    if item["period"] == 'daily':
+                      if checkday.weekday() in [0,1,2,3,4]:
+                        ritem = item.copy()
+                        titleparts = ritem['title'].split(" - - ")
+                        ritem['title'] = checkday.strftime('%b %d') + ' - - ' + titleparts[1] + ' - - ' + titleparts[2]
+                        ritem['pubDate'] = checkday.strftime('%Y-%m-%d')
+                        ritem['event'] = checkday.strftime("%Y-%m-%d %H:%M:%S%z")
+                        ritem['eventend'] = (checkday + timedelta(hours=2)).strftime("%Y-%m-%d %H:%M:%S%z")
+                        posts.append(ritem)
+            except:
+              pass
             posts.append(item)
   weather = [
     '',

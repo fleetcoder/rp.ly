@@ -42,6 +42,7 @@ import dataclasses
 import nltk
 from nltk.corpus import wordnet
 from itertools import chain
+from math import ceil
 
 
 
@@ -1197,6 +1198,12 @@ def expandSearch(search_term):
     for o in search_tokens:
       out.append(o)
   return out
+
+def week_of_month(dt):
+    first_day = dt.replace(day=1)
+    dom = dt.day
+    adjusted_dom = dom + first_day.weekday()
+    return int(ceil(adjusted_dom/7.0))
 
 exec(server,globals(),{'app':app,'request':request,'abilities':abilities,'estimator':estimator})
 
