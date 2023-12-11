@@ -13964,6 +13964,7 @@ def getCal():
         public_group = thisgroup[0]['id']
         ppath = thisgroup[0]['publicPath']
         public_group_entry = {'value':int(thisgroup[0]['id']),'label':thisgroup[0]['name'],'links':thisgroup[0]['shareLinks']}
+  holidays = ['2023-12-25']
   for item in recs:
     is_public = False
     if not item['inreplyto'] == '':
@@ -14019,7 +14020,8 @@ def getCal():
                           ritem['pubDate'] = checkday.strftime('%Y-%m-%d')
                           ritem['event'] = checkday.strftime("%Y-%m-%d %H:%M:%S%z")
                           ritem['eventend'] = (checkday + timedelta(hours=2)).strftime("%Y-%m-%d %H:%M:%S%z")
-                          posts.append(ritem)
+                          if not ritem['pubDate'] in holidays:
+                            posts.append(ritem)
                     if item["period"] == 'weekly':
                       if eventdate.weekday() == checkday.weekday():
                         ritem = item.copy()
@@ -14028,7 +14030,8 @@ def getCal():
                         ritem['pubDate'] = checkday.strftime('%Y-%m-%d')
                         ritem['event'] = checkday.strftime("%Y-%m-%d %H:%M:%S%z")
                         ritem['eventend'] = (checkday + timedelta(hours=2)).strftime("%Y-%m-%d %H:%M:%S%z")
-                        posts.append(ritem)
+                        if not ritem['pubDate'] in holidays:
+                          posts.append(ritem)
                     if item["period"] == 'daily':
                       if checkday.weekday() in [0,1,2,3,4]:
                         ritem = item.copy()
@@ -14037,7 +14040,8 @@ def getCal():
                         ritem['pubDate'] = checkday.strftime('%Y-%m-%d')
                         ritem['event'] = checkday.strftime("%Y-%m-%d %H:%M:%S%z")
                         ritem['eventend'] = (checkday + timedelta(hours=2)).strftime("%Y-%m-%d %H:%M:%S%z")
-                        posts.append(ritem)
+                        if not ritem['pubDate'] in holidays:
+                          posts.append(ritem)
             except:
               pass
             posts.append(item)
