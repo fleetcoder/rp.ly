@@ -4733,6 +4733,10 @@ sasitems:[{
             this.cursor = 0
             var unsorted = []
             var curr = this.calendar.current
+            if ("undefined" === typeof this.calendar.current) {
+              curr = moment().date(1)
+              this.calendar.current = curr
+            }
             for (var j = 0; j < this.allitems.length; j++) {
               var dtt = moment(this.allitems[j]['pubDate'],'YYYY-MM-DD')
               if (dtt.month() == curr.month()) {
