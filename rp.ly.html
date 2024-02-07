@@ -4702,6 +4702,7 @@ sasitems:[{
                         this.items[j].imageHidden = true
                         this.items[j].isHtml = true
                         this.items[j].textHidden = false
+                        this.items[j].bizname = 'Contact this business'
                         this.items[j].target = "_self"
                         if ( !this.items[j].link.includes("ourtown.org")) {
                           response.body[0][j].target = "_blank"
@@ -5423,6 +5424,7 @@ Show your appreciation for our town's businesses and SHOP LOCAL!</div>
                   <figcaption class="caption" v-html="item.title"></figcaption>
                 </vue-plyr>
                 <audio-player v-if="item.imageHidden" :src="'myFile?field=sound&name=' + item.sound" v-bind:class="{'is-hidden':item.soundHidden}" />
+                <a class="contactlink" :href="item.link" v-if="showSponsorButton" v-text="item.bizname"></a>
               </mt-cell>
         
         
