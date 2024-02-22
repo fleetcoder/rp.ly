@@ -14027,7 +14027,7 @@ def getCal():
                     checkdays.append(checkday)
                 for checkday in checkdays:
                   if item["period"] == 'monthly':
-                    if week_of_month(checkday) == week_of_month(eventdate):
+                    if (weekday_occurrence(checkday) == weekday_occurrence(eventdate)):
                       if eventdate.weekday() == checkday.weekday():
                         ritem = item.copy()
                         titleparts = ritem['title'].split(" - - ")
