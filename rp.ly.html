@@ -13876,6 +13876,11 @@ def getPost():
       if len(thisgroup) == 1:
         if int(thisgroup[0]['public']) > 0:
           post.append(p[0])
+          if not p[0]['title'] is None:
+            if not p[0]['dorepeat'] is None:
+              if p[0]['dorepeat'] == "1":
+                titleparts = p[0]['title'].split(" - - ")
+                p[0]['title'] = "[multiple dates] - - " + titleparts[1] + ' - - ' + titleparts[2]
   authd = ''
   if 'user' in session:
     if int(session['user']) > 0:
