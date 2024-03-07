@@ -1659,7 +1659,7 @@
         margin-right:5px;
       }
       .donatebut {
-        width:200px;
+        width:100px;
       }
     
     .donoritem {
@@ -4145,26 +4145,16 @@ projectname:'',
 filebase:'',
 image:'',
 sasitems:[{
-  "image":"https://ourtown.org/file/pubFile1.jpg",
-  "name":"Dog Training for 4H",
-  "link":"https://ourtown.org/#/saspage/1",
-  "target":"_blank",
-  "student":"I want to train Scruffy the Dog to understand simple commands that will make him useful when moving sheep from one pasture to another.",
-  "parent":"",
-  "pct":0,
-  "days":90,
-  "id":1
-},
-{
-  "image":"https://ourtown.org/file/pubFile2.jpg",
-  "name":"4H lamb support",
+  "image":"https://ourtown.org/file/horex.jpg",
+  "name":"4H molly support",
   "link":"https://ourtown.org/#/saspage/2",
   "target":"_blank",
-  "student":"I have two lambs that need food and supplies",
+  "student":"I have a molly that needs food and supplies",
   "parent":"",
   "pct":18,
   "days":71,
-  "id":2
+  "id":2,
+  "groupid":"vjmjkrjw"
 }]
 
           }
@@ -5348,8 +5338,6 @@ Show your appreciation for our town's businesses and SHOP LOCAL!</div>
         <div class="feedimages"> <a :href="item.link"><img class="article_img" :src="item.image" alt="Image" /></a></div>
         
               <h1 class="article_hed">
-        <div class="donoritem"><a href="https://www.paypal.com/pools/c/8U3cwsAHfX"><img class="donatebut" src="file/paypal.png" alt="paypal donate" /></a></div>
-        <div class="donoritem"><a href="https://venmo.com/code?user_id=3800771439101394680&created=1683855582.064025&printed=1"><img class="donatebut" src="file/venmo.png" alt="venmo donate" /></a></div>
         <div class="donoritem dtextitem">
  <a :href="item.link"><span v-html="item.name"></span> - Council</a>
         </div>
@@ -11801,33 +11789,35 @@ Show your appreciation for our town's businesses and SHOP LOCAL!</div>
 
                 </div>`
       }
+
       const SasPage = {
         data() {
           return {
             item:{},
             sasitems:[{
-  "image":"https://ourtown.org/file/pubFile1.jpg",
-  "name":"Dog Training for 4H",
-  "link":"https://ourtown.org/#/saspage/1",
-  "target":"_blank",
-  "student":"I want to train Scruffy the Dog to understand simple commands that will make him useful when moving sheep from one pasture to another.",
-  "parent":"",
-  "pct":0,
-  "days":90,
-  "id":1
-},
-{
-  "image":"https://ourtown.org/file/pubFile2.jpg",
-  "name":"4H lamb support",
+  "image":"https://ourtown.org/file/horex.jpg",
+  "name":"4H molly support",
   "link":"https://ourtown.org/#/saspage/2",
   "target":"_blank",
-  "student":"I have two lambs that need food and supplies",
+  "student":"I have a molly that needs food and supplies",
   "parent":"",
   "pct":18,
   "days":71,
-  "id":2
-}]
-
+  "id":2,
+  "groupid":"vjmjkrjw"
+}],
+doSponsor:false,
+doingSAS:true,
+sponsorGroupName:"",
+sponsorGroupId:0,
+btSpinnerHidden:true,
+formHidden:true,
+btAuth:'',
+            plan: 'support5',
+            plans:[{label: '$5 one-time',value: 'support5'},{label: '$20 one-time',value: 'support20'}],
+            btLoaded:false,
+            groupid:''
+            
           }
         },
         props: {subsHidden: Boolean, groups: Array},
@@ -11835,12 +11825,115 @@ Show your appreciation for our town's businesses and SHOP LOCAL!</div>
           for(var i = 0; i < this.sasitems.length; i++) {
             if (this.$route.params.id == this.sasitems[i].id) {
               this.item = this.sasitems[i]
+              this.groupid = this.sasitems[i].groupid
             }
           }
+          if (false === this.btLoaded) {
+            this.btSpinnerHidden = false
+            Vue.http.post( 'btSetup', {
+            }).then( ( response ) => {
+              this.btAuth = response.body[0]
+
+              this.createHostedFields()
+              this.btLoaded = true
+              this.formHidden = false
+              this.btSpinnerHidden = true
+            })
+          }
+          
         },
         methods: {
           doCampaign() {
               router.push( '/sasstart')
+          },
+          goSponsor() {
+            this.doingSAS = true;
+          },
+          doRegister(){
+            if (!this.authed) {
+              router.push('/auth/' + this.$route.params.grp)
+            } else {
+              
+              this.doSponsor = false;
+              this.btSpinnerHidden = false;
+              this.formHidden = true;
+
+              if (false === this.btLoaded) {
+                Vue.http.post( 'btSetup', {
+                }).then( ( response ) => {
+                  this.btAuth = response.body[0]
+                  this.createHostedFields()
+                  this.btLoaded = true
+                  this.formHidden = false
+                  this.btSpinnerHidden = true
+                })
+              }
+            }
+          },
+          createHostedFields() {
+            var postsobj = this
+
+
+            if (typeof braintree !== "undefined" && this.btAuth != '') {
+
+              braintree.setup(this.btAuth, "custom", {
+                id: "cardForm",
+                hostedFields: {
+                  number: {
+                    selector: "#card-number",
+                    placeholder: "4111411141114111"
+                  },
+                  cvv: {
+                    selector: "#cvv",
+                    placeholder: "111"
+                  },
+                  expirationDate: {
+                    selector: "#expiration-date",
+                    placeholder: "MMYY"
+                  },
+                  postalCode: {
+                    selector: "#postal-code",
+                    placeholder: "32323"
+                  },
+                  styles: {
+                    'input': {
+                      'font-size': '16px',
+                      'font-family': 'courier, monospace',
+                      'font-weight': 'lighter',
+                      'color': '#ccc'
+                    },
+                    ':focus': {
+                      'color': 'black'
+                    },
+                    '.valid': {
+                      'color': '#8bdda8'
+                    }
+                  }
+                },
+                onReady: function (integration) {
+                  checkout = integration
+                },
+                onPaymentMethodReceived: function (nonce) {
+                  Vue.http.post( 'doSupport', {
+                    method:JSON.stringify(nonce),
+                    plan_id:postsobj.plan,
+                    group_id:postsobj.groupid
+                  }).then( ( response ) => {
+                    MintUI.Toast({
+                      message: 'Thank you! You will see OURTOWN on your Credit Card Statement.',
+                      iconClass: 'icon icon-error',
+                      duration: 5000
+                    })
+                    //router.push( '/saspage/2' )
+                  })
+                  checkout.teardown(function () {
+                    checkout = null
+                    postsobj.createHostedFields()
+
+                  })
+                }
+              })
+            }
           }
         },
         template: `
@@ -11877,8 +11970,8 @@ Show your appreciation for our town's businesses and SHOP LOCAL!</div>
 <div class="sasblocks">
         
               <h1 class="article_hed">
-        <div class="donoritem"><a href="https://www.paypal.com/pools/c/8U3cwsAHfX"><img class="donatebut" src="file/paypal.png" alt="paypal donate" /></a></div>
-        <div class="donoritem"><a href="https://venmo.com/code?user_id=3800771439101394680&created=1683855582.064025&printed=1"><img class="donatebut" src="file/venmo.png" alt="venmo donate" /></a></div>
+        <div class="donoritem"><a href="javascript:void(0)" @click="goSponsor()"><img class="donatebut" src="file/visa.png" alt="credit card donate" /></a></div>
+
         <div class="donoritem dtextitem">
  <a :href="item.link"><span v-html="item.name"></span> - Council</a>
         </div>
@@ -11890,6 +11983,26 @@ Show your appreciation for our town's businesses and SHOP LOCAL!</div>
         </div>
         </h1>
         
+</div>
+<div class="sasblocks">
+            <div v-if="doingSAS">
+              <mt-cell class="sponsorgroup" :title="sponsorGroupName"></mt-cell>
+              <mt-spinner v-bind:class="{'is-hidden':btSpinnerHidden}" type="snake"></mt-spinner>
+              <form action="/" method="post" id="cardForm" v-bind:class="{'is-hidden':formHidden}">
+                <label class="hosted-fields--label" for="card-number">Card Number</label>
+                <div id="card-number" class="hosted-field"></div>
+                <label class="hosted-fields--label" for="expiration-date">Expiration Date</label>
+                <div id="expiration-date" class="hosted-field"></div>
+                <label class="hosted-fields--label" for="cvv">CVV</label>
+                <div id="cvv" class="hosted-field"></div>
+                <label class="hosted-fields--label" for="cvv">Postal Code</label>
+                <div id="postal-code" class="hosted-field"></div>
+                <mt-radio v-model="plan" :options="plans"></mt-radio>
+                <div class="button-container">
+                  <input type="submit" class="button button--small button--green" value="Submit" id="submit"/>
+                </div>
+              </form>
+            </div>
 </div>
 <div class="sasblocks">
         
@@ -12267,6 +12380,75 @@ Show your appreciation for our town's businesses and SHOP LOCAL!</div>
 
   </body>
   <script type="python" id="server">
+
+@app.route('/doSupport', methods=['GET','POST'])
+def doSupport():
+  response = json.loads(request.form.get('method'))
+  curr = current_user()
+  collection = 0
+  if not curr['phone'] == '':
+    collection = gateway.customer.search(
+      braintree.CustomerSearch.phone == curr['phone']
+    )
+  if not curr['email'] == '':
+    collection = gateway.customer.search(
+      braintree.CustomerSearch.email == curr['email']
+    )
+  if not collection == 0:
+    if len(list(collection.items)) > 0:
+      customer = list(collection.items)[0]
+    else:
+      result = gateway.customer.create({
+        "first_name": curr['name'],
+        "payment_method_nonce": response['nonce'],
+        "email": curr['email'],
+        "phone": curr['phone']
+      })
+      if result.is_success:
+        customer = result.customer
+    if not customer is None:
+      if not len(customer.payment_methods) > 0:
+        result = gateway.payment_method.create({
+          "customer_id": customer.id,
+          "payment_method_nonce": response['nonce']
+        })
+        if not curr['phone'] == '':
+          collection = gateway.customer.search(
+            braintree.CustomerSearch.phone == curr['phone']
+          )
+        if not curr['email'] == '':
+          collection = gateway.customer.search(
+            braintree.CustomerSearch.email == curr['email']
+          )
+        if len(list(collection.items)) > 0:
+          customer = list(collection.items)[0]
+      #result = gateway.subscription.create({
+      #  "payment_method_token": customer.payment_methods[0].token,
+      #  "plan_id": request.form.get('plan_id'),
+      #  "merchant_account_id":'ourtownllc_instant',
+      #  "id":randomword(6) + request.form.get('group_id')
+      #})
+      costs = {
+        "support5":"5.00",
+        "support20":"20.00"
+      }
+      result = gateway.transaction.sale({
+          "amount": costs[request.form.get('plan_id')],
+          "payment_method_token": customer.payment_methods[0].token,
+          "options": {
+              "submit_for_settlement": True
+          }
+      })
+      if result.is_success:
+        if not customer is None:
+          app.logger.error(request.form.get('group_id'))
+          notify_support( request.form.get('plan_id'), request.form.get('group_id'), curr['name'] )
+          response = make_response(json.dumps( [ 'OK' ] ))
+          return response
+        print("success")
+      else:
+        print(result.errors)
+  return 'OK'
 
 @app.route("/expandSearchEnable", methods=['GET'])
 def expandSearchEnable():
