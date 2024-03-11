@@ -11807,7 +11807,7 @@ Show your appreciation for our town's businesses and SHOP LOCAL!</div>
   "groupid":"vjmjkrjw"
 }],
 doSponsor:false,
-doingSAS:true,
+doingSAS:false,
 sponsorGroupName:"",
 sponsorGroupId:0,
 btSpinnerHidden:true,
@@ -11826,6 +11826,14 @@ btAuth:'',
             if (this.$route.params.id == this.sasitems[i].id) {
               this.item = this.sasitems[i]
               this.groupid = this.sasitems[i].groupid
+              Vue.http.post( 'joinGroup', {
+                grp:this.groupid
+              }).then( ( response ) => {
+                if (response.body[3] == 'AUTHED') {
+                  this.doingSAS = true
+                }
+              })
+              
             }
           }
           if (false === this.btLoaded) {
