@@ -4148,6 +4148,7 @@ sasitems:[{
   "image":"https://ourtown.org/file/horex.jpg",
   "name":"4H molly support",
   "link":"https://ourtown.org/#/saspage/2",
+  "shlink":"https://ourtown.org/saspage/2",
   "target":"_blank",
   "student":"I have a molly that needs food and supplies",
   "parent":"",
@@ -6062,11 +6063,11 @@ Show your appreciation for our town's businesses and SHOP LOCAL!</div>
               this.contactInfo = this.contactInfo.substring(2)
             }
             if (this.contactInfo.length < 5) {
-              MintUI.Toast({
+              /*MintUI.Toast({
                 message: 'Please add contact info. Thank you!',
                 iconClass: 'icon icon-error',
                 duration: 4000
-              })
+              })*/
               this.spinnerHidden = true
               return
             }
@@ -11798,6 +11799,7 @@ Show your appreciation for our town's businesses and SHOP LOCAL!</div>
   "image":"https://ourtown.org/file/horex.jpg",
   "name":"4H molly support",
   "link":"https://ourtown.org/#/saspage/2",
+  "shlink":"https://ourtown.org/saspage/2",
   "target":"_blank",
   "student":"I have a molly that needs food and supplies",
   "parent":"",
@@ -12018,8 +12020,8 @@ btAuth:'',
 <div class="sasblocks">
         
         <p>Click to share this fundraiser on:</p>
-        <a :href="'https://www.facebook.com/sharer/sharer.php?u=' + item.link"><img class="sasshare" src="file/facebook.png" alt="facebook share link"/></a>
-        <a :href="'https://twitter.com/intent/tweet?text=' + item.link"><img class="sasshare" src="file/twitter.png" alt="twitter share link"/></a>
+        <a :href="'https://www.facebook.com/sharer/sharer.php?u=' + item.shlink"><img class="sasshare" src="file/facebook.png" alt="facebook share link"/></a>
+        <a :href="'https://twitter.com/intent/tweet?text=' + item.shlink"><img class="sasshare" src="file/twitter.png" alt="twitter share link"/></a>
         
 </div>
 
