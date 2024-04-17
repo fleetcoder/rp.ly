@@ -12048,7 +12048,8 @@ btAuth:'',
             parentcontact:'',
             goalamount:'',
             projectname:'',
-            filebase:''
+            filebase:'',
+            sasmessage:''
           }
         },
         props: {subsHidden: Boolean, groups: Array},
@@ -12081,7 +12082,7 @@ btAuth:'',
                 iconClass: 'icon icon-success',
                 duration: 5000
               })
-              router.push( '/')
+              this.sasmessage = 'The OurTown team will review your submission and reach out with any questions. Your campaign will show live on the OurTown Web site within 72 hours.'
               
             })
             
@@ -12198,6 +12199,9 @@ btAuth:'',
                 <tr>
                   <td>
                     <table>
+                    <tr><td style="background-color:#90EE90">
+                    <h6 v-text="sasmessage"></h6>
+                    </td></tr>
                     </table>
                   </td>
                 </tr>
