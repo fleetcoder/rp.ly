@@ -4152,8 +4152,8 @@ sasitems:[{
   "target":"_blank",
   "student":"Thanks for helping me!",
   "parent":"Timmy would like to attend his first 4-H camp this July",
-  "pct":10,
-  "days":90,
+  "pct":55,
+  "days":89,
   "id":2,
   "groupid":"vjmjkrjw"
 }]
@@ -11802,8 +11802,8 @@ sasitems:[{
   "target":"_blank",
   "student":"Thanks for helping me!",
   "parent":"Timmy would like to attend his first 4-H camp this July",
-  "pct":10,
-  "days":90,
+  "pct":55,
+  "days":89,
   "id":2,
   "groupid":"vjmjkrjw"
 }],
@@ -11817,7 +11817,8 @@ btAuth:'',
             plan: 'support5',
             plans:[{label: '$5 one-time',value: 'support5'},{label: '$20 one-time',value: 'support20'}],
             btLoaded:false,
-            groupid:''
+            groupid:'',
+            sasmessage:false
             
           }
         },
@@ -11923,10 +11924,12 @@ btAuth:'',
                   checkout = integration
                 },
                 onPaymentMethodReceived: function (nonce) {
+                  postsobj.sasmessage = true;
                   Vue.http.post( 'doSupport', {
                     method:JSON.stringify(nonce),
                     plan_id:postsobj.plan,
-                    group_id:postsobj.groupid
+                    group_id:postsobj.groupid,
+                    proj_name:postsobj.item.name
                   }).then( ( response ) => {
                     MintUI.Toast({
                       message: 'Thank you! You will see OURTOWN on your Credit Card Statement.',
@@ -12016,6 +12019,9 @@ btAuth:'',
                   <input type="submit" class="button button--small button--green" value="Submit" id="submit"/>
                 </div>
               </form>
+              <div style="padding:10px;width:350px;'" v-if="sasmessage">
+                <h6 style="background-color:#90EE90;">Thank you. You will receive a receipt for your tax-deductible donation by email. The campaign percentage completed will be updated on the Web site within 24 hours.</h6>
+              </div>
             </div>
             <div v-else>
             <a href="https://ourtown.org/#/auth">log in to make a donation<a>
@@ -12463,7 +12469,7 @@ def doSupport():
       if result.is_success:
         if not customer is None:
           app.logger.error(request.form.get('group_id'))
-          notify_support( request.form.get('plan_id'), request.form.get('group_id'), curr['name'] )
+          notify_support( request.form.get('plan_id'), request.form.get('group_id'), curr['name'], request.form.get('proj_name') )
           response = make_response(json.dumps( [ 'OK' ] ))
           return response
         print("success")
