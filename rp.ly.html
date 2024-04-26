@@ -4145,15 +4145,15 @@ projectname:'',
 filebase:'',
 image:'',
 sasitems:[{
-  "image":"https://ourtown.org/pubFile?staged=1&field=image&name=20240416-160628CE4AFD5C-F66B-45A5-97D7-CCABADCAED56.jpeg",
-  "name":"Sleep away 4-H camp. ",
+  "image":"https://ourtown.org/file/horex.jpg",
+  "name":"",
   "link":"https://ourtown.org/#/saspage/2",
   "shlink":"https://ourtown.org/saspage/2",
   "target":"_blank",
-  "student":"Thanks for helping me!",
-  "parent":"Timmy would like to attend his first 4-H camp this July",
-  "pct":55,
-  "days":89,
+  "student":"I have a molly that needs food and supplies",
+  "parent":"Thanks for your support",
+  "pct":10,
+  "end":"2024-06-03",
   "id":2,
   "groupid":"vjmjkrjw"
 }]
@@ -4545,6 +4545,16 @@ sasitems:[{
         },
         created() {
           this.setup()
+          for(var i = 0; i < this.sasitems.length; i++) {
+            var parts =this.sasitems[i].end.split('-');
+            var d2 = new Date(parts[0], parts[1] - 1, parts[2]); 
+            var d1 =  new Date();
+            var ndays;
+            var tv1 = d1.valueOf();  // msec since 1970
+            var tv2 = d2.valueOf();
+            ndays = (tv2 - tv1) / 1000 / 86400;
+            this.sasitems[i].days = Math.round(ndays - 0.5).toString();
+          }
         },
         watch: {
           '$route.params.grp': function (grp) {
@@ -11795,15 +11805,15 @@ Show your appreciation for our town's businesses and SHOP LOCAL!</div>
           return {
             item:{},
 sasitems:[{
-  "image":"https://ourtown.org/pubFile?staged=1&field=image&name=20240416-160628CE4AFD5C-F66B-45A5-97D7-CCABADCAED56.jpeg",
-  "name":"Sleep away 4-H camp. ",
+  "image":"https://ourtown.org/file/horex.jpg",
+  "name":"",
   "link":"https://ourtown.org/#/saspage/2",
   "shlink":"https://ourtown.org/saspage/2",
   "target":"_blank",
-  "student":"Thanks for helping me!",
-  "parent":"Timmy would like to attend his first 4-H camp this July",
-  "pct":55,
-  "days":89,
+  "student":"I have a molly that needs food and supplies",
+  "parent":"Thanks for your support",
+  "pct":10,
+  "end":"2024-06-03",
   "id":2,
   "groupid":"vjmjkrjw"
 }],
@@ -11825,6 +11835,14 @@ btAuth:'',
         props: {subsHidden: Boolean, groups: Array},
         created() {
           for(var i = 0; i < this.sasitems.length; i++) {
+            var parts =this.sasitems[i].end.split('-');
+            var d2 = new Date(parts[0], parts[1] - 1, parts[2]); 
+            var d1 =  new Date();
+            var ndays;
+            var tv1 = d1.valueOf();  // msec since 1970
+            var tv2 = d2.valueOf();
+            ndays = (tv2 - tv1) / 1000 / 86400;
+            this.sasitems[i].days = Math.round(ndays - 0.5).toString();
             if (this.$route.params.id == this.sasitems[i].id) {
               this.item = this.sasitems[i]
               this.groupid = this.sasitems[i].groupid
