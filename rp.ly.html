@@ -12078,7 +12078,10 @@ btAuth:'',
             goalamount:'',
             projectname:'',
             filebase:'',
-            sasmessage:''
+            sasmessage:'',
+            duration:'90',
+            durations:[{label: '30 days',value: '30'},{label: '60 days',value: '60'},{label: '90 days',value: '90'}],
+            authed:false
           }
         },
         props: {subsHidden: Boolean, groups: Array},
@@ -12088,6 +12091,14 @@ btAuth:'',
           if (check === false) {
             this.isDesktop = true
           }
+          Vue.http.post( 'joinGroup', {
+            grp:'hdkqocon'
+          }).then( ( response ) => {
+            if (response.body[3] == 'AUTHED') {
+              this.authed = true
+            }
+          })
+          
         },
         methods: {
           doSasSubmit() {
@@ -12096,7 +12107,7 @@ btAuth:'',
               //3. 
               //3. 
             Vue.http.post( 'addInquiry', {
-              body:"<p><h2>Support A Student Submission</h2></p><p>Project Name</p><p>" + this.projectname + "</p><p>Goal Amount</p><p>" + this.goalamount + "</p><p>Parent Name</p><p>" + this.parentname + "</p><p>Parent Contact</p><p>" + this.parentcontact + "</p><p>Parent Project Description</p><p>" + this.parentstatement + "</p><p>Student Statement</p><p>" + this.studentstatement + "</p><p>Project Image link</p><p>" + "https://ourtown.org/pubFile?staged=1&field=image&name=" + this.image + "</p>",
+              body:"<p><h2>Support A Student Submission</h2></p><p>Project Name</p><p>" + this.projectname + "</p><p>Goal Amount</p><p>" + this.goalamount + "</p><p>Length of Campaign</p><p>" + this.duration + "</p><p>Parent Name</p><p>" + this.parentname + "</p><p>Parent Contact</p><p>" + this.parentcontact + "</p><p>Parent Project Description</p><p>" + this.parentstatement + "</p><p>Student Statement</p><p>" + this.studentstatement + "</p><p>Project Image link</p><p>" + "https://ourtown.org/pubFile?staged=1&field=image&name=" + this.image + "</p>",
               email:this.sasContactInfo
             }).then( ( response ) => {
               this.projectname = ''
@@ -12106,12 +12117,8 @@ btAuth:'',
               this.parentstatement = ''
               this.studentstatement = ''
               this.image = ''
-              MintUI.Toast({
-                message: 'PROJECT SUBMITTED THANK YOU',
-                iconClass: 'icon icon-success',
-                duration: 5000
-              })
-              this.sasmessage = 'The OurTown team will review your submission and reach out with any questions. Your campaign will show live on the OurTown Web site within 72 hours.'
+
+              this.sasmessage = '<p>Thank you for submitting a fundraising campaign via OurTown and Support A Student!</p><p>A member of our team will reach out to you within 72 hours (at the phone number or email provided) to go over the details and confirm eligibility for submission.</p><p>At the end of the campaign, all funds raised will be sent via check or EFT to either A) the associated 501(c)3 nonprofit, B) the student’s parent/guardian, or C) directly to the student (based on age).</p><p>We look forward to talking with you soon!</p><p>The OurTown Team</p>'
               
             })
             
@@ -12156,6 +12163,11 @@ btAuth:'',
 </div>
 
                <!-- sasformer -->
+
+               <div v-if="!authed">
+                 <a href="https://ourtown.org/#/auth">log in to submit a Support a Student request<a>
+               </div>
+               <div v-else>
                <table style="margin: 0 auto;">
                 <tr>
                   <td v-if="isDesktop">
@@ -12187,6 +12199,14 @@ btAuth:'',
                         </td>
                         <td colspan="3" style="text-align:left;">
                           <input placeholder="$" class="calinputlong"type="text" v-model="goalamount" />
+                        </td>
+                      </tr>
+                      <tr>
+                        <td  style="text-align:left;">
+                         <div class="saslabel">Length of campaign</div>
+                        </td>
+                        <td colspan="3" style="text-align:left;">
+                          <mt-radio v-model="duration" :options="durations"></mt-radio>
                         </td>
                       </tr>
                       <tr>
@@ -12229,7 +12249,7 @@ btAuth:'',
                   <td>
                     <table>
                     <tr><td style="background-color:#90EE90">
-                    <h6 v-text="sasmessage"></h6>
+                    <h6 v-html="sasmessage"></h6>
                     </td></tr>
                     </table>
                   </td>
@@ -12253,6 +12273,8 @@ btAuth:'',
                   </td>
                 </tr>
               </table>
+              
+              </div>
 
 
         </div>
@@ -12606,7 +12628,9 @@ def getCities():
 
 @app.route('/addInquiry',methods=['GET','POST'])
 def addInquiry():
+  sasmessage = '<p>Thank you for submitting a fundraising campaign via OurTown and Support A Student!</p><p>A member of our team will reach out to you within 72 hours (at the phone number or email provided) to go over the details and confirm eligibility for submission.</p><p>At the end of the campaign, all funds raised will be sent via check or EFT to either A) the associated 501(c)3 nonprofit, B) the student’s parent/guardian, or C) directly to the student (based on age).</p><p>We look forward to talking with you soon!</p><p>The OurTown Team</p>'
   ema = request.form.get('email')
+  curr = {"email":""}
   if "" == ema:
     try:
       curr = current_user()
@@ -12620,6 +12644,15 @@ def addInquiry():
     html_content='<p>FROM ' + ema + ' - ' + request.form.get('body') + '</p>')
   sg = SendGridAPIClient(sendgrid_token)
   response = sg.send(message)
+  curr = current_user()
+  if 'email' in curr:
+    if not curr['email'] == '':
+      message = Mail(
+        from_email=' Request at ' + mydomain + ' <' + os.getenv('SENDGRID_FROM') + '>',
+        to_emails=curr['email'],
+        subject='Your submission to OurTown',
+        html_content=sasmessage + '<p>' + request.form.get('body') + '</p>')
+      response = sg.send(message)
   return 'OK'
 
 @app.route('/syncGroups',methods=['GET','POST'])
