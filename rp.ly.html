@@ -11825,7 +11825,12 @@ btSpinnerHidden:true,
 formHidden:true,
 btAuth:'',
             plan: 'support5',
-            plans:[{label: '$5 one-time',value: 'support5'},{label: '$20 one-time',value: 'support20'}],
+            plans:[
+              {label: '$5 one-time',value: 'support5'},
+              {label: '$20 one-time',value: 'support20'},
+              {label: '$50 one-time',value: 'support50'},
+              {label: '$100 one-time',value: 'support100'}
+            ],
             btLoaded:false,
             groupid:'',
             sasmessage:false
@@ -12475,7 +12480,9 @@ def doSupport():
       #})
       costs = {
         "support5":"5.00",
-        "support20":"20.00"
+        "support20":"20.00",
+        "support50":"50.00",
+        "support100":"100.00"
       }
       result = gateway.transaction.sale({
           "amount": costs[request.form.get('plan_id')],
