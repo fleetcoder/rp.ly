@@ -11954,6 +11954,9 @@ btAuth:'',
                     group_id:postsobj.groupid,
                     proj_name:postsobj.item.name
                   }).then( ( response ) => {
+                    let carfor = document.getElementById('cardForm');
+                    carfor.classList.add('is-hidden');
+                    
                     //router.push( '/saspage/2' )
                   })
                   checkout.teardown(function () {
@@ -12038,7 +12041,7 @@ btAuth:'',
                 </div>
               </form>
               <div style="padding:10px;width:350px;'" v-if="sasmessage">
-                <h6 style="background-color:#90EE90;">Thank you. You will receive an emailed receipt for your tax-deductible donation by email. The campaign percentage completed will be updated on the Web site within 24 hours.</h6>
+                <h6 style="background-color:#90EE90;">You will receive a receipt for your tax deductible donation via email and your contribution will be reflected in the campaign’s &quot;percentage raised&quot; section within 24 hours. </h6>
               </div>
             </div>
             <div v-else>
@@ -12113,7 +12116,10 @@ btAuth:'',
               this.studentstatement = ''
               this.image = ''
 
-              this.sasmessage = '<p>Thank you for submitting a fundraising campaign via OurTown and Support A Student!</p><p>A member of our team will reach out to you within 72 hours (at the phone number or email provided) to go over the details and confirm eligibility for submission.</p><p>At the end of the campaign, all funds raised will be sent via check or EFT to either A) the associated 501(c)3 nonprofit, B) the student’s parent/guardian, or C) directly to the student (based on age).</p><p>We look forward to talking with you soon!</p><p>The OurTown Team</p>'
+              this.sasmessage = '<p>Thank you for submitting a fundraising campaign via OurTown and Support A Student!</p><p>A member of our team will reach out to you within 72 hours (at the phone number or email provided) to go over the details and confirm eligibility for submission.</p><p>At the end of the campaign, all funds raised will be sent via check or EFT to either A) the associated 501(c)(3) nonprofit, B) the student’s parent/guardian, or C) directly to the student (based on age).</p><p>We look forward to talking with you soon!</p><p>The OurTown Team</p>'
+              
+              let butt = document.getElementById('calsubmit');
+              butt.classList.add('is-hidden');
               
             })
             
@@ -12260,7 +12266,7 @@ btAuth:'',
 
                 <tr>
                   <td>
-                    <div class="calsubmit" v-on:click="doSasSubmit()" >Submit</div>
+                    <div class="calsubmit" id="calsubmit" v-on:click="doSasSubmit()" >Submit</div>
               <h1>&nbsp;</h1>
                   </td>
                 </tr>
@@ -12624,7 +12630,7 @@ def getCities():
 
 @app.route('/addInquiry',methods=['GET','POST'])
 def addInquiry():
-  sasmessage = '<p>Thank you for submitting a fundraising campaign via OurTown and Support A Student!</p><p>A member of our team will reach out to you within 72 hours (at the phone number or email provided) to go over the details and confirm eligibility for submission.</p><p>At the end of the campaign, all funds raised will be sent via check or EFT to either A) the associated 501(c)3 nonprofit, B) the student’s parent/guardian, or C) directly to the student (based on age).</p><p>We look forward to talking with you soon!</p><p>The OurTown Team</p>'
+  sasmessage = '<p>Thank you for submitting a fundraising campaign via OurTown and Support A Student!</p><p>A member of our team will reach out to you within 72 hours (at the phone number or email provided) to go over the details and confirm eligibility for submission.</p><p>At the end of the campaign, all funds raised will be sent via check or EFT to either A) the associated 501(c)(3) nonprofit, B) the student’s parent/guardian, or C) directly to the student (based on age).</p><p>We look forward to talking with you soon!</p><p>The OurTown Team</p>'
   ema = request.form.get('email')
   curr = {"email":""}
   if "" == ema:
