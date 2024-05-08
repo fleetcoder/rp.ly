@@ -5352,7 +5352,7 @@ Show your appreciation for our town's businesses and SHOP LOCAL!</div>
  <a :href="item.link"><span v-html="item.name"></span> - Council</a>
         </div>
         <div class="donoritem dtextitem">
-          <i>Percentage of goal reached:</i> <b><span v-html="item.pct"></span>%</b>
+          <i>Percentage of goal raised:</i> <b><span v-html="item.pct"></span>%</b>
         </div>
         <div class="donoritem dtextitem">
           <b><span v-html="item.days"></span></b> days remaining 
@@ -12014,7 +12014,7 @@ btAuth:'',
  <a :href="item.link"><span v-html="item.name"></span> - Council</a>
         </div>
         <div class="donoritem dtextitem">
-          <i>Percentage of goal reached:</i> <b><span v-html="item.pct"></span>%</b>
+          <i>Percentage of goal raised:</i> <b><span v-html="item.pct"></span>%</b>
         </div>
         <div class="donoritem dtextitem">
           <b><span v-html="item.days"></span></b> days remaining 
@@ -12041,6 +12041,7 @@ btAuth:'',
                 </div>
               </form>
               <div style="padding:10px;width:350px;'" v-if="sasmessage">
+                <h6 style="background-color:#90EE90;">Thank you for supporting a student!</h6> 
                 <h6 style="background-color:#90EE90;">You will receive a receipt for your tax deductible donation via email and your contribution will be reflected in the campaign’s &quot;percentage raised&quot; section within 24 hours. </h6>
               </div>
             </div>
