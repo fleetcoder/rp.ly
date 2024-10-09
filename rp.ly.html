@@ -3156,7 +3156,7 @@ errortext:'',
         <b-nav-item class="hoverlinks" href="/#/pubgroup/nibliqms">Calendar</b-nav-item>
         <b-nav-item class="hoverlinks" href="/#/pubgroup/ekevbzyq">Classified Ads</b-nav-item>
         <b-nav-item class="hoverlinks" href="/#/pubgroup/vbkuqsko">Bulletin Board</b-nav-item>
-        <b-nav-item class="hoverlinks" href="/#/pubgroup/hdkqocon">Support A Student</b-nav-item>
+        <b-nav-item class="hoverlinks" href="/#/pubgroup/hdkqocon">Support A Local Student</b-nav-item>
         <b-nav-item class="hoverlinks" href="/#/pubgroup/tlicintr">Business Directory</b-nav-item>
         <b-nav-item class="hoverlinks" href="/#/pubgroup/tlicintr"><div class="weatherwidget"><span v-html="weathertext"></span></div></b-nav-item>
       </b-navbar-nav>
@@ -3370,7 +3370,7 @@ errortext:'',
               <div class="linkbox botpanel">
               <a href="/#/pubgroup/hdkqocon">
               <img class="smallmenu twobytwo" src="https://ourtown.org/grpFile?field=image&amp;name=20210425-004231cil-education.svg" />
-              <h1>Support A Student
+              <h1>Support A Local Student
               </h1>
               </a>
         <p>Help a local student reach their goals!</p>
@@ -3518,7 +3518,7 @@ errortext:'',
 },{
         "grpLink":"/pubgroup/hdkqocon",
         "image":"https://ourtown.org/grpFile?field=image&name=20210425-004231cil-education.svg",
-        "name":"Support A Student"
+        "name":"Support A Local Student"
 },{
         "grpLink":"/pubgroup/tlicintr",
         "image":"https://ourtown.org/grpFile?field=image&name=20210425-003105cil-building.svg",
@@ -4097,7 +4097,7 @@ errortext:'',
 },{
         "grpLink":"/pubgroup/hdkqocon",
         "image":"https://ourtown.org/grpFile?field=image&name=20210425-004231cil-education.svg",
-        "name":"Support A Student"
+        "name":"Support A Local Student"
 },{
         "grpLink":"/pubgroup/tlicintr",
         "image":"https://ourtown.org/grpFile?field=image&name=20210425-003105cil-building.svg",
@@ -4153,7 +4153,7 @@ sasitems:[{
   "student":"I have a molly that needs food and supplies",
   "parent":"Thanks for your support",
   "pct":10,
-  "end":"2024-06-03",
+  "end":"2024-12-25",
   "id":2,
   "groupid":"vjmjkrjw"
 }]
@@ -4615,7 +4615,7 @@ sasitems:[{
                 this.showSponsorButton = true
                 this.featuredBiz = response.body[9]
               }
-              if (this.name == 'Support A Student') {
+              if (this.name == 'Support A Local Student') {
                 this.showSasForm = true
               }
               if (!(typeof response.body[12] == 'undefined')) {
@@ -5160,7 +5160,7 @@ sasitems:[{
               //3. 
               //3. 
             Vue.http.post( 'addInquiry', {
-              body:"<p><h2>Support A Student Submission</h2></p><p>Project Name</p><p>" + this.projectname + "</p><p>Goal Amount</p><p>" + this.goalamount + "</p><p>Parent Name</p><p>" + this.parentname + "</p><p>Parent Contact</p><p>" + this.parentcontact + "</p><p>Parent Project Description</p><p>" + this.parentstatement + "</p><p>Student Statement</p><p>" + this.studentstatement + "</p><p>Project Image link</p><p>" + "https://ourtown.org/pubFile?staged=1&field=image&name=" + this.image + "</p>",
+              body:"<p><h2>Support A Local Student Submission</h2></p><p>Project Name</p><p>" + this.projectname + "</p><p>Goal Amount</p><p>" + this.goalamount + "</p><p>Parent Name</p><p>" + this.parentname + "</p><p>Parent Contact</p><p>" + this.parentcontact + "</p><p>Parent Project Description</p><p>" + this.parentstatement + "</p><p>Student Statement</p><p>" + this.studentstatement + "</p><p>Project Image link</p><p>" + "https://ourtown.org/pubFile?staged=1&field=image&name=" + this.image + "</p>",
               email:this.sasContactInfo
             }).then( ( response ) => {
               this.projectname = ''
@@ -5324,7 +5324,7 @@ sasitems:[{
             <div class="sectionTopper"><h5>{{name}}</h5></div>
         
             <h3 v-if="showDidSponsor">You are registered! We will contact you to obtain your business logo or photo.</h3>
-<div class="bizblurb" v-if="showSponsorButton">Businesses in this directory have paid a small fee so that OurTown's Support A Student page remains free to the community, giving our students the opportunity to gain support for their personal and educational growth. 
+<div class="bizblurb" v-if="showSponsorButton">Businesses in this directory have paid a small fee so that OurTown's Support A Local Student page remains free to the community, giving our students the opportunity to gain support for their personal and educational growth. 
 Show your appreciation for our town's businesses and SHOP LOCAL!</div>
             <mt-button v-if="showSponsorButton" v-on:click="doRegister()" size="large">Click Here To Register a Business</mt-button>
         
@@ -11028,7 +11028,7 @@ Show your appreciation for our town's businesses and SHOP LOCAL!</div>
         <b-nav-item class="hoverlinks" href="/#/pubgroup/nibliqms">Calendar</b-nav-item>
         <b-nav-item class="hoverlinks" href="/#/pubgroup/ekevbzyq">Classified Ads</b-nav-item>
         <b-nav-item class="hoverlinks" href="/#/pubgroup/vbkuqsko">Bulletin Board</b-nav-item>
-        <b-nav-item class="hoverlinks" href="/#/pubgroup/hdkqocon">Support A Student</b-nav-item>
+        <b-nav-item class="hoverlinks" href="/#/pubgroup/hdkqocon">Support A Local Student</b-nav-item>
         <b-nav-item class="hoverlinks" href="/#/pubgroup/tlicintr">Business Directory</b-nav-item>
       </b-navbar-nav>
 
@@ -11420,7 +11420,7 @@ Show your appreciation for our town's businesses and SHOP LOCAL!</div>
         <b-nav-item class="hoverlinks" href="/#/pubgroup/nibliqms">Calendar</b-nav-item>
         <b-nav-item class="hoverlinks" href="/#/pubgroup/ekevbzyq">Classified Ads</b-nav-item>
         <b-nav-item class="hoverlinks" href="/#/pubgroup/vbkuqsko">Bulletin Board</b-nav-item>
-        <b-nav-item class="hoverlinks" href="/#/pubgroup/hdkqocon">Support A Student</b-nav-item>
+        <b-nav-item class="hoverlinks" href="/#/pubgroup/hdkqocon">Support A Local Student</b-nav-item>
         <b-nav-item class="hoverlinks" href="/#/pubgroup/tlicintr">Business Directory</b-nav-item>
       </b-navbar-nav>
 
@@ -11705,7 +11705,7 @@ Show your appreciation for our town's businesses and SHOP LOCAL!</div>
               <b-nav-item class="hoverlinks" href="/#/pubgroup/nibliqms">Calendar</b-nav-item>
               <b-nav-item class="hoverlinks" href="/#/pubgroup/ekevbzyq">Classified Ads</b-nav-item>
               <b-nav-item class="hoverlinks" href="/#/pubgroup/vbkuqsko">Bulletin Board</b-nav-item>
-              <b-nav-item class="hoverlinks" href="/#/pubgroup/hdkqocon">Support A Student</b-nav-item>
+              <b-nav-item class="hoverlinks" href="/#/pubgroup/hdkqocon">Support A Local Student</b-nav-item>
               <b-nav-item class="hoverlinks" href="/#/pubgroup/tlicintr">Business Directory</b-nav-item>
             </b-navbar-nav>
 
@@ -11813,7 +11813,7 @@ sasitems:[{
   "student":"I have a molly that needs food and supplies",
   "parent":"Thanks for your support",
   "pct":10,
-  "end":"2024-06-03",
+  "end":"2024-12-25",
   "id":2,
   "groupid":"vjmjkrjw"
 }],
@@ -11977,7 +11977,7 @@ btAuth:'',
         
         <div class="saspagewrap">
               <h1>&nbsp;</h1>
-            <h2>OurTown Support A Student Campaign</h2>
+            <h2>OurTown Support A Local Student Campaign</h2>
 
             <mt-button v-on:click="doCampaign()" size="large">Click here to create a student campaign</mt-button>
         
@@ -12054,7 +12054,7 @@ btAuth:'',
         <p>Click to share this fundraiser on:</p>
         <a :href="'https://www.facebook.com/sharer/sharer.php?u=' + item.shlink"><img class="sasshare" src="file/facebook.png" alt="facebook share link"/></a>
         <a :href="'https://twitter.com/intent/tweet?text=' + item.shlink"><img class="sasshare" src="file/twitter.png" alt="twitter share link"/></a>
-        <p>Support A Student LLC is a <a href="https://egov.sos.state.or.us/br/pkg_web_name_srch_inq.show_detl?p_be_rsn=2488599&p_srce=BR_INQ&p_print=FALSE">registered Oregon LLC</a>. 501(c)(3) nonprofit status has been filed, pending final approval.</p>
+        <p>Support A Local Student is a registered 501(c)3 charity</a> with the IRS, EIN: 99-4907955.</p>
 </div>
 
         
@@ -12106,7 +12106,7 @@ btAuth:'',
               //3. 
               //3. 
             Vue.http.post( 'addInquiry', {
-              body:"<p><h2>Support A Student Submission</h2></p><p>Project Name</p><p>" + this.projectname + "</p><p>Goal Amount</p><p>" + this.goalamount + "</p><p>Length of Campaign</p><p>" + this.duration + "</p><p>Parent Name</p><p>" + this.parentname + "</p><p>Parent Contact</p><p>" + this.parentcontact + "</p><p>Parent Project Description</p><p>" + this.parentstatement + "</p><p>Student Statement</p><p>" + this.studentstatement + "</p><p>Project Image link</p><p>" + "https://ourtown.org/pubFile?staged=1&field=image&name=" + this.image + "</p>",
+              body:"<p><h2>Support A Local Student Submission</h2></p><p>Project Name</p><p>" + this.projectname + "</p><p>Goal Amount</p><p>" + this.goalamount + "</p><p>Length of Campaign</p><p>" + this.duration + "</p><p>Parent Name</p><p>" + this.parentname + "</p><p>Parent Contact</p><p>" + this.parentcontact + "</p><p>Parent Project Description</p><p>" + this.parentstatement + "</p><p>Student Statement</p><p>" + this.studentstatement + "</p><p>Project Image link</p><p>" + "https://ourtown.org/pubFile?staged=1&field=image&name=" + this.image + "</p>",
               email:this.sasContactInfo
             }).then( ( response ) => {
               this.projectname = ''
@@ -12117,7 +12117,7 @@ btAuth:'',
               this.studentstatement = ''
               this.image = ''
 
-              this.sasmessage = '<p>Thank you for submitting a fundraising campaign via OurTown and Support A Student!</p><p>A member of our team will reach out to you within 72 hours (at the phone number or email provided) to go over the details and confirm eligibility for submission.</p><p>At the end of the campaign, all funds raised will be sent via check or EFT to either A) the associated 501(c)(3) nonprofit, B) the student’s parent/guardian, or C) directly to the student (based on age).</p><p>We look forward to talking with you soon!</p><p>The OurTown Team</p>'
+              this.sasmessage = '<p>Thank you for submitting a fundraising campaign via OurTown and Support A Local Student!</p><p>A member of our team will reach out to you within 72 hours (at the phone number or email provided) to go over the details and confirm eligibility for submission.</p><p>At the end of the campaign, all funds raised will be sent via check or EFT to either A) the associated 501(c)(3) nonprofit, B) the student’s parent/guardian, or C) directly to the student (based on age).</p><p>We look forward to talking with you soon!</p><p>The OurTown Team</p>'
               
               let butt = document.getElementById('calsubmit');
               butt.classList.add('is-hidden');
@@ -12148,9 +12148,9 @@ btAuth:'',
         <div class="sascopywrap">
         
         
-                <h4 class="sashed">Welcome to Support A Student!</h4>
+                <h4 class="sashed">Welcome to Support A Local Student!</h4>
                 <p class="sascopy">At OurTown, we believe in supporting EVERY member of our small communities, especially our children. So we created a page to help local students reach their 4-H, scholastic, personal and/or FFA goals.</p>
-                <p class="sascopy">Better yet, fundraising on Support A Student is ABSOLUTELY FREE for the student -- no fees of any kind are deducted from the funds raised!</p>
+                <p class="sascopy">Better yet, fundraising on Support A Local Student is ABSOLUTELY FREE for the student -- no fees of any kind are deducted from the funds raised!</p>
                 <p class="sascopy">How is that possible?</p>
                 <p class="sascopy">Through registration fees paid by local businesses who join OurTown's business directory.</p>
                 <h4 class="sashed">Getting Started</h4>
@@ -12161,14 +12161,15 @@ btAuth:'',
                 <p class="sascopy">If you'd like your student's identity to remain private, simply choose a Project Title that does not include the student's name and a Project Photo that does not include the student's face.</p>
                 <h4 class="sashed">Questions?</h4>
                 <p class="sascopy">Email us anytime at <a href="mailto:councilid@ourtown.org">councilid@ourtown.org</a></p>
-                <p>Support A Student LLC is a <a href="https://egov.sos.state.or.us/br/pkg_web_name_srch_inq.show_detl?p_be_rsn=2488599&p_srce=BR_INQ&p_print=FALSE">registered Oregon LLC</a>. 501(c)(3) nonprofit status has been filed, pending final approval.</p>
+                <p>Support A Local Student is a registered 501(c)3 charity</a> with the IRS, EIN: 99-4907955.</p>
+
 
 </div>
 
                <!-- sasformer -->
 
                <div v-if="!authed">
-                 <a href="https://ourtown.org/#/auth">log in to submit a Support a Student request<a>
+                 <a href="https://ourtown.org/#/auth">log in to submit a Support A Local Student request<a>
                </div>
                <div v-else>
                <table style="margin: 0 auto;">
@@ -12631,7 +12632,7 @@ def getCities():
 
 @app.route('/addInquiry',methods=['GET','POST'])
 def addInquiry():
-  sasmessage = '<p>Thank you for submitting a fundraising campaign via OurTown and Support A Student!</p><p>A member of our team will reach out to you within 72 hours (at the phone number or email provided) to go over the details and confirm eligibility for submission.</p><p>At the end of the campaign, all funds raised will be sent via check or EFT to either A) the associated 501(c)(3) nonprofit, B) the student’s parent/guardian, or C) directly to the student (based on age).</p><p>We look forward to talking with you soon!</p><p>The OurTown Team</p>'
+  sasmessage = '<p>Thank you for submitting a fundraising campaign via OurTown and Support A Local Student!</p><p>A member of our team will reach out to you within 72 hours (at the phone number or email provided) to go over the details and confirm eligibility for submission.</p><p>At the end of the campaign, all funds raised will be sent via check or EFT to either A) the associated 501(c)(3) nonprofit, B) the student’s parent/guardian, or C) directly to the student (based on age).</p><p>We look forward to talking with you soon!</p><p>The OurTown Team</p>'
   ema = request.form.get('email')
   curr = {"email":""}
   if "" == ema:
